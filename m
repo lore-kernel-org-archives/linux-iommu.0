@@ -1,52 +1,52 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.34
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=183.62.165.209
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795094892;
-	b=FzShT+qWg4lIAx0j+2tP8bmJVF/NIgLZOCNoamg0cyCLOKSzfAbYkSiOVvsDyOCDHMTr
-	 Qi3rQ7uOQnwgPDhl1NFuyka3QtlrpoGFo5KpudSiaUTaJblGtB1mQegv/VzTCXd1IlK32
-	 ZN9VqnTxAwjxJaFlJZiSobtPWZwY0FLfXRO/B4Lf3GNjSgK8PrpqfBVpO48QRHW3QR58K
-	 52c26u8JS6tAwH+Wmuini6PgLpIjFJaC7mOlS17zQGBo5dXgcHFakj6VyWkUgrrIF8yA/
-	 zZHP3T9UZcSLcf+7LPwtQzgVS9kuFMizc25zuZgEbSJfyrMl7WBwGnGxPQJnC3nMmrw==
+	t=1795094894;
+	b=Kou0OPOhJHNjHAAlf4Exld40RRxOZP8BylRBmM71nPgbfJQSeF0ltZOV4Gp4vG8z7ygN
+	 srCKMxxcziZAFsFjUXg0BWaSCLa7KAStrU7FaDVdp1nXgOsIRskGs6jMKilO60rGkDSlK
+	 x6LxPN/a580OpWhFiISUNcG6Qm3unJ1xwID2ioLT2PERqHqDZFqa40yXYxa9bnr9+1hv8
+	 wU7oZtInM3yLYCvtuLusFdCSRCU0PUhW9uVy5xokFeh/DeqDONeaVRQwamQy5pRGXhC+s
+	 SPTyb2agQ3muRnWvMloa9l3r4j3T5oBb2FxkX5XOA8zfEf4Ea+LJG5lxcN3BcFfKiXA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795094892;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795094894;
 	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:
 	 X-Zmail-LocalSMTP:X-Zmail-RealSender:From:To:Cc:Subject:Date:
 	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
 	 X-ZMAIL-USEORIGINALEMLTOOUTBOUND:Content-Transfer-Encoding:X-MAIL:
 	 X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:X-CLEAN:
 	 X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
-	bh=e4Z3fhhmLJhkjK5JFDJG7f0kbcabGFdXK4tvadL231g=;
-	b=n7BtHoI9nH7KN8D6hl5pGQQuptd03DFbcw9eMivGk35j5B+I5Tt/wVaYUBKGVg4uVJYM
-	 iR/SduIMaFpiBWMh70yiNRoOR5fOfyXVoeCu24ZqptpQzxt7mxtwe+RZhS3jDbQ89wrsQ
-	 k+0woL5/7KghE1Dqtr2eXeRYNVT45rMT6C78F3G5kyciSGIkrqT5DzuBPxtkcJIiDUSv+
-	 60T5QBbWWKMrMRWu/+8JQblbx1Oxjc+KPadFz5s8TMHLwFVHFV11s8DRtRB99iJP37PFY
-	 BadijyTp3OIhQmC3Tr1nUmgopumeMrSH2CGYxcyp6ECbaPQTn2SzEjHrJkmwSXe4eog==
+	bh=pXs81zN/gtOWk9jcY6j4Vry1pu2j7Yic8GSrqZs0QNY=;
+	b=4DgU+NMYi9NYVZ6ZiDEFX1faGUURCsDG5F7/ZKiLo4SOaA/0A9grBIma9+wRVSfyN+CC
+	 9QjdbiuPXM4MeLVHi4JZVJFwDB0dkAQO+OiSAuI7oHxE8A69sAOwcbmejLW46UKZVDWlU
+	 9duWOlqYiugG5e88rLoSMzkj9oaR7Uo36qLPmodf8ISzEYflu9YH9aBUoKS6Nl20+mNtv
+	 +NaLq24uGOzM6WvZlaflaxxtdetE9jhI+q3hgrwT1Mkvf6AC5bmr5s2DsNqOgLYvG+gQT
+	 CtH6c2rpXTilDs+39W5g0h4YckCJ/L9NBOSU0iIQ2NRPkkA2quM3g/36jNavvUGxA0Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=sanechips.com.cn;
 	spf=pass smtp.mailfrom=sanechips.com.cn;
-	arc=none smtp.remote-ip=160.30.148.34
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.34])
+	arc=none smtp.remote-ip=183.62.165.209
+Received: from mxct.zte.com.cn (mxct.zte.com.cn [183.62.165.209])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 774AE60A2611
-	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 13:28:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 774AE60A2611
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B967B60A2612
+	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 13:28:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B967B60A2612
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
-Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
+Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jVfRb27QCz4yjjW;
-	Thu, 19 Nov 2026 21:28:11 +0800 (CST)
-Received: from szxl2zmapp06.zte.com.cn ([10.1.32.108])
-	by mse-fl2.zte.com.cn with SMTP id 6AJDRv0W070523;
-	Thu, 19 Nov 2026 21:27:57 +0800 (+08)
+	by mxct.zte.com.cn (FangMail) with ESMTPS id 4jVfRK1ktVz52SG3;
+	Thu, 19 Nov 2026 21:27:57 +0800 (CST)
+Received: from szxlzmapp03.zte.com.cn ([10.5.231.207])
+	by mse-fl1.zte.com.cn with SMTP id 6AJDRsH9086413;
+	Thu, 19 Nov 2026 21:27:54 +0800 (+08)
 	(envelope-from gong.shuai@sanechips.com.cn)
 Received: from ubuntu-35-gs (unknown [10.230.214.35])
 	by smtp (Zmail) with SMTP;
-	Thu, 19 Nov 2026 21:28:00 +0800
-X-Zmail-TransId: 3e816afef95f02f-56564
+	Thu, 19 Nov 2026 21:27:58 +0800
+X-Zmail-TransId: 3e816afef95d02f-56508
 X-Zmail-LocalSMTP: 1
 X-Zmail-RealSender: gong.shuai@sanechips.com.cn
 From: Gong Shuai <gong.shuai@sanechips.com.cn>
@@ -67,9 +67,9 @@ Cc: Anup Patel <anup@brainfault.org>, Atish Patra <atish.patra@linux.dev>,
         Tan Chi <tanchi25@mails.ucas.ac.cn>, Wu Fei <wu.fei9@sanechips.com.cn>,
         Zhao Qingye <zhao.qingye@sanechips.com.cn>,
         Gong Shuai <gong.shuai@sanechips.com.cn>
-Subject: [RFC PATCH v3 10/10] iommu/riscv: Flush the right address space on bond unlink
-Date: Thu, 19 Nov 2026 21:27:44 +0800
-Message-ID: <20261119132744.396426-11-gong.shuai@sanechips.com.cn>
+Subject: [RFC PATCH v3 07/10] iommufd: Add RISC-V IOMMU hardware info type
+Date: Thu, 19 Nov 2026 21:27:41 +0800
+Message-ID: <20261119132744.396426-8-gong.shuai@sanechips.com.cn>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261119132744.396426-1-gong.shuai@sanechips.com.cn>
 References: <20261119132744.396426-1-gong.shuai@sanechips.com.cn>
@@ -84,68 +84,76 @@ Precedence: list
 MIME-Version: 1.0
 X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
 Content-Transfer-Encoding: 8bit
-X-MAIL:mse-fl2.zte.com.cn 6AJDRv0W070523
+X-MAIL:mse-fl1.zte.com.cn 6AJDRsH9086413
 X-TLS: YES
 X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
-X-SOURCE-IP: 10.5.228.133 unknown Thu, 19 Nov 2026 21:28:11 +0800
+X-SOURCE-IP: 10.5.228.132 unknown Thu, 19 Nov 2026 21:27:57 +0800
 X-CLEAN: YES
 X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6AFEF96B.000/4jVfRb27QCz4yjjW
+X-Fangmail-MID-QID: 6AFEF95D.000/4jVfRK1ktVz52SG3
 
-When the last bond to an IOMMU is removed, the entries cached for the
-address space it used must be invalidated. Nested and second-stage bonds
-are identified by GSCID, first-stage paging bonds by PSCID.
+From: Wu Fei <wu.fei9@sanechips.com.cn>
 
+A VMM needs the physical IOMMU capabilities to decide which features
+it can expose to a guest. Define IOMMU_HW_INFO_TYPE_RISCV and struct
+iommu_hw_info_riscv so IOMMU_GET_HW_INFO can return the RISC-V
+capabilities register.
+
+Signed-off-by: Wu Fei <wu.fei9@sanechips.com.cn>
 Signed-off-by: Gong Shuai <gong.shuai@sanechips.com.cn>
 ---
- drivers/iommu/riscv/iommu.c | 20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
+ include/uapi/linux/iommufd.h | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index e8d894f3e760..a106105bd31b 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -934,6 +934,7 @@ static void riscv_iommu_bond_unlink(struct riscv_iommu_domain *domain,
- 	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
- 	struct riscv_iommu_bond *bond, *found = NULL;
- 	struct riscv_iommu_command cmd;
-+	int gscid = 0;
- 	int count = 0;
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index fee63e6cbb7a..adc7f30b2b18 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -733,6 +733,28 @@ struct iommu_hw_info_amd {
+ 	__aligned_u64 efr2;
+ };
  
- 	if (!domain)
-@@ -948,18 +949,27 @@ static void riscv_iommu_bond_unlink(struct riscv_iommu_domain *domain,
- 		else if (dev_to_iommu(bond->dev) == iommu)
- 			count++;
- 	}
--	if (found)
-+	if (found) {
-+		gscid = found->gscid;
- 		list_del_rcu(&found->list);
-+	}
- 	spin_unlock(&domain->lock);
- 	kfree_rcu(found, rcu);
++/**
++ * struct iommu_hw_info_riscv - RISC-V IOMMU device info
++ *                              (IOMMU_HW_INFO_TYPE_RISCV)
++ *
++ * @capabilities: Value of the RISC-V IOMMU capabilities register, defined
++ *                in "IOMMU capabilities (capabilities)" of the RISC-V
++ *                IOMMU Architecture Specification. The value is reported
++ *                raw by the hardware.
++ *
++ * The VMM is responsible to determine the appropriate fields to be
++ * exposed to the VM since certain features are not currently supported
++ * by the kernel for nested domains. Current list of supported fields:
++ * - capabilities[Sv39, Sv48, Sv57, END, AMO_HWAD]
++ *
++ * This list may expand in the future. It is important that VMMs do not
++ * expose bits outside the list to the VM, to allow for compatibility
++ * with future kernels.
++ */
++struct iommu_hw_info_riscv {
++	__aligned_u64 capabilities;
++};
++
+ /**
+  * enum iommu_hw_info_type - IOMMU Hardware Info Types
+  * @IOMMU_HW_INFO_TYPE_NONE: Output by the drivers that do not report hardware
+@@ -743,6 +765,7 @@ struct iommu_hw_info_amd {
+  * @IOMMU_HW_INFO_TYPE_TEGRA241_CMDQV: NVIDIA Tegra241 CMDQV (extension for ARM
+  *                                     SMMUv3) info type
+  * @IOMMU_HW_INFO_TYPE_AMD: AMD IOMMU info type
++ * @IOMMU_HW_INFO_TYPE_RISCV: RISC-V IOMMU info type
+  */
+ enum iommu_hw_info_type {
+ 	IOMMU_HW_INFO_TYPE_NONE = 0,
+@@ -751,6 +774,7 @@ enum iommu_hw_info_type {
+ 	IOMMU_HW_INFO_TYPE_ARM_SMMUV3 = 2,
+ 	IOMMU_HW_INFO_TYPE_TEGRA241_CMDQV = 3,
+ 	IOMMU_HW_INFO_TYPE_AMD = 4,
++	IOMMU_HW_INFO_TYPE_RISCV = 5,
+ };
  
- 	/*
--	 * If this was the last bond between this domain and the IOMMU
--	 * invalidate all cached entries for domain's PSCID.
-+	 * If this was the last bond between this domain and the IOMMU,
-+	 * invalidate all cached entries for the address space used by that
-+	 * bond. Nested and second-stage bonds are identified by GSCID,
-+	 * first-stage paging bonds by PSCID.
- 	 */
- 	if (!count) {
--		riscv_iommu_cmd_inval_vma(&cmd);
--		riscv_iommu_cmd_inval_set_pscid(&cmd, domain->pscid);
-+		if (gscid) {
-+			riscv_iommu_cmd_inval_gvma(&cmd);
-+			riscv_iommu_cmd_inval_set_gscid(&cmd, gscid);
-+		} else {
-+			riscv_iommu_cmd_inval_vma(&cmd);
-+			riscv_iommu_cmd_inval_set_pscid(&cmd, domain->pscid);
-+		}
- 		riscv_iommu_cmd_send(iommu, &cmd);
- 
- 		riscv_iommu_cmd_sync(iommu, RISCV_IOMMU_IOTINVAL_TIMEOUT);
+ /**
 -- 
 2.53.0
 
