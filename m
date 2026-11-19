@@ -1,64 +1,94 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.133
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795072170;
-	b=OFscERHQ6TlzNYhHV68C+kT90ndb8HuIsxCxPSY0zPJmqYU10xwLL0cA5n6LnfzGsbva
-	 5ngoj5mStQV9syKrKg5YoPD39HqXrWPIhBYX8EasJ+nF4gBhxTHJkE2EboLpFpLUNw6B1
-	 6ylbckbBCgspuA+P/R92WoIp9Z3F9YvjEjnHP7rFR3zR6v7QZW7OWlOpNf81mszaAsKch
-	 l6KhinokE9q+tewizFeZpElbWTL+fYNy9tWqn9ihwVDoFGvpjFqYAg+GBDCUvK8XjrenR
-	 wPj/YOv8jQjTRnzoaxlQ5bSLXaAoKBweTrkA6J1yBWmpUEyu4UGSrnSK6mPvyUUXvcg==
+	t=1795072696;
+	b=MFcRk3HbZttDSb9YFb9/l1rxWJbe/sd8zESubT5W82Orsf3FxyZdlBDc7oW7obo6B5az
+	 BD15cu7VrgioLTq77HNvyPF77gjypGLYEgDvoDwK3rGR4x5zFsRrT6ToQ/fK2MwunrReO
+	 Myl0XvdnmlqjggXkai0cuiSedUy4ywP1oREWgrp2UDePs3ivbnVP1ieuXTkf3bBTYnAt5
+	 S4QvJQIlM+oM4vzfy0QFre5O1didaO+rGImRRSqcAJRAFkf8I+YMab5cqM5idzWGPkwAl
+	 OOIEcR4Q0GzqIMPDesiLHdeVIyOLC+Y2hmlT1Q4e4KdlZbOYHpa9NW1Scc+RJgA2zQw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795072170;
-	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=GI/EJYAO2f2q4uohtMP3CSKMcRVSkK/beZWUfhj380w=;
-	b=pIR+2bGG+an1GLQseKa9NIeXSq8WjcZo8RHNn3+iMU1IrhMYYT7cy/986VB4WvID0wjD
-	 zkGs7PsW0GoDx7G30FZ0beLIR0HHTH6RfHVUTAqVgdMvoUKJaPxh3z9AFLfXmFWQzJTv1
-	 sosVFBnxdl9Yp9oKf5fVXzsPgxT8PlsBwvWQzFJ1xadOJzPmi8LSss/P+Q8cffPwSrdrk
-	 g4EzBHUGzKN670hTw0WKoqxyrTPC5HNQgBDowdBQcnPmIGHU+Ojc+4QxBQg23olqQUJPB
-	 dKVNplPltF+pBNkDQ8/RJ9Sq+yw93NfQOGsHGCNulYJktvmklrmPnHyOqoEowfeZf6A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795072696;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=APuvn7f/7sMW86yp8ozwMRqfBj0JO9PvrdgmAwgAkXc=;
+	b=VyR3HPweDGlkcRHEhgyHO0XM0aQuXf21yjbO1ZZxC5fUz+36oN3nGALUqxwNz2SQ39Q+
+	 4/Nt55b7ek55S6ew3gdfbIt4YLp2h7dFr9PDCpKdkggPaByl+qc3porw++3jmoIaBU8e0
+	 Jy3Oqm1s6ZT8O1mP6TA34cupTPhwvRfi6bDHNYZHqc6e72WTufRi9/kK3QL6O7LHDi9dH
+	 j2Ci7KwkHaUQZ+/tidgdgrcFOK7nggGmapmxbSFHKxQO0xuRtpFaoYzFcbKDYAVxcje3x
+	 1F7cqEtzyVqiYy1Trf6fYInmUdzEoV7amAdWygLEqA1p0ihUodEtYEyqt/ZTYL1K8Dw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.alibaba.com;
-	spf=pass smtp.mailfrom=linux.alibaba.com;
-	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=NOnmUuvC;
-	arc=none smtp.remote-ip=115.124.30.133
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nuLJV8fV;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06C4C606A332
-	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 07:09:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 06C4C606A332
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E6D5606A324;
+	Thu, 19 Nov 2026 07:18:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=NOnmUuvC
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1795072160; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=GI/EJYAO2f2q4uohtMP3CSKMcRVSkK/beZWUfhj380w=;
-	b=NOnmUuvC5o0EaFOSdcPAPhkpClvJvCrREE70rjlgvpuKwI9KMH6vNvjq57uMbBMkQVeid+Pk2HhnVqlzb5tyHAg4zGjno9E/yyKvE/R/5cvilPc+Fbr344Du1GyKLYQz42UIGGh1nZfaqkd6bpUJh3ybzmrMJm10qpcqwunkLwU=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R491e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0XF2mQ2V_1795072145;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XF2mQ2V_1795072145 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Thu, 19 Nov 2026 15:09:19 +0800
-From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-To: jgg@nvidia.com
-Cc: alex@shazbot.org,
-	iommu@lists.linux.dev,
-	jgg@ziepe.ca,
-	joro@8bytes.org,
-	kevin.tian@intel.com,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com,
-	will@kernel.org
-Subject: [PATCH v7 0/3] iommufd: Recommended reservations query and opt-in IOAS reservation
-Date: Thu, 19 Nov 2026 15:09:02 +0800
-Message-ID: <20261119070905.1336240-1-guanghuifeng@linux.alibaba.com>
-X-Mailer: git-send-email 2.43.7
-In-Reply-To: <179502940167.3851267.4719665473088413793.b4-review@b4>
-References: <179502940167.3851267.4719665473088413793.b4-review@b4>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nuLJV8fV
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ADF91F000C4;
+	Thu, 19 Nov 2026 07:18:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795072696;
+	bh=APuvn7f/7sMW86yp8ozwMRqfBj0JO9PvrdgmAwgAkXc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=nuLJV8fVc2D0MrbPEKZ35IXVmf8L6ICWqA805Tk7LAAIPJx7UCKjmZxc59fyigx2g
+	 lXSSphsOzAQfsebmstu0+O4eMgGF3exHrvIfhuxGoLmOWey18JBKmVK1Xw/VyHaPsZ
+	 hfSjl8WYYm65pvvel75Be0ysgbB4Ky87xuvAoyV/SvuqTIEdmRvPaiJ7T4S3a+bVQR
+	 nIn2nQUotBnrGo9Xzn8ESPCAU8Vj6UhKaMIFf33OD9RSf1ChY6r0xVN3/BxnU55Hlh
+	 R9hY6EZN2X9huqMJHvsXgm3b3LVgn9x4FSZvgXfvSUj2AY4v6IcCAS4emNvE/VqD+b
+	 R2bmr+esy2LCA==
+Date: Thu, 19 Nov 2026 09:18:11 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
+	Chris Lu <chris.lu@mediatek.com>, Mans Rullgard <mans@mansr.com>,
+	Alan Stern <stern@rowland.harvard.edu>,
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Cornelia Huck <cornelia.huck@de.ibm.com>,
+	Andrew Morton <akpm@osdl.org>, Jeff Garzik <jeff@garzik.org>,
+	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
+	linux-input@vger.kernel.org, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+	Greg Kroah-Hartman <gregkh@suse.de>, linux-sound@vger.kernel.org,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH v3 18/31] net: phy: Use the compatibility driver
+ attachment API
+Message-ID: <20261119071811.GG162713@unreal>
+References: <20261118-device-trust-core-v3-0-d655875c4bfb@nvidia.com>
+ <20261118-device-trust-core-v3-18-d655875c4bfb@nvidia.com>
+ <71c1b931-c553-46e3-b49a-51167f168ac4@lunn.ch>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -68,114 +98,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <71c1b931-c553-46e3-b49a-51167f168ac4@lunn.ch>
 
-This series lets userspace learn which IOVA ranges the kernel
-recommends avoiding for a device, and optionally feed them back so
-the IOAS allocator enforces them.
+On Wed, Nov 18, 2026 at 09:21:45PM +0100, Andrew Lunn wrote:
+> > @@ -3813,6 +3809,8 @@ static int phy_probe(struct device *dev)
+> >  	int err = 0;
+> >  
+> >  	phydev->drv = phydrv;
+> > +	phydev->is_genphy_driven = phydrv == &genphy_driver ||
+> > +				 phydrv == &genphy_c45_driver;
+> >  
+> 
+> Why do this here?
 
-The motivating case is a PCI device behind a PCIe switch: DMA using
-IOVAs that fall inside the host bridge MMIO windows may be misrouted
-as peer-to-peer traffic instead of reaching the root complex for IOMMU
-translation.  The DMA IOVA layer already avoids these windows
-internally, but passthrough userspace had no way to learn about them.
-Per commit cd2c9fcf5c66 ("iommu/dma: Move PCI window region reservation back into dma specific path.")
-this information must not be forced through the IOMMU reserved-region
-API, so the series is fully opt-in:
+This flag marks that driver is already probed, which is reliably
+happening in phy_probe() under right locks. It was the easiest
+way to battle AI reviews which don't agree with how PHY subsystem
+performs driver bound.
 
-  Patch 1 adds iommu_for_each_pci_mmio_window(), a callback-based
-  iterator in the IOMMU core, and refactors dma-iommu.c to share it.
+> 
+> It also makes the code asymmetric. If you set it in phy_probe, you
+> should unset it in phy_remove. At the moment, it is symmetric,
+> phy_attach_direct sets it, phy_detach clears it.
 
-  Patch 2 adds IOMMU_GET_RECOMMENDED_RESERVATIONS, a per-device query
-  returning recommended ranges (currently PCI host bridge MMIO
-  windows) as struct iommu_iova_range entries.  Advisory only.
+is_genphy_driven management was moved from attach/detach to
+probe/remove, so it is not set in attach anymore. It aligns now
+with how phydev->drv is handled, which was set to NULL phy_remove(),
+see commit 00db8189d984 ("This patch adds a PHY Abstraction ...").
 
-  Patch 3 adds IOMMU_IOAS_RESERVE_IOVAS, letting userspace send
-  chosen ranges back in to restrict the IOAS allocator: reserved
-  ranges disappear from IOMMU_IOAS_IOVA_RANGES and are rejected by
-  mapping.  Overlapping reservations are permitted, so the same
-  ranges recommended for several devices behind one host bridge can
-  each be reserved independently.
+So I would say that now it is more aligned with what PHY does and more
+symmetric than before.
 
-Typical flow: bind device -> query recommendations -> reserve chosen
-ranges -> map.  Userspace that ignores the new ioctls sees no
-behaviour change.
+Thanks
 
-[1] https://lore.kernel.org/all/20260921115513.GK11599@ziepe.ca/
-[2] https://lore.kernel.org/all/20261027182947.GI1685504@ziepe.ca/
-[3] https://lore.kernel.org/all/20261027183418.GJ1685504@ziepe.ca/
-
-v6: https://lore.kernel.org/all/20261028090453.2392991-1-guanghuifeng@linux.alibaba.com/
-v5: https://lore.kernel.org/all/20261028071906.2325378-1-guanghuifeng@linux.alibaba.com/
-v4: https://lore.kernel.org/all/20261025133000.205508-1-guanghuifeng@linux.alibaba.com/
-v3: https://lore.kernel.org/all/20261004162213.3787623-1-guanghuifeng@linux.alibaba.com/
-v2: https://lore.kernel.org/all/20260921103922.1113752-1-guanghuifeng@linux.alibaba.com/
-v1: https://lore.kernel.org/all/20260921070234.897736-1-guanghuifeng@linux.alibaba.com/
-
-Changes since v6:
-- Patch 3: use > ULONG_MAX instead of >= ULONG_MAX for the range
-  bounds check.  struct iommu_iova_range is an inclusive [start, last]
-  interval and ULONG_MAX is a valid upper bound (iopt_table_add_domain()
-  reserves up to ULONG_MAX), so >= wrongly rejected ranges ending at
-  ULONG_MAX.  Per Jason's review of v6.
-
-Changes since v5:
-- Patch 3: reject ranges with start or last >= ULONG_MAX with
-  -EOVERFLOW, matching the existing checks in IOMMU_IOAS_MAP/UNMAP/
-  COPY; on 32-bit kernels such ranges would be silently truncated
-  when passed to iopt_reserve_iova(), and a wrapped pair could even
-  insert an inverted node into the reserved interval tree (reported
-  by the Sashiko AI review of v5).
-- Patch 3: drop the iommufd_ucmd_respond() call - all fields of
-  struct iommu_ioas_reserve_iovas are inputs and the handler never
-  modifies them, matching iommufd_ioas_allow_iovas() which also
-  returns directly (reported by the Sashiko AI review of v5).
-
-Changes since v4 (all per Jason's review [2][3]):
-- Patch 1: drop the single-pointer wrapper struct in dma-iommu.c and
-  pass the iova_domain directly as callback data.
-- Patch 1: drop the typedef kdoc and trim the iterator kdoc to the
-  essential description.
-- Patch 1: WARN_ON(!bridge) instead of a silent check; inline the
-  start/end temporaries.
-- Patch 2: reuse struct iommu_iova_range instead of adding a new
-  per-window struct.
-- Patch 2: rename away from PCI-specific naming: the interface is now
-  IOMMU_GET_RECOMMENDED_RESERVATIONS reporting recommended reserved
-  regions, with PCI host bridge MMIO windows as the first source.
-- Patch 3 (new): add IOMMU_IOAS_RESERVE_IOVAS so userspace can send
-  the ranges back in to create a restriction for the allocator, as
-  requested in [3].  The NULL-owner cleanup in iopt_destroy_table()
-  is no longer conditional on CONFIG_IOMMUFD_TEST since production
-  userspace can now create such reservations.
-
-Changes since v3:
-- Helper redesigned as a callback iterator shared with dma-iommu.c
-  (v4 changes).
-
-Changes since v2:
-- Redesign from forced reservation to opt-in query (v3 changes).
-
-The suggested removal of the now-redundant IOMMU_TEST_OP_ADD_RESERVED
-selftest op (switching the selftests to IOMMU_IOAS_RESERVE_IOVAS for
-coverage) will follow as a separate patch.
-
-Guanghui Feng (3):
-  iommu: Add iommu_for_each_pci_mmio_window() iterator
-  iommufd: Add IOMMU_GET_RECOMMENDED_RESERVATIONS ioctl
-  iommufd: Add IOMMU_IOAS_RESERVE_IOVAS ioctl
-
- drivers/iommu/dma-iommu.c               | 22 +++++---
- drivers/iommu/iommu-priv.h              | 17 ++++++
- drivers/iommu/iommu.c                   | 37 +++++++++++++
- drivers/iommu/iommufd/device.c          | 65 ++++++++++++++++++++++
- drivers/iommu/iommufd/io_pagetable.c    |  7 ++-
- drivers/iommu/iommufd/ioas.c            | 51 +++++++++++++++++
- drivers/iommu/iommufd/iommufd_private.h |  2 +
- drivers/iommu/iommufd/main.c            |  7 +++
- include/uapi/linux/iommufd.h            | 73 +++++++++++++++++++++++++
- 9 files changed, 271 insertions(+), 10 deletions(-)
-
--- 
-2.43.7
-
+> 
+> 	Andrew
