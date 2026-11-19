@@ -1,54 +1,75 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795094759;
-	b=pZ2w3q7Ho6S9Uus6lyfT2j6c2q4zkLxCjOpCEM1T4BoKiZ1p+y9VtByoV1N8LdlqbxAE
-	 g3j2UNn613sWvYrl9H0UIWlIFMW5ZcWrP0YLFTQHxCmLfV0TqYxZJJARyRdx0VOtqTESs
-	 s+bAwVqxLCspeePNZamSVyj9flc2Kmrq2aqsvRpqOqgAtDjbKVuR+LJ/XRB+R7pNNat1P
-	 gdsLOxXlB9EeT0Yc4RKtxpyCK4THp2unVeewoAGf0Ve5fGAhqo0s7luKbxWqhenFtjKnE
-	 t5rUjR1CMa/gplK6g9H37aK/xbH+CHDnp7irgI/lmcrE2uX9GTqhVvjGZJhOuQEr9QA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795094759;
-	h=DMARC-Filter:DKIM-Signature:Received:Content-Type:Mime-Version:
-	 Subject:From:In-Reply-To:Date:Cc:Content-Transfer-Encoding:Message-Id:
-	 References:To:X-Mailer:X-ZohoMailClient;
-	bh=pr51uze1wqLNhsetq8CpxBiZ5s6nc5Ak2O88RJm+VXU=;
-	b=pD6srj+YUUWR3dFeWrE/b37s1YYiBv6NfxLDYbUIInNEl7S00UczoX8udZLM/MubN7/4
-	 mbCxSK5edCHtcObX9VZXpLvT6GYCY9o1/iDtGwaQ5aIofRTrk/dj7CWlZivqkwITuq7ow
-	 +UupYIUgf1CCjpKBwTLje7WaHn5pf4GjxaOoiAUHWMV9/ZPttN4OQtzNyC4tpKRGM5gEW
-	 4Gksh6vqo8i2sqnIMK/K+iUsxj2htyjSJ56YHWQ27cpFjrtOyPVTVTiMVxHdfwSxDdEl3
-	 DvDKHzuk2634wF/b9M4250s/iWjL6IHthC8kv7WRs5AS8WSAkYl02otTcXI9Df8LZAA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=collabora.com;
-	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=gO5QMmtm;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
-Received: from sender5-op-o11.zoho.com (sender5-op-o11.zoho.com [165.173.182.11])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.35
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795094884;
+	b=BdhAEAQ1PnjmKJTQZfH/MhAmzyR4wHMcjDkToS+FkF3srtHuhhHDHe7AL7PV53tLurIt
+	 EZlBmzGm3fenTtEh8MUr1UCP8/Q4Po2P6ccX5rTaeuHS5/RIBIUMHMwzkBkhbxqN3raTB
+	 6EMdUzvuJBTAebk9AR3N+r7vsgjuyRSee3Is0MT5/Z5k2UY/vsHdMy1traaIudXMvpaRy
+	 CpBbmUMQaqRdPYKjX2900VwmhWo5WXMTP8cM5c3ZaigJmn1u6PM1WNv6xRCPhlV/2PPNK
+	 nQDYM5u+ROiikNKSeasZaevA+yxvQqLrD4pKVtTaaTQnj4qFPXl845lpxeqxe0eGIDQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795094884;
+	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:
+	 X-Zmail-LocalSMTP:X-Zmail-RealSender:From:To:Cc:Subject:Date:
+	 Message-ID:X-Mailer:MIME-Version:X-ZMAIL-USEORIGINALEMLTOOUTBOUND:
+	 Content-Transfer-Encoding:X-MAIL:X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:
+	 X-CLEAN:X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
+	bh=DdeABvnXD8ErsgEI1yFw+VhglyiJdjcWNifor1GeJ2I=;
+	b=OURQxsp9qdQQhSt/H6I2VB36LIUIAs5sa3l2WGn9SVnWh/SeiiJ+5cqTnZ8N9rzSa3EQ
+	 vI6aQB+hIyectRGp84WvPxxEI9OhXDlNgW6qWli930DtRJ3055KKIcRUtZMmy5g5Q4pi5
+	 3d7kripftW3rLHNabcbAuNSw/1MDl+lNVXZCjvuzoWpruX9D/n5UuT38z4NcbZ/51Liqz
+	 wvVfa3So2iYBcexsSiPI2KeU+21s97bZ69moxTJZu2otNRKxj+e3JjoIb96xliPCtxBGY
+	 exBTb/icmbLaLp6LUQgCCqwlI3UOhJETfv6PrX4BCqxZEYtG7CC8Y4yqQBNy9C0u7Kw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=sanechips.com.cn;
+	spf=pass smtp.mailfrom=sanechips.com.cn;
+	arc=none smtp.remote-ip=160.30.148.35
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.35])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CDE3606A324;
-	Thu, 19 Nov 2026 13:25:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1CDE3606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=gO5QMmtm
-ARC-Seal: i=1; a=rsa-sha256; t=1795094746; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=R+k1VavXzV7QFASzYoqR/gb/1v0p254Ipn5AGs2N7S4pi0dAmxtNPkVHPj5jlMdWIrZWkGUNyKDjcuT6G468IzSkxy552rWdh528GdIP27l+/vEq/K/DFNFSgGrTmGU6MBtkToezTsz/9RwU2/judnnKKrYnskSaS3+9YcnMBGQ=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1795094746; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=pr51uze1wqLNhsetq8CpxBiZ5s6nc5Ak2O88RJm+VXU=; 
-	b=arbENZWcLogbT6Ni0iHRbgEBGV3gfk7v9Z+wb2MI0p7pjZ//g9KcI2UD5+j9YspJnSRbNbUi7MCIPLLa0WPTPr8sauQwD+Jng9FgibE4Cn7pyBUrK6XofTaXxH1QzeRBIefiQLyaZ5n8i3b/EmuSQu904lAB+BqTc5Xcjn4dk5c=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
-	dmarc=pass header.from=<daniel.almeida@collabora.com>
-DKIM-Signature: a=rsa-sha256; b=gO5QMmtmFU2qWUGkeDwL8ZDeSv0MHNz8StC0PvdxEjD7eXmZMvTKlhTpO3AKxXltEQ4CMuzmh+xeZbqXorH+geMHU/mvDIzdg7O6EXNpeEZl+SJX2Q27fLQuPEt8NjE3QeXVW2c1g/E8npSeVoNaUWjwbFy29n1B8WHWtrtpK9s=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=pr51uze1wqLNhsetq8CpxBiZ5s6nc5Ak2O88RJm+VXU=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
-Received: by smtp.zohomail.com with SMTPS id 1795094743215152.64426972208537;
-	Thu, 19 Nov 2026 05:25:43 -0800 (PST)
-Content-Type: text/plain;
-	charset=utf-8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DAE9606A32A
+	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 13:28:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8DAE9606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
+Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jVfRH1jbzz8XrrJ;
+	Thu, 19 Nov 2026 21:27:55 +0800 (CST)
+Received: from szxl2zmapp06.zte.com.cn ([10.1.32.108])
+	by mse-fl1.zte.com.cn with SMTP id 6AJDRmY7086378;
+	Thu, 19 Nov 2026 21:27:48 +0800 (+08)
+	(envelope-from gong.shuai@sanechips.com.cn)
+Received: from ubuntu-35-gs (unknown [10.230.214.35])
+	by smtp (Zmail) with SMTP;
+	Thu, 19 Nov 2026 21:27:51 +0800
+X-Zmail-TransId: 3e816afef95002f-56441
+X-Zmail-LocalSMTP: 1
+X-Zmail-RealSender: gong.shuai@sanechips.com.cn
+From: Gong Shuai <gong.shuai@sanechips.com.cn>
+To: kvm@vger.kernel.org, kvm-riscv@lists.infradead.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev
+Cc: Anup Patel <anup@brainfault.org>, Atish Patra <atish.patra@linux.dev>,
+        Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+        Tomasz Jeznach <tomasz.jeznach@linux.dev>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+        Andrew Jones <andrew.jones@oss.qualcomm.com>,
+        Fangyu Yu <fangyu.yu@linux.alibaba.com>,
+        Tan Chi <tanchi25@mails.ucas.ac.cn>, Wu Fei <wu.fei9@sanechips.com.cn>,
+        Zhao Qingye <zhao.qingye@sanechips.com.cn>,
+        Gong Shuai <gong.shuai@sanechips.com.cn>
+Subject: [RFC PATCH v3 00/10] iommu/riscv: Add nested translation (vIOMMU) support
+Date: Thu, 19 Nov 2026 21:27:34 +0800
+Message-ID: <20261119132744.396426-1-gong.shuai@sanechips.com.cn>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -57,91 +78,195 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3901.200.71.1.16\))
-Subject: Re: [PATCH 0/6] rust: iommu: add a paging domain abstraction
-From: Daniel Almeida <daniel.almeida@collabora.com>
-In-Reply-To: <fe60c0bd-1ee2-4b33-8ca3-564ee08e6db5@arm.com>
-Date: Thu, 19 Nov 2026 10:25:24 -0300
-Cc: Jason Gunthorpe <jgg@ziepe.ca>,
- Nicolas Dufresne <nicolas.dufresne@collabora.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>,
- Will Deacon <will@kernel.org>,
- Miguel Ojeda <ojeda@kernel.org>,
- Boqun Feng <boqun@kernel.org>,
- Gary Guo <gary@garyguo.net>,
- =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <lossin@kernel.org>,
- Andreas Hindborg <a.hindborg@kernel.org>,
- Alice Ryhl <aliceryhl@google.com>,
- Trevor Gross <tmgross@umich.edu>,
- Danilo Krummrich <dakr@kernel.org>,
- Tamir Duberstein <tamird@kernel.org>,
- Alexandre Courbot <acourbot@nvidia.com>,
- =?utf-8?Q?Onur_=C3=96zkan?= <work@onurozkan.dev>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>,
- iommu@lists.linux.dev,
- rust-for-linux@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- driver-core@lists.linux.dev,
- Detlev Casanova <detlev.casanova@collabora.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <CF2BE3BB-4F16-49FC-8421-B2B823BB7BB4@collabora.com>
-References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
- <20261116193821.GC2452510@ziepe.ca>
- <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
- <20261117202055.GA3115493@ziepe.ca>
- <b145b2ceb92c73a4fa0477d7b3895a6e3b4adf99.camel@collabora.com>
- <20261118160909.GC3115493@ziepe.ca>
- <fe60c0bd-1ee2-4b33-8ca3-564ee08e6db5@arm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-X-Mailer: Apple Mail (2.3901.200.71.1.16)
-X-ZohoMailClient: External
+MIME-Version: 1.0
+X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
+Content-Transfer-Encoding: 8bit
+X-MAIL:mse-fl1.zte.com.cn 6AJDRmY7086378
+X-TLS: YES
+X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
+X-SOURCE-IP: 10.5.228.132 unknown Thu, 19 Nov 2026 21:27:55 +0800
+X-CLEAN: YES
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 6AFEF95B.000/4jVfRH1jbzz8XrrJ
 
->=20
-> I can't speak for the actual intent of the Rust drivers, but giving =
-them the benefit of the doubt, none of that fearmongering should apply: =
-the valid use-case is just simple time-division multiplexing.
->=20
-> A =3D iommu_paging_domain_alloc(dev);
-> B =3D iommu_paging_domain_alloc(dev);
-> iommu_attach(dev, A);
-> iommu_map(A, iova_x, virt_to_phys(X));
-> dma_map(dev, X) //still needed for the underlying memory
-> ... //tell dev to do the work for context A using iova_x
-> dma_unmap(dev, X);
-> dma_map(dev, Y);
-> iommu_map(B, iova_y, virt_to_phys(Y));
-> iommu_detach(dev, A);
-> iommu_attach(dev, B);
-> ... //do some work in context B
->=20
+An IOMMU allows an OS to restrict device DMA to the intended memory.
+It also gives device drivers an IOVA space that is independent of the
+physical memory layout. A guest OS needs these capabilities when it
+directly controls a device, just as a native OS does.
 
-Yeah, this is basically exactly what we want to do..yet Jason has been
-repeateadly saying you cannot call the dma api at all once you allocate =
-paging
-domains. So now, I am confused.
+Exposing a vIOMMU to the guest is not enough for a passthrough device.
+DMA from the physical device must also obey the mappings that the guest
+creates through its vIOMMU. Otherwise the guest cannot use its IOMMU to
+protect guest memory or provide IOVA mappings for the assigned device.
 
-> ...and so on. The only real subtlety is that while you still need to =
-make the DMA map/unmap calls as usual (for the sake of managing cache =
-coherency), you only use the returned DMA address for checking =
-dma_mapping_error() and the subsequent dma_unmap(); the address you give =
-to the device is your own IOVA for the mapping through your unmanaged =
-domain.
+The RISC-V IOMMU architecture supports this usage with two-stage
+translation. Stage 1 applies the guest's vIOMMU configuration. Stage 2
+is controlled by the hypervisor and restricts the device to memory
+assigned to the VM. This division gives the guest control of its own
+DMA mappings without allowing the device to escape the VM.
 
-Yeah, exactly.
+The Linux RISC-V IOMMU driver does not yet support this model through
+iommufd. A VMM cannot provide the guest stage 1 configuration to the
+physical IOMMU or synchronize its translation caches after the guest
+updates its page tables. This series adds the missing nested
+translation support so device passthrough can work with a guest that
+uses its own vIOMMU.
 
->=20
-> Plus as I mentioned recently in one of those sketchy dma-buf threads, =
-it's also true that at the moment, iommu-dma will still do a load of =
-unnecessary work in the unattached default domain for reasons that were =
-valid 5 years ago, but that now can and really should be optimised out. =
-I guess I'll have to steal a day or two from what I'm supposed to be =
-doing to write that patch before I get fed up of explaining it :)
+This is an RFC and comments on the design are welcome.
 
-Yeah, but I did some perf here, and it doesn=E2=80=99t matter much.
+Patch organization
 
->=20
-> Thanks,
-> Robin.
+Patch 1 prepares device context handling for nested translation.
+Patches 2 and 3 add the uAPI for nested allocation and cache
+invalidation.
+Patches 4 to 6 add the vIOMMU, nested domains and cache invalidation.
+Patches 7 and 8 allow a VMM to discover the physical IOMMU
+capabilities.
+Patch 9 adds nested device attachment.
+Patch 10 fixes bond unlink so it invalidates the correct address space.
 
+Dependencies
+
+The series applies on top of iommu/master at commit 9f9dc924a01e,
+together with the RISC-V hardware dirty tracking series v7 [1] and
+its dependencies.
+
+Testing
+
+The test requires MSI support, but the related dependencies are still
+under review, so the interrupt changes are not included in this series.
+The test needs the MSI remapping series v6 [2], the irqbypass series
+RFC v3 [3] and a KVM client from Andrew's github repo [4]. A branch with
+the complete test stack, including the additional nested interrupt
+support, is available at github repo [5].
+
+The host is a RISC-V machine whose physical IOMMU is provided by an outer
+QEMU riscv-iommu model, which implements both translation stages. An NVMe
+controller under it is bound to vfio-pci and passed through to the guest.
+The guest is started by a QEMU built with the accel series [6][7], which
+exposes a first stage IOMMU to the guest and leaves the second stage to
+the host IOMMU. For simplicity the guest runs the same kernel as the host,
+and inside the guest it mainly uses the normal IOMMU driver and the NVMe
+driver.
+
+The layering of the setup is
+
+Host HW, a RISC-V virt machine from latest QEMU(v11.1.3), with a
+riscv-iommu model that implements two stage translation and with the NVMe
+controller
+
+    Host OS, the kernel with this series
+      riscv-iommu driver, second stage and MSI table vfio-pci and KVM
+
+        Guest HW, QEMU with the accel series [6][7]
+          riscv-iommu accel, first stage only
+
+            Guest OS, the same kernel as the host
+              riscv-iommu driver, NVMe driver
+
+A DMA address from the NVMe controller is translated by the guest first
+stage and then by the host second stage on the physical IOMMU. An MSI
+address is translated by the guest first stage into a guest IMSIC address,
+which the flat MSI table then resolves straight to the interrupt file of
+the target vCPU, instead of walking the second stage.
+
+    DMA    device --> guest first stage --> host second stage --> RAM
+    MSI    device --> guest first stage --> MSI table --> VS-file
+
+The host was started with
+
+$HOST_QEMU \
+  -M virt,aia=aplic-imsic,aia-guests=7,iommu-sys=on \
+  -cpu rva23s64,sv48=on -nographic \
+  -smp 16 -m 16G \
+  -kernel $HOST_KERNEL \
+  -append "root=/dev/vda rw earlycon=sbi console=ttyS0 iommufd.allow_unsafe_interrupts=1" \
+  -drive file=$HOST_ROOTFS,if=none,id=d0,format=qcow2 -device virtio-blk-device,drive=d0 \
+  -device pcie-root-port,id=port0,chassis=0,slot=0,addr=3.0 \
+  -drive file=fake-nvme-disk.img,if=none,id=nvme0,format=qcow2 \
+  -device nvme,drive=nvme0,serial=deadbeef,bus=port0,addr=0.0
+
+and the guest with
+
+$GUEST_QEMU \
+  -machine virt,accel=kvm,aia=aplic-imsic,aia-guests=5 \
+  -cpu host -nographic \
+  -smp 4 -m 4G \
+  -object iommufd,id=iommufd0 \
+  -device riscv-iommu-pci,addr=1.0,s-stage=on,g-stage=off,accel=on \
+  -device vfio-pci,host=0000:01:00.0,iommufd=iommufd0 \
+  -kernel $GUEST_KERNEL \
+  -append "root=/dev/vda rw earlycon=sbi console=ttyS0 iommu.passthrough=0 iommu.strict=1" \
+  -drive file=$GUEST_ROOTFS,if=none,id=d0,format=qcow2 -device virtio-blk-device,drive=d0
+
+Correctness was checked by running fio with verification enabled against
+the passed through disk.
+
+Known limitations and future work
+
+- PASID and the process directory table are not supported.
+- The ATS, PRI and T2GPA fields are validated on the nested domain, but
+  ATS.INVAL and the PRI queue are not forwarded.
+- One single physical IOMMU instance on host is assumed for now.
+- The new uAPI types have no selftest coverage yet.
+
+Coding assistants based on LLMs were used during development for code
+exploration, patch review, test execution and for drafting and editing
+commit messages. We have reviewed and finalized all resulting code and
+text.
+
+Changes in v3:
+
+- Rebased on iommu/master at 9f9dc924a01e and the hardware
+  dirty tracking series v7 [2].
+- Use the guest PSCID directly and allocate a separate host GSCID for
+  each vIOMMU to ensure that the (GSCID, PSCID) pair programmed into the
+  physical DC uniquely identifies the correct nested address space
+  (suggested by Tan Chi and Jason).
+- Fixes bond unlink so it invalidates the correct address space, using
+  GSCID for second stage bonds and PSCID for first stage bonds.
+- Link to v2:
+  https://lore.kernel.org/linux-riscv/20261029061131.584453-1-gong.shuai@sanechips.com.cn/
+
+Changes in v2:
+
+- Rebased on linux-iommu/next at 20bfd25757659f and the hardware
+  dirty tracking series v5.
+- Rewrote the commit messages and updated the uAPI definitions (Jason's
+  suggestions).
+- Drop the MSI related patches (Jason's suggestions).
+- Link to v1:
+  https://lore.kernel.org/linux-riscv/20261015065232.604503-1-gong.shuai@sanechips.com.cn/
+
+
+[1] https://lore.kernel.org/linux-riscv/20261103120236.53474-1-fangyu.yu@linux.alibaba.com/
+[2] https://lore.kernel.org/all/20260925151659.419512-1-andrew.jones@oss.qualcomm.com/
+[3] https://lore.kernel.org/all/20260928143113.49838-1-andrew.jones@oss.qualcomm.com/
+[4] https://github.com/jones-drew/linux/commits/riscv/iommu-irqbypass-rfc-v3-kvm/
+[5] https://github.com/leaprise/linux/tree/riscv/iommu-nested-rfc-v3
+[6] https://lore.kernel.org/qemu-devel/20261119131524.395861-1-gong.shuai@sanechips.com.cn/
+[7] https://github.com/leaprise/qemu/tree/riscv/iommu-nested-rfc-v3
+
+
+Gong Shuai (3):
+  iommu/riscv: Use DC.tc.V as the device context valid bit
+  iommu/riscv: Add vIOMMU cache invalidation
+  iommu/riscv: Flush the right address space on bond unlink
+
+Wu Fei (7):
+  iommufd: Add RISC-V IOMMU hwpt and vIOMMU types
+  iommufd: Add RISC-V IOMMU cache invalidation data type
+  iommu/riscv: Add vIOMMU object support
+  iommu/riscv: Add nested domain allocation
+  iommufd: Add RISC-V IOMMU hardware info type
+  iommu/riscv: Add riscv_iommu_hw_info
+  iommu/riscv: Add riscv_iommu_attach_dev_nested
+
+ drivers/iommu/riscv/iommu-bits.h |  19 ++
+ drivers/iommu/riscv/iommu.c      | 468 ++++++++++++++++++++++++++++---
+ include/uapi/linux/iommufd.h     |  84 ++++++
+ 3 files changed, 533 insertions(+), 38 deletions(-)
+
+-- 
+2.53.0
 
