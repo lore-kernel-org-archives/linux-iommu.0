@@ -1,68 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795149865;
-	b=sAXkSm+yKccbvU9ePkrZtZ1Nzr1b8MAdNly/A9VZ4EBwS/1ivAb7/eKKpdoIln0pJNhx
-	 GSlazwB4/JThax+3eTyg5YZzYR/coQ3P3SslQOaBXGMzVvTV3J+I2rjGUSpDjy933fPxX
-	 wCahXTx83Op6o7p/qwImf5Gp6YXyTrvwY9t2QswAZAfscg42QxJho6uZPn0OwIC40KxE1
-	 X3FZFQDkTkMvLGFmaZMaB0IzXTcDQcV35yDhARDFDDVxWcP2AY9TwxMcc7iPk+4WqG9DB
-	 Gh4fFgaipYnJWDoO5jTNTWzxbuKa38F3N3G9qtEb5sHp3tJBgdXhAw4g19lreQfJOhg==
+	t=1795153185;
+	b=W0xAnvuBS52aShlgHK58Vm6bjXtdlV2/OO79diub8FXBcEiJBkFUEVsPrQnMDnQT/7A3
+	 H7ZTgdDnq0yiPz7J+xoiArQTTYelRzHTMmRooh5xkReSB2gptPqcAoERZvBNVas1yKkrB
+	 AHAdbdJLxx1RCvhvpAIwh17c+iVjtvP8wcW5iNQ8LwfK0xqTV2pmXgoF+XTsEQlu7O9L/
+	 WDREiRlR6P+UirUAG7C6j06pXYvWb8k8bmeGhRPtHWickXMkoiHmAjWuC11CEAX99Z3+m
+	 4/GrckyI7H9ToaIu9f8RC15b7rm5YuJ8blcV2LpL+JfaZMudbudar1/69OqA72ZQ0xQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795149865;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795153185;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
 	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
 	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=PT0FK9wWU0tkRsvayMQ1N9RgAm8dfnFyjV1OONVZR3Y=;
-	b=swUjn49XNPL0iZfqaohqwsuYTgfjfTcgpK8yW1xUo/xR2ZIz4FJpUPT86hilWp1E0HUh
-	 FdYo54alanol2u2gQc/fWqk9PxXVt+3nb8lEvwtTdnYASQnWCuN62S/E8l93TThB7NX8C
-	 6yZexhe2CwQ9mBIFw2v57y+J6hMQkXnUkZWP/gf8YaJrAWSPoUe0cqiIqbkKlJfTMI4zw
-	 tYxO56NFRw3xaFX+265PMwnpk3skTZ06jtooYCvvGDq9zQakLOLG3RF3CuaJCPEMlSD+e
-	 BISjWvIuAhUwTshul3yZqnfs1qKKl1uQRv58xzdBPGeGJOpbD04b75jzLHEw+2pf3Jg==
+	bh=ElvNMLPb9nWTefCnh+Wvm1TWF1EkTveOzrAIj5NeSzA=;
+	b=V13ebIfqp47z5cnGBE2KSjx4DwKXRtttGA5ZK7C4nI0bOqqU3FN4gy9S0h3dNLTPSOxE
+	 6iM68g1rHIignTeq5Y6MXkCCAKMJ+Gsl+qMOJMU3rpxRhceBvYOS67KsKV/ijF2HZ3v5q
+	 UK85q2fZMATnqqACjo3t8VfmsBk2cFbly4azzi2ZqB28DXns9m4+xVgNVgWI6/z24fsC3
+	 7KqoL+wkYX5gyU2x55eI+T/K/bfvyjEGpjwH16nqrkB2pVQ60VQ5BDP7slDliCLOtfiKS
+	 E+j+IiJZkM8AQFPfSpPchUxJWNBekbLkQcpGlyBXIgHitgfbACaJiu8OmvtbWPJ7Q3w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=DR0FNyfi;
-	arc=none smtp.remote-ip=198.175.65.21
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=l3wTozIw;
+	arc=none smtp.remote-ip=192.198.163.8
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8646E606A320;
-	Fri, 20 Nov 2026 04:44:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8646E606A320
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAA0B606A320;
+	Fri, 20 Nov 2026 05:39:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DAA0B606A320
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=DR0FNyfi
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=l3wTozIw
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795149864; x=1826685864;
+  t=1795153186; x=1826689186;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=Y/i10jyYjFWeI3DRZs4bsQaJGnLxtLrgwJ61Ht7xyRw=;
-  b=DR0FNyfiJbgVMvIiDbiObMPhvOgv11ebf+6ZrmDb4Ghzi0NGAlPENyQr
-   Mjt4hA6zEL3OnXgVc5HZP/wbxGKjsdHluR5EpuHtvUj+VXNYpegost5L6
-   FNP5xBPEQaomV9Y0zwBFEcWFJ7EEs7e/lLiD1N4lsSu2IJuH1awi0zc3E
-   3RsBw6aVqC+S639YFyniScQSHXulefvSMxrLetOit3cgVnpKa2G9e3iw7
-   K1olt2PeqMMkQL+fGaRPQlg68n0/N6HcL2zF+98rlWCkbr6yyxBo9bFQT
-   X3i31IFUyGL4W19DRluwRhsKt9hvRA8DCEYBprXKGAHz7TDGSYhNjARjg
-   A==;
-X-CSE-ConnectionGUID: NYnLrOy7S82/PVSlAJtoRA==
-X-CSE-MsgGUID: ZoGQk7VhThixyOC3WxXH/w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="4101319"
+  bh=JOXloh/WTQ18M0f0+orJ8jQWk9eyZPfHxhSzgmLwgig=;
+  b=l3wTozIwOlQzZcAXQL7AANbVSETjXCnF+BlPDw7BG/vVoi+UTII+0z2C
+   9s2swZ8PNkbi2D28lgJuT7myndMdAFiS/LjdTafX3c2fSFAH/cyWb/KWi
+   KHTL6mO/VhZY9ASGCCVaHniMXUV8Df3zFhM8HJmKN7KaKe55OZDuay46U
+   FMWIs/l2sGChWtMbWIQ4MEow5FTsi0aXVDZ6FHF2wArUeG3VSrWs8WtTk
+   iix+4eG00KcUsNpv7x2NS9QOD9AOcym5m8HCljZzep9p3HDxBVX4of6up
+   SZvpIhGWcA+26+4oLLSMwyaKPGvQuq6RKfcrNXJO8iiiwz0winuOQHc0J
+   Q==;
+X-CSE-ConnectionGUID: Kqnp6W4nTHGi2+5QRGA7QA==
+X-CSE-MsgGUID: q1pUmyxYQdqrQKJyD6UPVA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="3926489"
 X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
-   d="scan'208";a="4101319"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 20:44:22 -0800
-X-CSE-ConnectionGUID: H3ytyTdhTSWu5lchEfXTeQ==
-X-CSE-MsgGUID: QpvzWzgNR6iJN9JsRdkisQ==
+   d="scan'208";a="3926489"
+Received: from fmviesa012.fm.intel.com ([10.60.135.152])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 21:39:45 -0800
+X-CSE-ConnectionGUID: NCD7hbrERneuQrgdNmaJMQ==
+X-CSE-MsgGUID: qCE/ag8EST2VFpCAsOOiuA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
-   d="scan'208";a="11037850"
+   d="scan'208";a="12327914"
 Received: from unknown (HELO [10.238.1.144]) ([10.238.1.144])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 20:44:14 -0800
-Message-ID: <2e8a853f-9e7b-4cce-b578-2dac0c564eb5@linux.intel.com>
-Date: Fri, 20 Nov 2026 12:44:10 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 21:39:36 -0800
+Message-ID: <2d8af908-4dd5-43a9-b618-d1ee4189f6ba@linux.intel.com>
+Date: Fri, 20 Nov 2026 13:39:34 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -94,221 +94,63 @@ Cc: baolu.lu@linux.intel.com, Alex Williamson <alex@shazbot.org>,
  Tom Lendacky <thomas.lendacky@amd.com>, kvm@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
  linux-tegra@vger.kernel.org, patches@lists.linux.dev
-Subject: Re: [PATCH v9 09/13] iommufd/viommu: Select vIOMMU operations before
- allocation
+Subject: Re: [PATCH v9 10/13] iommufd/viommu: Allow PCI TSM backends to
+ provide vIOMMU operations
 To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
  linux-coco@lists.linux.dev
 References: <20261116081935.85372-1-aneesh.kumar@kernel.org>
- <20261116081935.85372-10-aneesh.kumar@kernel.org>
+ <20261116081935.85372-11-aneesh.kumar@kernel.org>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20261116081935.85372-10-aneesh.kumar@kernel.org>
+In-Reply-To: <20261116081935.85372-11-aneesh.kumar@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
 On 11/16/2026 4:19 PM, Aneesh Kumar K.V (Arm) wrote:
-> Physical IOMMU drivers currently provide the vIOMMU size and
-> initialization callbacks through iommu_ops. The initialization callback
-> then selects and installs the corresponding iommufd_viommu_ops.
+> In confidential-computing configurations, a vIOMMU may be implemented by
+> a TSM driver rather than by the physical IOMMU driver. Such an
+> implementation also needs the TSM identity when creating and validating
+> vdevices.
 > 
-> Add iommu_ops::get_viommu_ops() to select the operations from the
-> physical device and requested vIOMMU type before allocation. Move the
-> size and initialization callbacks into iommufd_viommu_ops. The core can
-> then validate the selected operations, allocate the driver structure,
-> initialize it, and install the operations.
+> Allow VIOMMU_ALLOC to first query the TSM associated with the target PCI
+> device for vIOMMU operations. Fall back to the physical IOMMU driver
+> when the TSM does not provide operations for the requested vIOMMU type.
 > 
-> Convert AMD, Arm SMMUv3, Tegra CMDQV, and the selftest backend to the
-> new interface.
+> Resolve the PCI TSM association under pci_tsm_rwsem, take a TSM device
+> reference, and pin the module providing the operations. Store the TSM
+> device in the vIOMMU. Release the device reference and module pin on
+> allocation failure, fallback to the physical IOMMU driver, or vIOMMU
+> destruction. Drop the device reference before releasing the module pin,
+> since the final put may call into the backend module.
 > 
-> The current code requires a valid parent HWPT before calling
-> viommu_init(), which selects the vIOMMU operations. A later patch adds
-> an operations flag indicating that a vIOMMU type does not require a
-> parent HWPT. Selecting the operations earlier allows the core to check
-> that flag before deciding whether to look up and validate a parent HWPT.
+> The device reference preserves the TSM allocation. Backends providing
+> vIOMMU operations must not unregister their TSM while the module is pinned,
+> since the reference does not prevent backend resource teardown.
 > 
-> Temporarily disable AMD vIOMMU allocation by returning NULL from
-> amd_iommufd_get_viommu_ops() while the vIOMMU interfaces are being
-> updated.
-> 
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Cc: Vasant Hegde <vasant.hegde@amd.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Thierry Reding <thierry.reding@kernel.org>
-> Cc: Krishna Reddy <vdumpa@nvidia.com>
-> Cc: Jonathan Hunter <jonathanh@nvidia.com>
-> Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-tegra@vger.kernel.org
-> Cc: iommu@lists.linux.dev
-> Based on original patch by Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+> Cc: Jason Gunthorpe<jgg@ziepe.ca>
+> Cc: Kevin Tian<kevin.tian@intel.com>
+> Cc: Joerg Roedel<joro@8bytes.org>
+> Cc: Will Deacon<will@kernel.org>
+> Cc: Robin Murphy<robin.murphy@arm.com>
+> Cc: Bjorn Helgaas<bhelgaas@google.com>
+> Cc: Alexey Kardashevskiy<aik@amd.com>
+> Cc: Lukas Wunner<lukas@wunner.de>
+> Cc: Xu Yilun<yilun.xu@linux.intel.com>
+> Cc:iommu@lists.linux.dev
+> Cc:linux-pci@vger.kernel.org
+> Signed-off-by: Aneesh Kumar K.V (Arm)<aneesh.kumar@kernel.org>
 > ---
->   drivers/iommu/amd/iommu.c                     |  3 +-
->   drivers/iommu/amd/iommufd.c                   | 18 ++++++---
->   drivers/iommu/amd/iommufd.h                   | 11 ++++--
->   drivers/iommu/amd/nested.c                    |  4 +-
->   .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 37 +++++++++++--------
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  7 ++--
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 16 ++++----
->   .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    | 24 ++++++++----
->   drivers/iommu/iommufd/selftest.c              | 31 +++++++++++-----
->   drivers/iommu/iommufd/viommu.c                | 32 ++++++++--------
->   include/linux/iommu.h                         | 20 +++-------
->   include/linux/iommufd.h                       | 14 +++++++
->   12 files changed, 129 insertions(+), 88 deletions(-)
-> 
+>   drivers/iommu/iommufd/viommu.c | 35 +++++++++++++++++++++++++++-----
+>   drivers/pci/tsm/core.c         | 22 ++++++++++++++++++++
+>   drivers/virt/coco/tsm-core.c   | 37 ++++++++++++++++++++++++++++++++++
+>   include/linux/iommufd.h        |  2 ++
+>   include/linux/pci-tsm.h        | 24 ++++++++++++++++++++++
+>   include/linux/tsm.h            | 25 +++++++++++++++++++++++
+>   6 files changed, 140 insertions(+), 5 deletions(-)
 
-[...]
+This change spans both PCI/TSM and IOMMUFD. Could it be split into
+separate patches for each subsystem—for example, one adding the TSM
+lookup interface and another updating IOMMUFD to use it?
 
-> diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
-> index 0d162a3fdc98..2eba1562a704 100644
-> --- a/drivers/iommu/iommufd/viommu.c
-> +++ b/drivers/iommu/iommufd/viommu.c
-> @@ -33,7 +33,7 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucmd)
->   	struct iommufd_viommu *viommu;
->   	struct iommufd_device *idev;
->   	struct iommu_device *iommu_dev;
-> -	const struct iommu_ops *ops;
-> +	const struct iommufd_viommu_ops *ops;
->   	size_t viommu_size;
->   	int rc;
->   
-> @@ -49,23 +49,25 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucmd)
->   		rc = -EOPNOTSUPP;
->   		goto out_put_idev;
->   	}
-> -	ops = iommu_dev->ops;
-> -	if (!ops->get_viommu_size || !ops->viommu_init) {
-> +	if (!iommu_dev->ops->get_viommu_ops) {
->   		rc = -EOPNOTSUPP;
->   		goto out_put_idev;
->   	}
-> -
-> -	viommu_size = ops->get_viommu_size(idev->dev, cmd->type);
-> -	if (!viommu_size) {
-> +	ops = iommu_dev->ops->get_viommu_ops(idev->dev, cmd->type);
-> +	if (!ops) {
->   		rc = -EOPNOTSUPP;
->   		goto out_put_idev;
->   	}
-> -
->   	/*
-> -	 * It is a driver bug for providing a viommu_size smaller than the core
-> -	 * vIOMMU structure size
-> +	 * It is a driver bug to omit the required operations or provide a size
-> +	 * smaller than the core vIOMMU structure.
->   	 */
-> -	if (WARN_ON_ONCE(viommu_size < sizeof(*viommu))) {
-> +	if (WARN_ON_ONCE(!ops->get_viommu_size || !ops->viommu_init)) {
-> +		rc = -EOPNOTSUPP;
-> +		goto out_put_idev;
-> +	}
-> +	viommu_size = ops->get_viommu_size(idev->dev, cmd->type);
-> +	if (!viommu_size || WARN_ON_ONCE(viommu_size < sizeof(*viommu))) {
->   		rc = -EOPNOTSUPP;
->   		goto out_put_idev;
->   	}
-> @@ -104,16 +106,12 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucmd)
->   	 */
->   	viommu->iommu_dev = iommu_dev;
->   
-> -	rc = ops->viommu_init(viommu, hwpt_paging->common.domain,
-> +	rc = ops->viommu_init(viommu, idev->dev,
-> +			      hwpt_paging->common.domain,
->   			      user_data.len ? &user_data : NULL);
->   	if (rc)
->   		goto out_put_hwpt;
-> -
-> -	/* It is a driver bug that viommu->ops isn't filled */
-> -	if (WARN_ON_ONCE(!viommu->ops)) {
-> -		rc = -EOPNOTSUPP;
-> -		goto out_put_hwpt;
-> -	}
-> +	viommu->ops = ops;
->   
->   	cmd->out_viommu_id = viommu->obj.id;
->   	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index ef5043752a36..f27064917df7 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -46,6 +46,7 @@ struct iommu_dma_msi_cookie;
->   struct iommu_fault_param;
->   struct iommufd_ctx;
->   struct iommufd_viommu;
-> +struct iommufd_viommu_ops;
->   struct msi_desc;
->   struct msi_msg;
->   
-> @@ -669,16 +670,8 @@ __iommu_copy_struct_to_user(const struct iommu_user_data *dst_data,
->    *		- IOMMU_DOMAIN_DMA: must use a dma domain
->    *		- 0: use the default setting
->    * @default_domain_ops: the default ops for domains
-> - * @get_viommu_size: Get the size of a driver-level vIOMMU structure for a given
-> - *                   @dev corresponding to @viommu_type. Driver should return 0
-> - *                   if vIOMMU isn't supported accordingly. It is required for
-> - *                   driver to use the VIOMMU_STRUCT_SIZE macro to sanitize the
-> - *                   driver-level vIOMMU structure related to the core one
-> - * @viommu_init: Init the driver-level struct of an iommufd_viommu on a physical
-> - *               IOMMU instance @viommu->iommu_dev, as the set of virtualization
-> - *               resources shared/passed to user space IOMMU instance. Associate
-> - *               it with a nesting @parent_domain. It is required for driver to
-> - *               set @viommu->ops pointing to its own viommu_ops
-> + * @get_viommu_ops: Return the vIOMMU operations supported by @dev for a type.
-> + *                  Return NULL if the type is unsupported.
->    * @owner: Driver module providing these ops
->    * @identity_domain: An always available, always attachable identity
->    *                   translation.
-> @@ -729,11 +722,8 @@ struct iommu_ops {
->   
->   	int (*def_domain_type)(struct device *dev);
->   
-> -	size_t (*get_viommu_size)(struct device *dev,
-> -				  enum iommu_viommu_type viommu_type);
-> -	int (*viommu_init)(struct iommufd_viommu *viommu,
-> -			   struct iommu_domain *parent_domain,
-> -			   const struct iommu_user_data *user_data);
-> +	const struct iommufd_viommu_ops *(*get_viommu_ops)(
-> +		struct device *dev, enum iommu_viommu_type viommu_type);
->   
->   	const struct iommu_domain_ops *default_domain_ops;
->   	struct module *owner;
-> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-> index d1fd7888fc91..5f5c67b24134 100644
-> --- a/include/linux/iommufd.h
-> +++ b/include/linux/iommufd.h
-> @@ -148,6 +148,15 @@ struct iommufd_hw_queue {
->   
->   /**
->    * struct iommufd_viommu_ops - vIOMMU specific operations
-> + * @get_viommu_size: Get the size of a driver-level vIOMMU structure for a given
-> + *                   @dev corresponding to @viommu_type. Driver should return 0
-> + *                   if vIOMMU isn't supported accordingly. It is required for
-> + *                   driver to use the VIOMMU_STRUCT_SIZE macro to sanitize the
-> + *                   driver-level vIOMMU structure related to the core one
-> + * @viommu_init: Init the driver-level struct of an iommufd_viommu on a physical
-> + *               IOMMU instance @viommu->iommu_dev, as the set of virtualization
-> + *               resources shared/passed to user space IOMMU instance. Associate
-> + *               it with a nesting @parent_domain.
->    * @destroy: Clean up all driver-specific parts of an iommufd_viommu. The memory
->    *           of the vIOMMU will be free-ed by iommufd core after calling this op
->    * @alloc_domain_nested: Allocate a IOMMU_DOMAIN_NESTED on a vIOMMU that holds a
-> @@ -190,6 +199,11 @@ struct iommufd_hw_queue {
->    *                      does, it should set it to the @hw_queue->destroy pointer
->    */
->   struct iommufd_viommu_ops {
-> +	size_t (*get_viommu_size)(struct device *dev,
-> +		enum iommu_viommu_type type);
-> +	int (*viommu_init)(struct iommufd_viommu *viommu, struct device *dev,
-> +		struct iommu_domain *parent_domain,
-> +		const struct iommu_user_data *user_data);
->   	void (*destroy)(struct iommufd_viommu *viommu);
->   	struct iommu_domain *(*alloc_domain_nested)(
->   		struct iommufd_viommu *viommu, u32 flags,
-
-For changes in iommufd/viommu common code,
-
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Thanks,
+baolu
