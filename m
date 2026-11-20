@@ -1,79 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795188664;
-	b=qa6tmiBHvAZp6/ptUZ7CdEelLB0RtbNw2N3ZEz3wBjkSBFwOSD7Nwyd65jQdLNkNlDjW
-	 uI6sYyZ42CX7gzzkRyYukUzbc9/epQI0/donGYjhGnSzAWs3uOGF8qTf1utxP6SfDVqxO
-	 CPlxhUEDt4/p4mSfscV/osTKjVHKqcd5xQlp+4gk7/Ur/emLBtWq2tvcgjPy/89Wi6JE3
-	 Q+RF8dHWWIqvaLYtnEbxzwcJlaU5wpGtKAFVr/D1Nl9K5ODuQlQDh8kkFwY5fwXSFL80v
-	 w8cPtBz2N5hS4da3mhavSwMFn57l1ow/TQxXIFimdx0YngrZM1F5P5d4W1/p5trjOqA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795188664;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=Ic/Tkesv9swqUgqf5iFVky14aDs798pTEmP4wTv+sGw=;
-	b=ycn5mGSoRppTb8eGUvdJ7q7mdItUn+XQdZCiukk/fkM3gwqEdV7+ZHARKYr5mwNJ2o6h
-	 NCug7RjhmekRCQhKPr5neS0Ye5TVy8V4vm+Pq/Ef4cmIXorR0QK2fj4JQ+PvisQWRqe+7
-	 ywy8MGw06215+D6J94pkQKzvwJz5e677pL3wLfGuZ4/AzVnxt/47WnY0Dy0gH3WANC3OK
-	 QSg2+H9wPz14zrb9Eo+q79VKaSD07cXKO/qpOb+ovq+Oc2MMK4hMRhymUwRoTis6fo4rK
-	 3/n0SjsxSiNGjSHmZue/fvwpssXLX7NiElDrKXnigkb2Pb51pUBer3/+/AcshUbCoLQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PFXWRAbD;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795190024;
+	b=pFLwViUjvFMb8FzcCg6gwa3cmrl06QswXRM/lG/8JZTbJualSedkhv6qbCICNF/F+NJn
+	 eGDsRri16FbfS2FRwTmXBwbw0q5AN72onrYPiSJaPA1zNV+F3mxq2vF4Ljo1F6vsw3VfR
+	 lryl5rREIuETVbiZQlxEMdJLbJn/Xs7FLmWLpv0LYuZ0oA7QaNeRFMg+dzJuihg4fdtwv
+	 X7Lk3I+whFtdw2SFs/ZL0e3iVaWaBSgoSiWRbGMCF6DLqWKHi5i8g7b1sTfw7LZa0I6xv
+	 HABEOwba/7M46Dshpzy9gREz/XYJFNLbXwqZZExuh3RRSD0TBrMd8rpVEa9PbDcPfpA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795190024;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:Content-Language:To:Cc:References:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=kUImOcVedUjegxwkK//FyLW+jQN1/HbnoWhnMDB3jpY=;
+	b=RBplD2MPwEm6Jl2CfmVI+AQudSc86sYd3iPUNoLzYMsiu3daxI1iJthGH5hI/13rnvw3
+	 Q1BWgFhi4OZHojWqbA6hO2QhDSOwcPVS1uYRC9O6sbZP1iQvnXBHr2yYggvGAo6G0RTBi
+	 7KCT8GIlc+lt8NU54gAb5IoBbf+RRAcYJ8zy3nhTviAWRrAVjs/f/N14CLOrNDfrHNs7P
+	 29H86PRILTWXHA1cYyLQt8htdy3/2eh1e7zOEDwBZCuyKacolU9pByWpEpgqY6qXc8rMo
+	 6W0qgVGcSoi3F4roToCq8RdPN/5r00jtvsrwa+mAWRECTefBPg/yK3a58lnEha2d1sQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="C1d/CmJA";
+	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42B58606A320;
-	Fri, 20 Nov 2026 15:31:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2AB2606A334
+	for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 15:53:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PFXWRAbD
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795188664;
-	b=2Sr5qRwqiJogqUwmNPr94QqJinb9l9DOwhXT97/ytYIvjOh5v756+Y8b/hW4KqU8diFq
-	 GTbVd6o/8x8N1R7HvQuadcXlTK1bbi+ov5SGd5EBkFwGSe4I0OXWintgclidniwMJDw0g
-	 ucwcQW8dwdN7xwZ1hnvrSB3V9Ratdlr0L5699H/q2FhNdorHut+91mKvzpH43sawNCzv+
-	 4JBd7fLAI68Noe+7H95/DkpVBAil2vebDRF3ZdrWh0wYxkU8CtV+QfRWryJwYVdS0fR6G
-	 o0rcNwnzpUtyxJJ/OwoQzXF7+vpLhFTT4l1Vy//641S2i8B6Oy3TmCIfPHdrN4KCSpA==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795188664;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=Ic/Tkesv9swqUgqf5iFVky14aDs798pTEmP4wTv+sGw=;
-	b=2mghJqf5BBy0DBpoyja+CVjfDKeifQzpXzu+RjlbAWN2n2FJfkTj6++HcIee35cLuLgF
-	 /2buvZ43PNwnJcfTUU+k4jWpV3fy9USGKh5HAThBO4Phllu3xtyTD1VBj4m6rTRijdm4S
-	 kBfA5rkabuU6YV18QRpPT0xzoksLgD89LTFRiDpaHT8e/GgcwgCjGY1KG0yS9rLJrcfbX
-	 hVeFjeqBXtq4CfiNDxiuAyRsEIht/PIF5cDQjXrbaCUSzAZrA8cz6QnMuX2k6JCk3gwJO
-	 arDNrKPI8tcvASRSEvBf6DmMdGXu2yb5toAPE+HNeLxTPoyXL4Z6O7+kbAoRBk3KTYQ==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 4D9961F000EC;
-	Fri, 20 Nov 2026 15:30:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C1d/CmJA
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC1481F0093E;
+	Fri, 20 Nov 2026 15:53:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795188664;
-	bh=Ic/Tkesv9swqUgqf5iFVky14aDs798pTEmP4wTv+sGw=;
-	h=From:Date:Subject:To:Cc:Reply-To;
-	b=PFXWRAbDHnVeDhOsbJ/YOzYlq3EGhCPm/TXcy5PrFKNI1WIo6ziKoBF4MJwNLEqHg
-	 c3X/sjGTAOe9pngXh9jDEWRv5zKGM7+2g7yFU6nZwWK6YCJqW6ICzbl1qmIf2VfNO5
-	 axGxQTMeebuWN//Qia/eUC2bw+UmWzStUZrsoskQ2WfXxMrHQYyxbNi101j5dy3aYY
-	 jNEINEDD6lHawMaYR2cO6SxU5Sn8qe658eiegQDQCT/HN0twJYhDjFoRt3soE2QGFy
-	 QVVPluX5hYFY7YgeBXXxtVOFaQf/BqFEy3R+Q6Fsd6xWjCz4panHK4v3igR11yXHsi
-	 P6O1vTk08HzvQ==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id CD6AC49904;
-	Fri, 20 Nov 2026 15:30:55 +0000 (UTC)
-From: Zhendong Liu via B4 Relay <devnull+yzddmr6.gmail.com@kernel.org>
-Date: Fri, 20 Nov 2026 23:30:53 +0800
-Subject: [PATCH v2] dma: swiotlb: Allocate the restricted DMA pool slot
- array with kvzalloc()
+	s=k20260515; t=1795190023;
+	bh=kUImOcVedUjegxwkK//FyLW+jQN1/HbnoWhnMDB3jpY=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=C1d/CmJAhbgn2yYJRxcS1Ze1OHHuhac0fgbrBOSGxrOfIl6bCLAjcW2iMal0sd80y
+	 OpjNuCpzKPzqfW3TJO7rRhwITQHXxRd07Cj9SECpyFf6XDH2vMmqqQrKhLcBWGhiyv
+	 huGkrsvNvr3LjR9PPL3hzJZEUupzerxwwTW43omfw7UUl+FtKljdOOMcDo2SUZHXOi
+	 5uVv9+rq55Eq0N0KmVxJsThoMmr/EQWIOOCer9Wila7S6hTA0ac5iZ11TZINMRfIGF
+	 Ejz+CiK3lN6uuaUp/bWXaFm8OKnXwRiAdU7zYnJxrDdGnUkbzdaF2sd7czHGy8GheC
+	 lr+fX4PLBV/Iw==
+Message-ID: <25b96bda-edb5-4baf-816c-cfb862b9243b@kernel.org>
+Date: Fri, 20 Nov 2026 09:53:40 -0600
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -83,127 +51,83 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261120-upstream2-swiotlb-rmem-kvzalloc-v2-1-cc5732dddb6b@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAKxnAGsC/42OzQ6DIBCEX6Xh3G0Vo4k99T0aD4CL0oIYQPpjf
- PeiJj03e5qdyTczE49OoSeXw0wcRuWVHZKgxwMRPRs6BNUmTWhGqzynGUyjDw6ZoeCfygbNwRk
- 08IgfprUVICvBKyExq1lBEmV0KNVra7g1u/YTv6MIK3ZNcOYRuGOD6NfXr+C8Ga1hsANStFc+W
- Pfe1sZ8Rf4/LOaQTpSy5mVWUFpcO8OUPglrSLMsyxcnCgudCwEAAA==
-X-Change-ID: 20261120-upstream2-swiotlb-rmem-kvzalloc-f6cb6cfe09a3
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, 
- linux-kernel@vger.kernel.org, stable@vger.kernel.org, 
- Zhendong Liu <yzddmr6@gmail.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795188654; l=4063;
- i=yzddmr6@gmail.com; s=20261028; h=from:subject:message-id;
- bh=n5WsBNFSSTY++xySoe4Lh6qAZ7+HFLIrorjS4M0Xd3I=;
- b=qpNujyU5LVEecmTJsbr9Kv82yZ6BGA0fvstIKHTLBgxAXuO2n1vVfjnSaVCkcTzNapi2xhZoB
- Al43Wdsl6TdBBXvUugeeZ3oEFCh7YVWtS23i5e3Kcyo3VGK3DL4+EXO
-X-Developer-Key: i=yzddmr6@gmail.com; a=ed25519;
- pk=QLT2mwairk4R38oU379hkHynqjoLrlqd0Cl1ERUqIqY=
-X-Endpoint-Received: by B4 Relay for yzddmr6@gmail.com/20261028 with
- auth_id=1489
-X-Original-From: Zhendong Liu <yzddmr6@gmail.com>
-Reply-To: yzddmr6@gmail.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/amd: Mark v2 page tables incoherent on Cezanne
+Content-Language: en-US
+To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+ joro@8bytes.org
+Cc: will@kernel.org, robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
+ Alex Deucher <alexander.deucher@amd.com>,
+ Akshata V Unkal <Akshata.VUnkal@amd.com>,
+ Nathan Blomquist <nblomquist@gmail.com>
+References: <20261120152308.76894-1-vasant.hegde@amd.com>
+From: Mario Limonciello <superm1@kernel.org>
+In-Reply-To: <20261120152308.76894-1-vasant.hegde@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-From: Zhendong Liu <yzddmr6@gmail.com>
+On 11/20/26 09:23, Vasant Hegde wrote:
+> DMA fails on Cezanne (family 19h, model 50h) when a device is placed in
+> an IOMMU v2 paging domain due to missing coherency setting in IOMMU HW.
+> The IOMMU walks v2 page tables without observing CPU writes still held
+> in the cache. v1 PTEs have a Force Coherent bit, which the driver sets
+> on every entry, but the v2 format has no equivalent bit, so v2 walks
+> are not kept coherent.
+> 
+> Set PT_FEAT_DMA_INCOHERENT for v2 domains on this CPU so the generic
+> page-table code clflushes table memory before the IOMMU reads it.
+> 
 
-rmem_swiotlb_device_init() allocates one struct io_tlb_slot per 2 KiB
-slot of a restricted DMA pool with kzalloc(). The struct is 24 bytes on
-64-bit, so with 4 KiB pages and the default MAX_PAGE_ORDER of 10 the
-array is larger than KMALLOC_MAX_SIZE (4 MiB) for any pool above about
-341 MiB. For such a pool kzalloc() refuses the request with a
-WARN_ON_ONCE() in ___kmalloc_large_node(), the pool is not set up, and
-of_dma_set_restricted_buffer() warns that it failed to initialise the
-pool. The devices assigned to it then lose the restriction without
-their probe failing, and use the default DMA path.
+Closes: https://gitlab.freedesktop.org/drm/amd/-/work_items/6081
+Reviewed-by: Mario Limonciello (AMD) <superm1@kernel.org>
 
-The slot array is only accessed by the CPU and does not need to be
-physically contiguous. Allocate it with kvzalloc_objs() and free it with
-kvfree(). The other pools are not affected: the slot array of the
-default pool comes from memblock, and the buffers of late and dynamic
-pools are limited to MAX_PAGE_ORDER, which keeps their slot arrays
-small.
+> Link: https://lore.kernel.org/linux-iommu/CACOV87VBwH+R3eSBEOuz8hk7OaT63+A9m6ipPSW5wt1VhHMFPg@mail.gmail.com/
+> Cc: Mario Limonciello (AMD) <superm1@kernel.org>
+> Cc: Alex Deucher <alexander.deucher@amd.com>
+> Tested-by: Akshata V Unkal <Akshata.VUnkal@amd.com>
+> Co-developed-by: Nathan Blomquist <nblomquist@gmail.com>
+> Signed-off-by: Nathan Blomquist <nblomquist@gmail.com>
 
-Pools of this size are needed when large buffers go through the pool
-for their whole lifetime: this was hit with an arm64 Gunyah protected
-VM whose virtio-gpu resources stay mapped in the pool, and a desktop at
-3392x2400 needed more than 341 MiB.
+Much appreciated for all your help here Nathan, you did a great job 
+narrowing this down.
 
-The problem was analysed and this change written with the help of an
-AI coding assistant.
-
-Fixes: 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization")
-Cc: stable@vger.kernel.org
-Signed-off-by: Zhendong Liu <yzddmr6@gmail.com>
----
-Reproduced in QEMU on the base commit below (arm64 defconfig, 4 KiB
-pages): virt machine with 2 GiB, a 512 MiB restricted-dma-pool added to
-the DT and referenced by every virtio_mmio node, one virtio-rng device
-with iommu_platform=on (modern virtio-mmio, so VIRTIO_F_ACCESS_PLATFORM
-is negotiated), and swiotlb=track_hiwater. Without this patch the WARN in
-___kmalloc_large_node() fires, every transport reports "failed to
-initialise "restricted-dma-pool" memory node", no debugfs directory is
-created for the pool, and reading /dev/hwrng works without any bounce
-(io_tlb_used_hiwater of the default pool stays 0). With it there is no
-warning, every transport is assigned the pool, and its debugfs
-directory shows 262144 slots, with io_tlb_used_hiwater already at 17
-once virtio-rng has probed. W=1 shows no new warnings in kernel/dma/.
-
-The change is also used in the guest kernel of the Gunyah VMs
-mentioned above.
-
-I used an AI coding assistant for this work. It analysed the failure,
-wrote this patch and changelog and set up the QEMU reproducer. I have
-reviewed the change.
----
-Changes in v2:
-- Use my legal name in the From: and Signed-off-by: lines, as requested.
-- Link to v1: https://patch.msgid.link/20261120-upstream2-swiotlb-rmem-kvzalloc-v1-1-1c5f9b503223@gmail.com
----
- kernel/dma/swiotlb.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 786954bc5e6a..51c7c064b62f 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -2042,7 +2042,7 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 			return -ENOMEM;
- 		pool = &mem->defpool;
- 
--		pool->slots = kzalloc_objs(*pool->slots, nslabs);
-+		pool->slots = kvzalloc_objs(*pool->slots, nslabs);
- 		if (!pool->slots) {
- 			kfree(mem);
- 			return -ENOMEM;
-@@ -2050,7 +2050,7 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 
- 		pool->areas = kzalloc_objs(*pool->areas, nareas);
- 		if (!pool->areas) {
--			kfree(pool->slots);
-+			kvfree(pool->slots);
- 			kfree(mem);
- 			return -ENOMEM;
- 		}
-@@ -2067,7 +2067,7 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 			if (ret) {
- 				dev_err(dev, "Failed to decrypt restricted DMA pool\n");
- 				kfree(pool->areas);
--				kfree(pool->slots);
-+				kvfree(pool->slots);
- 				kfree(mem);
- 				return ret;
- 			}
-
----
-base-commit: 14866e632fa48a0b4c385ab0121526575eb8f88c
-change-id: 20261120-upstream2-swiotlb-rmem-kvzalloc-f6cb6cfe09a3
-
-Best regards,
---  
-Zhendong Liu <yzddmr6@gmail.com>
-
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> ---
+>   drivers/iommu/amd/iommu.c | 16 ++++++++++++++++
+>   1 file changed, 16 insertions(+)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 41ee4ad1dcf8..0f04013f590d 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2792,6 +2792,15 @@ static const struct iommu_domain_ops amdv2_ops = {
+>   	.enforce_cache_coherency = amd_iommu_enforce_cache_coherency,
+>   };
+>   
+> +/*
+> + * Force a clflush on Cezanne (family 19h, model 50h) when the v2
+> + * page-table is enabled.
+> + */
+> +static bool amd_iommu_force_incoherent(void)
+> +{
+> +	return boot_cpu_data.x86 == 0x19 && boot_cpu_data.x86_model == 0x50;
+> +}
+> +
+>   static struct iommu_domain *amd_iommu_domain_alloc_paging_v2(struct device *dev,
+>   							     u32 flags)
+>   {
+> @@ -2810,6 +2819,13 @@ static struct iommu_domain *amd_iommu_domain_alloc_paging_v2(struct device *dev,
+>   	domain->iommu.nid = dev_to_node(dev);
+>   
+>   	cfg.common.features = BIT(PT_FEAT_X86_64_AMD_ENCRYPT_TABLES);
+> +
+> +	if (amd_iommu_force_incoherent()) {
+> +		cfg.common.features |= BIT(PT_FEAT_DMA_INCOHERENT);
+> +		/* pt_iommu_init() rejects DMA_INCOHERENT without a device */
+> +		domain->iommu.iommu_device = dev;
+> +	}
+> +
+>   	if (amd_iommu_np_cache)
+>   		cfg.common.features |= BIT(PT_FEAT_FLUSH_RANGE_NO_GAPS);
+>   	else
 
