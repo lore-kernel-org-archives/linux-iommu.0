@@ -1,54 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.211
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.69
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795132457;
-	b=dZ1lWP1cNE1hP4z6sImg8i3UUfCME4UCHVDdzCjSOLRmvbbMX8tz+X45zqy2Pil3A+tt
-	 F7OfdLg8b19Ztnaqu9TQdBur4U2GhxuWChv9WPOCjiaCUuw2AlVT1yNOz+lr4kdoO6Twu
-	 nZAa/Skyn7qKg3unMgusrTD0tXm1iSgaNSzJxYJbE+0EL4IMMF5zEQHP/A9oegQ3NxfcB
-	 F8X2zaIpSws6F83ipnG1mA3Fl3mRft/TwiLfc34GrsBp8Hmc45eHvDqU8CuLXfsGU3GCa
-	 Gc7kgCVHsDE5At4b37LV2vqsiHaZbEYh9tVf41rtYD9h/6qSWAuDoxOCL1lKOm4x/WQ==
+	t=1795134195;
+	b=h7dN4QGTSE5tMW7lEymxx+vvlJtxTqVN4FETRjLKy9Bt1q4xU9okk7HS+Ufm1xfdbILL
+	 4C9tdmy9k6GOF20CVbqOIu7ozFverZnADEVJ19ZP5lXRbkYf36e0VMRcCXGm3j6GldWza
+	 80Zal8tArcRkKHh12HYDRqt7P9OEULgP/HCWkmhzF4/IALdWQ6jxl1bBvHeHK5G8Dmo3T
+	 mF47etVV4UyYabofkXpLmqF/fyW4i3Wm7yxTw9ozWMle3uIs/HuMyBZ+SUSmD/hHONttm
+	 RDS/PGFxea3L6mbh67sUFQazjwZoOwZtG2mDKSv65t/rZgc+Ym+WVMraZqJQ33NTCTw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795132457;
-	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
-	 X-Mizu-Trace-ID:X-Migadu-Flow:Message-ID:Date:MIME-Version:User-Agent:
-	 Cc:Subject:To:References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=o8Jkl3D6PyKBQ9flRwdsQA2PhUfjW1xzSb0OsieXFqU=;
-	b=Ov80+QxwOolgX2C77AlONSgq9zwyWOYwfTLCJTB+YVdo5xn0PVHJLQtMSuBOPoWGuhvB
-	 OXuWWoW6BIMsEzq6pmcs0Qx+V+cUMExdXasi6uSCCJ1BHeCpBJnOl2hY97X+FmVSjTd78
-	 ZRhRRFwaQ7s3LD8wwLGTQR3qOrX0tu0QZi/QtNtfxaOFOC2g1WjIPfwQ02qsCbRXZHH7K
-	 GZuwG5t8thDDDWQqF8wtsv/naua6EiMoAoAFDyIDtk5Tars+AwEOfY3zvii5Vki8ThGsG
-	 o46XXttQnFejKi/F88WWjJB9jL6USR75Au+fZDJmAaGZhYy5jCOBg2En9XxmeGS3VIw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795134195;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:Mime-Version:
+	 X-Mailer:Message-ID:Subject:From:To:Cc:Content-Type;
+	bh=nXm7V+55JTESgfbXuII0g/LeSG6H/Z2OSofXDdA1V+w=;
+	b=ajR/97CHZ+onTe4/I6RC0bJNQAPZkU+QrafsVI+LXkhsN8wv+Jdp0a63wRq07tPWagvd
+	 S75suXPYUv3x5+/Ha4ztQ6P/IU3Cvx7KSBNDVQUhiqmmvDhpDWxuiY0ml3qGMlnQu3hC3
+	 baNkFeeJcHejyssWlV6MIOqQ9MeUM/s1y7LzXZfC7D2g058QWrnboKFGW4pQhDvaTONmD
+	 Bh62RfXHY3q9jJH5O4w2NkpXjcX6T1+IGkiBht1E+axj09XGj7qji2xo32J5q3YzgMBvs
+	 cf7jmY5DlObKAhCzNEQ51Mt80Rc1SyyqBRYGZLQYfGI8+RngHYrS/rjIhcYKEIWEaBQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.dev;
-	spf=pass smtp.mailfrom=linux.dev;
-	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=q70IX0lu;
-	arc=none smtp.remote-ip=91.218.175.211
-Received: from mta0.migadu.com (out-211.mta0.migadu.com [91.218.175.211])
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=flex--digonzal.bounces.google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=HjxDWsPI;
+	arc=none smtp.remote-ip=74.125.82.69
+Received: from mail-dl1-f69.google.com (mail-dl1-f69.google.com [74.125.82.69])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72DE7606A32A
-	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 23:54:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72DE7606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6750B606A337
+	for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 00:23:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6750B606A337
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--digonzal.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=q70IX0lu
-X-Envelope-To: iommu@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=SVZrlJks8sXPVt3xrpYdTAoVZmdk9CSrl7P148bcFmU=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1795132454; v=1; x=1795737254;
- b=q70IX0luUcbU6FCiJYBpmUfdNrXaCDzDyverVa5nohERhVo++3RcTQWOyKaGqDjVgz3oc5Fx
- VBY96WxGxsdaNk3gHTfIfp6AF/YK/SO2tPRF0sI/OQFkm0I4B33qwJ5F3URCKw0ij+tnYR3yJa0
- Gw0mzX4e9eiXeXHZeFdigyFI=
-X-Envelope-To: iommu@lists.linux.dev
-Received: by smtp.migadu.com with ESMTPS id eca0a2cac3c52e86;
-	Thu, 19 Nov 2026 23:54:14 +0000
-X-Mizu-Trace-ID: eca0a2cac3c52e86
-X-Migadu-Flow: FLOW_OUT
-Message-ID: <1ea66d73-4d40-4d95-855f-4235cbd1d809@linux.dev>
-Date: Fri, 20 Nov 2026 07:53:53 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=HjxDWsPI
+Received: by mail-dl1-f69.google.com with SMTP id a92af1059eb24-1a2af4c8cbaso291117c88.0
+        for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 16:23:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1795134193; x=1795738993; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=nXm7V+55JTESgfbXuII0g/LeSG6H/Z2OSofXDdA1V+w=;
+        b=HjxDWsPI3OWGduFcz7E+HY9cO9xDatFd9tJktBuJNif2Mm+Gmxpan2ofG93CRGQIqb
+         bgr/Z+Qbz5y8p5BHw2mbsv8WZ3RpS9lH/lCZ/0fDoMX+ZorfkENSEQNYzBATi1i/Mn1n
+         eM2o3012xCkpSzBMrBgNrDuRXkz0xp5SnFwwOLmoA6wPtx0UnoLQ1RW5ZgCYG8BuXaX9
+         c3VlPbS6yrqlFqkrJScxzm4IwCV5wO+5rTHU/b2ZDlBV6KwgTU3znoxneYE9Js2TZfCd
+         2Rg9JzOn5gdERxFthuIxhvTzkfggivzrDZsm1avAD0IKhyRtarUMf0O+QlCrJRnF977m
+         Ia1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795134193; x=1795738993;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=nXm7V+55JTESgfbXuII0g/LeSG6H/Z2OSofXDdA1V+w=;
+        b=nPC+Ein9T38c0YZbTmYmE5KAHdcPVI45HTW9K9O0ZrVP7HzDKZgktF7WMCMEdNjjyt
+         Vpy5jjUDTPyMG1T18LReIErKpUn0s938WtphxWLa75fd6umgM0rFOQdXdjS/CHUN9/8Y
+         8ExeP/IvWaC6BlcZ/echVGwo+KAbx8guiG8n+ss/t3FlRchCZePOyVH8ggE9uWfNvLFh
+         Zs7zAWFxudbzjKX1RHrmuaSLV0uKd//1utUAaeJwifxr601efzYWDHWiFQrUl7Q8P662
+         FZKtpQoxy/U5zK/CQ9FSoERSZQP0Q0Oea5Fe7ukwYcRvB7ilMZQgr6DblA/Ik3tKqoUv
+         Qerw==
+X-Forwarded-Encrypted: i=1; AL+hErF0YKeH4xJ/Pe5RJxpgJxYKzCAFoQaGudoxpSdGqUWBaxtA9Ymk8n9KBefV+z0qsvO3zfMdeg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+zgzVeKR9L+BF+ReV2VebhMucfDktCHwW2t9MjQ1PTdKorzua1
+	rYad1qyYFVcWWH1t0IZr9KgYojg3RVU1/F1ziwJX0EnbFfX+eCWuZXvEUxzusz+y75pstiN29dC
+	cXQz3nYLmM9HhHA==
+X-Received: from dlep8-n1.prod.google.com ([2002:a05:701b:4588:10b0:1b2:5589:f43a])
+ (user=digonzal job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:701b:204f:10b0:1b3:a05f:892d with SMTP id a92af1059eb24-1b556903388mr1192470c88.40.1795134193081;
+ Thu, 19 Nov 2026 16:23:13 -0800 (PST)
+Date: Fri, 20 Nov 2026 00:23:09 +0000
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -57,188 +75,61 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: cui.tao@linux.dev, akpm@linux-foundation.org, dgilbert@interlog.com,
- mkp@kernel.org, loberman@redhat.com, jmeneghi@redhat.com, kraxel@redhat.com,
- vivek.kasireddy@intel.com, jasowangio@gmail.com, eperezma@redhat.com,
- stefanha@redhat.com, sgarzare@redhat.com, rostedt@goodmis.org,
- vdonnefort@google.com, mhiramat@kernel.org, jgg@ziepe.ca,
- kevin.tian@intel.com, axboe@kernel.dk, linux-mm@kvack.org,
- James.Bottomley@hansenpartnership.com, sumit.semwal@linaro.org,
- christian.koenig@amd.com, phasta@kernel.org, joro@8bytes.org,
- will@kernel.org, linux-scsi@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
- linaro-mm-sig@lists.linaro.org, kvm@vger.kernel.org,
- virtualization@lists.linux.dev, linux-trace-kernel@vger.kernel.org,
- iommu@lists.linux.dev, io-uring@vger.kernel.org,
- linux-kernel@vger.kernel.org, bobbyeshleman@meta.com,
- mathieu.desnoyers@efficios.com, robin.murphy@arm.com, mason@kernel.org,
- aesteve@redhat.com, tjmercier@google.com, harry@kernel.org, vbabka@suse.cz,
- cuitao@kylinos.cn
-Subject: Re: [PATCH 3/7] vhost: account the per-device kernel allocations to
- memcg
-To: "Michael S. Tsirkin" <mst@redhat.com>
-References: <20261106131829.3228926-1-cui.tao@linux.dev>
- <20261106131829.3228926-4-cui.tao@linux.dev>
- <20261119101239-mutt-send-email-mst@kernel.org>
-From: Tao Cui <cui.tao@linux.dev>
-In-Reply-To: <20261119101239-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.56.1.750.gf70dc682cf-goog
+Message-ID: <20261120002311.394649-1-digonzal@google.com>
+Subject: [PATCH v3 0/2] PCI/ATS: Disable ATS when ACS TB is set upstream
+From: Danny Gonzalez <digonzal@google.com>
+To: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>
+Cc: "Rafael J . Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Kevin Tian <kevin.tian@intel.com>, decot@google.com, praan@google.com, 
+	sheenamo@google.com, linux-pci@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Danny Gonzalez <digonzal@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Hello, Michael,
+This series disables ATS on endpoints when an upstream bridge has ACS
+Translation Blocking (PCI_ACS_TB) enabled, preventing ACS Violations on
+translated DMA requests.
 
-在 2026/11/19 23:12, Michael S. Tsirkin 写道:
-> On Fri, Nov 06, 2026 at 09:18:25PM +0800, Tao Cui wrote:
->> From: Tao Cui <cuitao@kylinos.cn>
->>
->> Everything except the worker struct is allocated with plain GFP_KERNEL:
->> the per-vq iovec and log arrays at VHOST_SET_OWNER, the memory table at
->> VHOST_SET_MEM_TABLE whose size follows the user supplied region count,
->> the pending message nodes, and the vhost_net/vhost_vsock device structs
->> with their fallback to vmalloc.  The worker has been accounted since the
->> vhost_task conversion.
->>
->> A container that can open /dev/vhost-net or /dev/vhost-vsock, which
->> device plugins hand out with passthrough, holds roughly 150KB of
->> resident kernel memory per device after SET_OWNER.  Charge the rest the
->> same way the worker already is.
->>
->> Signed-off-by: Tao Cui <cuitao@kylinos.cn>
-> 
-> 
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> 
-> should each patch be merged individually?
-> 
-Yes, I think merging them individually is the cleaner path here: the series spans six subsystems, and each maintainer taking their own piece keeps things simple. Jason has already taken patch 5 into iommufd.  Please feel free to take patch 3 through your tree.
+Patch 1/2 stops pci_dev_reset_iommu_done() from re-evaluating
+pci_ats_supported() and dev_has_iommu() independently from
+pci_dev_reset_iommu_prepare(), tracking whether state needs to be
+restored via a @restore output flag instead. It can be merged
+independently.
 
-Thanks,
-Tao
-> 
->> ---
->>  drivers/vhost/net.c   | 14 ++++++++------
->>  drivers/vhost/vhost.c | 16 ++++++++++------
->>  drivers/vhost/vsock.c |  5 +++--
->>  3 files changed, 21 insertions(+), 14 deletions(-)
->>
->> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
->> index 4570a4ffbab2..bab6597c696d 100644
->> --- a/drivers/vhost/net.c
->> +++ b/drivers/vhost/net.c
->> @@ -249,7 +249,7 @@ vhost_net_ubuf_alloc(struct vhost_virtqueue *vq, bool zcopy)
->>  	/* No zero copy backend? Nothing to count. */
->>  	if (!zcopy)
->>  		return NULL;
->> -	ubufs = kmalloc_obj(*ubufs);
->> +	ubufs = kmalloc_obj(*ubufs, GFP_KERNEL_ACCOUNT);
->>  	if (!ubufs)
->>  		return ERR_PTR(-ENOMEM);
->>  	atomic_set(&ubufs->refcount, 1);
->> @@ -302,7 +302,8 @@ static int vhost_net_set_ubuf_info(struct vhost_net *n)
->>  		if (!zcopy)
->>  			continue;
->>  		n->vqs[i].ubuf_info =
->> -			kmalloc_objs(*n->vqs[i].ubuf_info, UIO_MAXIOV);
->> +			kmalloc_objs(*n->vqs[i].ubuf_info, UIO_MAXIOV,
->> +				     GFP_KERNEL_ACCOUNT);
->>  		if  (!n->vqs[i].ubuf_info)
->>  			goto err;
->>  	}
->> @@ -1344,17 +1345,18 @@ static int vhost_net_open(struct inode *inode, struct file *f)
->>  	struct xdp_buff *xdp;
->>  	int i;
->>  
->> -	n = kvmalloc_obj(*n, GFP_KERNEL | __GFP_RETRY_MAYFAIL);
->> +	n = kvmalloc_obj(*n, GFP_KERNEL | __GFP_RETRY_MAYFAIL |
->> +			 __GFP_ACCOUNT);
->>  	if (!n)
->>  		return -ENOMEM;
->> -	vqs = kmalloc_objs(*vqs, VHOST_NET_VQ_MAX);
->> +	vqs = kmalloc_objs(*vqs, VHOST_NET_VQ_MAX, GFP_KERNEL_ACCOUNT);
->>  	if (!vqs) {
->>  		kvfree(n);
->>  		return -ENOMEM;
->>  	}
->>  
->>  	queue = kmalloc_array(VHOST_NET_BATCH, sizeof(void *),
->> -			      GFP_KERNEL);
->> +			      GFP_KERNEL_ACCOUNT);
->>  	if (!queue) {
->>  		kfree(vqs);
->>  		kvfree(n);
->> @@ -1362,7 +1364,7 @@ static int vhost_net_open(struct inode *inode, struct file *f)
->>  	}
->>  	n->vqs[VHOST_NET_VQ_RX].rxq.queue = queue;
->>  
->> -	xdp = kmalloc_objs(*xdp, VHOST_NET_BATCH);
->> +	xdp = kmalloc_objs(*xdp, VHOST_NET_BATCH, GFP_KERNEL_ACCOUNT);
->>  	if (!xdp) {
->>  		kfree(vqs);
->>  		kvfree(n);
->> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
->> index ea127af58ada..d1274106ad5d 100644
->> --- a/drivers/vhost/vhost.c
->> +++ b/drivers/vhost/vhost.c
->> @@ -526,11 +526,14 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
->>  
->>  	for (i = 0; i < dev->nvqs; ++i) {
->>  		vq = dev->vqs[i];
->> -		vq->indirect = kmalloc_objs(*vq->indirect, UIO_MAXIOV);
->> -		vq->log = kmalloc_objs(*vq->log, dev->iov_limit);
->> -		vq->heads = kmalloc_objs(*vq->heads, dev->iov_limit);
->> +		vq->indirect = kmalloc_objs(*vq->indirect, UIO_MAXIOV,
->> +					    GFP_KERNEL_ACCOUNT);
->> +		vq->log = kmalloc_objs(*vq->log, dev->iov_limit,
->> +				       GFP_KERNEL_ACCOUNT);
->> +		vq->heads = kmalloc_objs(*vq->heads, dev->iov_limit,
->> +					 GFP_KERNEL_ACCOUNT);
->>  		vq->nheads = kmalloc_array(dev->iov_limit, sizeof(*vq->nheads),
->> -					   GFP_KERNEL);
->> +					   GFP_KERNEL_ACCOUNT);
->>  		if (!vq->indirect || !vq->log || !vq->heads || !vq->nheads)
->>  			goto err_nomem;
->>  	}
->> @@ -2053,7 +2056,8 @@ static long vhost_set_memory(struct vhost_dev *d, struct vhost_memory __user *m)
->>  		return -E2BIG;
->>  	if (max_iotlb_entries <= 0)
->>  		return -EINVAL;
->> -	newmem = kvzalloc_flex(*newmem, regions, mem.nregions);
->> +	newmem = kvzalloc_flex(*newmem, regions, mem.nregions,
->> +			       GFP_KERNEL_ACCOUNT);
->>  	if (!newmem)
->>  		return -ENOMEM;
->>  
->> @@ -3405,7 +3409,7 @@ EXPORT_SYMBOL_GPL(vhost_disable_notify);
->>  struct vhost_msg_node *vhost_new_msg(struct vhost_virtqueue *vq, int type)
->>  {
->>  	/* Make sure all padding within the structure is initialized. */
->> -	struct vhost_msg_node *node = kzalloc_obj(*node);
->> +	struct vhost_msg_node *node = kzalloc_obj(*node, GFP_KERNEL_ACCOUNT);
->>  	if (!node)
->>  		return NULL;
->>  
->> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
->> index 0cb87971d749..600daeb05e7b 100644
->> --- a/drivers/vhost/vsock.c
->> +++ b/drivers/vhost/vsock.c
->> @@ -721,11 +721,12 @@ static int vhost_vsock_dev_open(struct inode *inode, struct file *file)
->>  	/* This struct is large and allocation could fail, fall back to vmalloc
->>  	 * if there is no other way.
->>  	 */
->> -	vsock = kvmalloc_obj(*vsock, GFP_KERNEL | __GFP_RETRY_MAYFAIL);
->> +	vsock = kvmalloc_obj(*vsock, GFP_KERNEL | __GFP_RETRY_MAYFAIL |
->> +			     __GFP_ACCOUNT);
->>  	if (!vsock)
->>  		return -ENOMEM;
->>  
->> -	vqs = kmalloc_objs(*vqs, ARRAY_SIZE(vsock->vqs));
->> +	vqs = kmalloc_objs(*vqs, ARRAY_SIZE(vsock->vqs), GFP_KERNEL_ACCOUNT);
->>  	if (!vqs) {
->>  		ret = -ENOMEM;
->>  		goto out;
->> -- 
->> 2.43.0
-> 
+Patch 2/2 updates pci_ats_supported() to walk upstream bridges and
+return false if any bridge has PCI_ACS_TB set in PCI_ACS_CTRL.
+
+Changes since v2:
+ - Add patch 1/2 to track IOMMU reset restore state between
+   pci_dev_reset_iommu_prepare() and pci_dev_reset_iommu_done()
+ - Move the upstream ACS TB check back into pci_ats_supported(),
+   dropping pci_ats_check_acs() and changes to pci-driver.c and pci.h
+ - Read PCI_ACS_CTRL directly and check the return value and
+   PCI_POSSIBLE_ERROR() so inaccessible bridges are not treated as
+   having PCI_ACS_TB set
+ - Remove the pci_warn_once() logging and helper function
+
+Changes since v1 (v2, based on Sashiko review):
+ - Move the upstream ACS TB check from pci_ats_supported() into
+   pci_ats_check_acs() called after pci_enable_acs()
+ - Use pci_acs_enabled() instead of reading PCI_ACS_CTRL directly
+
+Danny Gonzalez (2):
+  iommu: Track whether pci_dev_reset_iommu_done() needs to restore state
+  PCI/ATS: Disable ATS when ACS TB is set upstream
+
+ drivers/iommu/iommu.c  | 14 ++++++++++----
+ drivers/pci/ats.c      | 19 +++++++++++++++++++
+ drivers/pci/pci-acpi.c |  5 +++--
+ drivers/pci/pci.c      | 25 +++++++++++++++----------
+ drivers/pci/quirks.c   |  5 +++--
+ include/linux/iommu.h  |  9 +++++----
+ 6 files changed, 55 insertions(+), 22 deletions(-)
+
+-- 
+2.56.1.708.g77570a6a1d-goog
 
