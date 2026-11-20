@@ -1,60 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795184323;
-	b=ROtglrIWiALNIaLhaIRh/rBjvAmNX5qLgXFrJ8dJOdtkzjHPCoeEytYH5LqKonXyfPtX
-	 qPcXMboGxR8vJqXqJLhAa6HCKP42213aSOgvnrXHzdyXb6zR14m+FenV0M4zCZqOjK+m8
-	 BKTgWUq4hVbMS6iGVYdOfsQ0VeI2ZSW8E7j5hZPixDA8PMOeY5qGg2abeQN2KAMG+4z51
-	 SwFXQQ/tD8Q/BYsrXobxxYP2IpCX2ZK31DLLNC4Hk+jFfwTOrmB/RISJSw+ubi3uVhvJg
-	 aP0YABDMu9fObOWyxltGXqQ6c0mObXRjJJSSqU+eyrcTIu8c0XviBWnbQkYppq3GnsQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795184323;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=tchBVgJeJy04vBo/BlAAOzVIUxBgTws/k6WQKEwIWWw=;
-	b=uyTjXkZEc4nEgOb7z6IT+FALglKpd9adFRosEoujUy+vwZwNaEFmeNt/mDB/LCSP04vz
-	 BZ/2aP9eRHbEcAGlErLViJu1VIr9a1PCUtP4FhiGGCr624HniNIGzaswD2Qty+INoqjWt
-	 gu9+pqmDh8zxYqQURUrXQpQIo5QCHFarzw6uP00R0J0eJMBbe9fdw0gyUmCF2PBcI+Yo2
-	 JvzYhLxOigHW/tvNHI9tncTzK719tQt3fpVsxieIR4yNCRLl0TuyVf8MItLCtRNYaGkDL
-	 /8t1FbawnmFSPGg/yH3EgJ9PKv5Iwnd/NGgSE8xqfI7PFjlBLtnrmDb1udtPC8OlNTg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=XI6AB4iG;
-	arc=none smtp.remote-ip=210.118.77.11
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.169
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795184413;
+	b=gfSl5xRBu0iuDVgGEGpSfqlWDDSNP8/DWOHh9pDujVXsGCF8Vzw47alJ8ioJKfGbUkZj
+	 1yxs1KrkGsd74aCy+7U6JChmGbKEr+WBHnbHmC5JZE/osjc2/luiCz9I/1ldXD4KCLv9e
+	 Py/msWDbLW+UZ0nSZupqSS6Mtum+xckLmve65Y3y1QxzBTPLINs8B0QNrbZ6i+oKw39cS
+	 olSySxS5gzZnGYCxRWryAYEDZiZTNazh17LH+gczd0UyzD6apnlvY0L/QO5wiQdTvDXtC
+	 84HkpztOxS9YPxi2JqfNFGQFky4Pyh8XlAwLjWz8YN8c6h1/fftYWT7qtBAo3jc9l2A==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795184413;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=ZZKnDY3fzlC6VsJ3+sJIUV4LE2tQFmEUFN5SVkPY8Lk=;
+	b=ibuU/ZrBibYJ0ZpBZEbGCU/GFhOyOEeh4jGBMpov1CR1FGLv+PUJWs7bQ6u4/zNPAFeY
+	 djoC47HdbeDT9HU7606w6FrWvYLJ+yLFIXM6uQ7yDd70uLSuvAz3XZjb+i5hyeKcsaH0x
+	 mzAmn6BDIubN7XcaPMpVJ+qW9+gGbG3W818aUdqdSP6EtHUTMKs6kdaLKg4urFrL60hkV
+	 fvvJC1U21S1TiSmCr5YjWRseH9an99K2OsCRYObuPQiBQJdK50rT4bOEGpLoY9UVC1TDN
+	 xBOMOEUs5FLmi9UKkUthOM6fJnZ6ykEex39D8jYvucV6UI3p9IkLPa4ELmRMVhepIbA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=Uc6DCpzc;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.169
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0F77606A335
-	for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 14:18:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D0F77606A335
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 792C1606A320
+	for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 14:20:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 792C1606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=XI6AB4iG
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261120141839euoutp01a207e52f139c1ee804860b670050a824~pxqCzwOOQ1058710587euoutp01Q
-	for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 14:18:39 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261120141839euoutp01a207e52f139c1ee804860b670050a824~pxqCzwOOQ1058710587euoutp01Q
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1795184320;
-	bh=tchBVgJeJy04vBo/BlAAOzVIUxBgTws/k6WQKEwIWWw=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=XI6AB4iGzg8JTHnOsvNZvZFYWTjE3vniGMB74Dcz56hRhFZtclpVGEuZ3oWzfj3/E
-	 rdaTT+i2pUm+MKDdmVycwR6y5GtozK2lp1fhRu7TSBUGrzWQJJwQWnYJG1Xw5lJ4MT
-	 twM561yXSqAKdt+UcI64uox75FiVGZv8+ExO8tk4=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261120141839eucas1p147101d35489752f566d91b788a75dfb9~pxqCihgoM0385403854eucas1p1t;
-	Fri, 20 Nov 2026 14:18:39 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261120141839eusmtip24357cb99294f8e6577a6683ab3a0f3fb~pxqB5949W1268112681eusmtip2Q;
-	Fri, 20 Nov 2026 14:18:38 +0000 (GMT)
-Message-ID: <7cfe91c5-4053-44bb-8c18-612fcda90e4d@samsung.com>
-Date: Fri, 20 Nov 2026 15:18:38 +0100
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=Uc6DCpzc
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-54492d8a988so289181cf.0
+        for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 06:20:13 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795184412; cv=none;
+        d=google.com; s=arc-20260327;
+        b=RuaTwZ828l9fbqQN8YFsEY1yQKMe6VzHKKX9EPSgSw3uL87YrrlZBgFoGpagfe8dEa
+         WbRvANayrqNNmeCOCUGe532S04VD9HTGazCPpUb89r22dIRgym/FW4sRo45Cf2m2RPDp
+         FT26GrFkgMgs/Xr/2TZ0w8/9yZzXifxXPnvnz/Xbto3tPwQwS1m80sFiGHZLTH0Sh1sx
+         jZ2bux0xuKNtLF73NDSdc1KFKMA472snodLBfwIYZwdLUWRTuD1VNCn36XEkRIKQYqNp
+         vWAjtp8RZVBC3VN0qoVnpAHIEmCSC+OB0x+U9g5zCavjZw3mpbGRSRbjFV88LO4WfN09
+         gUTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ZZKnDY3fzlC6VsJ3+sJIUV4LE2tQFmEUFN5SVkPY8Lk=;
+        fh=xkZCKyS2p66YkGAJ2qhM5/1QiQlQpjcIWDrwVexr+Xk=;
+        b=ER9b+napUXXllZYQaFQC5Ihj8He7Zv/NVaOWprM7QpfWHqbQy/Im4habK7+2zD2c5j
+         v+Sp0BkQTnjpU1TGzluzPtATz/LhsnXiJHTAC6RIf+a/QMqgA/8mftZAdmZbj34z3U5g
+         4hqf+b/IZDidYpLohfFICocb+PJyU82iSLEIN5rtjsjHxRIqNlsLvlA+OnQxZmfxj7p3
+         mhmU1WhlJ+xLcqUC0YbeaQlXqdt0N9DPGR0JpmHWKQpbyLC0gO8l6SwalLpseVj+O1Id
+         LnlGLjc8+U1NtI4Lc5Hj7MyuJv3UyE6cmAQIO+IkobOMOrMmxdxRr+Gmp6Q9flul+vaH
+         wyuA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1795184412; x=1795789212; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ZZKnDY3fzlC6VsJ3+sJIUV4LE2tQFmEUFN5SVkPY8Lk=;
+        b=Uc6DCpzcrV4kRBt6hkEcs87KtJcntyiMDCf3U1qct9Vqe179yErxokjTEAVzs7XxP+
+         uGhxMBFSPxmMyDw5VMhdm4NK0NCQbPxahZBSdfFmkHyMIIxwn38gxiT7x9AU0U6KXflr
+         /LdMOJ/pM0xsEUJctcfpH7xa7NsbFV/o36ZDQqQqELCF5LIuC25z1feIOl503F3Xp+cP
+         W/6Nr9dgOh87pY9LA1XNn2vemiPh2Fk5bo9exUKXykMDJGmwN25Gm4UutA7iMRUOHLjn
+         /bQtGAxqxIkvd3Zbrsmp6HZ3CDUBJpKJrv3YaZcfgA8WboZriQGGYC94jrvO91zOaKQC
+         k2dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795184412; x=1795789212;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ZZKnDY3fzlC6VsJ3+sJIUV4LE2tQFmEUFN5SVkPY8Lk=;
+        b=0rz0myMzX0OQjFHjyRwFv/k/XelqvulfH8io7gXrKZM1ImYxMGy5m05XGMQBem6PUf
+         NB9eiAETqnl5SLnGumcnD0RO4VKO3SoyYmBW4qG/hnBw251PGqSg5gj85ikQ3+6lRX0H
+         KvTkKer6EPrshu5WfUw0XlfdsQQl5Dp4VB3jbfCed1tKoBZUeqT7sfmwXOoJCPFnANwB
+         cfB6sL7rwCrzum/EREAWZUYp0FKE10otYRmUHzFiz//bqWxyYcUd7dHlJSCydk3bcM3a
+         LymY5qf3U62aYTHIedPTZ7yKUN16IH/7pfrpcCLKmPuO6SykLIFUyF2RqtTDc1Wi0+/Y
+         CltQ==
+X-Forwarded-Encrypted: i=1; AL+hErGIFwEYjxMxNyHvZIr0je7MutLOH1KcVmKko3XRex9d2Wd1sZiBaO3DEoSeuXc9mLBvS8QzNg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z83BUbCGgGflFXUcAlE4C6pHTVIVVE3dDvKt8nxWwKPBbb46xju
+	pgeZNFxDP2lRH8XsU/fC5dvA7OSezj93LJ4/RwvyCOU+0IYD5kZm+RzpNjc0ZhXM3Paq/K3bMTx
+	OQgyAg0ME7CnY1w5YwccfU6fWx9ZceBtVRl7cJ+cy
+X-Gm-Gg: AYBFou3AqEJ8NaIhAf8hV9l694qw/dF11KezBaJgoMSFaHa7TDvnQlFjm27c+CK1gvQ
+	0t+CMXD5zuQeHTGirv7NgoO3pxy0yOg/NReORArBap3njWM6+ZM0VkfBvl48FakFqG2dw7Xet1/
+	q0daFzkaLpBjq6rV+YbhQHhqRuNn7Ay8/1CyZnjN3Z5AyF1tC8PO/ReDttVucmWejtJMZRDK5W7
+	qtzSKRVb1D8ILbIE5C9yGkOKs76ZO5cjaJoqMuHHIso6XHmKPP2CGtjfQi3Lzr1CjQJz+7wSuQw
+	FSlNVEFSmT6dEe8sCzSg7aBHJiJSa7uWxhMrez8oQyNV5Kpaqc/br49BGjoDdwyqp9C3mlOKoAA
+	B4GduXPyvLzEc7b4Du2sia3HfOfcD9ynyx0CETA==
+X-Received: by 2002:a05:622a:8c8:b0:55b:ce7e:e65 with SMTP id
+ d75a77b69052e-55d7a37902amr16973301cf.12.1795184411359; Fri, 20 Nov 2026
+ 06:20:11 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,65 +104,98 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] dma: swiotlb: Allocate the restricted DMA pool slot
- array with kvzalloc()
-To: yzddmr6@gmail.com
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20261120-upstream2-swiotlb-rmem-kvzalloc-v1-1-1c5f9b503223@gmail.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20261120141839eucas1p147101d35489752f566d91b788a75dfb9
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261120131146eucas1p2d05549af0404d6af77ce3e9385e91fa7
-X-EPHeader: CA
-X-CMS-RootMailID: 20261120131146eucas1p2d05549af0404d6af77ce3e9385e91fa7
-References: <CGME20261120131146eucas1p2d05549af0404d6af77ce3e9385e91fa7@eucas1p2.samsung.com>
-	<20261120-upstream2-swiotlb-rmem-kvzalloc-v1-1-1c5f9b503223@gmail.com>
+References: <20261109182533.3594984-1-lrizzo@google.com> <20261120010655.467825-1-lrizzo@google.com>
+ <20261120135013.GO3115493@ziepe.ca>
+In-Reply-To: <20261120135013.GO3115493@ziepe.ca>
+From: Luigi Rizzo <lrizzo@google.com>
+Date: Fri, 20 Nov 2026 15:19:34 +0100
+X-Gm-Features: Aa3M54r79-wonm4abHk_49DjjJPxLMhPkMzG33LcM6yDH6fwirGgzaIY398cqTc
+Message-ID: <CAMOZA0LmZ9PFzxLcc1SuS8piFyZu6P=vX_qR2jy-3QRUoNCUKA@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 00/25] PISA: Pre-mapped IOVA Superpage Allocator
+ for DMA and CoCo
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
+	Johannes Weiner <hannes@cmpxchg.org>, Vlastimil Babka <vbabka@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Jens Axboe <axboe@kernel.dk>, 
+	"David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Luigi Rizzo <rizzo.unipi@gmail.com>, 
+	Lorenzo Stoakes <ljs@kernel.org>, "Liam R . Howlett" <liam@infradead.org>, Mike Rapoport <rppt@kernel.org>, 
+	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
+	Brendan Jackman <brendan.jackman@linux.dev>, Zi Yan <ziy@nvidia.com>, Harry Yoo <harry@kernel.org>, 
+	Christoph Lameter <cl@gentwo.org>, David Rientjes <rientjes@google.com>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Hao Li <hao.li@linux.dev>, 
+	Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>, Jann Horn <jannh@google.com>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	"Rafael J . Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Simon Horman <horms@kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>, 
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Willem de Bruijn <willemb@google.com>, 
+	Kuniyuki Iwashima <kuniyu@google.com>, Joshua Washington <joshwash@google.com>, 
+	Harshitha Ramamurthy <hramamurthy@google.com>, Alexander Lobakin <aleksander.lobakin@intel.com>, 
+	Christoph Hellwig <hch@lst.de>, Dragos Tatulea <dtatulea@nvidia.com>, Naman Gulati <namangulati@google.com>, 
+	Pranjal Shrivastava <praan@google.com>, Mostafa Saleh <smostafa@google.com>, 
+	Randy Dunlap <rdunlap@infradead.org>, linux-mm@kvack.org, iommu@lists.linux.dev, 
+	netdev@vger.kernel.org, linux-block@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, driver-core@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, linux-api@vger.kernel.org, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 20.11.2026 14:11, yzddMr6 via B4 Relay wrote:
-> From: yzddMr6 <yzddmr6@gmail.com>
+On Fri, Nov 20, 2026 at 2:50=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wrot=
+e:
 >
-> rmem_swiotlb_device_init() allocates one struct io_tlb_slot per 2 KiB
-> slot of a restricted DMA pool with kzalloc(). The struct is 24 bytes on
-> 64-bit, so with 4 KiB pages and the default MAX_PAGE_ORDER of 10 the
-> array is larger than KMALLOC_MAX_SIZE (4 MiB) for any pool above about
-> 341 MiB. For such a pool kzalloc() refuses the request with a
-> WARN_ON_ONCE() in ___kmalloc_large_node(), the pool is not set up, and
-> of_dma_set_restricted_buffer() warns that it failed to initialise the
-> pool. The devices assigned to it then lose the restriction without
-> their probe failing, and use the default DMA path.
+> On Fri, Nov 20, 2026 at 01:06:30AM +0000, Luigi Rizzo wrote:
+> > This is v3 of the RFC previously posted as DMA_PMD [0], now renamed PIS=
+A
+> > ("Pre-mapped IOVA Superpage Allocator"). The text below follows
+> > Documentation/core-api/pisa.rst (patch 25/25), which has the details.
 >
-> The slot array is only accessed by the CPU and does not need to be
-> physically contiguous. Allocate it with kvzalloc_objs() and free it with
-> kvfree(). The other pools are not affected: the slot array of the
-> default pool comes from memblock, and the buffers of late and dynamic
-> pools are limited to MAX_PAGE_ORDER, which keeps their slot arrays
-> small.
+> I thought the conclusion was to just do this stuff in netdev pagepool,
+> now you come with an enormous AI series spread across the entire
+> kernel?
+
+There were surely comments claiming nothing outside net/ cares or needs thi=
+s.
+
+I respectfully disagree, witness is the fact that e.g. there was already an
+io_uring proposal which is smaller, but does not address applications
+that want to use the standard disk I/O paths (libaio, buffer cache etc)
+
+Nothing has changed from the initial series in terms of size, use cases or
+subsystems involved. Large files are placed where they should,
+the series covers the same three use cases (disk, network, CoCo), and
+touches three parts which it has to touch: mm (most of it; it is a
+memory allocator
+extension after all), dma (it hooks into map and unmap, not a large change)
+and net (the pagepool change is a couple of lines; the tx path needs to
+touch more places because the current stack assumes all paths have
+the same I/O requirements).
+
+For CoCo, there are very fine grained controls so the bounce buffers
+can be enabled only when they don't pose a risk, which in turn
+depends on the threat model.
+
+Specifically, for network tx buffers or disk writes, the user-to-kernel cop=
+y
+is basically a bounce buffer provided it is used correctly and not leaked
+elsewhere (which is the design; of course the implementation
+needs to be verified and possibly fixed so that it matches the design).
+
+cheers
+luigi
+
+> > - Needs bounce buffers: in Confidential Computing VMs, PISA allocators
+> >   pre-decrypt 2MB pages in place, avoiding swiotlb bounce-buffer copies=
+.
 >
-> Pools of this size are needed when large buffers go through the pool
-> for their whole lifetime: this was hit with an arm64 Gunyah protected
-> VM whose virtio-gpu resources stay mapped in the pool, and a desktop at
-> 3392x2400 needed more than 341 MiB.
+> It seems this was ignored too. We want the bounce buffers in CC. They
+> serve a security purpose. You cannot loose control of the shared
+> memory buffers have have them leak into SKBs, user mappings and so
+> on. It is not secure.
 >
-> The problem was analysed and this change written with the help of an
-> AI coding assistant.
+> I don't see how any of this is valuable or necessary for CC,
+> especially when we really don't even expect to have an vIOMMU for CC
+> very often..
 >
-> Fixes: 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: yzddMr6 <yzddmr6@gmail.com>
-
-The change looks fine, but according to kernel rules, the patch must be
-signed with a real developer name. 'yzddMr6' doesn't look like a real name.
-
-
-> ...
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+> Jason
