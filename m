@@ -1,80 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795184305;
-	b=0vS+JTmHYJtrub7qCS0+Vtxk1u1ATSXGULfVSMxdnT9LVeuc5/KZ72dArS9n5JMmmWgc
-	 lK2SgnNtW+g+XkvOCB5/bA/aEsEq8uYFtTBm/hYqBxmBFzrs8JeegUZ6gSiNNhK9V54hP
-	 JBLTPwHrBkd4pxa9UMdR2WAVXOtiM7ZuoMCM26CipKakcvWnSFxpPWw3L262OD4JRX5Fx
-	 02Kk8RtxuJAqi78cd4NKjs2m4LB8ObNKs6s6GbRTTwyqo3aw9nhQsrFSUv+W/0LGrtp13
-	 3vqyxGigVwEATEQ8KID+pJr/FSJjHpKO0Brl0ivOOlrdxvO116DPbBPDHl0sUujHCCQ==
+	t=1795184323;
+	b=ROtglrIWiALNIaLhaIRh/rBjvAmNX5qLgXFrJ8dJOdtkzjHPCoeEytYH5LqKonXyfPtX
+	 qPcXMboGxR8vJqXqJLhAa6HCKP42213aSOgvnrXHzdyXb6zR14m+FenV0M4zCZqOjK+m8
+	 BKTgWUq4hVbMS6iGVYdOfsQ0VeI2ZSW8E7j5hZPixDA8PMOeY5qGg2abeQN2KAMG+4z51
+	 SwFXQQ/tD8Q/BYsrXobxxYP2IpCX2ZK31DLLNC4Hk+jFfwTOrmB/RISJSw+ubi3uVhvJg
+	 aP0YABDMu9fObOWyxltGXqQ6c0mObXRjJJSSqU+eyrcTIu8c0XviBWnbQkYppq3GnsQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795184305;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=R+kufEY/E+bsc6xg+Ks+M0qb/1tUkGUpCidjOKTYsjs=;
-	b=ny6vvhxRBxk2xFCEzv0FbJ34hfssNMx6IqVrTV7oOcosRlhf9i9X7S6b2EoTxn0a4r2l
-	 GPMe8TTm8empAqSrNFJt5B5pI+/dCrx8gm+3BblMuJN29GAVcBlPLLa0UDrLl+7p43t7P
-	 Z4Bn+q6VEcrRlhzSbKEtX2/N6/Ajj//BOyfibmIvVIN1u3WfCeg5jvnoOHmpeooX++8+C
-	 j1M/PdVeARzD1noXw449ffDqK0grnWSF0xjmgguOk5FokZmRB7zj3Y8UjssVT9hQUo6BF
-	 Q2U5ujryNjJICikFw+mVWmPhQ7QPTIXi2EfJWEEwGccxbkf+uvF5o/JGaAUlLoe9l6A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795184323;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
+	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
+	 X-CMS-RootMailID:References;
+	bh=tchBVgJeJy04vBo/BlAAOzVIUxBgTws/k6WQKEwIWWw=;
+	b=uyTjXkZEc4nEgOb7z6IT+FALglKpd9adFRosEoujUy+vwZwNaEFmeNt/mDB/LCSP04vz
+	 BZ/2aP9eRHbEcAGlErLViJu1VIr9a1PCUtP4FhiGGCr624HniNIGzaswD2Qty+INoqjWt
+	 gu9+pqmDh8zxYqQURUrXQpQIo5QCHFarzw6uP00R0J0eJMBbe9fdw0gyUmCF2PBcI+Yo2
+	 JvzYhLxOigHW/tvNHI9tncTzK719tQt3fpVsxieIR4yNCRLl0TuyVf8MItLCtRNYaGkDL
+	 /8t1FbawnmFSPGg/yH3EgJ9PKv5Iwnd/NGgSE8xqfI7PFjlBLtnrmDb1udtPC8OlNTg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hPYT8FF7;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=samsung.com;
+	spf=pass smtp.mailfrom=samsung.com;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=XI6AB4iG;
+	arc=none smtp.remote-ip=210.118.77.11
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AD3E606A325;
-	Fri, 20 Nov 2026 14:18:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0F77606A335
+	for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 14:18:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D0F77606A335
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hPYT8FF7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCB5B1F000C4;
-	Fri, 20 Nov 2026 14:18:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795184305;
-	bh=R+kufEY/E+bsc6xg+Ks+M0qb/1tUkGUpCidjOKTYsjs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=hPYT8FF7iduFPkJ4iHmWTYzFOXIDVjVzsgEu+b+PIaVxd9rAbDZrkqDn0kvaYa7CN
-	 TS3W+Fq7q1SDsZlwymg/X71NkiB0i0GAuYomWvK9HHLnEpKBVxyYJkjNCh2By1iSbO
-	 0BtO1ijL7q3ouf7vvLuY9IcTbRVjJ4u6ueLEGNarQU/g+mvyQVKhaMHy/0Ep44opf7
-	 JXOGp5ka1d+UYKQqTGGI/z4Y/OX3i2Wm5IDwZgMeNY/u5r8cW98mbVVeu3i49CXM7a
-	 /DdbQ8Ua13zkOR4LPXDQFcKeYYXccQJ+ogXOG8CW1kI3GdMEK7Oxd5II8oOmlPAuVQ
-	 RcfxGTUxzc2qg==
-Date: Fri, 20 Nov 2026 14:18:13 +0000
-From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Luigi Rizzo <lrizzo@google.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
-	Johannes Weiner <hannes@cmpxchg.org>, Vlastimil Babka <vbabka@kernel.org>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Jens Axboe <axboe@kernel.dk>, "David S . Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, Luigi Rizzo <rizzo.unipi@gmail.com>, 
-	"Liam R . Howlett" <liam@infradead.org>, Mike Rapoport <rppt@kernel.org>, 
-	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
-	Brendan Jackman <brendan.jackman@linux.dev>, Zi Yan <ziy@nvidia.com>, Harry Yoo <harry@kernel.org>, 
-	Christoph Lameter <cl@gentwo.org>, David Rientjes <rientjes@google.com>, 
-	Roman Gushchin <roman.gushchin@linux.dev>, Hao Li <hao.li@linux.dev>, Matthew Wilcox <willy@infradead.org>, 
-	Jan Kara <jack@suse.cz>, Jann Horn <jannh@google.com>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	"Rafael J . Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Simon Horman <horms@kernel.org>, 
-	Jesper Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, 
-	Willem de Bruijn <willemb@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
-	Joshua Washington <joshwash@google.com>, Harshitha Ramamurthy <hramamurthy@google.com>, 
-	Alexander Lobakin <aleksander.lobakin@intel.com>, Christoph Hellwig <hch@lst.de>, 
-	Dragos Tatulea <dtatulea@nvidia.com>, Naman Gulati <namangulati@google.com>, 
-	Pranjal Shrivastava <praan@google.com>, Mostafa Saleh <smostafa@google.com>, 
-	Randy Dunlap <rdunlap@infradead.org>, linux-mm@kvack.org, iommu@lists.linux.dev, 
-	netdev@vger.kernel.org, linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	driver-core@lists.linux.dev, linux-arm-kernel@lists.infradead.org, linux-api@vger.kernel.org, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v3 00/25] PISA: Pre-mapped IOVA Superpage Allocator
- for DMA and CoCo
-Message-ID: <awBVBqaPDmKXXHom@gremlin>
-References: <20261109182533.3594984-1-lrizzo@google.com>
- <20261120010655.467825-1-lrizzo@google.com>
- <20261120135013.GO3115493@ziepe.ca>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=XI6AB4iG
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261120141839euoutp01a207e52f139c1ee804860b670050a824~pxqCzwOOQ1058710587euoutp01Q
+	for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 14:18:39 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261120141839euoutp01a207e52f139c1ee804860b670050a824~pxqCzwOOQ1058710587euoutp01Q
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1795184320;
+	bh=tchBVgJeJy04vBo/BlAAOzVIUxBgTws/k6WQKEwIWWw=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=XI6AB4iGzg8JTHnOsvNZvZFYWTjE3vniGMB74Dcz56hRhFZtclpVGEuZ3oWzfj3/E
+	 rdaTT+i2pUm+MKDdmVycwR6y5GtozK2lp1fhRu7TSBUGrzWQJJwQWnYJG1Xw5lJ4MT
+	 twM561yXSqAKdt+UcI64uox75FiVGZv8+ExO8tk4=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261120141839eucas1p147101d35489752f566d91b788a75dfb9~pxqCihgoM0385403854eucas1p1t;
+	Fri, 20 Nov 2026 14:18:39 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20261120141839eusmtip24357cb99294f8e6577a6683ab3a0f3fb~pxqB5949W1268112681eusmtip2Q;
+	Fri, 20 Nov 2026 14:18:38 +0000 (GMT)
+Message-ID: <7cfe91c5-4053-44bb-8c18-612fcda90e4d@samsung.com>
+Date: Fri, 20 Nov 2026 15:18:38 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -84,40 +64,65 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261120135013.GO3115493@ziepe.ca>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] dma: swiotlb: Allocate the restricted DMA pool slot
+ array with kvzalloc()
+To: yzddmr6@gmail.com
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20261120-upstream2-swiotlb-rmem-kvzalloc-v1-1-1c5f9b503223@gmail.com>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20261120141839eucas1p147101d35489752f566d91b788a75dfb9
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20261120131146eucas1p2d05549af0404d6af77ce3e9385e91fa7
+X-EPHeader: CA
+X-CMS-RootMailID: 20261120131146eucas1p2d05549af0404d6af77ce3e9385e91fa7
+References: <CGME20261120131146eucas1p2d05549af0404d6af77ce3e9385e91fa7@eucas1p2.samsung.com>
+	<20261120-upstream2-swiotlb-rmem-kvzalloc-v1-1-1c5f9b503223@gmail.com>
 
-On Fri, Nov 20, 2026 at 09:50:13AM -0400, Jason Gunthorpe wrote:
-> On Fri, Nov 20, 2026 at 01:06:30AM +0000, Luigi Rizzo wrote:
-> > This is v3 of the RFC previously posted as DMA_PMD [0], now renamed PISA
-> > ("Pre-mapped IOVA Superpage Allocator"). The text below follows
-> > Documentation/core-api/pisa.rst (patch 25/25), which has the details.
+On 20.11.2026 14:11, yzddMr6 via B4 Relay wrote:
+> From: yzddMr6 <yzddmr6@gmail.com>
 >
-> I thought the conclusion was to just do this stuff in netdev pagepool,
-> now you come with an enormous AI series spread across the entire
-> kernel?
-
-Welcome to 2026 :) It's so exhausting.
-
+> rmem_swiotlb_device_init() allocates one struct io_tlb_slot per 2 KiB
+> slot of a restricted DMA pool with kzalloc(). The struct is 24 bytes on
+> 64-bit, so with 4 KiB pages and the default MAX_PAGE_ORDER of 10 the
+> array is larger than KMALLOC_MAX_SIZE (4 MiB) for any pool above about
+> 341 MiB. For such a pool kzalloc() refuses the request with a
+> WARN_ON_ONCE() in ___kmalloc_large_node(), the pool is not set up, and
+> of_dma_set_restricted_buffer() warns that it failed to initialise the
+> pool. The devices assigned to it then lose the restriction without
+> their probe failing, and use the default DMA path.
 >
-> > - Needs bounce buffers: in Confidential Computing VMs, PISA allocators
-> >   pre-decrypt 2MB pages in place, avoiding swiotlb bounce-buffer copies.
+> The slot array is only accessed by the CPU and does not need to be
+> physically contiguous. Allocate it with kvzalloc_objs() and free it with
+> kvfree(). The other pools are not affected: the slot array of the
+> default pool comes from memblock, and the buffers of late and dynamic
+> pools are limited to MAX_PAGE_ORDER, which keeps their slot arrays
+> small.
 >
-> It seems this was ignored too. We want the bounce buffers in CC. They
-> serve a security purpose. You cannot loose control of the shared
-> memory buffers have have them leak into SKBs, user mappings and so
-> on. It is not secure.
+> Pools of this size are needed when large buffers go through the pool
+> for their whole lifetime: this was hit with an arm64 Gunyah protected
+> VM whose virtio-gpu resources stay mapped in the pool, and a desktop at
+> 3392x2400 needed more than 341 MiB.
 >
-> I don't see how any of this is valuable or necessary for CC,
-> especially when we really don't even expect to have an vIOMMU for CC
-> very often..
+> The problem was analysed and this change written with the help of an
+> AI coding assistant.
 >
-> Jason
+> Fixes: 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: yzddMr6 <yzddmr6@gmail.com>
 
-Agreed, this whole thing needs to be rethought.
+The change looks fine, but according to kernel rules, the patch must be
+signed with a real developer name. 'yzddMr6' doesn't look like a real name.
 
-Will reply separately to the cover I think :)
 
---
-Cheers, Lorenzo
+> ...
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
