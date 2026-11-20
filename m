@@ -1,68 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.14
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795165359;
-	b=2KT7VDLVnA7n/+QyO4FYVOGkvtfv36BimVAjNCD30UNzwkvpS2ICTAXqXA17JJaeOajB
-	 A51h4CBtnXuZYmxfF55chzxM9oVv7AYtn24sMBuyaaPc37LvVKYwK5dtI9ZYj1GGLEZEB
-	 Q1lK7MyfU5JmrwRd1J8oY44djJs15HQWDkFvC7E+rDT5eStJMqrGQCyt4nvkJVxOqAZoO
-	 GEaAYi5KjKE8y3vcLqmE9+z8Pxulli4r0nGOhrlLtIbZ8T6A1UqeqG3CuQSvdhKvI0t0E
-	 LktHYGu0VSfuTmVH7kW4WcjOdz5AVhahWulUfyAXTPPn8Lbt0wrJ3mBITCkCyGkycEg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795165359;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:References:Content-Language:From:
-	 In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=B27NBmW6xEW99C4mPgAJ/Hv6uDSHsBlZ/pHbt7OCb5c=;
-	b=DiR5QcKjeP9gu6CTXdfgjeerTTSYouUw+OBHSUniG3/O1Ry9qIYsBpMTKB+3emgtIo4i
-	 xUhNaJz2iLkg5b7fLFqHyvL7sRh2VQksNFsalwoPihRrpPy2bk0YRnqfbHlFDe7ur4QDu
-	 nvHaKgN0sUG0FQvRiWkeSlv2WKQGFVJ3JK+HCIEDcQPfBDP3oC9JmX/OyptsDhzdaIBnj
-	 aN+zgD6HqGoFbLn2jhWrYsCjvbXC7/KCpdnHNPA0skJS0ZmBm0UE6vTn+DH/EeP6kcDln
-	 OQ6uTBW0kn5d1MzMo5mEtCbjtIBbqToHT9vao5M9PCo4Pg3MieKA3lSSIjsKp6UG1Tw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CbL1ygrH;
-	arc=none smtp.remote-ip=192.198.163.14
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.remote-ip=209.85.214.182
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=fail;
+	t=1795166794;
+	b=nmUbXkOt4b1Kdc8hsBbKNif8RLROsI/g9eTUwX1rhpsEfEphNHWbwA8TfJFzY+3IKxhr
+	 er3WwsHZ/sQe9DPsyf8rhly6S5JU3gaaPc7efM1ejGYCZlAyy/fjH1p4Of+tMes9O676c
+	 sWXBY6SAWim060g6fq9OaIO8eGzT307obfmrBR/y/4+OU9E09sOPx/YRUE8cbl/EcLX1c
+	 EKuGr4TRr/4X+z2IOVI0jE2lmFVwLgVD+4wb2aVZBTpdQxgSFHloXoP1ZBCgr48Uf7yXd
+	 Fi5YJ12GDmWEcqOc9KHQgB4r16PdGR+p2GwYgc6z5+sjIoivX/u1FrSpeWd6FJL67xA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795166794;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=YLVHtNfEKOoQsgj7eBA+fP9IdBA3FfwhirmQVmJV3Ms=;
+	b=d/dw7+hJyTjvXxFgwmmfWWHbYWxxnpVF+29qebNG3Df2fuEzdqdAxGlPmmBNzYA8jEvj
+	 JnhykAmcnukyc3ZNeajHR/oq0RDrfgBsv2SCJtKnjqa6wa4nUOcL5H4HvIHVMuc3tRx3q
+	 phQ6tfacKG3M2hJFctSAewb2BwMcL9dp7CK2l0CUkG/EoB3zpwx9bCWPtB5VcYKnhIUU1
+	 If7V/toY50dOHoaRqf3XKeRwmTBbWmcRlcTuhCkR2NNJqkflxuJtUvNzd5llbTk6EgebU
+	 qjlouicAd95KJuKhvmejdTOXeEahTLgnVFckBJipt69MlMJrti2ZwVzO5x207dujrmQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TZF8NnPN;
+	arc=fail smtp.remote-ip=209.85.214.182
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB60C606A320
-	for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 09:02:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DB60C606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C650606A320
+	for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 09:26:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7C650606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CbL1ygrH
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795165359; x=1826701359;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=gARWLH6ZEUJrL59sAcqoW3jvuymgTvg3AgpOXJipfyc=;
-  b=CbL1ygrHZWBkpMsFO9UllxrDIMpb1z5cMPNV6c4OqwOLjC+tVhHpdAvH
-   EVnKn/J8dRlNlgXzRi7T8x89OZJbJ2HDx5wEf9ywCMVVBRz6bPOc+Zgdb
-   hSrSG/QQKoUCZ5Ptiu2bxZfArvRferEJpDFVWNoorlyB+RZ3kTam9bMN5
-   zxMooJOF54M+D4cFI2VK0U7PkN/GTw1HXbTkYDmB+K/kVq9R27r0JKrfd
-   gczzVQjHCGMnXPHz3z/qZPPB9M6tToSfcslRG52hp1TR8YJj0aZnlA4/z
-   aMAebxtDYa6KoU9euJPu1tTZzHw5wckwflQICTIpFr4RK2JF6w9JJBV20
-   A==;
-X-CSE-ConnectionGUID: 70jBFKVuT9aPEVV1HLAv3Q==
-X-CSE-MsgGUID: 96Y5obgPS/mWxaY5YZNSvw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="3927347"
-X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
-   d="scan'208";a="3927347"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 01:02:38 -0800
-X-CSE-ConnectionGUID: fBG0jayzTsmxWVASfsMV9Q==
-X-CSE-MsgGUID: Nmec7opNSWCMak6X0xk8jw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
-   d="scan'208";a="10648511"
-Received: from soc-pf6038af.clients.intel.com (HELO [10.217.180.38]) ([10.217.180.38])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 01:02:29 -0800
-Message-ID: <47f2ff46-1837-43f5-a413-0dbf29716d7a@linux.intel.com>
-Date: Fri, 20 Nov 2026 10:02:27 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TZF8NnPN
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2ee20b82356so398065ad.1
+        for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 01:26:34 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795166794; cv=none;
+        d=google.com; s=arc-20260327;
+        b=ng/p13DLdhPoI1C1VFzFcUfHxWpqFcZm3+1cAYdQ7cleIgi4e9H4kwR+HaoVXn+iNJ
+         0ydfAkSL1VG0xeTg17HGR+ZLPxdt4ATGBk1jHAifiGORi3rgX3F1+Th3qb6xUhkXSSfu
+         pJlciaazV6Wzbg2zMcjH8eiNt5hHB4uqF0ekN2smFOX+fqhZxR3nqqKKlMLb+XkzlK5p
+         dBMXe2niJs2gDouenjT53Noxr5fiowkRLISRmsMmbbnZ/wNDoh0J68LKPzgCqjP8C4fN
+         Tgps39hPRNoHkztWgEB1J+lHuRMwLTVXHgTxWcDwVbrcQo4N6I8fkKAgdr0hThQiqQrg
+         a9Zg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=YLVHtNfEKOoQsgj7eBA+fP9IdBA3FfwhirmQVmJV3Ms=;
+        fh=Td3Eil2a00Aj1FzixqSZyUV9+RQTCZa6yVMng412eeo=;
+        b=O1l0dCLU6AkCj+7jd/2+9uXvF3X+SJqGyr8g0+dKzcyuAx8EhWnYwYeCwGJLLpIE1m
+         MctoQy7+42DpzMU65yECOTfnyd7oHTym1vfM8MtPOfndpkRe+91472oFuMAbZBbcuiBg
+         A1hS+hctNOfxWTknEwitAOoSggz1WXY92Y2jD2eadYEhJTLjLYjHvBzikmG7+iox6e0g
+         CTZ9xJUx2fDyqCO6OCoznj6TMfKfcWB7QwdB2z+4dXRP+SFQ9ez6nCmp1iMZTDo2Ndv0
+         PTyMl0nRFQ4r3K0OLJYfbHmuRvFu13ctnNPVYm1/XxfIkjhQRHE58W9COAZxXVbWyZ+W
+         +7EA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795166794; x=1795771594; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=YLVHtNfEKOoQsgj7eBA+fP9IdBA3FfwhirmQVmJV3Ms=;
+        b=TZF8NnPN0rlaYoYs4QUF/8l7U0pePzdqHRLlxmzBlCvuXLr4HLs7qZUU/x6P1L17r+
+         5LK4pLGpK0G5pjbfjWUAf6AO8whnsHHKa1WdCQ/z1Xhp9wQK/edUOHT54qYPXBpa5Ai2
+         T4OtEfjg53lthNMxkASm5rXKt5FJNUKv4Y07eBtdfKkiZ95eDMiE4ZZIJWMJW3xXf2W6
+         KfK02wjGQ7kwKoPW6Oko6klgfiPG/iU6zbmh55d7js5m6xVAdZ8XBwFYrRzx2N63Gg3M
+         wHiWdQCNJAMsuVvep8lAiIgiPcP3ZCJmtl3iRYywOe5MIErCYyeRj7m+d2Y/p+m0bPHO
+         ts2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795166794; x=1795771594;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=YLVHtNfEKOoQsgj7eBA+fP9IdBA3FfwhirmQVmJV3Ms=;
+        b=c2ObuMBEQVU78vru+sTQatzRTUkE/sqk7waMt6LQYaNhSKBGVFHhhy0K0ho5JVTygx
+         ximokp+B0eqkRzI0OD+ZGyUvZGEEH5PNIYL4YT1N4151CLHThPLscEiFXPmZqD2k4QOr
+         XEgBkbj5XRVwMum0bnQs9EfFSD7etV3hp1AGbO7OXYYYN/ECwUCbkhxo4aNXSFZ/1cO/
+         Da5CEQPy/dZ8aNKeenyq0WARhbBHxboMmb3Dhu2Pc/OOTYXcY9NBS6ypWUWjHZpp8PjQ
+         avX6YJQqLx733gIfPzDcPCUriKxJ73RXvBxDfNtyj3jpGnfNfPVfAIQYxMwR1gE6jwsK
+         Jtyg==
+X-Forwarded-Encrypted: i=1; AL+hErFmU2GpfL2NE4Ufx4rH3WhKQ+KqKemBj1AT/5c5qzsCtYqFuGEwJFBXHRo+Yr5dTY9cTdAgcg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/f05HeH7oqalWCaIJf4W1swhXlvtUKN48i1vXV+m60lveujkj8
+	yW1VWqM+I4Ft7Ib4j8mQU9XRifDjrXWtGHj998bbYPWO3iMIp7xxfLPWP3vz7s+N9cI1y3WqEU8
+	wSieLIWgoDdGmW8oM2MjJH64WoGwUrss=
+X-Gm-Gg: AZFdTZe9a0LawelReg1a1vxZN/ymBjMmyjb9bovTFkRNvakoZ8DzgrfYZCeMuhOjTGO
+	2+fqJY4aTwyf4OOoZnwrlB53j00JPIidtR1R+bMl7+RaxRMNt5w6numB53B4lMsVs4WwJG0wlFa
+	ntuwdpJm3eS3WHG9qQiuYMJMKrnTY9iW9TjfWe4Us5nnKFu1Ujbtn8DyBkPehBTdfq7e8JkXm1V
+	ShHzGC/Vq6ABQMR35UBnsgKfewUbenjGwXylqYUyj2t55mkfyE1R6PNVcg2djS4tSfZgFv7E5cZ
+	V02ne1Yf5ddQHFOT2LcD6vefG69uAfcXD7g9z31+QEUVw5fzNgenzg4cVkiwg4JqnQTDzEiACXv
+	lh9K5vcIVaVOszOd4+JVO7b3tWpiywql2v/J1UNe0BJ8kqz+iBCHAdVAiYa3So6WguyZUw1Y=
+X-Received: by 2002:a17:902:d547:b0:2f0:33d8:f88d with SMTP id
+ d9443c01a7336-2f03ee6fa4fmr43299475ad.0.1795166793696; Fri, 20 Nov 2026
+ 01:26:33 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,860 +104,133 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 07/24] dma-buf: Convert exporters allocating a table
- per map to the SGT mapping type
-To: Alistair Popple <apopple@nvidia.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- Simona Vetter <simona.vetter@ffwll.ch>,
- Matthew Brost <matthew.brost@intel.com>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>,
- Dongwon Kim <dongwon.kim@intel.com>, Kevin Tian <kevin.tian@intel.com>,
- Xu Yilun <yilun.xu@linux.intel.com>,
- Karl Mehltretter <kmehltretter@gmail.com>,
- Baolu Lu <baolu.lu@linux.intel.com>, Felix Kuehling
- <felix.kuehling@amd.com>, Alex Deucher <alexander.deucher@amd.com>,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
- linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
- linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
- Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
- Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
- linux-nvme@lists.infradead.org, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
- Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
- Alexey Kardashevskiy <aik@amd.com>, zhipingz@meta.com, treding@nvidia.com,
- jhubbard@nvidia.com, chaitanyak@nvidia.com, Jason Gunthorpe <jgg@ziepe.ca>,
- Leon Romanovsky <leon@kernel.org>
-References: <20261120-dma_mapping_type_v4-v3-0-c0183a409bdf@nvidia.com>
- <20261120-dma_mapping_type_v4-v3-7-c0183a409bdf@nvidia.com>
-Content-Language: en-US
-From: Karol Wachowski <karol.wachowski@linux.intel.com>
-In-Reply-To: <20261120-dma_mapping_type_v4-v3-7-c0183a409bdf@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20261117015409.25492-1-q.h.hack.winter@gmail.com> <56be2b4e-aefb-413b-8f72-0bea1f9e96db@linux.intel.com>
+In-Reply-To: <56be2b4e-aefb-413b-8f72-0bea1f9e96db@linux.intel.com>
+From: Qihang <q.h.hack.winter@gmail.com>
+Date: Fri, 20 Nov 2026 17:26:20 +0800
+X-Gm-Features: AclHuK96MsvfmI4xhRwe-8BPGXSUlpaPU2PaBnGT6PTcIOYEbLNBvWMF0ZGTZE4
+Message-ID: <CAH78GvuUtU=zhe-Qbn9k73D3U5n1Ye1=8wtQqR7vCEpDzgNUJg@mail.gmail.com>
+Subject: Re: [PATCH 0/2] iommu/io-pgfault: reject partial faults after device removal
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>, 
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 20-Nov-26 6:55, Alistair Popple wrote:
-> These exporters allocate a struct sg_table in map_dma_buf() and free
-> it again in unmap_dma_buf().
-> 
-> The conversion is mechanical and no behaviour change is expected.
-> Instead of map_dma_buf() allocating a sg_table it instead allocates and
-> returns a dma_buf_sgt_mapping, which the unmap callbacks also take.
-> 
-> As a side effect this fixes a leak in fsl_asrc_m2m. Its unmap_dma_buf()
-> only DMA unmapped the per-map table and never freed it. It now frees the
-> mapping including the table.
-> 
-> Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Alistair Popple <apopple@nvidia.com>
-> ---
->   drivers/accel/amdxdna/amdxdna_cbuf.c             | 30 ++++++++------
->   drivers/accel/amdxdna/amdxdna_ubuf.c             | 34 +++++++++-------
->   drivers/accel/habanalabs/common/memory.c         | 52 +++++++++++++-----------
->   drivers/gpu/drm/armada/armada_gem.c              | 36 +++++++++-------
->   drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c | 30 ++++++++------
->   drivers/gpu/drm/tegra/gem.c                      | 30 ++++++++------
->   samples/vfio-mdev/mbochs.c                       | 31 ++++++++------
->   sound/soc/fsl/fsl_asrc_m2m.c                     | 32 +++++++++------
->   8 files changed, 161 insertions(+), 114 deletions(-)
-> 
-> diff --git a/drivers/accel/amdxdna/amdxdna_cbuf.c b/drivers/accel/amdxdna/amdxdna_cbuf.c
-> index a504560aae98..945436516cc6 100644
-> --- a/drivers/accel/amdxdna/amdxdna_cbuf.c
-> +++ b/drivers/accel/amdxdna/amdxdna_cbuf.c
-> @@ -5,6 +5,7 @@
->   
->   #include <drm/drm_mm.h>
->   #include <drm/drm_prime.h>
-> +#include <linux/dma-buf-mapping.h>
->   
->   #include "amdxdna_cbuf.h"
->   #include "amdxdna_pci_drv.h"
-> @@ -81,11 +82,13 @@ struct amdxdna_cbuf_priv {
->   	struct drm_mm_node node;
->   };
->   
-> -static struct sg_table *amdxdna_cbuf_map(struct dma_buf_attachment *attach,
-> -					 enum dma_data_direction direction)
-> +static struct dma_buf_sgt_mapping *
-> +amdxdna_cbuf_map(struct dma_buf_attachment *attach,
-> +		 enum dma_data_direction direction)
->   {
->   	struct amdxdna_cbuf_priv *cbuf = attach->dmabuf->priv;
-> -	struct device *dev = attach->dev;
-> +	struct device *dev = dma_buf_sgt_dma_device(attach);
-> +	struct dma_buf_sgt_mapping *mapping;
->   	struct scatterlist *sgl, *sg;
->   	int ret, n_entries, i;
->   	struct sg_table *sgt;
-> @@ -93,9 +96,10 @@ static struct sg_table *amdxdna_cbuf_map(struct dma_buf_attachment *attach,
->   	size_t dma_size;
->   	size_t max_seg;
->   
-> -	sgt = kzalloc_obj(*sgt);
-> -	if (!sgt)
-> +	mapping = kzalloc_obj(*mapping);
-> +	if (!mapping)
->   		return ERR_PTR(-ENOMEM);
-> +	sgt = &mapping->sgt;
->   
->   	max_seg = min_t(size_t, UINT_MAX, dma_max_mapping_size(dev));
->   	n_entries = (cbuf->node.size + max_seg - 1) / max_seg;
-> @@ -127,24 +131,27 @@ static struct sg_table *amdxdna_cbuf_map(struct dma_buf_attachment *attach,
->   		dma_size -= len;
->   	}
->   
-> -	return sgt;
-> +	return mapping;
->   
->   free_sgl:
->   	kfree(sgl);
->   free_sgt:
-> -	kfree(sgt);
-> +	kfree(mapping);
->   	return ERR_PTR(ret);
->   }
->   
->   static void amdxdna_cbuf_unmap(struct dma_buf_attachment *attach,
-> -			       struct sg_table *sgt,
-> +			       struct dma_buf_sgt_mapping *mapping,
->   			       enum dma_data_direction direction)
->   {
-> -	dma_unmap_resource(attach->dev, sg_dma_address(sgt->sgl),
-> +	struct sg_table *sgt = &mapping->sgt;
-> +
-> +	dma_unmap_resource(dma_buf_sgt_mapping_dma_device(mapping),
-> +			   sg_dma_address(sgt->sgl),
->   			   drm_prime_get_contiguous_size(sgt), direction,
->   			   DMA_ATTR_SKIP_CPU_SYNC);
->   	sg_free_table(sgt);
-> -	kfree(sgt);
-> +	kfree(mapping);
->   }
->   
->   static void amdxdna_cbuf_release(struct dma_buf *dbuf)
-> @@ -210,12 +217,11 @@ static void amdxdna_cbuf_vunmap(struct dma_buf *dbuf, struct iosys_map *map)
->   }
->   
->   static const struct dma_buf_ops amdxdna_cbuf_dmabuf_ops = {
-> -	.map_dma_buf = amdxdna_cbuf_map,
-> -	.unmap_dma_buf = amdxdna_cbuf_unmap,
->   	.release = amdxdna_cbuf_release,
->   	.mmap = amdxdna_cbuf_mmap,
->   	.vmap = amdxdna_cbuf_vmap,
->   	.vunmap = amdxdna_cbuf_vunmap,
-> +	DMA_BUF_SIMPLE_SGT_EXP_MATCH(amdxdna_cbuf_map, amdxdna_cbuf_unmap),
->   };
->   
->   static int amdxdna_cbuf_clear(struct dma_buf *dbuf)
-> diff --git a/drivers/accel/amdxdna/amdxdna_ubuf.c b/drivers/accel/amdxdna/amdxdna_ubuf.c
-> index 0e0cd69cd1fb..ed8b0ab9e554 100644
-> --- a/drivers/accel/amdxdna/amdxdna_ubuf.c
-> +++ b/drivers/accel/amdxdna/amdxdna_ubuf.c
-> @@ -7,6 +7,7 @@
->   #include <drm/drm_device.h>
->   #include <drm/drm_print.h>
->   #include <linux/dma-buf.h>
-> +#include <linux/dma-buf-mapping.h>
->   #include <linux/overflow.h>
->   #include <linux/pagemap.h>
->   #include <linux/vmalloc.h>
-> @@ -20,42 +21,48 @@ struct amdxdna_ubuf_priv {
->   	struct mm_struct *mm;
->   };
->   
-> -static struct sg_table *amdxdna_ubuf_map(struct dma_buf_attachment *attach,
-> -					 enum dma_data_direction direction)
-> +static struct dma_buf_sgt_mapping *
-> +amdxdna_ubuf_map(struct dma_buf_attachment *attach,
-> +		 enum dma_data_direction direction)
->   {
->   	struct amdxdna_ubuf_priv *ubuf = attach->dmabuf->priv;
-> +	struct dma_buf_sgt_mapping *mapping;
->   	struct sg_table *sg;
->   	int ret;
->   
-> -	sg = kzalloc_obj(*sg);
-> -	if (!sg)
-> +	mapping = kzalloc_obj(*mapping);
-> +	if (!mapping)
->   		return ERR_PTR(-ENOMEM);
-> +	sg = &mapping->sgt;
->   
->   	ret = sg_alloc_table_from_pages(sg, ubuf->pages, ubuf->nr_pages, 0,
->   					ubuf->nr_pages << PAGE_SHIFT, GFP_KERNEL);
->   	if (ret)
-> -		goto err_free_sg;
-> +		goto err_free_mapping;
->   
-> -	ret = dma_map_sgtable(attach->dev, sg, direction, 0);
-> +	ret = dma_map_sgtable(dma_buf_sgt_dma_device(attach), sg, direction, 0);
->   	if (ret)
->   		goto err_free_table;
->   
-> -	return sg;
-> +	return mapping;
->   
->   err_free_table:
->   	sg_free_table(sg);
-> -err_free_sg:
-> -	kfree(sg);
-> +err_free_mapping:
-> +	kfree(mapping);
->   	return ERR_PTR(ret);
->   }
->   
->   static void amdxdna_ubuf_unmap(struct dma_buf_attachment *attach,
-> -			       struct sg_table *sg,
-> +			       struct dma_buf_sgt_mapping *mapping,
->   			       enum dma_data_direction direction)
->   {
-> -	dma_unmap_sgtable(attach->dev, sg, direction, 0);
-> +	struct sg_table *sg = &mapping->sgt;
-> +
-> +	dma_unmap_sgtable(dma_buf_sgt_mapping_dma_device(mapping), sg,
-> +			  direction, 0);
->   	sg_free_table(sg);
-> -	kfree(sg);
-> +	kfree(mapping);
->   }
->   
->   static void amdxdna_ubuf_release(struct dma_buf *dbuf)
-> @@ -70,9 +77,8 @@ static void amdxdna_ubuf_release(struct dma_buf *dbuf)
->   }
->   
->   static const struct dma_buf_ops amdxdna_ubuf_dmabuf_ops = {
-> -	.map_dma_buf = amdxdna_ubuf_map,
-> -	.unmap_dma_buf = amdxdna_ubuf_unmap,
->   	.release = amdxdna_ubuf_release,
-> +	DMA_BUF_SIMPLE_SGT_EXP_MATCH(amdxdna_ubuf_map, amdxdna_ubuf_unmap),
->   };
->   
->   struct dma_buf *amdxdna_get_ubuf(struct drm_device *dev,
-> diff --git a/drivers/accel/habanalabs/common/memory.c b/drivers/accel/habanalabs/common/memory.c
-> index 361cff577381..fc39ccd6f8db 100644
-> --- a/drivers/accel/habanalabs/common/memory.c
-> +++ b/drivers/accel/habanalabs/common/memory.c
-> @@ -9,6 +9,7 @@
->   #include "habanalabs.h"
->   #include "../include/hw_ip/mmu/mmu_general.h"
->   
-> +#include <linux/dma-buf-mapping.h>
->   #include <linux/uaccess.h>
->   #include <linux/slab.h>
->   #include <linux/vmalloc.h>
-> @@ -1531,13 +1532,15 @@ static int set_dma_sg(struct scatterlist *sg, u64 bar_address, u64 chunk_size,
->   	return 0;
->   }
->   
-> -static struct sg_table *alloc_sgt_from_device_pages(struct hl_device *hdev, u64 *pages, u64 npages,
-> -						u64 page_size, u64 exported_size, u64 offset,
-> -						struct device *dev, enum dma_data_direction dir)
-> +static struct dma_buf_sgt_mapping *
-> +alloc_sgt_from_device_pages(struct hl_device *hdev, u64 *pages, u64 npages, u64 page_size,
-> +			    u64 exported_size, u64 offset, struct device *dev,
-> +			    enum dma_data_direction dir)
->   {
->   	u64 dma_max_seg_size, curr_page, size, chunk_size, left_size_to_export, left_size_in_page,
->   		left_size_in_dma_seg, device_address, bar_address, start_page;
->   	struct asic_fixed_properties *prop = &hdev->asic_prop;
-> +	struct dma_buf_sgt_mapping *mapping;
->   	struct scatterlist *sg;
->   	unsigned int nents, i;
->   	struct sg_table *sgt;
-> @@ -1553,9 +1556,10 @@ static struct sg_table *alloc_sgt_from_device_pages(struct hl_device *hdev, u64
->   		return ERR_PTR(-EINVAL);
->   	}
->   
-> -	sgt = kzalloc_obj(*sgt);
-> -	if (!sgt)
-> +	mapping = kzalloc_obj(*mapping);
-> +	if (!mapping)
->   		return ERR_PTR(-ENOMEM);
-> +	sgt = &mapping->sgt;
->   
->   	/* Use the offset to move to the actual first page that is exported */
->   	for (start_page = 0 ; start_page < npages ; ++start_page) {
-> @@ -1686,7 +1690,7 @@ static struct sg_table *alloc_sgt_from_device_pages(struct hl_device *hdev, u64
->   			"SG entry %d: address %#llx, length %#x\n",
->   			i, sg_dma_address(sg), sg_dma_len(sg));
->   
-> -	return sgt;
-> +	return mapping;
->   
->   err_unmap:
->   	for_each_sgtable_dma_sg(sgt, sg, i) {
-> @@ -1700,7 +1704,7 @@ static struct sg_table *alloc_sgt_from_device_pages(struct hl_device *hdev, u64
->   	sg_free_table(sgt);
->   
->   err_free_sgt:
-> -	kfree(sgt);
-> +	kfree(mapping);
->   	return ERR_PTR(rc);
->   }
->   
-> @@ -1714,22 +1718,22 @@ static int hl_dmabuf_attach(struct dma_buf *dmabuf,
->   	hl_dmabuf = dmabuf->priv;
->   	hdev = hl_dmabuf->ctx->hdev;
->   
-> -	rc = pci_p2pdma_distance(hdev->pdev, attachment->dev, true);
-> +	rc = pci_p2pdma_distance(hdev->pdev, dma_buf_sgt_dma_device(attachment), true);
->   
->   	if (rc < 0)
->   		attachment->peer2peer = false;
->   	return 0;
->   }
->   
-> -static struct sg_table *hl_map_dmabuf(struct dma_buf_attachment *attachment,
-> -					enum dma_data_direction dir)
-> +static struct dma_buf_sgt_mapping *
-> +hl_map_dmabuf(struct dma_buf_attachment *attachment, enum dma_data_direction dir)
->   {
->   	u64 *pages, npages, page_size, exported_size, offset;
->   	struct dma_buf *dma_buf = attachment->dmabuf;
->   	struct hl_vm_phys_pg_pack *phys_pg_pack;
-> +	struct dma_buf_sgt_mapping *mapping;
->   	struct hl_dmabuf_priv *hl_dmabuf;
->   	struct hl_device *hdev;
-> -	struct sg_table *sgt;
->   
->   	hl_dmabuf = dma_buf->priv;
->   	hdev = hl_dmabuf->ctx->hdev;
-> @@ -1753,18 +1757,21 @@ static struct sg_table *hl_map_dmabuf(struct dma_buf_attachment *attachment,
->   		page_size = hl_dmabuf->dmabuf->size;
->   	}
->   
-> -	sgt = alloc_sgt_from_device_pages(hdev, pages, npages, page_size, exported_size, offset,
-> -						attachment->dev, dir);
-> -	if (IS_ERR(sgt))
-> -		dev_err(hdev->dev, "failed (%ld) to initialize sgt for dmabuf\n", PTR_ERR(sgt));
-> +	mapping = alloc_sgt_from_device_pages(hdev, pages, npages, page_size,
-> +					      exported_size, offset,
-> +					      dma_buf_sgt_dma_device(attachment),
-> +					      dir);
-> +	if (IS_ERR(mapping))
-> +		dev_err(hdev->dev, "failed (%ld) to initialize sgt for dmabuf\n", PTR_ERR(mapping));
->   
-> -	return sgt;
-> +	return mapping;
->   }
->   
->   static void hl_unmap_dmabuf(struct dma_buf_attachment *attachment,
-> -				  struct sg_table *sgt,
-> +				  struct dma_buf_sgt_mapping *mapping,
->   				  enum dma_data_direction dir)
->   {
-> +	struct sg_table *sgt = &mapping->sgt;
->   	struct scatterlist *sg;
->   	int i;
->   
-> @@ -1776,14 +1783,14 @@ static void hl_unmap_dmabuf(struct dma_buf_attachment *attachment,
->   	 * a sync of the memory to the CPU's cache, as it never resided inside that cache.
->   	 */
->   	for_each_sgtable_dma_sg(sgt, sg, i)
-> -		dma_unmap_resource(attachment->dev, sg_dma_address(sg),
-> -					sg_dma_len(sg), dir,
-> -					DMA_ATTR_SKIP_CPU_SYNC);
-> +		dma_unmap_resource(dma_buf_sgt_mapping_dma_device(mapping),
-> +				   sg_dma_address(sg), sg_dma_len(sg), dir,
-> +				   DMA_ATTR_SKIP_CPU_SYNC);
->   
->   	/* Need to restore orig_nents because sg_free_table use that field */
->   	sgt->orig_nents = sgt->nents;
->   	sg_free_table(sgt);
-> -	kfree(sgt);
-> +	kfree(mapping);
->   }
->   
->   static struct hl_vm_hash_node *memhash_node_export_get(struct hl_ctx *ctx, u64 addr)
-> @@ -1850,9 +1857,8 @@ static void hl_release_dmabuf(struct dma_buf *dmabuf)
->   
->   static const struct dma_buf_ops habanalabs_dmabuf_ops = {
->   	.attach = hl_dmabuf_attach,
-> -	.map_dma_buf = hl_map_dmabuf,
-> -	.unmap_dma_buf = hl_unmap_dmabuf,
->   	.release = hl_release_dmabuf,
-> +	DMA_BUF_SIMPLE_SGT_EXP_MATCH(hl_map_dmabuf, hl_unmap_dmabuf),
->   };
->   
->   static int export_dmabuf(struct hl_ctx *ctx,
-> diff --git a/drivers/gpu/drm/armada/armada_gem.c b/drivers/gpu/drm/armada/armada_gem.c
-> index 044acdef6351..1eff00567386 100644
-> --- a/drivers/gpu/drm/armada/armada_gem.c
-> +++ b/drivers/gpu/drm/armada/armada_gem.c
-> @@ -4,6 +4,7 @@
->    */
->   
->   #include <linux/dma-buf.h>
-> +#include <linux/dma-buf-mapping.h>
->   #include <linux/dma-mapping.h>
->   #include <linux/mman.h>
->   #include <linux/shmem_fs.h>
-> @@ -383,41 +384,44 @@ int armada_gem_pwrite_ioctl(struct drm_device *dev, void *data,
->   }
->   
->   /* Prime support */
-> -static struct sg_table *
-> +static struct dma_buf_sgt_mapping *
->   armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
->   	enum dma_data_direction dir)
->   {
-> +	struct device *dma_dev = dma_buf_sgt_dma_device(attach);
->   	struct drm_gem_object *obj = attach->dmabuf->priv;
->   	struct armada_gem_object *dobj = drm_to_armada_gem(obj);
-> +	struct dma_buf_sgt_mapping *mapping;
->   	struct scatterlist *sg;
->   	struct sg_table *sgt;
->   	int i;
->   
-> -	sgt = kmalloc_obj(*sgt);
-> -	if (!sgt)
-> +	mapping = kzalloc_obj(*mapping);
-> +	if (!mapping)
->   		return NULL;
-> +	sgt = &mapping->sgt;
->   
->   	if (dobj->obj.filp) {
-> -		struct address_space *mapping;
-> +		struct address_space *file_mapping;
->   		int count;
->   
->   		count = dobj->obj.size / PAGE_SIZE;
->   		if (sg_alloc_table(sgt, count, GFP_KERNEL))
->   			goto free_sgt;
->   
-> -		mapping = dobj->obj.filp->f_mapping;
-> +		file_mapping = dobj->obj.filp->f_mapping;
->   
->   		for_each_sgtable_sg(sgt, sg, i) {
->   			struct page *page;
->   
-> -			page = shmem_read_mapping_page(mapping, i);
-> +			page = shmem_read_mapping_page(file_mapping, i);
->   			if (IS_ERR(page))
->   				goto release;
->   
->   			sg_set_page(sg, page, PAGE_SIZE, 0);
->   		}
->   
-> -		if (dma_map_sgtable(attach->dev, sgt, dir, 0))
-> +		if (dma_map_sgtable(dma_dev, sgt, dir, 0))
->   			goto release;
->   	} else if (dobj->page) {
->   		/* Single contiguous page */
-> @@ -426,7 +430,7 @@ armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
->   
->   		sg_set_page(sgt->sgl, dobj->page, dobj->obj.size, 0);
->   
-> -		if (dma_map_sgtable(attach->dev, sgt, dir, 0))
-> +		if (dma_map_sgtable(dma_dev, sgt, dir, 0))
->   			goto free_table;
->   	} else if (dobj->linear) {
->   		/* Single contiguous physical region - no struct page */
-> @@ -437,7 +441,7 @@ armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
->   	} else {
->   		goto free_sgt;
->   	}
-> -	return sgt;
-> +	return mapping;
->   
->    release:
->   	for_each_sgtable_sg(sgt, sg, i)
-> @@ -446,19 +450,21 @@ armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
->    free_table:
->   	sg_free_table(sgt);
->    free_sgt:
-> -	kfree(sgt);
-> +	kfree(mapping);
->   	return NULL;
->   }
->   
->   static void armada_gem_prime_unmap_dma_buf(struct dma_buf_attachment *attach,
-> -	struct sg_table *sgt, enum dma_data_direction dir)
-> +	struct dma_buf_sgt_mapping *mapping, enum dma_data_direction dir)
->   {
->   	struct drm_gem_object *obj = attach->dmabuf->priv;
->   	struct armada_gem_object *dobj = drm_to_armada_gem(obj);
-> +	struct sg_table *sgt = &mapping->sgt;
->   	int i;
->   
->   	if (!dobj->linear)
-> -		dma_unmap_sgtable(attach->dev, sgt, dir, 0);
-> +		dma_unmap_sgtable(dma_buf_sgt_mapping_dma_device(mapping), sgt,
-> +				  dir, 0);
->   
->   	if (dobj->obj.filp) {
->   		struct scatterlist *sg;
-> @@ -468,7 +474,7 @@ static void armada_gem_prime_unmap_dma_buf(struct dma_buf_attachment *attach,
->   	}
->   
->   	sg_free_table(sgt);
-> -	kfree(sgt);
-> +	kfree(mapping);
->   }
->   
->   static int
-> @@ -478,10 +484,10 @@ armada_gem_dmabuf_mmap(struct dma_buf *buf, struct vm_area_struct *vma)
->   }
->   
->   static const struct dma_buf_ops armada_gem_prime_dmabuf_ops = {
-> -	.map_dma_buf	= armada_gem_prime_map_dma_buf,
-> -	.unmap_dma_buf	= armada_gem_prime_unmap_dma_buf,
->   	.release	= drm_gem_dmabuf_release,
->   	.mmap		= armada_gem_dmabuf_mmap,
-> +	DMA_BUF_SIMPLE_SGT_EXP_MATCH(armada_gem_prime_map_dma_buf,
-> +				     armada_gem_prime_unmap_dma_buf),
->   };
->   
->   struct dma_buf *
-> diff --git a/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c b/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c
-> index f2863da7f5c1..bba066f3cb50 100644
-> --- a/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c
-> +++ b/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c
-> @@ -4,20 +4,24 @@
->    * Copyright © 2016 Intel Corporation
->    */
->   
-> +#include <linux/dma-buf-mapping.h>
->   #include <linux/vmalloc.h>
->   #include "mock_dmabuf.h"
->   
-> -static struct sg_table *mock_map_dma_buf(struct dma_buf_attachment *attachment,
-> -					 enum dma_data_direction dir)
-> +static struct dma_buf_sgt_mapping *
-> +mock_map_dma_buf(struct dma_buf_attachment *attachment,
-> +		 enum dma_data_direction dir)
->   {
->   	struct mock_dmabuf *mock = to_mock(attachment->dmabuf);
-> +	struct dma_buf_sgt_mapping *mapping;
->   	struct sg_table *st;
->   	struct scatterlist *sg;
->   	int i, err;
->   
-> -	st = kmalloc_obj(*st);
-> -	if (!st)
-> +	mapping = kzalloc_obj(*mapping);
-> +	if (!mapping)
->   		return ERR_PTR(-ENOMEM);
-> +	st = &mapping->sgt;
->   
->   	err = sg_alloc_table(st, mock->npages, GFP_KERNEL);
->   	if (err)
-> @@ -29,26 +33,27 @@ static struct sg_table *mock_map_dma_buf(struct dma_buf_attachment *attachment,
->   		sg = sg_next(sg);
->   	}
->   
-> -	err = dma_map_sgtable(attachment->dev, st, dir, 0);
-> +	err = dma_map_sgtable(dma_buf_sgt_dma_device(attachment), st, dir, 0);
->   	if (err)
->   		goto err_st;
->   
-> -	return st;
-> +	return mapping;
->   
->   err_st:
->   	sg_free_table(st);
->   err_free:
-> -	kfree(st);
-> +	kfree(mapping);
->   	return ERR_PTR(err);
->   }
->   
->   static void mock_unmap_dma_buf(struct dma_buf_attachment *attachment,
-> -			       struct sg_table *st,
-> +			       struct dma_buf_sgt_mapping *mapping,
->   			       enum dma_data_direction dir)
->   {
-> -	dma_unmap_sgtable(attachment->dev, st, dir, 0);
-> -	sg_free_table(st);
-> -	kfree(st);
-> +	dma_unmap_sgtable(dma_buf_sgt_mapping_dma_device(mapping),
-> +			  &mapping->sgt, dir, 0);
-> +	sg_free_table(&mapping->sgt);
-> +	kfree(mapping);
->   }
->   
->   static void mock_dmabuf_release(struct dma_buf *dma_buf)
-> @@ -88,12 +93,11 @@ static int mock_dmabuf_mmap(struct dma_buf *dma_buf, struct vm_area_struct *vma)
->   }
->   
->   static const struct dma_buf_ops mock_dmabuf_ops =  {
-> -	.map_dma_buf = mock_map_dma_buf,
-> -	.unmap_dma_buf = mock_unmap_dma_buf,
->   	.release = mock_dmabuf_release,
->   	.mmap = mock_dmabuf_mmap,
->   	.vmap = mock_dmabuf_vmap,
->   	.vunmap = mock_dmabuf_vunmap,
-> +	DMA_BUF_SIMPLE_SGT_EXP_MATCH(mock_map_dma_buf, mock_unmap_dma_buf),
->   };
->   
->   static struct dma_buf *mock_dmabuf(int npages)
-> diff --git a/drivers/gpu/drm/tegra/gem.c b/drivers/gpu/drm/tegra/gem.c
-> index e6aa6dae4ec8..8e288a34f10f 100644
-> --- a/drivers/gpu/drm/tegra/gem.c
-> +++ b/drivers/gpu/drm/tegra/gem.c
-> @@ -11,6 +11,7 @@
->    */
->   
->   #include <linux/dma-buf.h>
-> +#include <linux/dma-buf-mapping.h>
->   #include <linux/iommu.h>
->   #include <linux/module.h>
->   #include <linux/pagemap.h>
-> @@ -626,51 +627,56 @@ int tegra_drm_mmap(struct file *file, struct vm_area_struct *vma)
->   	return __tegra_gem_mmap(gem, vma);
->   }
->   
-> -static struct sg_table *
-> +static struct dma_buf_sgt_mapping *
->   tegra_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
->   			    enum dma_data_direction dir)
->   {
-> +	struct device *dma_dev = dma_buf_sgt_dma_device(attach);
->   	struct drm_gem_object *gem = attach->dmabuf->priv;
->   	struct tegra_bo *bo = to_tegra_bo(gem);
-> +	struct dma_buf_sgt_mapping *mapping;
->   	struct sg_table *sgt;
->   
-> -	sgt = kmalloc_obj(*sgt);
-> -	if (!sgt)
-> +	mapping = kzalloc_obj(*mapping);
-> +	if (!mapping)
->   		return NULL;
-> +	sgt = &mapping->sgt;
->   
->   	if (bo->pages) {
->   		if (sg_alloc_table_from_pages(sgt, bo->pages, bo->num_pages,
->   					      0, gem->size, GFP_KERNEL) < 0)
->   			goto free;
->   	} else {
-> -		if (dma_get_sgtable(attach->dev, sgt, bo->vaddr, bo->iova,
-> +		if (dma_get_sgtable(dma_dev, sgt, bo->vaddr, bo->iova,
->   				    gem->size) < 0)
->   			goto free;
->   	}
->   
-> -	if (dma_map_sgtable(attach->dev, sgt, dir, 0))
-> +	if (dma_map_sgtable(dma_dev, sgt, dir, 0))
->   		goto free;
->   
-> -	return sgt;
-> +	return mapping;
->   
->   free:
->   	sg_free_table(sgt);
-> -	kfree(sgt);
-> +	kfree(mapping);
->   	return NULL;
->   }
->   
->   static void tegra_gem_prime_unmap_dma_buf(struct dma_buf_attachment *attach,
-> -					  struct sg_table *sgt,
-> +					  struct dma_buf_sgt_mapping *mapping,
->   					  enum dma_data_direction dir)
->   {
->   	struct drm_gem_object *gem = attach->dmabuf->priv;
->   	struct tegra_bo *bo = to_tegra_bo(gem);
-> +	struct sg_table *sgt = &mapping->sgt;
->   
->   	if (bo->pages)
-> -		dma_unmap_sgtable(attach->dev, sgt, dir, 0);
-> +		dma_unmap_sgtable(dma_buf_sgt_mapping_dma_device(mapping), sgt,
-> +				  dir, 0);
->   
->   	sg_free_table(sgt);
-> -	kfree(sgt);
-> +	kfree(mapping);
->   }
->   
->   static void tegra_gem_prime_release(struct dma_buf *buf)
-> @@ -740,14 +746,14 @@ static void tegra_gem_prime_vunmap(struct dma_buf *buf, struct iosys_map *map)
->   }
->   
->   static const struct dma_buf_ops tegra_gem_prime_dmabuf_ops = {
-> -	.map_dma_buf = tegra_gem_prime_map_dma_buf,
-> -	.unmap_dma_buf = tegra_gem_prime_unmap_dma_buf,
->   	.release = tegra_gem_prime_release,
->   	.begin_cpu_access = tegra_gem_prime_begin_cpu_access,
->   	.end_cpu_access = tegra_gem_prime_end_cpu_access,
->   	.mmap = tegra_gem_prime_mmap,
->   	.vmap = tegra_gem_prime_vmap,
->   	.vunmap = tegra_gem_prime_vunmap,
-> +	DMA_BUF_SIMPLE_SGT_EXP_MATCH(tegra_gem_prime_map_dma_buf,
-> +				     tegra_gem_prime_unmap_dma_buf),
->   };
->   
->   struct dma_buf *tegra_gem_prime_export(struct drm_gem_object *gem,
-> diff --git a/samples/vfio-mdev/mbochs.c b/samples/vfio-mdev/mbochs.c
-> index 64ea19253ee3..3502d0b37bd1 100644
-> --- a/samples/vfio-mdev/mbochs.c
-> +++ b/samples/vfio-mdev/mbochs.c
-> @@ -32,6 +32,7 @@
->   #include <linux/pci.h>
->   #include <linux/dma-buf.h>
->   #include <linux/highmem.h>
-> +#include <linux/dma-buf-mapping.h>
->   #include <drm/drm_fourcc.h>
->   #include <drm/drm_rect.h>
->   #include <drm/drm_modeset_lock.h>
-> @@ -857,46 +858,51 @@ static void mbochs_print_dmabuf(struct mbochs_dmabuf *dmabuf,
->   		dmabuf->mode.offset, dmabuf->mode.size, dmabuf->pagecount);
->   }
->   
-> -static struct sg_table *mbochs_map_dmabuf(struct dma_buf_attachment *at,
-> -					  enum dma_data_direction direction)
-> +static struct dma_buf_sgt_mapping *
-> +mbochs_map_dmabuf(struct dma_buf_attachment *at,
-> +		  enum dma_data_direction direction)
->   {
->   	struct mbochs_dmabuf *dmabuf = at->dmabuf->priv;
->   	struct device *dev = mdev_dev(dmabuf->mdev_state->mdev);
-> +	struct dma_buf_sgt_mapping *mapping;
->   	struct sg_table *sg;
->   
->   	dev_dbg(dev, "%s: %d\n", __func__, dmabuf->id);
->   
-> -	sg = kzalloc(sizeof(*sg), GFP_KERNEL);
-> -	if (!sg)
-> +	mapping = kzalloc_obj(*mapping);
-> +	if (!mapping)
->   		goto err1;
-> +	sg = &mapping->sgt;
->   	if (sg_alloc_table_from_pages(sg, dmabuf->pages, dmabuf->pagecount,
->   				      0, dmabuf->mode.size, GFP_KERNEL) < 0)
->   		goto err2;
-> -	if (dma_map_sgtable(at->dev, sg, direction, 0))
-> +	if (dma_map_sgtable(dma_buf_sgt_dma_device(at), sg, direction, 0))
->   		goto err3;
->   
-> -	return sg;
-> +	return mapping;
->   
->   err3:
->   	sg_free_table(sg);
->   err2:
-> -	kfree(sg);
-> +	kfree(mapping);
->   err1:
->   	return ERR_PTR(-ENOMEM);
->   }
->   
->   static void mbochs_unmap_dmabuf(struct dma_buf_attachment *at,
-> -				struct sg_table *sg,
-> +				struct dma_buf_sgt_mapping *mapping,
->   				enum dma_data_direction direction)
->   {
->   	struct mbochs_dmabuf *dmabuf = at->dmabuf->priv;
->   	struct device *dev = mdev_dev(dmabuf->mdev_state->mdev);
-> +	struct sg_table *sg = &mapping->sgt;
->   
->   	dev_dbg(dev, "%s: %d\n", __func__, dmabuf->id);
->   
-> -	dma_unmap_sgtable(at->dev, sg, direction, 0);
-> +	dma_unmap_sgtable(dma_buf_sgt_mapping_dma_device(mapping), sg,
-> +			  direction, 0);
->   	sg_free_table(sg);
-> -	kfree(sg);
-> +	kfree(mapping);
->   }
->   
->   static void mbochs_release_dmabuf(struct dma_buf *buf)
-> @@ -918,11 +924,10 @@ static void mbochs_release_dmabuf(struct dma_buf *buf)
->   	mutex_unlock(&mdev_state->ops_lock);
->   }
->   
-> -static struct dma_buf_ops mbochs_dmabuf_ops = {
-> -	.map_dma_buf	  = mbochs_map_dmabuf,
-> -	.unmap_dma_buf	  = mbochs_unmap_dmabuf,
-> +static const struct dma_buf_ops mbochs_dmabuf_ops = {
->   	.release	  = mbochs_release_dmabuf,
->   	.mmap		  = mbochs_mmap_dmabuf,
-> +	DMA_BUF_SIMPLE_SGT_EXP_MATCH(mbochs_map_dmabuf, mbochs_unmap_dmabuf),
->   };
->   
->   static struct mbochs_dmabuf *mbochs_dmabuf_alloc(struct mdev_state *mdev_state,
-> diff --git a/sound/soc/fsl/fsl_asrc_m2m.c b/sound/soc/fsl/fsl_asrc_m2m.c
-> index 58101ce07c9f..79fde68f9394 100644
-> --- a/sound/soc/fsl/fsl_asrc_m2m.c
-> +++ b/sound/soc/fsl/fsl_asrc_m2m.c
-> @@ -7,6 +7,7 @@
->   
->   #include <linux/dma/imx-dma.h>
->   #include <linux/dma-buf.h>
-> +#include <linux/dma-buf-mapping.h>
->   #include <linux/dma-mapping.h>
->   #include <linux/pm_runtime.h>
->   #include <sound/asound.h>
-> @@ -414,35 +415,42 @@ static int fsl_asrc_m2m_mmap(struct dma_buf *dmabuf, struct vm_area_struct *vma)
->   	return snd_dma_buffer_mmap(dmab, vma);
->   }
->   
-> -static struct sg_table *fsl_asrc_m2m_map_dma_buf(struct dma_buf_attachment *attachment,
-> -						 enum dma_data_direction direction)
-> +static struct dma_buf_sgt_mapping *
-> +fsl_asrc_m2m_map_dma_buf(struct dma_buf_attachment *attachment,
-> +			 enum dma_data_direction direction)
->   {
-> +	struct device *dma_dev = dma_buf_sgt_dma_device(attachment);
->   	struct snd_dma_buffer *dmab = attachment->dmabuf->priv;
-> +	struct dma_buf_sgt_mapping *mapping;
->   	struct sg_table *sgt;
->   
-> -	sgt = kmalloc_obj(*sgt);
-> -	if (!sgt)
-> +	mapping = kzalloc_obj(*mapping);
-> +	if (!mapping)
->   		return NULL;
-> +	sgt = &mapping->sgt;
->   
-> -	if (dma_get_sgtable(attachment->dev, sgt, dmab->area, dmab->addr, dmab->bytes) < 0)
-> +	if (dma_get_sgtable(dma_dev, sgt, dmab->area, dmab->addr, dmab->bytes) < 0)
->   		goto free;
->   
-> -	if (dma_map_sgtable(attachment->dev, sgt, direction, 0))
-> +	if (dma_map_sgtable(dma_dev, sgt, direction, 0))
->   		goto free;
->   
-> -	return sgt;
-> +	return mapping;
->   
->   free:
->   	sg_free_table(sgt);
-> -	kfree(sgt);
-> +	kfree(mapping);
->   	return NULL;
->   }
->   
->   static void fsl_asrc_m2m_unmap_dma_buf(struct dma_buf_attachment *attachment,
-> -				       struct sg_table *table,
-> +				       struct dma_buf_sgt_mapping *mapping,
->   				       enum dma_data_direction direction)
->   {
-> -	dma_unmap_sgtable(attachment->dev, table, direction, 0);
-> +	dma_unmap_sgtable(dma_buf_sgt_mapping_dma_device(mapping),
-> +			  &mapping->sgt, direction, 0);
-> +	sg_free_table(&mapping->sgt);
-> +	kfree(mapping);
->   }
->   
->   static void fsl_asrc_m2m_release(struct dma_buf *dmabuf)
-> @@ -452,9 +460,9 @@ static void fsl_asrc_m2m_release(struct dma_buf *dmabuf)
->   
->   static const struct dma_buf_ops fsl_asrc_m2m_dma_buf_ops = {
->   	.mmap = fsl_asrc_m2m_mmap,
-> -	.map_dma_buf = fsl_asrc_m2m_map_dma_buf,
-> -	.unmap_dma_buf = fsl_asrc_m2m_unmap_dma_buf,
->   	.release = fsl_asrc_m2m_release,
-> +	DMA_BUF_SIMPLE_SGT_EXP_MATCH(fsl_asrc_m2m_map_dma_buf,
-> +				     fsl_asrc_m2m_unmap_dma_buf),
->   };
->   
->   static int fsl_asrc_m2m_comp_task_create(struct snd_compr_stream *stream,
-> 
+Hi Baolu,
 
-Acked-by: Karol Wachowski <karol.wachowski@linux.intel.com>
+Thanks. I agree that the driver must drain pending faults before
+calling iopf_queue_remove_device(). My selftest removed the mock
+driver's serialization, so it doesn't establish that fault reporting
+can overlap removal in an unmodified driver. I'm withdrawing this
+series and won't resend it.
+
+I still have two questions about where the drivers establish that guarantee=
+.
+
+On VT-d, blocking_domain_attach_dev() calls
+iopf_for_domain_remove(old, dev) before device_block_translation(dev).
+When that drops the last IOPF reference, it calls
+iopf_queue_remove_device(). On an SM-capable IOMMU, for a device that
+isn't a real DMA subdevice, the only PRQ drain on this path is reached
+through device_block_translation() =E2=86=92 intel_pasid_tear_down_entry() =
+=E2=86=92
+intel_iommu_drain_pasid_prq(). By then iopf_refcount is zero, so the
+drain returns early.
+
+In the same file, identity_domain_attach_dev() calls
+device_block_translation(dev) first and releases the old domain's IOPF
+reference afterwards. The comment there explains that putting the
+device in the blocking state leaves the IOPF reference count
+unchanged. Should blocking_domain_attach_dev() use the same order? If
+the current order is intentional, what ensures that pending PRQ
+reports for this device have drained before the last reference is
+dropped?
+
+On AMD, detach_device() calls iopf_queue_flush_dev() immediately
+before amd_iommu_iopf_remove_device(). The flush helper waits for
+queued work and documents that the caller must have flushed the
+low-level queue first. The PPR interrupt thread calls
+iommu_report_device_fault() directly, so waiting for queued work alone
+doesn't establish that the thread has finished reporting faults for
+this device. What in the detach path ensures that PPR reporting for
+this device has quiesced before the device is removed from the IOPF
+queue?
+
+I may be missing a step in both cases. A pointer would be enough.
+
+Thanks,
+Qihang
+
+On Fri, Nov 20, 2026 at 3:56=E2=80=AFPM Baolu Lu <baolu.lu@linux.intel.com>=
+ wrote:
+>
+> On 11/17/2026 9:54 AM, Qihang wrote:
+> > iopf_queue_remove_device() kfree()s the entries on
+> > fault_param->partial without unlinking them, leaving the list head
+> > pointing into freed memory.  Since a74c077b9021 the fault parameter is
+> > refcounted and can outlive the drain, a report that took its reference
+> > earlier can still list_add() through those pointers.  Unlinking
+> > instead turns that into a leak: the late node lands on a parameter
+> > that is no longer on queue->devices, whose final put does not free
+> > partial faults.
+> >
+> > This needs a device removed from its iopf queue while a non-last
+> > (partial) request is in flight, with the caller not blocking new report=
+s
+> > for the duration.
+> >
+> > Patch 1 unlinks each partial before freeing it, matching
+> > iopf_queue_discard_partial().
+> >
+> > Patch 2 adds fault_param->removing, set and tested under
+> > fault_param->lock: a late partial is either drained, or rejected and
+> > freed by report_partial_fault() (-ENODEV).  It covers partial-list
+> > admission only; callers must still quiesce reports for the remaining
+> > lifetimes.
+> >
+> > Both patches are scoped to fault_param->partial, not the group path,
+> > the attach handle, or paths that never call iopf_queue_remove_device().
+> >
+> > Verified on v7.4-rc3 with KASAN + DEBUG_LIST and the iommufd mock
+> > driver, its caller-side IOPF serialization deliberately removed and
+> > test-only delays added; this shows the mechanism, not production
+> > reachability.  The runs cover queue-before-removal,
+> > removal-before-insertion, concurrent late reporters and re-enable.
+> > Each round queues one partial before the removal and then races the
+> > late reporters against the drain, so a clean run ends with every node
+> > accounted for: 1800 =3D 900 + 900 and 3600 =3D 900 + 2700 (allocated =
+=3D
+> > drained + rejected), counted at a final removal with no reporter in
+> > flight.  Nothing was left on fault_param->partial and KASAN stayed
+> > quiet.
+> >
+> > With patch 1 reverted, the report is:
+> >
+> >    BUG: KASAN: slab-use-after-free in __list_add_valid_or_report
+> >    Freed by task 1: kfree <- iopf_queue_remove_device
+> >    56 bytes inside a freed 64-byte region (struct iopf_fault, list.prev=
+)
+> >
+> > With patch 1 only, the same reproducer runs 1460 rounds without a KASAN
+> > report and leaks one late node per round, which patch 2 addresses.
+> >
+> > Reachability on an unmodified production kernel, and any security
+> > impact, remain unconfirmed: the test shows memory corruption and a
+> > KASAN panic on the modified mock driver, not a user-triggerable bug on
+> > a stock kernel.
+> >
+> > An AI coding assistant helped find this defect and build the
+> > reproducer and instrumentation, which are available on request along
+> > with the KASAN logs.
+>
+> +Jason
+>
+> The issues addressed by both patches are false positives. They rely on a
+> fault being reported for a device after iopf_queue_remove_device() has
+> been called for that device. The iommu driver must not allow that.
+> Pending i/o page faults must be drained before the device is removed
+> from its iommu's io page fault queue.
+>
+> Thanks,
+> baolu
