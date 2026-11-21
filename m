@@ -1,80 +1,71 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.109
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.214
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795266178;
-	b=zMsPac7vKdV/qovMMv9vEUn5iRY2adBAhqg40mdcr25/MyQ4gH2pv7Ef1y78TY6GJmss
-	 ra7OyTBgfbruFfjDiSlK8rCy4SpRp/WEdei8t51UyE4v1N78QLnlpdwSMKG7JyQ7+DJ1M
-	 /mAN0qYE7WX1Nspn57xxfP76m0e6EoOBHKJbiSub7BExEnaGbue33vUQqxkBDsAQ1q2ov
-	 Fc3JoxPEo4G4KODFKYJRuh8tHky8aNeOUsNJ1YaMuzR8clzqdX7HqQ+MzbTdM+DgN48I0
-	 dYVMehya0WEQnh4/iifLiGyrD+tnX13EjMqKKn7dBOtvfiQxmlCI6nY1B6ymdgY2fsA==
+	t=1795276171;
+	b=HGnmX1mVIMSQZmE1571RAxczB9IMe0tKpI0pqQhqc3MyOLy+9gTJ3LGavW0LSZnfX4hI
+	 Xf0+Z1Xncf99RkYqFarfPuj5kyPJrFb5YZTydMKMUL+3sfP4fXWQLjhOug36Ffr2UP1vi
+	 7eUP4EAN3hSc2MaOhDlENWpfsrHnuJRj33/TTj9FWZHHsyGodzTHnllrZ3dhqaVj5aqWy
+	 /9KhXZn9tyqB5Xm/ClIrrlDyohjCtumNXJWcQKBM6C3zPd3x4S7WFeuFde7GgTgyhoj/h
+	 VM5Hr+m+EF/Am19ZLo8pzXrXWMbkv1FkSpUR4GYe/+96YDopbMm/HB5rdCeD++MIuLA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795266178;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795276171;
 	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
 	 X-Mizu-Trace-ID:X-Migadu-Flow:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=kosSlO4n4eaj/l8QctRPYZS0nYWx+0xDQzEvrB+dFGg=;
-	b=A9663zNBTtDNtRsWBN8WfU/5k+5suEV0uZmyhAWmDnsGNUunGdKrhNSuffwD5NjwzYw7
-	 qBju39hd4QvuP3wwbgcQUVH/2P/bLd+EkGt9DLh0AaXkxD1zquy2bV+PadoF5d7a9acuW
-	 OC9zw7eFaPr45WL/3568Wb+sc8i0FR/pAbp30w5AlGE/S8/MThkb+7U6xFfUpaXR6+PPr
-	 7EabAxDL7xy1efBjrxR2u2Md6FjAMHYVv7M4lHSP4VHfQ5tJuXovNYGORUXQIgRtbp++R
-	 zg6RCnDfwTHc2lSovTExWU9UGU7DkCppwK8Ei8mUVrkB+Ta8Ks7vBw+eHPVLOntrNwQ==
+	bh=0YZb9vl8h3h2s9tCOBwKg7YDMBx7IJ0VENcqcFynRLs=;
+	b=BPQbC/CMmM6jqsMoI5xF+/QRkTF2ixhHlkrh12vZ0Gj7+cotXAB52A7Q1Xcj89eBw3uf
+	 usP8N/eTYPvUiMzw05z9jbdQGuUEBpqY5kvkLiLbPKAD/dZYouRY8GfY4/ci2gr6DvDhu
+	 sZ5eCBP1fS8djuysz9wndj2eQpPj1TKzXLAnvXZbTyc5kvoG+UHaFj1/7iYhZnLprZgDX
+	 kK7Y935Xo8EUypojcUxT0IxLZbOS4FiDgk1m7xOZ7NMBa2eICspXXOlnvvQRVqpcJC751
+	 kX3/79NPpV9eZxZCRuN4ahoQFWOb5qVp1w7oBp3zXwALosJyRLQJ0/Ui0satm3tIT+Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.dev;
 	spf=pass smtp.mailfrom=linux.dev;
-	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=evWxxf05;
-	arc=none smtp.remote-ip=91.218.175.109
-Received: from mta0.migadu.com (out-109.mta0.migadu.com [91.218.175.109])
+	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=w2pR9wVL;
+	arc=none smtp.remote-ip=91.218.175.214
+Received: from mta0.migadu.com (out-214.mta0.migadu.com [91.218.175.214])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BD82606A332
-	for <iommu@lists.linux.dev>; Sat, 21 Nov 2026 13:02:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6BD82606A332
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AA08606A32C
+	for <iommu@lists.linux.dev>; Sat, 21 Nov 2026 15:49:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9AA08606A32C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=evWxxf05
+	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=w2pR9wVL
 X-Envelope-To: iommu@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=AXPl9MSQKEVnxwBZxVz70iQ3WAgcrk7wcvSe7Ve0uwo=;
+DKIM-Signature: a=rsa-sha256; bh=87tG5wTJqa8KKU5Vw1XcYaRFIKmNyRkg1DQIqfjExPM=;
  c=simple/simple; d=linux.dev;
  h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1795266175; v=1; x=1795870975;
- b=evWxxf05XzVJt8Tiou/ooJaFuuGuIEy6pjt2YmbAgNiOxUhEf41eaNZKkg47SGXEuGOXmAyt
- 3WwiAi8ByTAobCpv3Fp+93sxm2LZVZgMx5+WnZdbPDilExVU6ew6/6LAC8t6n1rEElzVU8kRIXn
- y9U/4883p+Brc6sMaiwDe+Bk=
+ t=1795276168; v=1; x=1795880968;
+ b=w2pR9wVLVUEmNc/0xvbGAfErcyc7Q064cNe2Qb0JIQ8E3trfNPtCcUuXokXWWavloaXnxfRU
+ Y3drjX4obip27K21vOfT/kadJGIDVNpdHfim3KoKCHqoBpoWUFI7VggUrR3pFshFi6VvgDpAEym
+ dXAczSt5dyLO0XQ6IT/CY/Lk=
 X-Envelope-To: iommu@lists.linux.dev
-Received: by smtp.migadu.com with ESMTPS id 2fb3a475fbc6b1aa;
-	Sat, 21 Nov 2026 13:02:54 +0000
-X-Mizu-Trace-ID: 2fb3a475fbc6b1aa
+Received: by smtp.migadu.com with ESMTPS id 1cf4a9c89376da71;
+	Sat, 21 Nov 2026 15:49:28 +0000
+X-Mizu-Trace-ID: 1cf4a9c89376da71
 X-Migadu-Flow: FLOW_OUT
-Date: Sat, 21 Nov 2026 21:02:42 +0800
-From: Peng Fan <peng.fan@linux.dev>
-To: Jason Gunthorpe <jgg@ziepe.ca>, Frank Li <Frank.Li@nxp.com>,
-	Vinod Koul <vkoul@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, Frank Li <Frank.Li@nxp.com>,
-	Vinod Koul <vkoul@kernel.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Laxman Dewangan <ldewangan@nvidia.com>,
-	Jon Hunter <jonathanh@nvidia.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>, Frank Li <Frank.Li@kernel.org>,
-	Larisa IIeana Grigore <larisa.grigore@nxp.com>, imx@lists.linux.dev,
-	dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH v6 0/9] dmaengine: add DMA channel bus and fsl-edma
- per-channel IOMMU support
-Message-ID: <awGWcq_nKWShC81B@fedora>
-References: <20261112-edma-iommu-v3-v6-0-b038edb8ce6f@nxp.com>
- <20261116193021.GB2452510@ziepe.ca>
- <avwQl18smAW4R6ec@fedora>
- <20261117130005.GC2606445@ziepe.ca>
+Date: Sat, 21 Nov 2026 16:48:51 +0100
+From: Andrew Jones <andrew.jones@linux.dev>
+To: Gong Shuai <gong.shuai@sanechips.com.cn>
+Cc: kvm@vger.kernel.org, kvm-riscv@lists.infradead.org, 
+	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	Anup Patel <anup@brainfault.org>, Atish Patra <atish.patra@linux.dev>, 
+	Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, 
+	Tomasz Jeznach <tomasz.jeznach@linux.dev>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Sean Christopherson <seanjc@google.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
+	Andrew Jones <andrew.jones@oss.qualcomm.com>, Fangyu Yu <fangyu.yu@linux.alibaba.com>, 
+	Tan Chi <tanchi25@mails.ucas.ac.cn>, Wu Fei <wu.fei9@sanechips.com.cn>, 
+	Zhao Qingye <zhao.qingye@sanechips.com.cn>
+Subject: Re: [RFC PATCH v3 09/10] iommu/riscv: Add
+ riscv_iommu_attach_dev_nested
+Message-ID: <awG5Q7pmntSme1A2@orel>
+References: <20261119132744.396426-1-gong.shuai@sanechips.com.cn>
+ <20261119132744.396426-10-gong.shuai@sanechips.com.cn>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -86,66 +77,30 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261117130005.GC2606445@ziepe.ca>
+In-Reply-To: <20261119132744.396426-10-gong.shuai@sanechips.com.cn>
 
-Hi Jason, and all
+On Thu, Nov 19, 2026 at 09:27:43PM +0800, Gong Shuai wrote:
+...
+> +	if (riscv_iommu_bond_link(s2_parent, dev, nested_domain->viommu->gscid))
+> +		return -ENOMEM;
+> +
+> +	riscv_iommu_iodir_update(iommu, dev, &dc);
+> +	riscv_iommu_bond_unlink(info->domain, dev);
+> +	info->domain = s2_parent;
+> +
 
-On Tue, Nov 17, 2026 at 09:00:05AM -0400, Jason Gunthorpe wrote:
->> 
+When moving between the S2 parent and a nested domain on it, the parent
+briefly has two bonds for dev. bond_link() puts the new bond after the
+first bond with the same GSCID, which may come before dev's old bond,
+and since it's then dev's first bond, bond_unlink() removes it. dev is
+left bonded with its old GSCID, so its new GSCID misses invalidations
+once no other device's bond has it.
 
-[...]
+Passing the old domain to bond_unlink(), like I do in [1] for a
+different reason, would let it remove the bond matching both dev and
+old's GSCID.
 
->> I may not describe it clear in cover-letter.
->> 
->> I understand the concern. Let me explain why I believe it is justified here
->> rather than a hack.
->> 
->> On i.MX eDMA each channel has its own interrupt, its own register region,
->> and on i.MX8QM even its own power domain. Each channel may also have its
->> own Stream ID, or share one when SIDs are scarce. These are genuine
->> per-channel hardware resources, not software fiction.
->> 
->> In dmaengine each channel is already modeled as a channel device (see
->> dmaengine_chan_dev()), and this series puts those devices on a real bus
->> (dmaengine_chan_bus_type) as a prerequisite. The DT child node simply
->> describes that existing device, so its reg/interrupts/power-domains/iommus
->> are attached per channel instead of as index-matched flat lists on the
->> controller.
->
->If they are real devices then why can't they come out as platform
->devices?
->
->I think you are overstating how independent they are. Many single
->devices have per "channel" resources like MMIO and IRQs. That's
->totally normal. It doesn't make the sub resources independent devices.
->
->AFAICT what you have here is some HW designer used SID where they
->should have used SSID and you are trying to hack DT to make that
->usable because Linux does not support a SID as SSID model today.
->
->Again, since this is the 3rd - 4th case like this, it seems like a
->popular hardware choice and we should try to do better to make Linux
->support if we can.
+[1] https://lore.kernel.org/all/20260928143113.49838-12-andrew.jones@oss.qualcomm.com/
 
-Let's put i.MX eDMA aside, I have one general question regarding
-dma channel DMA.
-
-The below two drivers[1] has chan_dma_dev set as true which means they use
-dma channel device to do dma memory allocation. And for tegra186, it
-use dma channel device for iommu, the buggy part is that it forces
-chan dev's bus to platform bus.
-
-Do you think it is reasonable to have chan device(not platform device) do dma
-allocation? I ask because if we allow chan device to do dma allocation, we need
-to provide a dma channel bus for iommu_buses to fix tegre186(TBH, I 
-am not familar with this platform, it even has iommu-map for the dma node).
-
-[1] drivers/dma/tegra186-gpc-dma.c
-    drivers/dma/ti/k3-udma.c
-    https://elixir.bootlin.com/linux/v7.4-rc1/A/ident/chan_dma_dev
-
-Thanks
-Peng
-
->
->Jason
+Thanks,
+drew
