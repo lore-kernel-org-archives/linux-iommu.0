@@ -1,100 +1,93 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.216.52
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795227241;
-	b=x8w+1WCaZfpRtmpRHjhxeD5/y09hfsBM7FgN6GJkXrdOiOeMXzSAd3KiNTV8Bz4uTLxY
-	 /jsb69aYUemmW7MYhWpbCCokoPqc+BA2PKI0qDcayfbPpk1HkOhLVQykANR7rMPc4LGAF
-	 KhUQxcTQNjmL5p7DXAwWPIyWYbkDqs87Xxf0oW56G6dtgyKJq0B/EfRQ4vAHIzIE/Ni2I
-	 VDqZFyqgm3++oygZb+CpuOVtJpQzkMcRB2UzmHmjhJdJWOxYZB3ltna34LtlPNZG8LwVK
-	 Yy0z9QsH6eHClrR+Y1zf94v8PWIj63RQGoZ7x445Sn3v8LFCjHieYZMmLhZ7qWziF3Q==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795227241;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.170
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795232488;
+	b=IyUwZE08aHL/5vxsLSrxZ/DImsjgxC1RYhmD5+hCikCOhoW/zKZC+WD/o0rRcTsaZV8b
+	 naI7scBup7zJ/8Rqfmy7M71uXEvYPi4ibwPL53phKNvDxUfbw6MkfZFhPWRf8Y0QrtT3L
+	 sw79zU2wT/ZvY9vdDltEJk2ZL1KOIzvNPEOdRcpKaU9xUVm6QR/kDgkV41OK7FCSyGufH
+	 p8nCzJQAe0KaJLQ8xwUDoT8MHFtCH9EnXFmkfgiGg1nYKmVcvgJqlQmgOO9ZpGEAQWe6Y
+	 gc+rFcIcDRdgpNemf1+F/ii2dyeg7n6cLB4Ii0MOgxH3TyNkJF7iFYwxNhUY4dbakvw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795232488;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=IG+ZJh/LD9XAogPPkpcUkOpfA1PilwYhMDov5mMLDkc=;
-	b=nAuSj9/0OpCExzhevLDPFyV96vwzt98SIotHjw2yex1t1Xizf65IE6WiTU747eEEBeYL
-	 rIG95znMNPRYNMNySknGl1kNcRxhmPulPU8BMQ8UXf4sar4EfqtnDI2Le4Ob0/kB2ArYm
-	 kdTqr7Q/7bmLHsukVkApKX10yW4SQWLqVghYdD5MbsUI+qsIBc5QE/SyawiriIKokcqz0
-	 tlB06OTSgocna/4Boc5wFu3Gq3x+PBb7eOUZ/g2/Ef6Vdo7pWsPWdFwzochvn8NwsDlpL
-	 Xi0qn/EyNwy3hxRIrpJPoMoVZ8Mv06M5eO9DwfEETHCJIzXMZ6CmdPHc4/HQqAhFgxg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=JanZ89QKVqcpMPfV74tPnz9Q9BpRuGoPYgJISEH9VJs=;
+	b=ZGFEWYSldBV2+MzL54+LoJD3FPHW9TGJwR0CARTBgkNlzFCffeyc2TrugJGlHEfdipo+
+	 YwKCN7QvDKzLuzauQpCXMAFrunTeDqVYQ23jNrAGYdfX7KRogHCM6ie6MSkqDBYts+56n
+	 SbUYxRPODCViZaAZIVg7hB56JuTKz06z8LJXPRwH+ooXwi5QUe02WBFCx5gSxBiaW9e2d
+	 tbG7r5pmDO/zKcF5u2xij4+Oh9U3TCbXPCviN7I+Vu2Oa7STJWHfEt21C5ysIHp8JP40J
+	 Qixzc6Xgr4Vs7Rm/rklS8NyaCRI7hHC01jMmgDl/4PQsPoQjBHlu3EBelx0KoezdNEQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=SwdVSGeT;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.216.52
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=NSb2+Tns;
+	arc=none smtp.remote-ip=74.125.82.170
+Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F9B6606A6A8
-	for <iommu@lists.linux.dev>; Sat, 21 Nov 2026 02:14:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5F9B6606A6A8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C561606A6B0
+	for <iommu@lists.linux.dev>; Sat, 21 Nov 2026 03:41:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9C561606A6B0
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=SwdVSGeT
-Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-3b4200f59e1so176502a91.2
-        for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 18:14:01 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1795227241; cv=none;
-        d=google.com; s=arc-20260327;
-        b=pG+1/Co3UA4gsSbWNm8uXADCD/83Emz0NYcH1Wc/rhjhlrxlfCKU+1uPnPJxlqw23g
-         6V/xKpe1kALyuIl8TYiugi53l5UX772KxnZJFLQPvXSsaVhWDK2ucQFbG4kVTMGXQyr3
-         qwIJjNn0G2FuLF0EqfVu+ayOMaoh62279zqajnzD/chmW9Jx/XHtle6hFk68T0Pkru4w
-         rs/t4JmeButqrsZwihcFtKJGL2LD4J/O3WSr7yJjAyVsuk53O/nPe6WpwSZyuxMLoeYV
-         pw8krXHjlaR/UdNFmRMLzgwxXA/s/h5F73G3V+JGYBWh/8YWWqp662cs4lDN4L1llyDM
-         KA4w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=IG+ZJh/LD9XAogPPkpcUkOpfA1PilwYhMDov5mMLDkc=;
-        fh=xnUDJL6UB3i0EPdUTPCABw9TiTZ4v6od0XmxmmL0SWU=;
-        b=CC1gd8Q2Q4Rvv7l9u19/pHVH91RkjKqkHw9NYXhIPfVK+ypnt/1A5zBM8YQDmOelle
-         qMKYCoCrT2ODQz9OX+UUfyne1/MTO/DH67hcKgBH8KKPzFMks3W1KMYZvbJOq4jg2T2D
-         BHfnSK7AShNtZZ6Pgk2GACqdBa/iGiuO2gHuQC4f0FSkLNdX1Tt/s+/TfvR4yFx6NaUv
-         Zgc0WEP+TMta3ukoFZiyT3I4w9vFmk6APipUE2TTH4YX9hI0OZ643yLqhwjFHOvXF01S
-         BZvE6VFggJQ7JKMQf2hl162Ve7A6omg6YeXD/04OTfTIvDlOG0+bGgD3uVc1DbxLJj3H
-         tGjw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=NSb2+Tns
+Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-38453938af4so196266eec.0
+        for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 19:41:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795227241; x=1795832041; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=IG+ZJh/LD9XAogPPkpcUkOpfA1PilwYhMDov5mMLDkc=;
-        b=SwdVSGeTeiMR8yQR1fZm7MK05UzPKk2GYYDKdw2PatREDfLapkhPX4+PX1GPATRz9p
-         zgwKBW+m99YwDY5P/tkiAO09D8rbRYRPjj9g+Ku+SwE+GrX+ouPJm5PogGGTb4X50mt0
-         SQzTrkO6TXPQR51a1e7OPdW2/WXhE0ZjUH4LoNc4FlPLWky6IN7++6sJFqkQ4AeLCVtL
-         b1K5v5p/nIKN2+LJSLOapmyc8mdgv+7xQXPi9TFWIbUvj453LIq3aZN7Zw0Aq2ZsLZn+
-         P0jow8mqPawXHpPsBnaq74KO97XKk4OFrezAGs8CZpnTREqV8AeTd0S+S0kBhhhzylwZ
-         HBhg==
+        d=gmail.com; s=20260707; t=1795232486; x=1795837286; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=JanZ89QKVqcpMPfV74tPnz9Q9BpRuGoPYgJISEH9VJs=;
+        b=NSb2+Tnsxn32gOcWoVLwNl/SZP3iPfGiRSOvkTsoEFLHPzw/uJHGjBslFvSVHKza/N
+         5swwNJn5qaf/tBJ34dtBjfQJjh3oms2V0n0qjsUvcI93uNennzo8VpncqXw/ZRu/ILbH
+         A7XtGgtsRdssMO7YK/5dTEOT8Qbl9RIk6lh2zlUM8K1QlrHDwxpzDm5iBwF/Q9a8PFzL
+         lc61i3iYor6vYDlr32jdKYwuNYDXrwjYNVEMqCOSZFTN2WH/TUIOBYsFBN/YvQmDrenK
+         w6BjXImTHxXeVCrTJWigrteF3ixkcmn/SFaEbH0I8+1FCyMUefuvZUl+FxxMHlJwqNLw
+         sbnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795227241; x=1795832041;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=IG+ZJh/LD9XAogPPkpcUkOpfA1PilwYhMDov5mMLDkc=;
-        b=thKh1cZdOPN/retK7kYYuRmhyTvzIWK1/V4trtddKP5SZcetkaSlTlL0pfUwD+4ZL5
-         qCGqJYejjSofrcnO1T91cBwhoOSBd+xDBujFAuCPBWbI9m3s2kTxn09VorcbUCX66fpu
-         MydywRbkMaLmHQNqC+ACBffvY5BQEQ2HT4WdUv3H6nxj2ci0uZ8rCRD8K9iS7WvNzyG6
-         83Zs2jWkKwGSbiFwfUR5KMSSdAAg5sRlMW996uj0Fn7zhAYjKsTkvvSPCdIc+V10hGYL
-         vDdUz/ko+QZEU8xcWrxTR6DR7cWfFaQ2JUc/pXqaZaGkDd0jOmUIAyzQXC9GLuxg+z5h
-         Z3Pg==
-X-Forwarded-Encrypted: i=1; AL+hErGbmHehLl2mxW5XWcyhX8vX0gnqnG+XYZF7LO8J1tsIZ1OeDngrrvxLPJUzXlbYlnkQ4FqlkA==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/Uikaz34GHYD4te6kIdvRj0nzgFVZm9G5GM7xC+u742kh+2VH+
-	WkAm6zzp7BmNan70e+lWrlpq1R3cG5q5edZJV4BdBxVROYlQAUETYPq0vDeQnxd6m+4D0pUw3Wv
-	tioPLZaylJZ2dMMgKNNPeaHqyoWvCItA=
-X-Gm-Gg: AZFdTZdYN2Y2vTWYVLKsFrQ6naX6UzWW42pz8sG0pfdICTlVT+GcRfaTFURJyAVFISH
-	0+Sm2kGSnBR2qUJ0sNrmiuYP4kXE+DbS5t+8OH2K8A888ONrA5PhBaUN1ncKcncZ4WPkGF1p8DF
-	1uu17jW0jTUl+S5nPgS+h1y7wvUd41KJpPnwz/nWAV/h089kQfnVS2HRkF6DLJyJrSqs+76jl/W
-	61efVmzlUGDvHAehWBjxmqOBdj5hy04lkDF3FwtmCLsB7MFg2LoLp32XB7dXDrPVG2tEwmqJBXu
-	430nusQD6wLHru6/TjpUEg/I3SK7eSYtX9IjphROb9B0bM0BYgns5O2jcw1FFYTuiFrAvRTXo2K
-	9kceaZaOHMiw1bAfksKx1L6oKlELXftKbhXVnyohLzNwLeE5GEvmGCN4SfTVKVSxqNps4Aw==
-X-Received: by 2002:a17:90b:2ecb:b0:3b0:9a3e:bf8b with SMTP id
- 98e67ed59e1d1-3b41c98a1f8mr7487744a91.6.1795227240277; Fri, 20 Nov 2026
- 18:14:00 -0800 (PST)
+        d=1e100.net; s=20260707; t=1795232486; x=1795837286;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=JanZ89QKVqcpMPfV74tPnz9Q9BpRuGoPYgJISEH9VJs=;
+        b=ZCYJtt4dkO+8xG67wuoXEv+dlyUnHoSHYVXqRfrOcYEWssuGLcoVxqzvqZCKTxfS0p
+         UhPSNAH+uzQqTA7t8Ecxyzba2l5IKJ1attV1/3Sb/2eddhRHjM/2hACEb+Izkv3S9G6H
+         QbjfNjF8L5IPu/nVhtgjyIzONkx5iDHuVy9jXdTtOprvJWAVX2XwvrnL0NHjiVY21p7P
+         OIHtz13CFefcm6fNUUuH2bcf/zzxF2c2QSgdbDHxxGmvt9+3eWZxmbTRIuAbL/71F3pu
+         pTiEc8/hajlgdjnGBkSVlBoCQGZBzRRubyXmGqr1JKP2kXMhUY1xsRY+LGw9LhWt+Tk1
+         Y4Bw==
+X-Forwarded-Encrypted: i=1; AL+hErEZ4qjAwQpMVGoHOBxDlxZP/2Yha0Smp/sLHoEJzcGcVDOq1vzCXRlMzabnEQOZ6DbFGp3djQ==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8KX54MfIY/7jOYwxsM6qfGmgRI0jH2g9zTglnpoOIJbMJ/nob9
+	ra4Tghr4gWLoOOQSkxxUinrGGJlALOTXPl2baAv6YVEliqrSgW4QmgXr
+X-Gm-Gg: AZFdTZdzlWELLlkIOFpaM1+WAl53bcGm5N4eBxXpwVhhIF+B0Vu2U2ZbR5vDbKqcGtz
+	GM3tQ9nI8jiAiTAhYdfmPG6z1ELceEPxWktcn7NlHWAtRwRUl300z1g25Drpj2iaH9VeKHc1+p+
+	xZq98/3ntsSjA8PQ921bcgUx1Tl6IhEVz7SAEesEebHlZBUU6PxsqZO9rcrySv+4MNmZJ5C45jW
+	8yDiTj5mFAg+0ulb4v5vXn6p9TAqO31+uOojGQ5u2F0xOZIj9FpGfb8EvtRJDguTWT4wWKCrJNA
+	1/lty1NTRGHW8iV3vz1R5mj9gpT3Z2GO/xQIKvLuHAgoXA82VATTZLZ4iuEGHl1axQ7Hyb/gpBK
+	F8IxWE8vJ5ktzuQNRXYQz0d7WAKBBFCPq+HHRMa1kSgtb6FuY1mDVo0IXJz+DAX/IWdZHhgF0vi
+	z9ploxxrJlZIeYGoI9LdfNxxInC1cnkoBs2Lgqb7Z8Uw1jFpSGVUJLU9v3YmYuI0NiHke7kjjzA
+	fEPZjq9WOBEpinxcF1450OHYh1uK/dmdM+UwbCadClT+08iXzPX9vlkVMUfNM8AcZ26q3wbZDIF
+	NZL31qpur5Lx4Bc2YqCog/Bo5GbAyrkqQfOH7kU9tN9o24kRtZLpULLjsKxEnhU/vTkWrAxzfbL
+	CYix0ApfGR9xEhFuxVILk0CCMPE/5k0X7qr+KYw78jVm97xBqguIvy2vLg5T2AzO6fATBykROMK
+	VWf6fdLHfSEkj8ynPnGv/Ag7ALavUZ83Sm
+X-Received: by 2002:a05:7300:6025:b0:384:cea9:a109 with SMTP id 5a478bee46e88-3856925debfmr7470845eec.0.1795232485519;
+        Fri, 20 Nov 2026 19:41:25 -0800 (PST)
+Received: from 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa ([188.253.120.76])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-38567daaf70sm13879164eec.28.2026.11.20.19.41.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Nov 2026 19:41:25 -0800 (PST)
+From: Qihang <q.h.hack.winter@gmail.com>
+To: jgg@ziepe.ca
+Cc: kevin.tian@intel.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommufd: Keep group state in the attach handle
+Date: Sat, 21 Nov 2026 11:41:18 +0800
+Message-ID: <20261121034118.74460-1-q.h.hack.winter@gmail.com>
+X-Mailer: git-send-email 2.54.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -104,168 +97,173 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261117015409.25492-1-q.h.hack.winter@gmail.com>
- <56be2b4e-aefb-413b-8f72-0bea1f9e96db@linux.intel.com> <CAH78GvuUtU=zhe-Qbn9k73D3U5n1Ye1=8wtQqR7vCEpDzgNUJg@mail.gmail.com>
- <aceb9e9f-7ba3-48e2-8945-95179f22581d@linux.intel.com>
-In-Reply-To: <aceb9e9f-7ba3-48e2-8945-95179f22581d@linux.intel.com>
-From: Qihang <q.h.hack.winter@gmail.com>
-Date: Sat, 21 Nov 2026 10:13:48 +0800
-X-Gm-Features: Aa3M54opUKy3tR7eGnpShseaHOR8Dg3J-Z6Ik5gqSO8qnVYY4b0VBcftyM8PVfk
-Message-ID: <CAH78Gvubo20uU4ntOxzd-+B6GHpUovL_wYQt9yahF-8=x3sEVA@mail.gmail.com>
-Subject: Re: [PATCH 0/2] iommu/io-pgfault: reject partial faults after device removal
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>, 
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hi Baolu,
+The attach handle is created per iommu_group and PASID by the device
+that attaches, and it is freed when the attachment is replaced or its
+last device detaches.  It stores a struct iommufd_device pointer,
+which is the device that created the current handle.
 
-Thanks for confirming the VT-d ordering bug. I'll keep this series
-withdrawn and won't resend it.
+That device can be unbound while the handle is still in use.  If one
+device detaches while other devices in the group stay attached, the
+handle is kept but its device pointer is left dangling.  A later MSI
+setup on a remaining device reaches iommufd_sw_msi(), which reads
+handle->idev->igroup and dereferences freed memory:
 
-I still have one question about AMD. detach_device() calls
-iopf_queue_flush_dev() just before amd_iommu_iopf_remove_device().
-That flush only waits on the iopf workqueue, while the PPR IRQ thread
-runs amd_iommu_poll_ppr_log() and reports the fault through
-iommu_report_device_fault() directly. What ensures that the thread has
-finished reporting faults for this device, and cannot report another
-one, before the device is removed from the IOPF queue?
+  BUG: KASAN: slab-use-after-free in iommufd_sw_msi
+  Read of size 8 at addr ...
+  Allocated by iommufd_device_bind
+  Freed by iommufd_object_remove <- iommufd_device_unbind
 
-Thanks,
-Qihang
+The fault read path has the same problem when it composes
+hwpt_fault::dev_id from the same pointer.
 
-On Sat, Nov 21, 2026 at 9:25=E2=80=AFAM Baolu Lu <baolu.lu@linux.intel.com>=
- wrote:
->
-> On 11/20/2026 5:26 PM, Qihang wrote:
-> > Hi Baolu,
-> >
-> > Thanks. I agree that the driver must drain pending faults before
-> > calling iopf_queue_remove_device(). My selftest removed the mock
-> > driver's serialization, so it doesn't establish that fault reporting
-> > can overlap removal in an unmodified driver. I'm withdrawing this
-> > series and won't resend it.
-> >
-> > I still have two questions about where the drivers establish that guara=
-ntee.
-> >
-> > On VT-d, blocking_domain_attach_dev() calls
-> > iopf_for_domain_remove(old, dev) before device_block_translation(dev).
-> > When that drops the last IOPF reference, it calls
-> > iopf_queue_remove_device(). On an SM-capable IOMMU, for a device that
-> > isn't a real DMA subdevice, the only PRQ drain on this path is reached
-> > through device_block_translation() =E2=86=92 intel_pasid_tear_down_entr=
-y() =E2=86=92
-> > intel_iommu_drain_pasid_prq(). By then iopf_refcount is zero, so the
-> > drain returns early.
-> >
-> > In the same file, identity_domain_attach_dev() calls
-> > device_block_translation(dev) first and releases the old domain's IOPF
-> > reference afterwards. The comment there explains that putting the
-> > device in the blocking state leaves the IOPF reference count
-> > unchanged. Should blocking_domain_attach_dev() use the same order? If
-> > the current order is intentional, what ensures that pending PRQ
-> > reports for this device have drained before the last reference is
-> > dropped?
->
-> Good catch. This is a bug in the vt-d driver. I already have a patch
-> that changes the order in blocking_domain_attach_dev(). I will submit it
-> for discussion after the necessary assessment.
->
-> > On AMD, detach_device() calls iopf_queue_flush_dev() immediately
-> > before amd_iommu_iopf_remove_device(). The flush helper waits for
-> > queued work and documents that the caller must have flushed the
-> > low-level queue first. The PPR interrupt thread calls
-> > iommu_report_device_fault() directly, so waiting for queued work alone
-> > doesn't establish that the thread has finished reporting faults for
-> > this device. What in the detach path ensures that PPR reporting for
-> > this device has quiesced before the device is removed from the IOPF
-> > queue?
-> >
-> > I may be missing a step in both cases. A pointer would be enough.
-> >
-> > Thanks,
-> > Qihang
-> >
-> > On Fri, Nov 20, 2026 at 3:56=E2=80=AFPM Baolu Lu <baolu.lu@linux.intel.=
-com> wrote:
-> >>
-> >> On 11/17/2026 9:54 AM, Qihang wrote:
-> >>> iopf_queue_remove_device() kfree()s the entries on
-> >>> fault_param->partial without unlinking them, leaving the list head
-> >>> pointing into freed memory.  Since a74c077b9021 the fault parameter i=
-s
-> >>> refcounted and can outlive the drain, a report that took its referenc=
-e
-> >>> earlier can still list_add() through those pointers.  Unlinking
-> >>> instead turns that into a leak: the late node lands on a parameter
-> >>> that is no longer on queue->devices, whose final put does not free
-> >>> partial faults.
-> >>>
-> >>> This needs a device removed from its iopf queue while a non-last
-> >>> (partial) request is in flight, with the caller not blocking new repo=
-rts
-> >>> for the duration.
-> >>>
-> >>> Patch 1 unlinks each partial before freeing it, matching
-> >>> iopf_queue_discard_partial().
-> >>>
-> >>> Patch 2 adds fault_param->removing, set and tested under
-> >>> fault_param->lock: a late partial is either drained, or rejected and
-> >>> freed by report_partial_fault() (-ENODEV).  It covers partial-list
-> >>> admission only; callers must still quiesce reports for the remaining
-> >>> lifetimes.
-> >>>
-> >>> Both patches are scoped to fault_param->partial, not the group path,
-> >>> the attach handle, or paths that never call iopf_queue_remove_device(=
-).
-> >>>
-> >>> Verified on v7.4-rc3 with KASAN + DEBUG_LIST and the iommufd mock
-> >>> driver, its caller-side IOPF serialization deliberately removed and
-> >>> test-only delays added; this shows the mechanism, not production
-> >>> reachability.  The runs cover queue-before-removal,
-> >>> removal-before-insertion, concurrent late reporters and re-enable.
-> >>> Each round queues one partial before the removal and then races the
-> >>> late reporters against the drain, so a clean run ends with every node
-> >>> accounted for: 1800 =3D 900 + 900 and 3600 =3D 900 + 2700 (allocated =
-=3D
-> >>> drained + rejected), counted at a final removal with no reporter in
-> >>> flight.  Nothing was left on fault_param->partial and KASAN stayed
-> >>> quiet.
-> >>>
-> >>> With patch 1 reverted, the report is:
-> >>>
-> >>>     BUG: KASAN: slab-use-after-free in __list_add_valid_or_report
-> >>>     Freed by task 1: kfree <- iopf_queue_remove_device
-> >>>     56 bytes inside a freed 64-byte region (struct iopf_fault, list.p=
-rev)
-> >>>
-> >>> With patch 1 only, the same reproducer runs 1460 rounds without a KAS=
-AN
-> >>> report and leaks one late node per round, which patch 2 addresses.
-> >>>
-> >>> Reachability on an unmodified production kernel, and any security
-> >>> impact, remain unconfirmed: the test shows memory corruption and a
-> >>> KASAN panic on the modified mock driver, not a user-triggerable bug o=
-n
-> >>> a stock kernel.
-> >>>
-> >>> An AI coding assistant helped find this defect and build the
-> >>> reproducer and instrumentation, which are available on request along
-> >>> with the KASAN logs.
-> >>
-> >> +Jason
-> >>
-> >> The issues addressed by both patches are false positives. They rely on=
- a
-> >> fault being reported for a device after iopf_queue_remove_device() has
-> >> been called for that device. The iommu driver must not allow that.
-> >> Pending i/o page faults must be drained before the device is removed
-> >> from its iommu's io page fault queue.
-> >>
-> >> Thanks,
-> >> baolu
->
-> Thanks,
-> baolu
+Store the iommufd_group instead.  It is reference counted for as long
+as any device in the group is bound, and iommufd_sw_msi() runs under
+the iommu group mutex, which also keeps the handle from being replaced
+or freed during the call.
+
+The fault path needs a device ID and there is no longer a device to
+take it from.  Cache the ID of the device that created the current
+handle at attach or replace time.  This preserves the existing choice
+of ID while allowing the fault read path to use it after that device
+has been unbound, so this patch alone removes every use of the stale
+pointer.
+
+Fixes: b7d8833677ba ("iommufd: Fault-capable hwpt attach/detach/replace")
+Cc: stable@vger.kernel.org
+Signed-off-by: Qihang <q.h.hack.winter@gmail.com>
+---
+ drivers/iommu/iommufd/device.c          |  6 ++++--
+ drivers/iommu/iommufd/driver.c          | 11 +++++------
+ drivers/iommu/iommufd/eventq.c          | 14 ++++++--------
+ drivers/iommu/iommufd/iommufd_private.h |  9 ++++++++-
+ 4 files changed, 23 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index 1b0bdf57ac8a..43ee9610e6d1 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -581,7 +581,8 @@ static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
+ 	if (!handle)
+ 		return -ENOMEM;
+ 
+-	handle->idev = idev;
++	handle->igroup = idev->igroup;
++	handle->dev_id = idev->obj.id;
+ 	if (pasid == IOMMU_NO_PASID)
+ 		rc = iommu_attach_group_handle(hwpt->domain, idev->igroup->group,
+ 					       &handle->handle);
+@@ -654,7 +655,8 @@ static int iommufd_hwpt_replace_device(struct iommufd_device *idev,
+ 	if (!handle)
+ 		return -ENOMEM;
+ 
+-	handle->idev = idev;
++	handle->igroup = idev->igroup;
++	handle->dev_id = idev->obj.id;
+ 	if (pasid == IOMMU_NO_PASID)
+ 		rc = iommu_replace_group_handle(idev->igroup->group,
+ 						hwpt->domain, &handle->handle);
+diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
+index e4d17a748178..601a5aeced95 100644
+--- a/drivers/iommu/iommufd/driver.c
++++ b/drivers/iommu/iommufd/driver.c
+@@ -274,26 +274,25 @@ int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
+ 
+ 	handle = to_iommufd_handle(raw_handle);
+ 	/* No IOMMU_RESV_SW_MSI means no change to the msi_msg */
+-	if (handle->idev->igroup->sw_msi_start == PHYS_ADDR_MAX)
++	if (handle->igroup->sw_msi_start == PHYS_ADDR_MAX)
+ 		return 0;
+ 
+-	ictx = handle->idev->ictx;
++	ictx = handle->igroup->ictx;
+ 	guard(mutex)(&ictx->sw_msi_lock);
+ 	/*
+ 	 * The input msi_addr is the exact byte offset of the MSI doorbell, we
+ 	 * assume the caller has checked that it is contained with a MMIO region
+ 	 * that is secure to map at PAGE_SIZE.
+ 	 */
+-	msi_map = iommufd_sw_msi_get_map(handle->idev->ictx,
+-					 msi_addr & PAGE_MASK,
+-					 handle->idev->igroup->sw_msi_start);
++	msi_map = iommufd_sw_msi_get_map(ictx, msi_addr & PAGE_MASK,
++					 handle->igroup->sw_msi_start);
+ 	if (IS_ERR(msi_map))
+ 		return PTR_ERR(msi_map);
+ 
+ 	rc = iommufd_sw_msi_install(ictx, hwpt_paging, msi_map);
+ 	if (rc)
+ 		return rc;
+-	__set_bit(msi_map->id, handle->idev->igroup->required_sw_msi.bitmap);
++	__set_bit(msi_map->id, handle->igroup->required_sw_msi.bitmap);
+ 
+ 	iova = msi_map->sw_msi_start + msi_map->pgoff * PAGE_SIZE;
+ 	msi_desc_set_iommu_msi_iova(desc, iova, PAGE_SHIFT);
+diff --git a/drivers/iommu/iommufd/eventq.c b/drivers/iommu/iommufd/eventq.c
+index b8a54454dd17..3c3282fd5b93 100644
+--- a/drivers/iommu/iommufd/eventq.c
++++ b/drivers/iommu/iommufd/eventq.c
+@@ -83,11 +83,10 @@ void iommufd_fault_destroy(struct iommufd_object *obj)
+ 
+ static void iommufd_compose_fault_message(struct iommu_fault *fault,
+ 					  struct iommu_hwpt_pgfault *hwpt_fault,
+-					  struct iommufd_device *idev,
+-					  u32 cookie)
++					  u32 dev_id, u32 cookie)
+ {
+ 	hwpt_fault->flags = fault->prm.flags;
+-	hwpt_fault->dev_id = idev->obj.id;
++	hwpt_fault->dev_id = dev_id;
+ 	hwpt_fault->pasid = fault->prm.pasid;
+ 	hwpt_fault->grpid = fault->prm.grpid;
+ 	hwpt_fault->perm = fault->prm.perm;
+@@ -128,7 +127,7 @@ static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
+ 	struct iommufd_eventq *eventq = filep->private_data;
+ 	struct iommufd_fault *fault = eventq_to_fault(eventq);
+ 	struct iommu_hwpt_pgfault data = {};
+-	struct iommufd_device *idev;
++	u32 dev_id;
+ 	struct iopf_group *group;
+ 	struct iopf_fault *iopf;
+ 	size_t done = 0;
+@@ -157,11 +156,10 @@ static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
+ 			break;
+ 		}
+ 
+-		idev = to_iommufd_handle(group->attach_handle)->idev;
++		dev_id = to_iommufd_handle(group->attach_handle)->dev_id;
+ 		list_for_each_entry(iopf, &group->faults, list) {
+-			iommufd_compose_fault_message(&iopf->fault,
+-						      &data, idev,
+-						      group->cookie);
++			iommufd_compose_fault_message(&iopf->fault, &data,
++						      dev_id, group->cookie);
+ 			if (copy_to_user(buf + group_done, &data, fault_size)) {
+ 				xa_erase(&fault->response, group->cookie);
+ 				iommufd_fault_deliver_restore(fault, group);
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index eb2e85b27e42..6d02599ebd9e 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -589,9 +589,16 @@ struct iommufd_eventq {
+ 	struct wait_queue_head wait_queue;
+ };
+ 
++/*
++ * Devices attached to the same PASID in an IOMMU group share this
++ * handle until the attachment is replaced or its last device detaches.
++ * Each bound device holds an igroup reference, so the group remains
++ * valid even if the device that created the handle is unbound.
++ */
+ struct iommufd_attach_handle {
+ 	struct iommu_attach_handle handle;
+-	struct iommufd_device *idev;
++	struct iommufd_group *igroup;
++	u32 dev_id;
+ };
+ 
+ /* Convert an iommu attach handle to iommufd handle. */
+-- 
+2.54.0 (Apple Git-157)
+
