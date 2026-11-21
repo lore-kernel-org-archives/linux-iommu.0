@@ -1,93 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.170
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.113
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795232488;
-	b=IyUwZE08aHL/5vxsLSrxZ/DImsjgxC1RYhmD5+hCikCOhoW/zKZC+WD/o0rRcTsaZV8b
-	 naI7scBup7zJ/8Rqfmy7M71uXEvYPi4ibwPL53phKNvDxUfbw6MkfZFhPWRf8Y0QrtT3L
-	 sw79zU2wT/ZvY9vdDltEJk2ZL1KOIzvNPEOdRcpKaU9xUVm6QR/kDgkV41OK7FCSyGufH
-	 p8nCzJQAe0KaJLQ8xwUDoT8MHFtCH9EnXFmkfgiGg1nYKmVcvgJqlQmgOO9ZpGEAQWe6Y
-	 gc+rFcIcDRdgpNemf1+F/ii2dyeg7n6cLB4Ii0MOgxH3TyNkJF7iFYwxNhUY4dbakvw==
+	t=1795241742;
+	b=3axmDUkoJcPoL+WNCMf3y0VX38LdpBhWOPcP7d3npLkevlHUw3jrLOAeon1PwslroG6R
+	 xfGrny1s6yfMDGfaBqI1Dg0Pthml7pyagVaGtoOBTZh9C3y7PA23r7DRP75zGxpfcSPMd
+	 yy0bLxWKJZmpxm9XF2AuVaHobsYBPgaY/h2FeD5cM//bhfdbYGFLKQUwWTo/ukTYisCS3
+	 l7FnlQrKUC1yz/2cqpm1ujecYqM1VO5gy2oDDkXYowFRpQtLGoE93XuqQB30kkUBku2zk
+	 4m/CvShR53cXbMRkqGMtWUGWIPnkbX7kyTRuWRCTp8QjuJ8qUhIqNDL1E2i6OKA+GDg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795232488;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	a=rsa-sha256; c=relaxed/relaxed; t=1795241742;
+	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
+	 Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=JanZ89QKVqcpMPfV74tPnz9Q9BpRuGoPYgJISEH9VJs=;
-	b=ZGFEWYSldBV2+MzL54+LoJD3FPHW9TGJwR0CARTBgkNlzFCffeyc2TrugJGlHEfdipo+
-	 YwKCN7QvDKzLuzauQpCXMAFrunTeDqVYQ23jNrAGYdfX7KRogHCM6ie6MSkqDBYts+56n
-	 SbUYxRPODCViZaAZIVg7hB56JuTKz06z8LJXPRwH+ooXwi5QUe02WBFCx5gSxBiaW9e2d
-	 tbG7r5pmDO/zKcF5u2xij4+Oh9U3TCbXPCviN7I+Vu2Oa7STJWHfEt21C5ysIHp8JP40J
-	 Qixzc6Xgr4Vs7Rm/rklS8NyaCRI7hHC01jMmgDl/4PQsPoQjBHlu3EBelx0KoezdNEQ==
+	bh=YShQ51CxPN05RyeAJpAM1rmHPAWCYeDv107+BzXh+IU=;
+	b=qyMw+9t/SAqR7ljLhENT8zwfuOS25y8A6zQDLSQmoGgDPtkVo2NRUgUKAo5hkmlw9KWB
+	 bI/xkmZEpOVOqMRIi8Apw+hkyzU8ktbS29Gfm9a7oFZASf0eO5AXP6cQtNnzzx7wlwYUb
+	 mrRTKYIny+OUM75xnHpJLjhBpUZ1ZozX7zyZWuQ3VhKXn78xumk5SXmWvnoSg2D0ySHPA
+	 +7O9rVK5fjnXdG0LZ+d6bGr1W2Je6Qo9IY/0tnsGLMb0TfOXxlFaKGhVXOI9KGgAnOVYb
+	 CrESiiBRVE5vOgv7ZG1PHO5xo3iFCFYau+d5NB5JmnLkfmlFRhRfPHCTNsR0Qc8JDZA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=NSb2+Tns;
-	arc=none smtp.remote-ip=74.125.82.170
-Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=linux.alibaba.com;
+	spf=pass smtp.mailfrom=linux.alibaba.com;
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=quEavZpk;
+	arc=none smtp.remote-ip=115.124.30.113
+Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C561606A6B0
-	for <iommu@lists.linux.dev>; Sat, 21 Nov 2026 03:41:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9C561606A6B0
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21556606A336
+	for <iommu@lists.linux.dev>; Sat, 21 Nov 2026 06:15:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 21556606A336
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=NSb2+Tns
-Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-38453938af4so196266eec.0
-        for <iommu@lists.linux.dev>; Fri, 20 Nov 2026 19:41:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795232486; x=1795837286; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=JanZ89QKVqcpMPfV74tPnz9Q9BpRuGoPYgJISEH9VJs=;
-        b=NSb2+Tnsxn32gOcWoVLwNl/SZP3iPfGiRSOvkTsoEFLHPzw/uJHGjBslFvSVHKza/N
-         5swwNJn5qaf/tBJ34dtBjfQJjh3oms2V0n0qjsUvcI93uNennzo8VpncqXw/ZRu/ILbH
-         A7XtGgtsRdssMO7YK/5dTEOT8Qbl9RIk6lh2zlUM8K1QlrHDwxpzDm5iBwF/Q9a8PFzL
-         lc61i3iYor6vYDlr32jdKYwuNYDXrwjYNVEMqCOSZFTN2WH/TUIOBYsFBN/YvQmDrenK
-         w6BjXImTHxXeVCrTJWigrteF3ixkcmn/SFaEbH0I8+1FCyMUefuvZUl+FxxMHlJwqNLw
-         sbnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795232486; x=1795837286;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=JanZ89QKVqcpMPfV74tPnz9Q9BpRuGoPYgJISEH9VJs=;
-        b=ZCYJtt4dkO+8xG67wuoXEv+dlyUnHoSHYVXqRfrOcYEWssuGLcoVxqzvqZCKTxfS0p
-         UhPSNAH+uzQqTA7t8Ecxyzba2l5IKJ1attV1/3Sb/2eddhRHjM/2hACEb+Izkv3S9G6H
-         QbjfNjF8L5IPu/nVhtgjyIzONkx5iDHuVy9jXdTtOprvJWAVX2XwvrnL0NHjiVY21p7P
-         OIHtz13CFefcm6fNUUuH2bcf/zzxF2c2QSgdbDHxxGmvt9+3eWZxmbTRIuAbL/71F3pu
-         pTiEc8/hajlgdjnGBkSVlBoCQGZBzRRubyXmGqr1JKP2kXMhUY1xsRY+LGw9LhWt+Tk1
-         Y4Bw==
-X-Forwarded-Encrypted: i=1; AL+hErEZ4qjAwQpMVGoHOBxDlxZP/2Yha0Smp/sLHoEJzcGcVDOq1vzCXRlMzabnEQOZ6DbFGp3djQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8KX54MfIY/7jOYwxsM6qfGmgRI0jH2g9zTglnpoOIJbMJ/nob9
-	ra4Tghr4gWLoOOQSkxxUinrGGJlALOTXPl2baAv6YVEliqrSgW4QmgXr
-X-Gm-Gg: AZFdTZdzlWELLlkIOFpaM1+WAl53bcGm5N4eBxXpwVhhIF+B0Vu2U2ZbR5vDbKqcGtz
-	GM3tQ9nI8jiAiTAhYdfmPG6z1ELceEPxWktcn7NlHWAtRwRUl300z1g25Drpj2iaH9VeKHc1+p+
-	xZq98/3ntsSjA8PQ921bcgUx1Tl6IhEVz7SAEesEebHlZBUU6PxsqZO9rcrySv+4MNmZJ5C45jW
-	8yDiTj5mFAg+0ulb4v5vXn6p9TAqO31+uOojGQ5u2F0xOZIj9FpGfb8EvtRJDguTWT4wWKCrJNA
-	1/lty1NTRGHW8iV3vz1R5mj9gpT3Z2GO/xQIKvLuHAgoXA82VATTZLZ4iuEGHl1axQ7Hyb/gpBK
-	F8IxWE8vJ5ktzuQNRXYQz0d7WAKBBFCPq+HHRMa1kSgtb6FuY1mDVo0IXJz+DAX/IWdZHhgF0vi
-	z9ploxxrJlZIeYGoI9LdfNxxInC1cnkoBs2Lgqb7Z8Uw1jFpSGVUJLU9v3YmYuI0NiHke7kjjzA
-	fEPZjq9WOBEpinxcF1450OHYh1uK/dmdM+UwbCadClT+08iXzPX9vlkVMUfNM8AcZ26q3wbZDIF
-	NZL31qpur5Lx4Bc2YqCog/Bo5GbAyrkqQfOH7kU9tN9o24kRtZLpULLjsKxEnhU/vTkWrAxzfbL
-	CYix0ApfGR9xEhFuxVILk0CCMPE/5k0X7qr+KYw78jVm97xBqguIvy2vLg5T2AzO6fATBykROMK
-	VWf6fdLHfSEkj8ynPnGv/Ag7ALavUZ83Sm
-X-Received: by 2002:a05:7300:6025:b0:384:cea9:a109 with SMTP id 5a478bee46e88-3856925debfmr7470845eec.0.1795232485519;
-        Fri, 20 Nov 2026 19:41:25 -0800 (PST)
-Received: from 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa ([188.253.120.76])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-38567daaf70sm13879164eec.28.2026.11.20.19.41.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Nov 2026 19:41:25 -0800 (PST)
-From: Qihang <q.h.hack.winter@gmail.com>
-To: jgg@ziepe.ca
-Cc: kevin.tian@intel.com,
+	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=quEavZpk
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1795241737; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=YShQ51CxPN05RyeAJpAM1rmHPAWCYeDv107+BzXh+IU=;
+	b=quEavZpkcBiqWp4jM5eSpJUnMKwKxXRYz0LCOu1THynZs3Z4lUPCqmzfX9wRMcT/+QBTY/eG6FoapNikawV5NRhhSO7ojq355jeyeb42eyZuAELJTwfTZa+QK9lR6uyPQNeUYlSlv1SHFJ6T2WnntG8ZRvP1YEcQ4V9BoYb6HHM=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R831e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=30;SR=0;TI=SMTPD_---0XF83hNL_1795241733;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XF83hNL_1795241733 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Sat, 21 Nov 2026 14:15:35 +0800
+From: fangyu.yu@linux.alibaba.com
+To: gsh517025@gmail.com
+Cc: alex@ghiti.fr,
+	andrew.jones@linux.dev,
+	anup@brainfault.org,
+	aou@eecs.berkeley.edu,
+	atish.patra@linux.dev,
+	baolu.lu@linux.intel.com,
+	fangyu.yu@linux.alibaba.com,
+	gong.shuai@sanechips.com.cn,
+	guoren@kernel.org,
 	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommufd: Keep group state in the attach handle
-Date: Sat, 21 Nov 2026 11:41:18 +0800
-Message-ID: <20261121034118.74460-1-q.h.hack.winter@gmail.com>
-X-Mailer: git-send-email 2.54.0
+	jgg@nvidia.com,
+	jgg@ziepe.ca,
+	joerg.roedel@amd.com,
+	joro@8bytes.org,
+	jroedel@suse.de,
+	kevin.tian@intel.com,
+	kvm-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	nutty.liu@hotmail.com,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	robin.murphy@arm.com,
+	skhawaja@google.com,
+	tanchi25@mails.ucas.ac.cn,
+	tomasz.jeznach@linux.dev,
+	vasant.hegde@amd.com,
+	will@kernel.org,
+	zong.li@sifive.com
+Subject: Re: [PATCH v7 05/10] iommu/riscv: support GSCID and GVMA invalidation command 
+Date: Sat, 21 Nov 2026 14:15:32 +0800
+Message-Id: <20261121061532.23534-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <23b033cb-1b98-48cf-a089-4e710dfe3e15@gmail.com>
+References: <23b033cb-1b98-48cf-a089-4e710dfe3e15@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -99,171 +90,146 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The attach handle is created per iommu_group and PASID by the device
-that attaches, and it is freed when the attachment is replaced or its
-last device detaches.  It stores a struct iommufd_device pointer,
-which is the device that created the current handle.
+>>>Hi Fangyu,
+>>>
+>>>> From: Zong Li <zong.li@sifive.com>
+>>>>
+>>>> This patch adds a ID Allocator for GSCID and a wrap for setting up
+>>>> GSCID in IOTLB invalidation command.
+>>>>
+>>>> Set up iohgatp to enable second stage table and flush stage-2 table if
+>>>> the GSCID is set.
+>>>>
+>>>> The GSCID of domain should be freed when release domain. GSCID will be
+>>>> allocated for parent domain in nested IOMMU process.
+>>>>
+>>>> Signed-off-by: Zong Li <zong.li@sifive.com>
+>>>> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+>>>> Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
+>>>> ---
+>>>>  drivers/iommu/riscv/iommu-bits.h |  7 ++++
+>>>>  drivers/iommu/riscv/iommu.c      | 62 ++++++++++++++++++++++++++------
+>>>>  2 files changed, 58 insertions(+), 11 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu-bits.h
+>>>> index f2ef9bd3cde9..65d1f2250011 100644
+>>>> --- a/drivers/iommu/riscv/iommu-bits.h
+>>>> +++ b/drivers/iommu/riscv/iommu-bits.h
+>>>> @@ -720,6 +720,13 @@ static inline void riscv_iommu_cmd_inval_vma(struct riscv_iommu_command *cmd)
+>>>>  	cmd->dword1 = 0;
+>>>>  }
+>>>>
+>>>> +static inline void riscv_iommu_cmd_inval_gvma(struct riscv_iommu_command *cmd)
+>>>> +{
+>>>> +	cmd->dword0 = FIELD_PREP(RISCV_IOMMU_CMD0_OPCODE, RISCV_IOMMU_CMD_IOTINVAL_OPCODE) |
+>>>> +		      FIELD_PREP(RISCV_IOMMU_CMD0_FUNC, RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA);
+>>>> +	cmd->dword1 = 0;
+>>>> +}
+>>>> +
+>>>>  static inline void riscv_iommu_cmd_inval_set_addr(struct riscv_iommu_command *cmd,
+>>>>  						  u64 addr)
+>>>>  {
+>>>> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+>>>> index 918fce4aa8c4..5546dfcd976c 100644
+>>>> --- a/drivers/iommu/riscv/iommu.c
+>>>> +++ b/drivers/iommu/riscv/iommu.c
+>>>> @@ -49,6 +49,10 @@
+>>>>  static DEFINE_IDA(riscv_iommu_pscids);
+>>>>  #define RISCV_IOMMU_MAX_PSCID		(BIT(20) - 1)
+>>>>
+>>>> +/* IOMMU GSCID allocation namespace. */
+>>>> +static DEFINE_IDA(riscv_iommu_gscids);
+>>>> +#define RISCV_IOMMU_MAX_GSCID		(BIT(16) - 1)
+>>>> +
+>>>>  /* Device resource-managed allocations */
+>>>>  struct riscv_iommu_devres {
+>>>>  	void *addr;
+>>>> @@ -842,6 +846,7 @@ struct riscv_iommu_domain {
+>>>>  	struct list_head bonds;
+>>>>  	spinlock_t lock;		/* protect bonds list updates. */
+>>>>  	int pscid;
+>>>> +	int gscid;
+>>>>  };
+>>>>  PT_IOMMU_CHECK_DOMAIN(struct riscv_iommu_domain, riscvpt.iommu, domain);
+>>>>
+>>>> @@ -1004,7 +1009,7 @@ static void riscv_iommu_tlbi_calc(struct riscv_iommu_tlbi *tlbi,
+>>>>  }
+>>>>
+>>>>  static void riscv_iommu_iotlb_inval_iommu(struct riscv_iommu_device *iommu,
+>>>> -					  int pscid,
+>>>> +					  int pscid, int gscid,
+>>>>  					  struct riscv_iommu_tlbi *tlbi)
+>>>>  {
+>>>>  	bool use_nl = tlbi->non_leaf &&
+>>>> @@ -1012,8 +1017,13 @@ static void riscv_iommu_iotlb_inval_iommu(struct riscv_iommu_device *iommu,
+>>>>  	struct riscv_iommu_command cmd;
+>>>>  	unsigned int i;
+>>>>
+>>>> -	riscv_iommu_cmd_inval_vma(&cmd);
+>>>> -	riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
+>>>> +	if (gscid) {
+>>>> +		riscv_iommu_cmd_inval_gvma(&cmd);
+>>>> +		riscv_iommu_cmd_inval_set_gscid(&cmd, gscid);
+>>>> +	} else {
+>>>> +		riscv_iommu_cmd_inval_vma(&cmd);
+>>>> +		riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
+>>>> +	}
+>>>
+>>>As I understand it, the same choice is needed in
+>>>riscv_iommu_bond_unlink().
+>>>
+>>>The missing GVMA command does not break anything today, because every
+>>>caller of bond_unlink() runs iodir_update() just before it, and that
+>>>already sends the GVMA for the old GSCID. But depending on that
+>>>ordering seems fragile, and the comment in bond_unlink(), "invalidate
+>>>all cached entries for domain's PSCID", is no longer true now that we
+>>>have S2 domains.
+>>>
+>>
+>> There is no functional issue with the current code, since
+>> iodir_update() already performs the required invalidation.
+>>
+>> That said, as this series adds S2 domain support,
+>> bond_unlink() should indeed be updated accordingly.
+>> Good catch.
+>
+>Hi Fangyu,
+>
+>I've included this code in patch 10 of the v3 nested series [1].
+>
 
-That device can be unbound while the handle is still in use.  If one
-device detaches while other devices in the group stay attached, the
-handle is kept but its device pointer is left dangling.  A later MSI
-setup on a remaining device reaches iommufd_sw_msi(), which reads
-handle->idev->igroup and dereferences freed memory:
+Hi Shuai,
 
-  BUG: KASAN: slab-use-after-free in iommufd_sw_msi
-  Read of size 8 at addr ...
-  Allocated by iommufd_device_bind
-  Freed by iommufd_object_remove <- iommufd_device_unbind
+Thanks for the pointer. If possible, I'd suggest keeping this
+change in the current patch rather than splitting it out --
+it makes the functionality look more complete, and splitting
+it into two patches seems a bit odd.
 
-The fault read path has the same problem when it composes
-hwpt_fault::dev_id from the same pointer.
+>BTW, if you have time, would you mind reviewing the nested series?
+>I'd greatly appreciate your help.
+>
 
-Store the iommufd_group instead.  It is reference counted for as long
-as any device in the group is bound, and iommufd_sw_msi() runs under
-the iommu group mutex, which also keeps the handle from being replaced
-or freed during the call.
+Regarding the nested series, it looks like a solid set of
+patches that already provides the basic nested IOMMU
+functionality. I'd be glad to help with the review and hope
+I can be of some help.
 
-The fault path needs a device ID and there is no longer a device to
-take it from.  Cache the ID of the device that created the current
-handle at attach or replace time.  This preserves the existing choice
-of ID while allowing the fault read path to use it after that device
-has been unbound, so this patch alone removes every use of the stale
-pointer.
+Thanks,
+Fangyu
 
-Fixes: b7d8833677ba ("iommufd: Fault-capable hwpt attach/detach/replace")
-Cc: stable@vger.kernel.org
-Signed-off-by: Qihang <q.h.hack.winter@gmail.com>
----
- drivers/iommu/iommufd/device.c          |  6 ++++--
- drivers/iommu/iommufd/driver.c          | 11 +++++------
- drivers/iommu/iommufd/eventq.c          | 14 ++++++--------
- drivers/iommu/iommufd/iommufd_private.h |  9 ++++++++-
- 4 files changed, 23 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 1b0bdf57ac8a..43ee9610e6d1 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -581,7 +581,8 @@ static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
- 	if (!handle)
- 		return -ENOMEM;
- 
--	handle->idev = idev;
-+	handle->igroup = idev->igroup;
-+	handle->dev_id = idev->obj.id;
- 	if (pasid == IOMMU_NO_PASID)
- 		rc = iommu_attach_group_handle(hwpt->domain, idev->igroup->group,
- 					       &handle->handle);
-@@ -654,7 +655,8 @@ static int iommufd_hwpt_replace_device(struct iommufd_device *idev,
- 	if (!handle)
- 		return -ENOMEM;
- 
--	handle->idev = idev;
-+	handle->igroup = idev->igroup;
-+	handle->dev_id = idev->obj.id;
- 	if (pasid == IOMMU_NO_PASID)
- 		rc = iommu_replace_group_handle(idev->igroup->group,
- 						hwpt->domain, &handle->handle);
-diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
-index e4d17a748178..601a5aeced95 100644
---- a/drivers/iommu/iommufd/driver.c
-+++ b/drivers/iommu/iommufd/driver.c
-@@ -274,26 +274,25 @@ int iommufd_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
- 
- 	handle = to_iommufd_handle(raw_handle);
- 	/* No IOMMU_RESV_SW_MSI means no change to the msi_msg */
--	if (handle->idev->igroup->sw_msi_start == PHYS_ADDR_MAX)
-+	if (handle->igroup->sw_msi_start == PHYS_ADDR_MAX)
- 		return 0;
- 
--	ictx = handle->idev->ictx;
-+	ictx = handle->igroup->ictx;
- 	guard(mutex)(&ictx->sw_msi_lock);
- 	/*
- 	 * The input msi_addr is the exact byte offset of the MSI doorbell, we
- 	 * assume the caller has checked that it is contained with a MMIO region
- 	 * that is secure to map at PAGE_SIZE.
- 	 */
--	msi_map = iommufd_sw_msi_get_map(handle->idev->ictx,
--					 msi_addr & PAGE_MASK,
--					 handle->idev->igroup->sw_msi_start);
-+	msi_map = iommufd_sw_msi_get_map(ictx, msi_addr & PAGE_MASK,
-+					 handle->igroup->sw_msi_start);
- 	if (IS_ERR(msi_map))
- 		return PTR_ERR(msi_map);
- 
- 	rc = iommufd_sw_msi_install(ictx, hwpt_paging, msi_map);
- 	if (rc)
- 		return rc;
--	__set_bit(msi_map->id, handle->idev->igroup->required_sw_msi.bitmap);
-+	__set_bit(msi_map->id, handle->igroup->required_sw_msi.bitmap);
- 
- 	iova = msi_map->sw_msi_start + msi_map->pgoff * PAGE_SIZE;
- 	msi_desc_set_iommu_msi_iova(desc, iova, PAGE_SHIFT);
-diff --git a/drivers/iommu/iommufd/eventq.c b/drivers/iommu/iommufd/eventq.c
-index b8a54454dd17..3c3282fd5b93 100644
---- a/drivers/iommu/iommufd/eventq.c
-+++ b/drivers/iommu/iommufd/eventq.c
-@@ -83,11 +83,10 @@ void iommufd_fault_destroy(struct iommufd_object *obj)
- 
- static void iommufd_compose_fault_message(struct iommu_fault *fault,
- 					  struct iommu_hwpt_pgfault *hwpt_fault,
--					  struct iommufd_device *idev,
--					  u32 cookie)
-+					  u32 dev_id, u32 cookie)
- {
- 	hwpt_fault->flags = fault->prm.flags;
--	hwpt_fault->dev_id = idev->obj.id;
-+	hwpt_fault->dev_id = dev_id;
- 	hwpt_fault->pasid = fault->prm.pasid;
- 	hwpt_fault->grpid = fault->prm.grpid;
- 	hwpt_fault->perm = fault->prm.perm;
-@@ -128,7 +127,7 @@ static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
- 	struct iommufd_eventq *eventq = filep->private_data;
- 	struct iommufd_fault *fault = eventq_to_fault(eventq);
- 	struct iommu_hwpt_pgfault data = {};
--	struct iommufd_device *idev;
-+	u32 dev_id;
- 	struct iopf_group *group;
- 	struct iopf_fault *iopf;
- 	size_t done = 0;
-@@ -157,11 +156,10 @@ static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
- 			break;
- 		}
- 
--		idev = to_iommufd_handle(group->attach_handle)->idev;
-+		dev_id = to_iommufd_handle(group->attach_handle)->dev_id;
- 		list_for_each_entry(iopf, &group->faults, list) {
--			iommufd_compose_fault_message(&iopf->fault,
--						      &data, idev,
--						      group->cookie);
-+			iommufd_compose_fault_message(&iopf->fault, &data,
-+						      dev_id, group->cookie);
- 			if (copy_to_user(buf + group_done, &data, fault_size)) {
- 				xa_erase(&fault->response, group->cookie);
- 				iommufd_fault_deliver_restore(fault, group);
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index eb2e85b27e42..6d02599ebd9e 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -589,9 +589,16 @@ struct iommufd_eventq {
- 	struct wait_queue_head wait_queue;
- };
- 
-+/*
-+ * Devices attached to the same PASID in an IOMMU group share this
-+ * handle until the attachment is replaced or its last device detaches.
-+ * Each bound device holds an igroup reference, so the group remains
-+ * valid even if the device that created the handle is unbound.
-+ */
- struct iommufd_attach_handle {
- 	struct iommu_attach_handle handle;
--	struct iommufd_device *idev;
-+	struct iommufd_group *igroup;
-+	u32 dev_id;
- };
- 
- /* Convert an iommu attach handle to iommufd handle. */
--- 
-2.54.0 (Apple Git-157)
-
+>[1] https://lore.kernel.org/linux-riscv/20261119132744.396426-11-gong.shuai@sanechips.com.cn/
+>
+>Thanks,
+>Shaui
+>
+>>
+>> Thanks,
+>> Fangyu
+>>
+>>>The change, if you think it is needed, fits better in the last patch,
+>>>"iommu/riscv: Add IOTINVAL.GVMA invalidations". I am replying here
+>>>only because the code is very similar.
+>>>
+>>>Thanks,
+>>>Shuai
+>>>
