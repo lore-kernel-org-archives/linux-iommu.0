@@ -1,79 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795342314;
-	b=FcFeG8vn20GN70/KqG46Kdmt9oQA5qb/Z/43hGvaL6Covc1285F2Z01vpFGArwa9WLIY
-	 hIA6BGHOihyuGPgtZWT31WY02HhT+2HyyeQsNKDnPh6b+pR63XYP6Hfhasx0yl92JtiRx
-	 bxwT7kVMpWJCJayBbNyzU7UWhvRJPj55fu6i5kafKBX71VFx/d8PTf15ge5YlhTZTbapa
-	 XoK4hXj03icg48Q1WmKVBdwQFcFJbJZqZoZ6Ny7HZNoiQXSgxT4iI5H721uSjnvjGH81O
-	 eOk6VRztoci0Jh6DudMh+QIpUGcqHo5yxdfw190nXKX8A1ilfw1rx9AB3jBEAkuZ8CA==
+	t=1795351638;
+	b=SuPlAeMyMs26NevvXKC1Qtqz/Egzq1NUthjCOdEFi6TKrqAp6nawlq/LIhSaJIqqqt7A
+	 SLgIWrHWaLcwmoarvTV8EFyfq5HRn9mQo8mNKBmaYk0ZvIJ7IN3N7wkW8vgGfxptoCgX6
+	 c/zaNDKA+jH17gx7eX3wuVhnGEhoMqYzUEobuT2Uer8OJlDup5plryykkhpkQ4P7ib27O
+	 MmIf2EZamJOck1XZaaMTh+WBGj4OAjkPf6pPVH5HA5W/wiSsU6BcrxH5SIG6ULRB5+qqF
+	 0EPBG4UJEoJ5B1VnGE+ntw4MVqs0c2CX9kV1fSJ0gJSybLrW4StcZTWs2dVIsIshrSw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795342314;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795351638;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Message-Id:X-B4-Tracking:
-	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
-	 X-Endpoint-Received:X-Original-From:Reply-To;
-	bh=DUFGSuQcmGXTXP29qSBzVDw0B0OLNCLEBlu9W81RI20=;
-	b=G6g2z8ycuT/XP+Pv2iKHHJsN8irLykGAOPM3WYWM2t3JRMWbssJAPJqm4WV5CMnNW+3D
-	 2ztPgwSOVyTJjIeOiZjQ+Cfl6o3XW8UbfcjVp0oFMkdUCGdv+YgF+4Y2dbqshqBoSKlHa
-	 7RjokSQwXwQ4B+uxTOsi7FMoKd2ZbaKtoZSsBnUDcKUAczSe6oen6Mi1uZz2HibZD0CzP
-	 oXN+MoG9E1Uu8yBoCGVky+jn6QQMTJCZa3ilsSlDeLSTWtmxPxuH84qJdU246eW6B3ZJy
-	 H7zEO4OLMU7fh84nX3NKTJpzdd7aa0d/B/KIIZAOk3EhQNFy5hKY320TaX7SPkYWe+A==
+	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=H6i7jKklZYNYidCp2oakstTLRi6a7yVcN/iUSHiKrp0=;
+	b=iwHD5O6iwhCvI3ySPfzHSIj6fKGdpIoL4D4vbpiU5Igid8p3kJe9UTnFZzzy8KKFjZ2r
+	 SUnSF25NzhDl0GrgB3bghaOksLbHyBKV4MNRn30K4ye3Xpal7sEZhxELpPyC/2W16DEaY
+	 6tprEw+KOb5oGR2R2+NmUOkPhCT92/9jcnXWhpySCSvpcGBYG9OZVegjJ3xFM664qHZJU
+	 hlQ/GcPByh8iBcwwuow4/RarUyqF0oMwSPIZCYPSJFgHZ0nZXBUWwyver2/LDBAUVi0zn
+	 SMqmge3ZMI/b2Msg8RTDXo4bUIQ6kse+uyMbuKjzJuEpUX/f5oO+4tpw0WR6+EUlVuA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k4neDRH1;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Xd6hb4qM;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 821F0606A320;
-	Sun, 22 Nov 2026 10:11:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3070606A320;
+	Sun, 22 Nov 2026 12:47:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k4neDRH1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Xd6hb4qM
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795342314;
-	b=iBwskpfAiRJWSRoErak97eSGASWza6UsIf9wzI6eO0/HsrPMo/JORfSMfnFesroUiJua
-	 oyex9OYTI7G5ROCqAc3kHm8T3Gwq0Z4bQAdAZQhuXGwvE2B5nKEm7ry+JKb/Dm6nZf7SG
-	 74R4QjiOTARY3Vu7z8vd8n5G8CtEHOsv50Cy6ZlRDbb8YymAq0t4wf5/j/KqB90IbA1iH
-	 XlOyIKK6PSoJdTalkjxeHOY9LGOFA0hzXpqcd96ISUfOOoWbsxhk+7WGMr1shMdN8LTHq
-	 k1Ho/UlOU58cBvVUpUaBdoFsfpkn0Rl6z9wnEVHe5Xn8TIrqtxW9wsZKtVYRbbD8uKg==
+	t=1795351637;
+	b=bcN3wPd7/kxRdjO9UvdZlOUF86JJioRiyUjRfcptuoudgty/NRfAqsRh8ePD6VgZDF3J
+	 SacLuXD5Z/5wD5VOvCXsg7TnWlHU+aA8FCIdKoZdYpBph0uijm8eaXuCYWpQ64VBkVLB0
+	 btPGjAljjpLwVcVmzd2Te0qiHbS6nOvRBFTYQXo8gkMzAGyjWlqHIsSiB/IML7jSQbG7V
+	 4b1VDTCkvu6XIlxqchofD6Axz9HcYASZEuqoBrFdaaEhI0U4drI1vOrujlBVHRZv7yJTO
+	 XfQP/9ncBGg0cXluvPtkniHBT2yo8x13Gp4ptacBDFcLMHzZ8V7PDbLC6wHX53vGWPA==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795342314;
+	c=relaxed/relaxed; t=1795351637;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:
-	 X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To;
-	bh=DUFGSuQcmGXTXP29qSBzVDw0B0OLNCLEBlu9W81RI20=;
-	b=g4s2CoYZ0HCVSS8S1l6KG0sJvk4Bn3ZeKJBXpqt5iaClPYBmzRCnHD/QCZ/wQyN9+nks
-	 VyaIElOvzSgl3DStLEQNMR94/iZLcooISC0dcz50YrCfxCqdD7BF2unhH4kWwrj7xpI6u
-	 CbYw1oY3YxtX/UtuBzD89QwkNLYlxWs+LoX8uAzuorK+iL5HUIk3tkkqObBdV0jJmDvXt
-	 j+CJzSvjdk25Ia+VL30mIgdccz1gFqBQmpWTLWYkgu+w6xZzybobzvC2KfQbn5zBpubj5
-	 REgdtoBVdxp4eZIpt3l4uz48Q+2YXMa3urvXvwbrP/OxC32eKoob7VN8uyl0mXrctdQ==
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=H6i7jKklZYNYidCp2oakstTLRi6a7yVcN/iUSHiKrp0=;
+	b=Cy/tT7ccfY6HVF2Xaemp5uLaQJnMnIjx1DRUh9GZlSu/+7mQCeGD2SgPxhtMJ7FYvy+A
+	 mWDD/wwq9+hRrg1hNCxDlm8YKxNkZPFlY0ygJlln/tsZ7MyGiqrKXOWOvZ/O2VON2WxFk
+	 t4iHBQK++nMtfjs9R8khdpv22vcA90SNnXFRQSN6yxEw1nEsUT/jvc7Y/4IoYnqdJ3yhk
+	 7LXCgwGZrEASTFmctYaEQlJDZnQQF4lhusOM63sBgMBEk/v+qepm1fInQD7Xi1PJbqgQK
+	 mg/S9LNKqj+ZPBp546ozqLfMLwrrqqvI2DQuCQ3Fvbmu1pvXrgy8HlaXKQeovHbjLwA==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id AA41A1F000C0;
-	Sun, 22 Nov 2026 10:11:53 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id 848211F000C0;
+	Sun, 22 Nov 2026 12:47:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795342314;
-	bh=DUFGSuQcmGXTXP29qSBzVDw0B0OLNCLEBlu9W81RI20=;
+	s=k20260515; t=1795351637;
+	bh=H6i7jKklZYNYidCp2oakstTLRi6a7yVcN/iUSHiKrp0=;
 	h=From:Date:Subject:To:Cc:Reply-To;
-	b=k4neDRH1RSfUCf70KfROzFinXSzg+oPHczgZBJEwAYkQi2wI5XYuCvHbt1HLqRA43
-	 R9t/SmrzrIg1dXSkjxx8G3ATn2CzK3V7mNrvLFInCMUrUSxQSELme7AbkXjvtO5OEJ
-	 EDPm7nGZU2bowrNBVwlvEgR4b/h0tHw6mZIR8j0BR6K55ahmizit9F3BWnpHskJ1Mh
-	 V/ZDE+Y2Kh+mBemwRUmyIglhcWleGSPYGSyYn0QWAvd0uAXjnDkHS+tQj7BthovU0r
-	 G1mgM357UFLMrR7QVLe3ZQ2SLZNiVLydwT3doz2iZjzKVZzo2xF1G/ORKlsjCuzpjW
-	 BEPDmyvdilO0w==
+	b=Xd6hb4qMUki8cwX0QTgsO7SkaaZAg+PwDSPle8+feCvfk2c2nE0te4QalQEtT/gt8
+	 YNt0n+A90hfrC5LoKXbQTLhskxtOfWEEztqemvRmri3NNuuRzopV10LC9ffMsqF0j3
+	 Ytl0PYxYms0uwhfuDSDoy9kcTMnn3CW4Ucbm8mfm+BSSGeH5QAn/W91OsKwq4exFgT
+	 KQiw5nEQ2swYPs0pBXEiglb1cYXIW4fUt+kgZkvTHzZFo2mJVKw5JQJaFEWxawPqDC
+	 fnlhe9bC+P8xSg9bh1FYjGrGcmqwzD8mxU3C4liZiCBv9DSLTYfOUr3nyB9cnLVYki
+	 /fW0KMqcIWBLg==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 0B7EA4BFE9;
-	Sun, 22 Nov 2026 10:11:53 +0000 (UTC)
-From: Suyuan Wang via B4 Relay <devnull+shyckless.gmail.com@kernel.org>
-Date: Sun, 22 Nov 2026 10:11:52 +0000
-Subject: [PATCH] iommu/qcom: Disable clocks if restoring the secure config
- fails
+	by lkml.kernel.org (Postfix) with ESMTP id 11F2C4C034;
+	Sun, 22 Nov 2026 12:47:11 +0000 (UTC)
+From: YanXin Li via B4 Relay <devnull+fadouse.pm.me@kernel.org>
+Date: Sun, 22 Nov 2026 20:46:37 +0800
+Subject: [PATCH v2] iommufd: reject mmap() of not-yet-finalized objects
+ with iommufd_try_inc_users()
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -84,71 +84,99 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261122-b4-04-iommufd-mmap-uaf-v2-a67fd4229347-v2-1-5c108f208c89@pm.me>
+X-B4-Tracking: v=1; b=H4sIACzkAmsC/yWNQQ7CIBBFr2JYOxGGkVavYlwMMCjGtgas0TS9u
+ 60u38vP+5OqUrJUddxMqsgr1zz0C+B2o8KV+4tAjgsr1OiMQQRPoAny0HVjitB1/ICRE7wQ2DU
+ pEuLBUgMcvY4m7Y0JWi2xR5GU37+j0/nPdfQ3Cc+1vi48VwFfuA/XVRW58wdWuQtERlOyjjByg
+ 9o40oQOrVBrsbWOJcXYiprnL5okshDQAAAA
+X-Change-ID: 20261122-b4-04-iommufd-mmap-uaf-v2-a67fd4229347-adb0d1f511c0
+To: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, 
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795351630; l=3039;
+ i=fadouse@pm.me; s=b4-relay-20261122; h=from:subject:message-id;
+ bh=Z84dv3tFgdoJmnVouiJISUeePaqORmrrqKd4RPqN3QM=;
+ b=ToN2PGJXB+5WFnyUW173WnInnUMjF3W3Cd1ZCMQzK9yMGN309zX2gytW39ZMzuE0oIp/aITtJ
+ dHH8X6KtIzjATSBu6TXFoRlCD19Gp5zoxCKN65pYAa+fdkUvgcFd4ZG
+X-Developer-Key: i=fadouse@pm.me; a=ed25519;
+ pk=b4DyzHJDRd8853IHUSKPA5wwzChj8eF4MTnZuyPz1PQ=
+X-Endpoint-Received: by B4 Relay for fadouse@pm.me/b4-relay-20261122 with
+ auth_id=1597
+X-Original-From: YanXin Li <fadouse@pm.me>
+Reply-To: fadouse@pm.me
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261122-qcom-iommu-v1-1-ecb20a28871f@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAOe/AmsC/yXMTQ5AMBBA4avIrDXR8RtXEQtqMJIqLSIRd1csv
- 8V7FziyTA7K4AJLBzs2s4cMA1BjMw8kuPMGjDCTElGsymjBRutdYJLHqsAO0xTBB4ulns9vVtW
- /3d5OpLb3APf9AM6McwVuAAAA
-X-Change-ID: 20261122-qcom-iommu-2473c82d2552
-To: joro@8bytes.org, will@kernel.org, robin.clark@oss.qualcomm.com
-Cc: iommu@lists.linux.dev, robin.murphy@arm.com, 
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795342312; l=1475;
- i=shyckless@gmail.com; s=default; h=from:subject:message-id;
- bh=1Eskb3u6fGizPUm16aNFvrkib/eJ2zFG+/IzmSV4X/Y=;
- b=ZOGKdTHhmGOSbeG4MiNOD9O4UG/bQnmgXpNcWMIuhzXL6CbNW60fDSSxuqAPYbf+CxdaRHuqT
- bUCoNBgV+eAA5fWSVT4jLwsfiqxAeW3ig/BT3bfrHFybV/AwxRrQ6hQ
-X-Developer-Key: i=shyckless@gmail.com; a=ed25519;
- pk=pMtccVGiWES3bV+7YBFuBclkvq2n2HBHQ5azaBrK2lY=
-X-Endpoint-Received: by B4 Relay for shyckless@gmail.com/default with
- auth_id=1498
-X-Original-From: Suyuan Wang <shyckless@gmail.com>
-Reply-To: shyckless@gmail.com
 
-From: Suyuan Wang <stevewong@hust.edu.cn>
+From: YanXin Li <fadouse@pm.me>
 
-qcom_iommu_resume() enables the clocks and then, for an IOMMU with a
-power domain, calls qcom_scm_restore_sec_cfg(). If that call fails, the
-error is returned but the clocks stay enabled. The PM core then treats
-the device as still suspended, so qcom_iommu_suspend() will not run to
-turn them off.
+iommufd_fops_mmap() pins the owner of an mmap region with
+refcount_inc_not_zero(&immap->owner->users).  This can also pin an
+object still being constructed: IOMMU_VIOMMU_ALLOC publishes its
+immap in ictx->mt_mmap before the object is finalized, while
+ictx->objects still holds XA_ZERO_ENTRY and obj->users is 1.
 
-Disable the clocks again when qcom_scm_restore_sec_cfg() fails.
+A concurrent mmap() can take the reference.  If the creation ioctl
+then fails, for example when iommufd_ucmd_respond() faults on a
+read-only command buffer, iommufd_object_abort_and_destroy() erases
+and frees the immap.  iommufd_object_abort() warns about the extra
+users reference; a later VMA close dereferences the freed immap.  On
+the unpatched kernel, a CONFIG_IOMMUFD_TEST reproducer reported:
 
-Found with a static analysis tool and checked by hand.
+  WARNING: drivers/iommu/iommufd/main.c:126 at iommufd_object_abort
+  BUG: KASAN: slab-use-after-free in iommufd_fops_vma_close
 
-Fixes: 268dd4edb748 ("iommu/qcom: restore IOMMU state if needed")
+The reproducer needs no hardware IOMMU.  On production kernels, this
+requires a driver that publishes an mmap region before its creation
+ioctl can still fail, such as tegra241-cmdqv on real hardware.
+
+Use iommufd_try_inc_users() to check under the objects xarray lock
+that the owner is published before increasing users.  It returns
+-EBUSY for an unfinalized object, so mmap() returns -ENXIO.  The mmap
+path takes the objects lock under the mt_mmap lock; object teardown
+releases the objects lock before erasing the mmap entry.
+
+With this change, a finalized viommu can still be mmap()ed and
+unmapped.  In an x86-64 QEMU/KVM guest running mainline after
+v7.4-rc3 with Generic KASAN, UBSAN, lockdep, and DEBUG_OBJECTS, 3000
+aborted allocations racing two mmap()/munmap() loops produced no
+kernel splats.
+
+Fixes: 56e9a0d8e53f ("iommufd: Add mmap interface")
 Cc: stable@vger.kernel.org
-Co-developed-by: Kaixuan Li <kaixuan.li@ntu.edu.sg>
-Signed-off-by: Kaixuan Li <kaixuan.li@ntu.edu.sg>
-Signed-off-by: Suyuan Wang <stevewong@hust.edu.cn>
+Signed-off-by: YanXin Li <fadouse@pm.me>
 ---
-Compile tested on arm64 (W=1). I don't have the hardware.
+Changes in v2:
+- Resend via b4 because the archived v1 email gained a blank line in
+  the diff context and cannot be applied.
+- Shorten the commit message and correct the tested kernel version wording.
+- Link to v1: https://lore.kernel.org/r/20261122032416.11746-1-fadouse@pm.me
+
+Test baseline: c44104f3642d
 ---
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/iommu/iommufd/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 96903cd9cfc2..52bcb8cf46b1 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -898,8 +898,11 @@ static int __maybe_unused qcom_iommu_resume(struct device *dev)
- 	if (ret < 0)
- 		return ret;
- 
--	if (dev->pm_domain)
--		return qcom_scm_restore_sec_cfg(qcom_iommu->sec_id, 0);
-+	if (dev->pm_domain) {
-+		ret = qcom_scm_restore_sec_cfg(qcom_iommu->sec_id, 0);
-+		if (ret)
-+			clk_bulk_disable_unprepare(CLK_NUM, qcom_iommu->clks);
-+	}
- 
- 	return ret;
- }
+diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+index 9a921b15316..f0b4308fe34 100644
+--- a/drivers/iommu/iommufd/main.c
++++ b/drivers/iommu/iommufd/main.c
+@@ -601,7 +601,7 @@ static int iommufd_fops_mmap(struct file *filp, struct vm_area_struct *vma)
+ 	mtree_lock(&ictx->mt_mmap);
+ 	/* vma->vm_pgoff carries a page-shifted start position to an immap */
+ 	immap = mtree_load(&ictx->mt_mmap, vma->vm_pgoff << PAGE_SHIFT);
+-	if (!immap || !refcount_inc_not_zero(&immap->owner->users)) {
++	if (!immap || iommufd_try_inc_users(ictx, immap->owner)) {
+ 		mtree_unlock(&ictx->mt_mmap);
+ 		return -ENXIO;
+ 	}
 
+---
+base-commit: c44104f3642da720164042623e4832836aefdd8e
+change-id: 20261122-b4-04-iommufd-mmap-uaf-v2-a67fd4229347-adb0d1f511c0
 
+Best regards,
+--  
+YanXin Li <fadouse@pm.me>
 
 
