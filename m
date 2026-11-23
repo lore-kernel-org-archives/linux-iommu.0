@@ -1,56 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795454571;
-	b=z2DEjnMFXET5RFj3Y0M6yBAHVTw3HXvo83bJ2lJj961Dh/t/NVTgTPkZSjeoY0jaBwoy
-	 42LdfTWLvrh4rDgRl7GxYFxoqNG4W7Cq9czjqFVvYmY8OnwMMi1dPg9mEZzts/E+AENOt
-	 +YyjITd4yiBkBKe2o0NbCb5aJ1iJJL6QkAHFV9tUF1X8z07zs62r6x+rKz8c2p7wzxIN2
-	 zEm7vn7Vl/mSq/BKeiAy7nfqRWSLKCRPVrxqKm7M+1ZVnrPJ3oQ2ODiK3Uzyy+lxq1CTF
-	 d7jsomYy/3nSWMgQ69OKhRD8ZBolXbu0aqs8rQxI1fl23vSPpa1V/6J3TUmCmv+VGZw==
+	t=1795455141;
+	b=cDJgj8mHLE+Cr938HWX6QqJALzkElBgtlr/EbATYOMjjpTGqAC98y0UDEoI1Bp14SyHj
+	 WoKNwAhf1Rv3ImhXXjMzKzKEr6RWflj/GTlFBSdaI8rVXTjZUX9Urfu5zPJgv9xGCW4I0
+	 P/lJmt6nwVHvZFAs40BImWLxx0mor5ZXxDV3v0yzM8ZTKWin6yyncRCdnDoFxEDUarr3A
+	 zQGJq6QyQpoVLEBoExuyr87e+3jCP28Eg6lYo11K4UXeBXUH8UrRF0Au8nGXXtbCQQQVf
+	 l5U7APrsJFAotDZC0lqiKg+FYlheh9HO4Jj8g16NXaOWEtChoL6RmS7SBZkH51pmy1w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795454571;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=To0SY0PCUEWNtp8vKtDr3U/74vnYOoZDCurwJNOsb+E=;
-	b=UXgw+ZQJPB3Po/l+YlJXwRHz9lMUMMaHE0NmO9zozaceKC06Vp186Yfxmzm7KhxxFP/G
-	 rVtKZfL8Vf3vjPBMKONixSdGGBSpl505NrTH3M/onyATVyvhweZ7HAYE1ql/TrJOtX/WA
-	 +ZUj/Nbq9TyiHrh905XsEv9/keXM/dhbHUJ6eXzqptH6jAVQTbA2NqtkmsgAr8jtWnek1
-	 YdMyBoR0H3A32o8EPgLszd8xykaCBMs0P7QYNbOVqCou4fK0MJ0BMOM5ubxwIf4Xw62k6
-	 lrLSqjEfVqsJSh3/ZHzo7bThbYqLq9+HtskMot4zabpQeXph5pOQnekOpcbDN5eSoRQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795455141;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Mime-Version:Content-Transfer-Encoding:Content-Type:Date:Message-Id:
+	 From:To:Cc:Subject:X-Mailer:References:In-Reply-To;
+	bh=P+l/VRR07HqPbgm9tEPK7SVr6Tlf5vY5XKwCiYVXpnE=;
+	b=iFJInDFv0OXBcz6d2HN2RUtQFcvUVYCmnpcbdi2KV7KTNYLn82lrDRDbSgHBnzQ1LNVy
+	 9e9hfibaKT3rsIEfLIVWBfGzbkbnhg/4d5Z6rJ60chwPl2h4oVHO0uVwV0srn0PrMAj9W
+	 q4aQqi7Aigd6pZ8HvUBTtzv8K8/tmrerdFItrzfSo2CEkIvX3deO1QqgGpJfVytMnIUBf
+	 TgIOKfuCBonygPe97Dc0JO1XMOrMpK2ob6lOTt2CTSVKzMXqwrF2tUKoKio6tn3H0ctmy
+	 fbJvGhh8AamIPXCG5B7HP5MVTBjgxwWeD98BpweXU0XI3AOjOJaOC3VBpGWwj0RLc3Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n5Sn69Fn;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=aIaDX2Za;
+	arc=none smtp.remote-ip=209.85.214.172
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48B0D606A327;
-	Mon, 23 Nov 2026 17:22:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 415BD606A31F
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 17:32:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 415BD606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n5Sn69Fn
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 925541F000D4;
-	Mon, 23 Nov 2026 17:22:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795454570;
-	bh=To0SY0PCUEWNtp8vKtDr3U/74vnYOoZDCurwJNOsb+E=;
-	h=Date:From:To:Cc:Subject:In-Reply-To;
-	b=n5Sn69FnkbmU1o8ob6qHPrFVakoc4kcL4qpkMfrY/+3Y1/f+Sw7Fc5fu4dh41Ot2C
-	 64dkif6Mq6BcbFGiFgMJdacI08ek1oXrMssJaTiBcw/6crWDJi4yR12jw6RxOqDyHR
-	 2dUnxbO1y8tnHa7psNzkdLmA5feI1gh5N8MUJr4QUIO+jN0laEfTjURaG/s752YUT3
-	 SuBbR2h05X2nHRzGYEAq3PK/AdrbsyNaOAY9RQjAN9Iv57GuVzbiNHOhUb2rcyzt//
-	 4/dCe8OnmtECessrTMLBz5WLv3GH9Od66vtm0y+rQC/wH3Mh7cAbx5zOhDeDBaljV8
-	 ojFHMGmiNRaIw==
-Date: Mon, 23 Nov 2026 11:22:49 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>, linux-kernel@vger.kernel.org,
-	Danny Gonzalez <digonzal@google.com>,
-	David Decotigny <decot@google.com>,
-	Sheena Mohan <sheenamo@google.com>,
-	Pranjal Shrivastava <praan@google.com>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Avoid relying on pci_ats_supported() for
- rbtree removal
-Message-ID: <20261123172249.GA1095219@bhelgaas>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=aIaDX2Za
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2f04244c3d0so29819375ad.3
+        for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 09:32:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1795455140; x=1796059940; darn=lists.linux.dev;
+        h=in-reply-to:references:subject:cc:to:from:message-id:date
+         :content-type:content-transfer-encoding:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=P+l/VRR07HqPbgm9tEPK7SVr6Tlf5vY5XKwCiYVXpnE=;
+        b=aIaDX2Za1UAxDZvHikVowcIZLEDfyZNK/wJ7n0zdBFr1kO5d7UmwabvcI5D71wVcCW
+         sWvZMULyDzVN8TdIgZomhhSKXJx++KqyH6Jj/1JtZkLAgrkoJCaFYMZDSISektkDUW6w
+         3gefAGclXbeK6SbKVxBZFwNJsb0G7wO8bUW21km4irmig1tZdMtcjE8ar59tb8V/3kvv
+         08lEYiD092ntiE7JRaPnc7FGugYqVobsK0EF8snw/jlM8q65+lRJxNOqLCdRyC2LhpfK
+         8yblElZVDkQo1+OLk2EqSPKtFapxpJpOSZbisPjGf2aY8kZRMZJ11SONR7TB//xgp1Jv
+         2sJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795455140; x=1796059940;
+        h=in-reply-to:references:subject:cc:to:from:message-id:date
+         :content-type:content-transfer-encoding:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=P+l/VRR07HqPbgm9tEPK7SVr6Tlf5vY5XKwCiYVXpnE=;
+        b=MH89vQb1S0ncpgIs2OK68P7e0P7NezxilqCvsXsIkdyso9iANRjXakn0ASQEegLz63
+         PlRo6DWad0N5tbnjRL+AzTfABMVuKOe+lm9FDQoWWum+pWwXhaoKg6voU+nWYXIZRgiV
+         IJOfMTaBgYg0Ziq3bWUPJFxkn+/YLIxmUP5x9HQegyApyWra3Qk7ZzBnetDSms/+XCE+
+         uQL6YHu9Fdf4W4EbD/m9ouWxGKn5VDsqE2SO68SOf3hl0hpYoW2ItJJeh/3Hxj8LvA+Q
+         mXYZx0I+JqnVswKIJCWxwYrBKIVdmftgjIv6fUItoJPSQJFjHjD9I65MzUWcwW76WCbP
+         Xudw==
+X-Forwarded-Encrypted: i=1; AL+hErGejB2TzMlOEHNlcWng/FtbHk0koBiYD7cxz3L89qGst7Um7erbQsAp36mgZn3TKKh2NEF5fQ==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+LvgkWWwk25qUZCEdXSNmVIRsyCgFKaW7UzdS+lBPxrQITj9Ib
+	Tja/HoaYir2ovNr7dyfLqOcAY9nQs80PS/nzQaHp0iqlcbuowBN2JolaHcyvtglvPw==
+X-Gm-Gg: AZFdTZd/kZYQBb0lqIqIIa1TE5yRnFQ2S+EiRrpbyknG6vc+omN2maVkPCnjqtJmHsd
+	pCGIT9LKPuouXaMbS5koT9zHmsaSGzTTpDOai/nekrjBJplBhYqHpb+uZXd0DijdZHSG+pW8+Oz
+	lS3QyZaBNeNttLXUmUJKVEYGVbMdF7gXbj+m8x1MR0zPGiuAwmgkqumtmt52fsUIFaaRH/HzhyL
+	iRCUwIZmRj14qw+fmu1VDm24Eoeb4lrznpFR+A22L0yxX/Iy7y6oU8nFAEldO+dqg9h131zOx1e
+	j1KwMj6fNaWKD0D4isfNM0fvO/Pdw8Nwc+VJ6JO3vBwxu14n6KGLvXwJSua61eI/2+XPeaPDOzv
+	JahBB2XjDXhw+LHQQrX5zN1vfWIsIAN/nypl3XjC3afamvlfTvWEMmkXhMPVSEdSoeHNZdXGiDf
+	kb+tAmE0tAZirJx2vzszarySylEVJKqKCXZbquC8ZcN6xM0FMq2rzTR/U/Gx6w74hza7R1p9rVf
+	4FP9UtyiIU+dsVApYelX1S5OLWGXIoj1jvDESxPdGZVFYHlsr8PVKni52xDZZUSXt7CsQx5OxKS
+	P0SnFs3I4WwZtRnwJHhIQZUJJUwoXn82Vy2gpCxFxKfjAVKruDE4PTzPoFtC+tFd
+X-Received: by 2002:a17:902:e807:b0:2ee:1fab:158f with SMTP id d9443c01a7336-2f03f167d4emr115089865ad.43.1795455139780;
+        Mon, 23 Nov 2026 09:32:19 -0800 (PST)
+Received: from localhost (33.79.127.34.bc.googleusercontent.com. [34.127.79.33])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2f051a566f7sm45650825ad.41.2026.11.23.09.32.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Nov 2026 09:32:18 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -59,60 +87,89 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261123003805.2828580-1-baolu.lu@linux.intel.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Mon, 23 Nov 2026 09:32:17 -0800
+Message-Id: <DN2RQ7LGX224.3W3PSQ2PBHTJZ@google.com>
+From: "David Matlack" <dmatlack@google.com>
+To: "Pratyush Yadav" <pratyush@kernel.org>, "Tarun Sahu"
+ <tarunsahu@google.com>
+Cc: "Pasha Tatashin" <pasha.tatashin@soleen.com>, "Mike Rapoport"
+ <rppt@kernel.org>, <robin.murphy@arm.com>, <maz@kernel.org>,
+ <will@kernel.org>, "David Matlack" <dmatlack@google.com>, "Alexander Graf"
+ <graf@amazon.com>, <seanjc@google.com>, <jgg@nvidia.com>,
+ <loganodell@google.com>, <arnd@arndb.de>, <dwmw2@infradead.org>,
+ <baolu.lu@linux.intel.com>, "Bjorn Helgaas" <bhelgaas@google.com>,
+ <oupton@kernel.org>, <alex@shazbot.org>, <gle.com@google.com>,
+ <pbonzini@redhat.com>, "Andrew Morton" <akpm@linux-foundation.org>,
+ <kevin.tian@intel.com>, <joro@8bytes.org>, <kvmarm@lists.linux.dev>,
+ <linux-pci@vger.kernel.org>, <kexec@lists.infradead.org>,
+ <kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
+ <linux-arm-kernel@lists.infradead.org>, <skhawaja@google.com>,
+ <sagis@google.com>, <linux-arch@vger.kernel.org>, <linux-mm@kvack.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 05/19] kho: Add feature header for fine-grained ABI
+ compatibility
+X-Mailer: aerc 0.21.0
+References: <20261110050202.529473-1-tarunsahu@google.com>
+ <20261110050202.529473-6-tarunsahu@google.com>
+ <2vxzse0rzjdn.fsf@kernel.org>
+In-Reply-To: <2vxzse0rzjdn.fsf@kernel.org>
 
-[+cc Danny, David, Sheena, Pranjal]
+On Mon Nov 23, 2026 at 6:56 AM PST, Pratyush Yadav wrote:
+[...]
 
-On Mon, Nov 23, 2026 at 08:38:05AM +0800, Lu Baolu wrote:
-> Commit 89436f4f5412 ("iommu/vt-d: Fix WARN_ON in iommu probe path") made
-> the device rbtree insertion in intel_iommu_probe_device() conditional on
-> pci_ats_supported(). To match, intel_iommu_release_device() only removes
-> the device from the rbtree if pci_ats_supported() is still true.
-> 
-> That relies on pci_ats_supported() returning the same result at release
-> as it did at probe. If it changes in between, the rbtree can retain an
-> entry after its device_domain_info has been freed, resulting in a
-> use-after-free during a later lookup.
-> 
-> Checking RB_EMPTY_NODE() to track rbtree membership is common in the
-> iommu subsystem. Since device_rbtree_remove() safely handles an empty
-> node, call it unconditionally in the release path. This makes removal
-> depend on the device's actual rbtree membership.
-> 
-> Fixes: 89436f4f5412 ("iommu/vt-d: Fix WARN_ON in iommu probe path")
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> When we have all this available, I don't see the point in
+> differentiating between optional and required features at the ABI level.
+> At the ABI level, all that matters is what the incoming kernel
+> understands. If the incoming kernel does not understand a specific
+> field, the outgoing kernel should just not use it. There's no point.
+> Best case, it gets ignored.
 
-Looks good to me, thanks!
+I pretty strongly disagree.
 
-> ---
->  drivers/iommu/intel/iommu.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 5a2e705a2f2e..82f7bd8ecadf 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -3393,6 +3393,7 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
->  
->  	info->dev = dev;
->  	info->iommu = iommu;
-> +	/* An empty node marks the device as not in the rbtree. */
->  	RB_CLEAR_NODE(&info->node);
->  	if (dev_is_pci(dev)) {
->  		if (ecap_dev_iotlb_support(iommu->ecap) &&
-> @@ -3508,8 +3509,7 @@ static void intel_iommu_release_device(struct device *dev)
->  	}
->  
->  	mutex_lock(&iommu->iopf_lock);
-> -	if (dev_is_pci(dev) && pci_ats_supported(to_pci_dev(dev)))
-> -		device_rbtree_remove(info);
-> +	device_rbtree_remove(info);
->  	mutex_unlock(&iommu->iopf_lock);
->  
->  	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev) &&
-> -- 
-> 2.43.0
-> 
+An optional feature is one that the next kernel does not need to
+understand to correctly restore the object. A required feature is one
+that the next kernel must understand to correctly restore the object.
+Optional features can be enabled without any compatibility concerns.
+Required features must be enabled carefully (IMO via uAPI) to avoid
+breaking Live Update.
+
+I agree it's a good idea for the outgoing kernel to check that the next
+kernel supports all of the required features it is using, so the Live
+Update can be stopped before the kexec. But that doesn't remove the
+need for the distinction. The next kernel still has to decide what to
+do when it sees a feature bit it doesn't understand, e.g. because no
+spec was provided, the spec was wrong, or we kexec'd into a different
+kernel than planned. Without the distinction it can only:
+
+ A. Treat all features as optional, which risks misinterpreting state
+    and corrupting memory if the previous kernel did not properly
+    validate the next kernel's capabilities.
+
+ B. Treat all features as required, which means no new feature can be
+    enabled until every kernel it might Live Update to (including
+    rollback targets) understands it, even when those kernels could
+    safely ignore it.
+
+Neither of those is a good outcome.
+
+> The semantics of required or optional then become "can I describe this
+> object with the capabilities I can use?". If the answer is yes,
+> serialization succeeds, if the answer is no, serialization fails. So
+> with this, KHO_MAP_F_MULTI_INDEX or KHO_MAP_F_DYN_DEPTH are indeed
+> optional. All memfds can be described without these, they just will be
+> less efficient.
+
+I think this is a different meaning of "optional". Whether the outgoing
+kernel can choose not to use a feature is a decision for the serializer.
+Whether the next kernel can safely ignore a feature's data is a property
+of the ABI. KHO_MAP_F_MULTI_INDEX is optional in the first sense, but
+required in the second: a kernel that doesn't understand it will
+misinterpret the map. The header needs to convey the second.
+
+So I see the spec and required bits as complementary: the spec lets the
+outgoing kernel avoid features the next kernel doesn't support and fail
+before kexec, and required bits let the next kernel fail safely if that
+check was skipped or wrong.
