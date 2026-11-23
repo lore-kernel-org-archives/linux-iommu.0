@@ -1,84 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.172
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795455141;
-	b=cDJgj8mHLE+Cr938HWX6QqJALzkElBgtlr/EbATYOMjjpTGqAC98y0UDEoI1Bp14SyHj
-	 WoKNwAhf1Rv3ImhXXjMzKzKEr6RWflj/GTlFBSdaI8rVXTjZUX9Urfu5zPJgv9xGCW4I0
-	 P/lJmt6nwVHvZFAs40BImWLxx0mor5ZXxDV3v0yzM8ZTKWin6yyncRCdnDoFxEDUarr3A
-	 zQGJq6QyQpoVLEBoExuyr87e+3jCP28Eg6lYo11K4UXeBXUH8UrRF0Au8nGXXtbCQQQVf
-	 l5U7APrsJFAotDZC0lqiKg+FYlheh9HO4Jj8g16NXaOWEtChoL6RmS7SBZkH51pmy1w==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795455141;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.128.54
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795456255;
+	b=Irj/TyC6YBdeAj19RfsfuOQWGvEuAYGGFV5u9JZp3pcaQLWmkAP0ExHeUOZafADOa2hH
+	 tB3lJ/KKHwUSUUSv+iqU2ySpPDxd2MZMSkzF18VCcRWPc/ociTOcKwGXTll+oFWJSjaVZ
+	 N6zI7QqObgwUzLWDiqnf9x8h7JX3KGcdak9PKDhc/8ehsvw2w3lYgpIW8HiohhHzoZziH
+	 mGuygOUFxc5ICSvgM9UXxSyoLl0YaUdPLYSHeQq0am/hOI86Ulztr9hXMstXhNRSz+W6t
+	 86AEYOK/tp8BKw9fw/Kjz2JYxSWPgkOXe/fE4q+FiTFhsTSzx3o/mqTuQeAymjfj2dg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795456255;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Mime-Version:Content-Transfer-Encoding:Content-Type:Date:Message-Id:
-	 From:To:Cc:Subject:X-Mailer:References:In-Reply-To;
-	bh=P+l/VRR07HqPbgm9tEPK7SVr6Tlf5vY5XKwCiYVXpnE=;
-	b=iFJInDFv0OXBcz6d2HN2RUtQFcvUVYCmnpcbdi2KV7KTNYLn82lrDRDbSgHBnzQ1LNVy
-	 9e9hfibaKT3rsIEfLIVWBfGzbkbnhg/4d5Z6rJ60chwPl2h4oVHO0uVwV0srn0PrMAj9W
-	 q4aQqi7Aigd6pZ8HvUBTtzv8K8/tmrerdFItrzfSo2CEkIvX3deO1QqgGpJfVytMnIUBf
-	 TgIOKfuCBonygPe97Dc0JO1XMOrMpK2ob6lOTt2CTSVKzMXqwrF2tUKoKio6tn3H0ctmy
-	 fbJvGhh8AamIPXCG5B7HP5MVTBjgxwWeD98BpweXU0XI3AOjOJaOC3VBpGWwj0RLc3Q==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=ezlDWRMj9kmxxJBJDvLQDaV+rNJm+P/qJAKPI2Vbze4=;
+	b=UbpUtGZcdFQUZ2WOu20u3o1nLeqUMqLD1ANmmcKfdELSpazbEfrh1r+GwtOLS2o1wUAf
+	 kIWF+AGnBFWgbRJ8bGBGLr86E0pt6X9gGJZNfkmgbO5u8c5i8C7+9XEFEssfecsJ1sm5q
+	 S56WgvEEplQ1KsFEXDZOzyOOGwob3MxxNUfz+zvRsQLPybdXh0i0v1cmSgAUvlgohaXiP
+	 mYfgaGsTlh2BoMEr/0OcvZUmu/+RdRD+PHc79eLzuOtWzwPpdwoc+ijzyCJ7vj6S9OykS
+	 d2D0K51iI2y6hq8k43VFFqkUfcGoBdpKiZbzifKpX8PgbBTGmwGl6C5OQ1Dd7yYCVlg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=google.com;
 	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=aIaDX2Za;
-	arc=none smtp.remote-ip=209.85.214.172
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=esh33WJX;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.128.54
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 415BD606A31F
-	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 17:32:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 415BD606A31F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4510B606A321
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 17:50:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4510B606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=aIaDX2Za
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2f04244c3d0so29819375ad.3
-        for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 09:32:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=esh33WJX
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4bb845433b8so77415e9.0
+        for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 09:50:55 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795456254; cv=none;
+        d=google.com; s=arc-20260327;
+        b=KB45NdRWqrPCywN5xrHFxHC97DuhqbcXXeGck/dUYLzmc4cdnazZnUE7IG7XOHrJij
+         ZJnyj931rQvznsq8fl2X8SPbL0n0nWmj8SQfsi+MsBHy9OM32Hx1U8NWuTy7QRQuLHuf
+         1Sg5qeHi7Va8ritkkQeHmHTZuZZ8CBAqIgsxuR6rrAN2NsripRuiB5V+qxQuoSnbkUMx
+         4Cr5/+y4cvKZa8H57waSSXycaJaPq761eoQmriLx9ahNIvh3VEKkJ4ORXqP8mKCrzZQJ
+         ot1eQez98Ysxzlg4teoALoYf6FmbVOwgB98Fpbwj2Q+Xw6Jx/2yiBRQnI/fobatmxLz+
+         CLiw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ezlDWRMj9kmxxJBJDvLQDaV+rNJm+P/qJAKPI2Vbze4=;
+        fh=sknKnvT6qPodzLM1KifqdCyuYcsPm/eLR7PjfFUuUb0=;
+        b=IkStC5w7fo1CgpWOgOF7UBiFokWa75mx0Rjex498q8h0dXYsDkKuqTmJZz0V3dLN8z
+         YLHonGKNOHdk+II1UErk343317d68IrAC0nDd30Gj4AoGwAVYat4TG8D9ZsYGWYof815
+         xdhy8QqIE2SdIghasARH5fHNPajEP2PON9qn5DUcatPfeg2FfACxRSYTt69t/4DH12RK
+         wKpIfvuPcw+4qnNrDvjsIVXvLbeMkxI9AEQR1CasYpBDSpjUXCmszoMfQdhV6m7uOAw+
+         YdwFaDc+ZTHyESon5LVa0bxoEbf+Hc1itqhKwjWqUoNIiiry+lCIdtCJOCz95umOki68
+         KQ6g==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1795455140; x=1796059940; darn=lists.linux.dev;
-        h=in-reply-to:references:subject:cc:to:from:message-id:date
-         :content-type:content-transfer-encoding:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=P+l/VRR07HqPbgm9tEPK7SVr6Tlf5vY5XKwCiYVXpnE=;
-        b=aIaDX2Za1UAxDZvHikVowcIZLEDfyZNK/wJ7n0zdBFr1kO5d7UmwabvcI5D71wVcCW
-         sWvZMULyDzVN8TdIgZomhhSKXJx++KqyH6Jj/1JtZkLAgrkoJCaFYMZDSISektkDUW6w
-         3gefAGclXbeK6SbKVxBZFwNJsb0G7wO8bUW21km4irmig1tZdMtcjE8ar59tb8V/3kvv
-         08lEYiD092ntiE7JRaPnc7FGugYqVobsK0EF8snw/jlM8q65+lRJxNOqLCdRyC2LhpfK
-         8yblElZVDkQo1+OLk2EqSPKtFapxpJpOSZbisPjGf2aY8kZRMZJ11SONR7TB//xgp1Jv
-         2sJw==
+        d=google.com; s=20260707; t=1795456254; x=1796061054; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ezlDWRMj9kmxxJBJDvLQDaV+rNJm+P/qJAKPI2Vbze4=;
+        b=esh33WJXLAO44u8Ttcac5VQ+NzvLrEKGO86qH4VVHl5ZzaY+NBJi4bQ6U/NseUjzpf
+         3Niv9fNBBQcoWCJ1p+ER8fSbdwfVQLMuhsF7v9xOye2RG5YG7ZaIaPSGKz4grhBfUd3p
+         g7nxg+GvvHLOlUJgjaZl5uZM+SPu3e+sEthmyc81ZHKWnu59g96xY8Fm3+YrY2fxga/G
+         BW3AYrR6tDD9lIUKhvCjZp53W5Ydhpfj4IneMdgQR+kq3PAToiqDbrPpEE/tGCX0jOWx
+         BhZlQYt+CXBwwvWh47L4ryVRlRsxqhPXzLzHWTiCaUMp1HVzsnTs6475CehaOY9aPU8q
+         t55w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795455140; x=1796059940;
-        h=in-reply-to:references:subject:cc:to:from:message-id:date
-         :content-type:content-transfer-encoding:mime-version:x-gm-gg
+        d=1e100.net; s=20260707; t=1795456254; x=1796061054;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=P+l/VRR07HqPbgm9tEPK7SVr6Tlf5vY5XKwCiYVXpnE=;
-        b=MH89vQb1S0ncpgIs2OK68P7e0P7NezxilqCvsXsIkdyso9iANRjXakn0ASQEegLz63
-         PlRo6DWad0N5tbnjRL+AzTfABMVuKOe+lm9FDQoWWum+pWwXhaoKg6voU+nWYXIZRgiV
-         IJOfMTaBgYg0Ziq3bWUPJFxkn+/YLIxmUP5x9HQegyApyWra3Qk7ZzBnetDSms/+XCE+
-         uQL6YHu9Fdf4W4EbD/m9ouWxGKn5VDsqE2SO68SOf3hl0hpYoW2ItJJeh/3Hxj8LvA+Q
-         mXYZx0I+JqnVswKIJCWxwYrBKIVdmftgjIv6fUItoJPSQJFjHjD9I65MzUWcwW76WCbP
-         Xudw==
-X-Forwarded-Encrypted: i=1; AL+hErGejB2TzMlOEHNlcWng/FtbHk0koBiYD7cxz3L89qGst7Um7erbQsAp36mgZn3TKKh2NEF5fQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+LvgkWWwk25qUZCEdXSNmVIRsyCgFKaW7UzdS+lBPxrQITj9Ib
-	Tja/HoaYir2ovNr7dyfLqOcAY9nQs80PS/nzQaHp0iqlcbuowBN2JolaHcyvtglvPw==
-X-Gm-Gg: AZFdTZd/kZYQBb0lqIqIIa1TE5yRnFQ2S+EiRrpbyknG6vc+omN2maVkPCnjqtJmHsd
-	pCGIT9LKPuouXaMbS5koT9zHmsaSGzTTpDOai/nekrjBJplBhYqHpb+uZXd0DijdZHSG+pW8+Oz
-	lS3QyZaBNeNttLXUmUJKVEYGVbMdF7gXbj+m8x1MR0zPGiuAwmgkqumtmt52fsUIFaaRH/HzhyL
-	iRCUwIZmRj14qw+fmu1VDm24Eoeb4lrznpFR+A22L0yxX/Iy7y6oU8nFAEldO+dqg9h131zOx1e
-	j1KwMj6fNaWKD0D4isfNM0fvO/Pdw8Nwc+VJ6JO3vBwxu14n6KGLvXwJSua61eI/2+XPeaPDOzv
-	JahBB2XjDXhw+LHQQrX5zN1vfWIsIAN/nypl3XjC3afamvlfTvWEMmkXhMPVSEdSoeHNZdXGiDf
-	kb+tAmE0tAZirJx2vzszarySylEVJKqKCXZbquC8ZcN6xM0FMq2rzTR/U/Gx6w74hza7R1p9rVf
-	4FP9UtyiIU+dsVApYelX1S5OLWGXIoj1jvDESxPdGZVFYHlsr8PVKni52xDZZUSXt7CsQx5OxKS
-	P0SnFs3I4WwZtRnwJHhIQZUJJUwoXn82Vy2gpCxFxKfjAVKruDE4PTzPoFtC+tFd
-X-Received: by 2002:a17:902:e807:b0:2ee:1fab:158f with SMTP id d9443c01a7336-2f03f167d4emr115089865ad.43.1795455139780;
-        Mon, 23 Nov 2026 09:32:19 -0800 (PST)
-Received: from localhost (33.79.127.34.bc.googleusercontent.com. [34.127.79.33])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2f051a566f7sm45650825ad.41.2026.11.23.09.32.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Nov 2026 09:32:18 -0800 (PST)
+        bh=ezlDWRMj9kmxxJBJDvLQDaV+rNJm+P/qJAKPI2Vbze4=;
+        b=wJSlVP3d8en9ZBW/QsmfTI5F8SvliWUey6s8+s3N5cD78YITDqNA3V2sZMuVmrMbAA
+         TaG+sOzQJSrfcaAjiAYpDLB02lwCySHzGd8qIaGRSA0kFekQl88eJ+S8XIznrrrQHmtq
+         sA+nCRUL/kNuq71q3Oy3JM7Rf3PQiMovkLp6byUSmB9GOX0KSXndu0ZpLxOBWiyXaYpi
+         Z1UwslhJsB8yaTTjLfnP5r0OgN30TCEtmSh9ica6K67vAS/7a8Fevksz703G8PaXk/il
+         EfM6ya/1DtNm4kfplxwMkmJtGzWZsGCtIuWS6BUje00B7twmUrvp+K2qd+9VI4rbDcYD
+         pbNA==
+X-Forwarded-Encrypted: i=1; AL+hErGTTKYL0DoNR+uvXAmWWcAQ9pStgg3CHyJabiE/v6R3cV6OqsVW6YUKvuokJESJrEzpsjCPPA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/Xd8rsa1JX+0/M7AIMMUf/HjtwojDPNgDPS85AzDqPrh5c5Vo+
+	Ltc3NB28HCuBmWSpmd9xOWhyCsivwUeNhHbJ8mpNoV3Qdzwfz81NiwGVGnyn2Lv/UT/tk6lJRTQ
+	NqKzXxj5xdNMj1xsKNokjGp/4BDdSjOPGPwLvhH9W
+X-Gm-Gg: AZFdTZcdIGNIpPWnMoVxWE9tM07+1wA/tEuyATGSyLpa9jdzrqVtxSscCcFM8+OMT/+
+	pQL4a5/NwhTDh1o0GHSeREyRmnWrLjPVoHZ4qjRE5UjK3ZZ0CKzVpFrREwSInSZHW0XNZ7CHpxG
+	t/y06lBqe+wyE+pFctZXVxcfdzy4DrJ2UGHEjNIwXgsp6ufx3nP1DgZscEhdlAIrh50Wvh/b1+i
+	faAY5rSWetUHJxKbZEkc8YebRtqekdSe4OMAWMDkXvtBX7OskR/ElmpjoTsSBw37AUypOjWgkVW
+	mcKZ/z0uZ8WRi9JAcAuJ6GphXcsWIr06HY+uXXaoGaOw5cXD6fWdkROsPThP1QYjejwc6WJyqjt
+	6jGWQKVA8oF/t/VG/7Ms8YHkNTtJ/zjUBeKlcZhmtACfheW6HuEmtP/nNfrDwuVwN4Cg=
+X-Received: by 2002:a05:600c:287:b0:4a1:e368:cbf7 with SMTP id
+ 5b1f17b1804b1-4bb909d0619mr1867585e9.0.1795456253076; Mon, 23 Nov 2026
+ 09:50:53 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -87,89 +103,157 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
+MIME-Version: 1.0
+References: <20261109182533.3594984-1-lrizzo@google.com> <20261120010655.467825-1-lrizzo@google.com>
+ <20261120135013.GO3115493@ziepe.ca> <CAMOZA0LmZ9PFzxLcc1SuS8piFyZu6P=vX_qR2jy-3QRUoNCUKA@mail.gmail.com>
+ <1f10002ea9ee16a17087bd06e4a1685a973fdf6e.camel@linux.ibm.com>
+In-Reply-To: <1f10002ea9ee16a17087bd06e4a1685a973fdf6e.camel@linux.ibm.com>
+From: Naman Gulati <namangulati@google.com>
+Date: Mon, 23 Nov 2026 09:50:40 -0800
+X-Gm-Features: Aa3M54qK7IY8ZMBupflhQ8_7jK3YPX7yjpTGqvTp5f5henwr9osR6FHQsicVdiQ
+Message-ID: <CAMP57yVZx=s-JXHfQfd_ouv2jV6MMsJXpxVLkQQHG=7qfFVJfA@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 00/25] PISA: Pre-mapped IOVA Superpage Allocator
+ for DMA and CoCo
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Luigi Rizzo <lrizzo@google.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
+	Johannes Weiner <hannes@cmpxchg.org>, Vlastimil Babka <vbabka@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Jens Axboe <axboe@kernel.dk>, 
+	"David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Luigi Rizzo <rizzo.unipi@gmail.com>, 
+	Lorenzo Stoakes <ljs@kernel.org>, "Liam R . Howlett" <liam@infradead.org>, Mike Rapoport <rppt@kernel.org>, 
+	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
+	Brendan Jackman <brendan.jackman@linux.dev>, Zi Yan <ziy@nvidia.com>, Harry Yoo <harry@kernel.org>, 
+	Christoph Lameter <cl@gentwo.org>, David Rientjes <rientjes@google.com>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Hao Li <hao.li@linux.dev>, 
+	Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>, Jann Horn <jannh@google.com>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	"Rafael J . Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Simon Horman <horms@kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>, 
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Willem de Bruijn <willemb@google.com>, 
+	Kuniyuki Iwashima <kuniyu@google.com>, Joshua Washington <joshwash@google.com>, 
+	Harshitha Ramamurthy <hramamurthy@google.com>, Alexander Lobakin <aleksander.lobakin@intel.com>, 
+	Christoph Hellwig <hch@lst.de>, Dragos Tatulea <dtatulea@nvidia.com>, Pranjal Shrivastava <praan@google.com>, 
+	Mostafa Saleh <smostafa@google.com>, Randy Dunlap <rdunlap@infradead.org>, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, netdev@vger.kernel.org, linux-block@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, driver-core@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, linux-api@vger.kernel.org, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Mon, 23 Nov 2026 09:32:17 -0800
-Message-Id: <DN2RQ7LGX224.3W3PSQ2PBHTJZ@google.com>
-From: "David Matlack" <dmatlack@google.com>
-To: "Pratyush Yadav" <pratyush@kernel.org>, "Tarun Sahu"
- <tarunsahu@google.com>
-Cc: "Pasha Tatashin" <pasha.tatashin@soleen.com>, "Mike Rapoport"
- <rppt@kernel.org>, <robin.murphy@arm.com>, <maz@kernel.org>,
- <will@kernel.org>, "David Matlack" <dmatlack@google.com>, "Alexander Graf"
- <graf@amazon.com>, <seanjc@google.com>, <jgg@nvidia.com>,
- <loganodell@google.com>, <arnd@arndb.de>, <dwmw2@infradead.org>,
- <baolu.lu@linux.intel.com>, "Bjorn Helgaas" <bhelgaas@google.com>,
- <oupton@kernel.org>, <alex@shazbot.org>, <gle.com@google.com>,
- <pbonzini@redhat.com>, "Andrew Morton" <akpm@linux-foundation.org>,
- <kevin.tian@intel.com>, <joro@8bytes.org>, <kvmarm@lists.linux.dev>,
- <linux-pci@vger.kernel.org>, <kexec@lists.infradead.org>,
- <kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
- <linux-arm-kernel@lists.infradead.org>, <skhawaja@google.com>,
- <sagis@google.com>, <linux-arch@vger.kernel.org>, <linux-mm@kvack.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 05/19] kho: Add feature header for fine-grained ABI
- compatibility
-X-Mailer: aerc 0.21.0
-References: <20261110050202.529473-1-tarunsahu@google.com>
- <20261110050202.529473-6-tarunsahu@google.com>
- <2vxzse0rzjdn.fsf@kernel.org>
-In-Reply-To: <2vxzse0rzjdn.fsf@kernel.org>
 
-On Mon Nov 23, 2026 at 6:56 AM PST, Pratyush Yadav wrote:
-[...]
+On Mon, Nov 23, 2026 at 2:10=E2=80=AFAM Niklas Schnelle <schnelle@linux.ibm=
+.com> wrote:
+>
+> On Fri, 2026-11-20 at 15:19 +0100, Luigi Rizzo wrote:
+> > On Fri, Nov 20, 2026 at 2:50=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> =
+wrote:
+> > >
+> > > On Fri, Nov 20, 2026 at 01:06:30AM +0000, Luigi Rizzo wrote:
+> > > > This is v3 of the RFC previously posted as DMA_PMD [0], now renamed=
+ PISA
+> > > > ("Pre-mapped IOVA Superpage Allocator"). The text below follows
+> > > > Documentation/core-api/pisa.rst (patch 25/25), which has the detail=
+s.
+> > >
+> > > I thought the conclusion was to just do this stuff in netdev pagepool=
+,
+> > > now you come with an enormous AI series spread across the entire
+> > > kernel?
+> >
+> > There were surely comments claiming nothing outside net/ cares or needs=
+ this.
+> >
+> > I respectfully disagree, witness is the fact that e.g. there was alread=
+y an
+> > io_uring proposal which is smaller, but does not address applications
+> > that want to use the standard disk I/O paths (libaio, buffer cache etc)
+> >
+> > Nothing has changed from the initial series in terms of size, use cases=
+ or
+> > subsystems involved. Large files are placed where they should,
+> > the series covers the same three use cases (disk, network, CoCo), and
+> > touches three parts which it has to touch: mm (most of it; it is a
+> > memory allocator
+> > extension after all), dma (it hooks into map and unmap, not a large cha=
+nge)
+> > and net (the pagepool change is a couple of lines; the tx path needs to
+> > touch more places because the current stack assumes all paths have
+> > the same I/O requirements).
+> >
+> > For CoCo, there are very fine grained controls so the bounce buffers
+> > can be enabled only when they don't pose a risk, which in turn
+> > depends on the threat model.
+> >
+> > Specifically, for network tx buffers or disk writes, the user-to-kernel=
+ copy
+> > is basically a bounce buffer provided it is used correctly and not leak=
+ed
+> > elsewhere (which is the design; of course the implementation
+> > needs to be verified and possibly fixed so that it matches the design).
+> >
+> > cheers
+> > luigi
+>
+> Hi Luigi, Hi Jason,
+>
+> I've been lurking but following this series since the start. I am torn.
+> On s390 where the IOMMU is always enabled on our closest equivalent to
+> bare metal (non paging LPAR hypervisor), and where we also default to
+> an emulated IOMMU in KVM guests, the underlying problem is a real pain.
+> We're also in the process of enabling large IOMMU mappings via the
+> generic_pt API which are 1M and 2G on s390. So, the idea of making
+> better use of larger mappings is very attractive to us and I applaud
+> you for trying to tackle this very real issue.
+>
+> That said I do have to agree with the critique. This series is too
+> invasive, too unclear in its layering, and most importantly it feels
+> like you're trying to do everything in a big swoop ignoring advice from
+> the maintainers just because it would limit the scope of a first step.
+>
+> I also don't think Jason's point is that nothing outside net/ cares, I
+> think, it's rather that the IOMMU and DMA layers already offer the
+> tools and each subsystem needs to use the right combination for its
+> specific requirements. And if a tool is missing this needs to be stated
+> very precisely including how the addition keeps layering intact.
+>
+> I don't claim to have a simple solution to offer, if I did I would have
+> sent patches already, but let me state my thoughts. First I think this
+> really needs an iterative approach with much smaller self contained
+> steps and focus on specific issues. With that, I think this should
+> focus on the network stack, while the io_uring specific proposal can go
+> after the block layer. Also in my experience networking is where this
+> hurts most.
+>
+> Now, I wonder if we can't start with something simple. What if the page
+> pool could start by allocating in batches of PMD sized and aligned
+> folios of contiguous pages that can share a single large IOMMU
+> translation. The page pool can then still hand out pages from that
+> batch without having to do sub-page allocation but would already use
+> much fewer IOTLB entries and the locality might even help non IOMMU
+> workloads. So, I'd even hope this could be enabled by default and this
+> is actually something I don't like about this series, I really don't
+> like having a tunable when we know that larger IOMMU mappings are
+> strictly better when you have an IOMMU that supports them.
+>
+> I think that approach would also align with Jason's idea to keep things
+> within the network stack and to work with the tools we have until their
+> limits become very clear.
 
-> When we have all this available, I don't see the point in
-> differentiating between optional and required features at the ABI level.
-> At the ABI level, all that matters is what the incoming kernel
-> understands. If the incoming kernel does not understand a specific
-> field, the outgoing kernel should just not use it. There's no point.
-> Best case, it gets ignored.
+Hi Niklas,
 
-I pretty strongly disagree.
+I have been working on this idea exactly - extending the network
+page-pool with a memory provider that allocates large pages, splitting
+them into N smaller pages that all share a single IOMMU entry. I
+breifly shared my approach in the v1 PMD series [1]. I'm readying a
+short RFC to share shortly, would appreciate your feedback.
 
-An optional feature is one that the next kernel does not need to
-understand to correctly restore the object. A required feature is one
-that the next kernel must understand to correctly restore the object.
-Optional features can be enabled without any compatibility concerns.
-Required features must be enabled carefully (IMO via uAPI) to avoid
-breaking Live Update.
 
-I agree it's a good idea for the outgoing kernel to check that the next
-kernel supports all of the required features it is using, so the Live
-Update can be stopped before the kexec. But that doesn't remove the
-need for the distinction. The next kernel still has to decide what to
-do when it sees a feature bit it doesn't understand, e.g. because no
-spec was provided, the spec was wrong, or we kexec'd into a different
-kernel than planned. Without the distinction it can only:
+[1] https://lore.kernel.org/netdev/CAMP57yWvHO0pWCR3-9q1gtwVe8WV4Y6i69trmw+=
+BJRVYf3JB1g@mail.gmail.com/
 
- A. Treat all features as optional, which risks misinterpreting state
-    and corrupting memory if the previous kernel did not properly
-    validate the next kernel's capabilities.
-
- B. Treat all features as required, which means no new feature can be
-    enabled until every kernel it might Live Update to (including
-    rollback targets) understands it, even when those kernels could
-    safely ignore it.
-
-Neither of those is a good outcome.
-
-> The semantics of required or optional then become "can I describe this
-> object with the capabilities I can use?". If the answer is yes,
-> serialization succeeds, if the answer is no, serialization fails. So
-> with this, KHO_MAP_F_MULTI_INDEX or KHO_MAP_F_DYN_DEPTH are indeed
-> optional. All memfds can be described without these, they just will be
-> less efficient.
-
-I think this is a different meaning of "optional". Whether the outgoing
-kernel can choose not to use a feature is a decision for the serializer.
-Whether the next kernel can safely ignore a feature's data is a property
-of the ABI. KHO_MAP_F_MULTI_INDEX is optional in the first sense, but
-required in the second: a kernel that doesn't understand it will
-misinterpret the map. The header needs to convey the second.
-
-So I see the spec and required bits as complementary: the spec lets the
-outgoing kernel avoid features the next kernel doesn't support and fail
-before kexec, and required bits let the next kernel fail safely if that
-check was skipped or wrong.
+>
+> Thanks,
+> Niklas
+> > >
