@@ -1,53 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795432200;
-	b=xI+v9KA6RHMdLY9I/dFZUIEEu3AnIKJNn1+1vq7TK+LajIZR+yF174q6V2ACMWzZcvM4
-	 wA55Fv8hD8uhR/rNWWkyB/z9tV1no6tNAyIRfCr/Gr5kYgALL9nqEe2+CF213sv0aLIO9
-	 jhuxnZyo17FUIc0AU4NDpHDnVQIUrfAVaaIjULRzUju+Mr3YW2oRgsfWGvVxCzcg3pWqD
-	 H3qxeHmVyqKJYIkLK2iAHB6q+9q8TBIN1qKGLYN7IQAaQczUSDHBCKqFENqPMLVtdbci/
-	 F9q3w4VdsEplH3VSVcopLswS9Rp8mg/82pc7FtTWDgFPp/CUK139BoDzqb+YEJAdQ1Q==
+	t=1795432472;
+	b=hqxsHjEevTtG9sBRopr0K8+0QESTWPBRRdz0FXJTgl50CGdaYWyIoO1Lm6nsmadiNukd
+	 WJzr2Dda7rVaAEndtk5AA8YUe9qDOKYRgtE/p4hh++xEad2EKSsi+80M8jwAixTLD28hp
+	 6fIo+Thv+pF0WLmNLBauKLOoZ0IpXj/3i7/JR+3CUeO62ld/M2w+hOlvZP2A612GNB6sY
+	 YZIV3a4ISBTwR2KYi8MyvJdnZOZCNz1aXKmonofKDnpRXqH+Cxatl+hgvxiEUvLNnJsaa
+	 uAIRCObtBw6vtK05CznzQDdD/QETfTCigJxdi5hTTlhDbm44uKaJxgN4OSHqGk9+ZYQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795432200;
-	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=lrb0YFMFrFE7HyTUV8Y84CUpLSY3p3XgELY1JaOTjxA=;
-	b=UMSHv4dn5pX1v2c3rZVUwNKngeNPwNU3w6C3ilIdc0bFDat9N+nlC6Wr3T+Nul4motws
-	 6Tz+DYzqXwmnsqe2qvDOBFJLM2iltVqH+ivFU0vp/P163PwNaBJ6AAncKjRt4id8NVdU2
-	 nUdxsp0jHqB4ZqK8okW+sF/LyAb3c2Y1vH7N/CGmTF66OGf7+WindbMDzEY/A1+g3Yhfo
-	 GI5Fme6G0FA9qBcm+A9aABcF7MNHEPUjnylz6SpdsLVsjAIa9ssNcJUxX2+kCaFzPVETz
-	 R/Kgk3R9Nso6TVo2Jw9j/JMXZws5Z5tTylt6SFVHQGrSyahZFmJT2DDYUvFhVJccqxg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795432472;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:X-TUID;
+	bh=M8BgEwiMtUwRuCgZnUVMTSSA8VV5wT5wVfxb83hMYt4=;
+	b=EV74lQf3zKxK/qECQzMEstG8iVszZHQuuZ1jnKzeeODsbjzRjZyps18+O0YyH56tq0Tp
+	 /OHfAKzZ/oMECkX5y33aUWmKhnU9K0eTI9e517WNf/ninFhurCC1jb6sl85C7fdYbl3jq
+	 /qdJs4HtsnDFdhUq/eXrYAJrlmy6M741Zm9hPZOuCgAZkTl0zraMua6sQhr2FyD1SR8Da
+	 MbwiwoCuvIqYzn3BY8Lz5jr7BKQsCBhRhlepyOhdbv/HnrwlsIHxYqoIDueGdXdIcfgIE
+	 xQu+N8kZuN2w1YGWf7ldBlIKDo5wloPgz5gZuw9vNBlagaPZoNbERkqvnXV0IfS+wAQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=8bytes.org;
-	spf=pass smtp.mailfrom=8bytes.org;
-	arc=none smtp.remote-ip=85.214.250.239
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D03C2606A33F
-	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 11:09:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D03C2606A33F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Received: from 8bytes.org (p549216fa.dip0.t-ipconnect.de [84.146.22.250])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 26D0B244C20;
-	Mon, 23 Nov 2026 12:09:58 +0100 (CET)
-Date: Mon, 23 Nov 2026 12:09:57 +0100
-From: "Joerg Roedel (AMD)" <joro@8bytes.org>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: Yuho Choi <oss.patchbox@gmail.com>, Will Deacon <will@kernel.org>, 
-	Wei Liu <wei.liu@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Haiyang Zhang <haiyangz@microsoft.com>, Dexuan Cui <decui@microsoft.com>, 
-	Yu Zhang <zhangyu1@linux.microsoft.com>, Easwar Hariharan <easwar.hariharan@linux.microsoft.com>, 
-	Jacob Pan <jacob.pan@linux.microsoft.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 0/2] iommu/hyperv: Don't free a paging domain the
- hypervisor did not delete
-Message-ID: <awQe8NR3bnJoujMC@8bytes.org>
-References: <20261112195710.1417744-4-oss.patchbox@gmail.com>
- <awQOkV6RFl0TM6Hb@8bytes.org>
- <MN2PR02MB68630C9F5A4AD705B3838FABD4452@MN2PR02MB6863.namprd02.prod.outlook.com>
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=cUtfC1HA;
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BD2F606A31E;
+	Mon, 23 Nov 2026 11:14:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2BD2F606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=cUtfC1HA
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7CE821476;
+	Mon, 23 Nov 2026 03:14:28 -0800 (PST)
+Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1BA2F3F882;
+	Mon, 23 Nov 2026 03:14:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1795432471; bh=4UDMjdKhEafTSrkfoMvLUzagh+R4A1yL+W6+zxTSE3g=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=cUtfC1HA2CZBX5GdLcjS9Fv5iD/xcSaWNNdEjaMRUj8xf0cmPTKcKav27v+CAPLkC
+	 w1bkGxtfk5N0ExzhPBYejU8PO0+4gtg8l1F7GJM4V1zbhqzbrPWAA1+BjvltqwmxMn
+	 LE7OlN/w/0fHifp9euPk5nQuLJbtKZlIitJWjJvE=
+Date: Mon, 23 Nov 2026 11:14:21 +0000
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Cc: linux-coco@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>,
+	Baoquan He <baoquan.he@linux.dev>, Mike Rapoport <rppt@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>,
+	Mark Rutland <mark.rutland@arm.com>, Radu Rendec <radu@rendec.net>,
+	"T.J. Mercier" <tjmercier@google.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Ritesh Harjani <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H . Peter Anvin" <hpa@zytor.com>, Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	"K . Y . Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+	Long Li <longli@microsoft.com>, Paolo Bonzini <pbonzini@redhat.com>,
+	Vitaly Kuznetsov <vkuznets@redhat.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	linaro-mm-sig@lists.linaro.org,
+	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
+	linux-mm@kvack.org, kvmarm@lists.linux.dev, patches@lists.linux.dev
+Subject: Re: [PATCH v10 01/13] mm: Add an allocator for CoCo shared memory
+Message-ID: <awQgDYK2Bq0QGpNU@arm.com>
+References: <20261116091137.94252-1-aneesh.kumar@kernel.org>
+ <20261116091137.94252-2-aneesh.kumar@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -57,12 +104,32 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <MN2PR02MB68630C9F5A4AD705B3838FABD4452@MN2PR02MB6863.namprd02.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20261116091137.94252-2-aneesh.kumar@kernel.org>
+X-TUID: 696EyIiS0JVf
 
-On Mon, Nov 23, 2026 at 10:48:09AM +0000, Michael Kelley wrote:
-> Hmmm. Did you apply this v2 patch set, or the v3 that Yuho posted a
-> few hours ago?
+On Mon, Nov 16, 2026 at 02:41:24PM +0530, Aneesh Kumar K.V (Arm) wrote:
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 3e626e45d432..5ce879ea2ef4 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -28553,6 +28553,8 @@ F:	drivers/pci/tsm/
+>  F:	drivers/virt/coco/guest/
+>  F:	drivers/virt/coco/tsm-core.c
+>  F:	include/linux/*tsm*.h
+> +F:	include/linux/cc_shared.h
+> +F:	mm/cc_shared.c
 
-I applied v3.
+Would it make sense to put these under a separate CoCo memory sharing
+and encryption entry? It should also cover include/linux/mem_encrypt.h
+and include/linux/cc_platform.h. Both are shared interfaces with no
+specific MAINTAINERS entry.
+
+I don’t mind who maintains the entry but I’d list both linux-coco and
+linux-mm. We can leave include/linux/set_memory.h out for now since
+most of that header deals with page permissions and cacheability.
+
+-- 
+Catalin
