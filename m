@@ -1,127 +1,115 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=202.12.124.151
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795477926;
-	b=ATr8o19L4UCoTsJMMTvQjbYcMoJuieRpM5Drj7wPwIFFgKMkOk7VI+6QzAD/FAYrBWyy
-	 Y7yrZpv5M43N8YUD4GmtJmx0e1A0uhCmvSV2QliMETMclHnIDjvvoFdpICRd6snhyXvw+
-	 /DNU9LQHOpegdOx2SCCv7wtIABnQ0z3y4VaGAyYYS8/pwGrJ/QPBa6PyeK0aqhZ8/krFH
-	 YYoRFFpQoAEm0qy45z1ldtTjVh+u5KJ1ymIkOiKlH/nsoAxnZC9FWFQiRC3LVZp5Pd1/v
-	 263UWTfJjzJ882RQ9hGVZkkNWQfz6uab2BvkqVw4XqsuDgD/k0iBso6CCAz2PxQ9Oig==
+	t=1795478343;
+	b=auqAqNIDSFz7TDl7Zq3SE5Mwjgg/n/ksPNtNORIvwoA0E/We/3K2rhPDSOa745SRIRMj
+	 MT2z5xA0QrXIokSTOKntHcnW2HI+z+H1XWxm3C/tV4GetbppjZ2f7wuPaqDW530VJTZes
+	 vmVAJGEisgHmZwR84PFaePgURQxM+y3a/wAHXeIY9KjU/z+FDQ3Da3Hog5POM4RVeDQQU
+	 C6V17oHBfZ7QmEyB8j5VqVLalY7TM5DGatg7WlxgQyBk4QxePZvFED/s2WRtQjdJD2sXH
+	 IVhPklDZFT5+ZnoSqd1oc/9YRZU6KM8rqAdijcU5HGq8OHrtKlZ8+/Fen81sUbngs7A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795477926;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
-	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
-	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
-	 Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	a=rsa-sha256; c=relaxed/relaxed; t=1795478343;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=IybjlPb0LVZ7QOrAFKKCkNNJ886YmIr8unCCc4l7uQU=;
-	b=0mzJlpAEVn7ujN7MNYS26wIa0+6jMOcKTmd8D7trKFbZNJ1AUsKnYAX3jb9o4FJxAhoY
-	 dYL/0T+rZTKTMxvNsNH4fdUs0eB7C4R9Fa5TdbL0P85J1rJO0bWXeZ6gNRanyHsLlIC0Z
-	 Ng2fPRzc9u3BdG3cUgiwzfYIWXXX2k2De+BLb1SPbuxpd9BIXXbSk/9FOGxapflkPk0gq
-	 VqHNQFjFVjMHeylyeE/OTWfiM6XdVn+WZvI2WJNBG4XW5j2ZMJ2m+o4K154hN1CyWt03u
-	 5SdZ1Ry2CEoXGe10tN+SRyY0nZwD15EE3u64HEx1GbLA6rP2o613Dz9s1oonncWDGMA==
+	bh=1KEZlJHY2iJZV5bGkgX8FT1FWywheNVCNg2fp4w3t8o=;
+	b=VLZDGdQABMgsSy+mSQ1O3Mi0JnLYEGQBUH/uPyB3EY6Kzdz/3ZfW96pQukVzLT4933H5
+	 R/gq1LjX7kUVNWmmmRHVgJbtjJWv9qMDDC9pUC5Zttv3K6rAyCQ6V+McnTHkNdu27JtfV
+	 wTw28f6iFRtr+ULxMZ0DZX/IT9lq1ZE/EqLbLoHcib0HW5pi6aQhG/nxqY5LlWNVaYwj0
+	 JGlCd0zR4N7ZbX/Ls0zekPB4dXJVTeVDHq+yAQtUUSPNMmrmRx/QyDzSXLspm8xPaKbh0
+	 mYFzaHqkfB62si0XWufSlmBE9BhF89APYICxwcXvMDE2e+2kQWFZEzFGCDlzSJRa6LQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gahingwoo.com;
-	spf=pass smtp.mailfrom=gahingwoo.com;
-	dkim=pass header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm2 header.b=CPYfRbcB;
-	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=uTacps4U;
-	arc=none smtp.remote-ip=202.12.124.151
-Received: from fout-b8-smtp.messagingengine.com (fout-b8-smtp.messagingengine.com [202.12.124.151])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=chromium.org;
+	spf=pass smtp.mailfrom=chromium.org;
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=imBAzJjA;
+	arc=none smtp.remote-ip=209.85.221.43
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB068606A322
-	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 23:52:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CB068606A322
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ACB2606A327
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 23:59:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3ACB2606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm2 header.b=CPYfRbcB;
-	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=uTacps4U
-Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailfout.stl.internal (Postfix) with ESMTP id EC2B21D00636
-	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 18:52:03 -0500 (EST)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-01.internal (MEProxy); Mon, 23 Nov 2026 18:52:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
-	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
-	:from:in-reply-to:message-id:mime-version:reply-to:subject
-	:subject:to:to; s=fm2; t=1795477922; x=1795564322; bh=IybjlPb0LV
-	Z7QOrAFKKCkNNJ886YmIr8unCCc4l7uQU=; b=CPYfRbcBBrg7/V9O3wjaPCSf5J
-	k7ahECh+Td41Nh3WV874GvdzmLJrXDD/OlBAXv8e9eLflbum4+/Dx+jYK2Ql+IZo
-	ntHexnWr8jTjyTDPFL79OqXvUCW8zSvPic8moGM1uIK3iXo9eHFOcaZWxK1woHcK
-	GhkCz763bnkmfJEl983rsOBp2ivPYuIw+srDOeXOVzHbDqTkZ9ShpN7uXD1hieRj
-	oUKVIdwMcSmqQPX7G0bTKUFx82u8pLcCduzJjZql9QWlkrm3C+mwEH4OqGPlx2Y3
-	izD/qOjcnDp1wZJsLxt6RfYQWboBVyPJvbBv430vTMk743FJoekPCohP3n4Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-	1795477922; x=1795564322; bh=IybjlPb0LVZ7QOrAFKKCkNNJ886YmIr8unC
-	Cc4l7uQU=; b=uTacps4UBTdqNXSA/ZYq/EdYMuORnzKAjwshymbVPFPMZeiLpsO
-	mjBxTVc8GbLrHQjKqtoWMsAYF+UNR+w02vIHtcAjQyDxyswD/koZJO/dDaz3ScHe
-	8rTpL/g37zcbmrwhdWNy0/1gUE2hVD3K7BgjWX+e0d3lgpF27wIg9CI9jQgbkLBY
-	jd/wHDLDNt3/C6vR0C2xJ18LS57b4Sgapm9vzaVlgwPbcCw06pPnlvSa0L+RVLBx
-	fyIY/+GkA7epr8FoTCRReFZP6j5WgIdhvytF8UA5mSh9Nu/CqUPJmHcjZWpuoCX0
-	uKekc0czs23FP+aZUyezKwberEiPwiomwoA==
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
-	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
-	action=sign d=gahingwoo.com a=rsa-sha256;
-DKIM2-Signature: i=1; m=1; t=1795477922; d=gahingwoo.com;
-	mf=PGdhaGluZ0BnYWhpbmd3b28uY29tPg==;
-	rt=PGlvbW11QGxpc3RzLmxpbnV4LmRldj4=;
-	s=fm2:rsa-sha256:WyENN/C8RyBNb5oaylZ6BAnUlVgkY2CQNHPQ0RjviLrdjAP
-	kr2m9uMYBidGvf2HwAVOtNJxcjYMKruVpDrrgxRusf/z4u3DWuJbHecOQun2Afm5
-	7SucFCvz/M8ZKHX7Y07JB/tJjI+7z5A+rH1bHTwp+9vxg7ensYkGFE2MKGnTvaDE
-	Th7wNGXAzT6cRBiZ+WXr5VflME0Z3VtNHFKDpSSbnoUcm6KPGu3Vijj/4M2R4muv
-	/88XA7vADlZjalSpGVr/mlWN06XpwEagAqr4CU8lU+QDlcS74pKAC6M1JHAdzfQX
-	K8lNmu2y65i5cUoyZYsNs94a2f29d8kF5a0Y90g==;
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
-	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
-	action=mi-m=1; hc=9;
-	hn=cc,content-transfer-encoding,date,feedback-id,from,
-	message-id,mime-version,subject,to;
-Message-Instance: m=1; h=sha256:snLsPNsbCz4VYOV2yj47o6aRDOxjWYqyPbozGNNs8VY=:P1o165xLoA2qPuWrWFB5pBAq5tFyty/t5vGj9pxnMhE=;
-X-ME-Sender: <xms:oNEEayNBhIsU1UsD4wcEKvo0F7MVcHuRFBk7UpQ2QN0e_m-K_rFQdw>
-    <xme:oNEEa9Wt-eCR0KFCQfpEhkNvInUAZuyiqoWWNKM09uQfu_Bc5yFMli7BFEpsIbvpJ
-    pijCkXMummPZerpiV_S3AU-fOMt_VJCNnVTDJ7N72szWB7KVigdK7U>
-X-ME-Received: <xmr:oNEEa9vyk1XhCip0WNq7twhcbfXgFs_dXjNlOTmLOOFXifPBa3VIt-6z5WOys9_whlW3fzKY>
-X-ME-Proxy-Cause: dmFkZTGJb1GdD04PLpCAwZXXn7KZFUQpgvhFpeiMNWdTsgQSXg4su9r1wkz1eWzPIWOfBk
-    FJ9NY1WQK6z+GMRPOeRa/xAcpLpGhZ3i3rHu5zB/D89kM2qY3MxfXxhF110D0CRcXEf2fs
-    4MN8MAYO53DHxq/1TxDxLsW5l7z73MpX6FTTFOLL15TnPkCKO8+O8eTU+J7YY12pzpLN9D
-    p/Kfr1ryp9Wgd2f7QZubaklTf0nB4k6SUJquczvZb3B/7xgpFlcJ0khWtpNl6yBmu4hGTG
-    rRsYCFoUn1baSUqCSDWvFHpznLOQrwKiCna74wQ9/Gjj2KmMpF+aQXmxNWCHIUGenuXuJh
-    7S3H+o9zDSJGKzoghBTYfKDpTcrMP8uXEMuxALYb/6VCSTKN566GB/8nyz/Wod6HIjG1RJ
-    ggCKta78hvrnZZZmTSy5AjuBmN0Z+eCbSKfT0pxpOhQol3WDC/xm0duisMs4leMcI2X4bm
-    vElPhLbZwcp8fFyfcud8QwdbASs/s9OHFa2l34KCDcDJoVV73h7OYUsJMoCVtX8tY4kYra
-    YBGMqVPC1naNhEqezi3z9gcD/pzGewTMhtrXBkjPD4czMToAIjEwz8zslcpWt72BD8ThG+
-    s4aY8/tdWsw96+Mj9zvaymtCPXiBR2ss+/GFpYC+3lTl90JY7qAdmQgEvcMw
-X-ME-Proxy: <xmx:oNEEaw0-SK_YQXOqR6vG6JDwO3SMTOonxH7AI6Qkpj3Jt0T5AtOmfw>
-    <xmx:oNEEa265RLCMuUWeLqN_Et1li24zw51GNx9ZNrpsXJJ8mKxMmU3XUA>
-    <xmx:oNEEa_XrqjxsazoJvxACg2og9xgDzysaS0fyq_8BQ0efYoVFd_GZLw>
-    <xmx:oNEEa2iay_QGchCQCamWbZuZRRbbAd7njZtZxz1iT-B5qsHgXdVYTA>
-    <xmx:otEEa9IbXmXQVeWTV5gWRzJeSD0Si6hsRP_FhIDNSdEyRkWZo8GclPrN>
-Feedback-ID: i7a5e4b5f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 23 Nov 2026 18:51:56 -0500 (EST)
-From: Jiaxing Hu <gahing@gahingwoo.com>
-To: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	heiko@sntech.de
-Cc: tomeu@tomeuvizoso.net,
-	ddrake@baylibre.com,
-	sidong.yang@furiosa.ai,
-	anton.sovetov@gmail.com,
-	chaoyi.chen@rock-chips.com,
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=imBAzJjA
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-49465892f7bso2816916f8f.1
+        for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 15:59:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1795478341; x=1796083141; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=1KEZlJHY2iJZV5bGkgX8FT1FWywheNVCNg2fp4w3t8o=;
+        b=imBAzJjAQD+KGJGhv6mNam8K+jcfJUZh3G45ncLcpzgxKzMlJMX33TA7Wr2TOFqAt2
+         MZ01R4s3XZZ6thu68bpb3Fs8OPiSRZT+YSTj0JuKRNcIZwHgSUSiwOTSD0Z/d7z558mD
+         +9onTj0gAOlNf4gPmg+5gZ2CtZoaolRxwY82g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795478341; x=1796083141;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=1KEZlJHY2iJZV5bGkgX8FT1FWywheNVCNg2fp4w3t8o=;
+        b=vnpBXru07F79HXLRfXNiIDqvM78rOw3i/Uz20JB7AzX5rtcAJaHD9RZrKU8V/qmAFU
+         gUi9gZ0vXKGgSLC0y6jMReFmn7Ve+K4JJfPJXq5dD+IZYLwcjBqslxRIPoGkzbnxUMLz
+         YqkovS9hKRbcGAqTrdxZydJIK7a4K5LsjgqZZTOGYpOKMNZHInBslKQOv3e/vJ5q1n96
+         YY0fMUnuZ7tebwoA+4YEFL6c4dhw/oL9uRp7vpvA1OGn26mWN8CFtO7pNMM9Pt82Thg3
+         GRep7fcDDavvrjvhbUqw3uGcW+33GZxPlryS1hQ8/krTYErXDly2iirvImcBtrevfuva
+         4/4A==
+X-Forwarded-Encrypted: i=1; AL+hErH15/dpwYE4ofdtBa9CvkWn/kZ7dmil12IAoin/c3VlULDtEZmkGz/KnbMNZ85XXy+4fIkEGA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9ZH4Z8ioIJf+Qn2R0zNR7T/mmaYkc6+6Aq62135j2p4kQmPWiT
+	mCDi+lcKUocwRyqRofeUdcQDMvibClZrXI7vIeJDudI+aNte9lGeVeVD0cWI7OXHhg==
+X-Gm-Gg: AZFdTZf+oUyaeyhA2z81Ag6FIKbS9syLJfVkHpjGXcb6qjDto/PLn19iLcMCupGxDqs
+	/xMyadaJtlqIglThLs0cIi5TgNspgKPHoxa2PaQ9vzyYSsBxaVuOZy2Eit/7mAlgKZHCou0Wqlq
+	GKd0wyhcVgVXMZcipxy7Q4jCuVv89y8NErqaBjAElqeh1vEgJ3q1XXTqit4/i6c6l8OyHYroUSS
+	lhb9F5yWWTDqBQpDWHWi1niIm7BdvRZTocs9tx+X7HdbcdAYfHarD6oNNkWMZtEtcKi5woS5K8z
+	L5BoEF9evLnBIJAQAB+/3Lkp5ZxrL4uNWBi1GJ//Jw7QY3GBLMFupZR+s40K2RSCApzoJqxifwA
+	2mENakXE6Ucgvs7eDuUgRGztDCM710QZHvzrNLFGtNuwtdfT8Xx2HDzvZ4xw+cUh/BqLRAah4Kc
+	kb1D7UXk1X+6O1r1fgH63X6h8REs56M91adNr0B7P+P0s7q+xfja3Ux2sNiT1O8wlMHJmBYB8VU
+	OzRqv3jCdLv1paxesdsSY5em7CTyoPmRugtyeBP88+7uZckkm2tAqusaW36onL3fnTZCSqWm2kq
+	iXfz9RC2QLNQT5xDa2Xxqiza0q8I2V1YhvBK8/fCybk4f+ZupRh4sRNMQBJvBFVkQj25reh9vcR
+	wT4Hkm4xz/zuKDNKqug==
+X-Received: by 2002:a05:6000:40c9:b0:4aa:f8a3:3cf6 with SMTP id ffacd0b85a97d-4abb3955aa0mr26517246f8f.30.1795478340984;
+        Mon, 23 Nov 2026 15:59:00 -0800 (PST)
+Received: from dmaluka.c.googlers.com.com (120.142.205.35.bc.googleusercontent.com. [35.205.142.120])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6c61e53asm25727068f8f.59.2026.11.23.15.58.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Nov 2026 15:58:59 -0800 (PST)
+From: Dmytro Maluka <dmaluka@chromium.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Dmitry Torokhov <dtor@google.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Bjorn Helgaas <helgaas@kernel.org>,
 	iommu@lists.linux.dev,
-	linux-rockchip@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/rockchip: Disable paging on banks that still page before a force reset
-Date: Tue, 24 Nov 2026 12:51:54 +1300
-Message-ID: <20261123235154.315460-1-gahing@gahingwoo.com>
-X-Mailer: git-send-email 2.43.0
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Joshua Peraza <jperaza@google.com>,
+	Jesse Barnes <jsbarnes@google.com>,
+	Len Brown <lenb@kernel.org>,
+	linux-acpi@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	"Oliver O'Halloran" <oohall@gmail.com>,
+	Pavel Machek <pavel@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Rajat Jain <rajatja@google.com>,
+	Rajat Jain <rajatxjain@gmail.com>,
+	Will Deacon <will@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Vineeth Pillai <vineeth@bitbyteword.org>,
+	Aashish Sharma <aashish@aashishsharma.net>,
+	Grzegorz Jaszczyk <jaszczyk@chromium.org>,
+	Tomasz Nowicki <tnowicki@google.com>,
+	Dmytro Maluka <dmaluka@chromium.org>
+Subject: [PATCH v11 0/2] PCI/ACPI: Support Microsoft's "DmaProperty"
+Date: Mon, 23 Nov 2026 23:58:27 +0000
+Message-ID: <20261123235845.564027-1-dmaluka@chromium.org>
+X-Mailer: git-send-email 2.56.1.831.g720f3f5937-goog
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -131,114 +119,141 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-After an RK3576 NPU job timeout resets the core, the banks of its IOMMU
-can be left in different states: bank 0 is still paging while bank 1
-has been reset.
+[ Resending + rebasing a series which was last submitted by Joshua and
+  acked by Greg over 1.5 years ago [7]. ]
 
-In this state the existing stall and paging helpers do nothing, so the
-force reset that follows fails as well. The IOMMU can then no longer be
-enabled, and the NPU stops working.
+Threat model: An overview of the security implications of non-strict
+IOMMU is presented at [1]. This change is motivated by “Case 1” where
+a DMA-capable device is processing untrusted inputs, e.g. network
+devices.
 
-When the banks disagree, stop paging on the banks that still page
-first, then run the existing sequence.
+This patchset proposes using “DMA protection” to mitigate these risks.
+This has the following effects, currently controlled by the
+“pci_dev::untrusted” flag.
 
-Tested on a ROCK 4D with repeated forced job timeouts. Without this
-patch, one in every 2 to 10 timeouts was not recovered from; with it,
-20 out of 20 recovered.
+- Separate IOMMU DMA domains
+- Use of SWIOTLB if CONFIG_SWIOTLB
+- Disables quirks in Intel IOMMU
+- Disables Address Translation Services
 
-Fixes: cd6438c5f844 ("iommu/rockchip: Reconstruct to support multi slaves")
-Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
----
-Not tested on the RK3588.
+The “untrusted” flag was introduced in 2018 in [2]. The motivation for
+that change was to enable using IOMMU to protect against DMA attacks
+from externally facing devices such as thunderbolt ports. The patchset
+introduces the “untrusted” flag which “is supposed to cover various
+PCIe devices that may be used to conduct DMA attacks.” The patchset
+originally proposes naming the flag “is_external” but is renamed to
+“is_untrusted” and then “untrusted” supposing that it could apply to
+more than just externally facing thunderbolt devices. The fact that
+“ExternalFacingPort” is not part of any standard is called out during
+review but also that Windows expecting firmware to identify external
+facing ports makes it “as good as a formal standard in the Windows
+world.”
 
-LLM-assisted.
+This current patch series was first proposed in January 2022 [3]. It
+originally proposed a new property “UntrustedDevice” which would cause
+the untrusted flag to be set. In V1 Greg questions whether the new
+property is part of the ACPI standard and asks who is making this
+policy decision. Mika links to Microsoft's documentation of
+“DmaProperty” and suggests that property should be adopted instead.
+Greg objects that Linux does not have “dma protection” but Mika says
+that this is the IOMMU. Today, the term “DMA protection” is used in
+thunderbolt driver code with the same meaning and in an Intel white
+paper [4] describing the technique. Mika also observes that Linux has
+recognized several properties documented by Microsoft but not part of
+the ACPI standard. There is discussion between Mika, Rafael, and Rajat
+about seeking to align with Microsoft on the semantics of
+“DmaProperty” for compatibility with firmware produced for Windows.
 
- drivers/iommu/rockchip-iommu.c | 61 ++++++++++++++++++++++++++++++++++
- 1 file changed, 61 insertions(+)
+V2 of this patch series [5] again proposed an “UntrustedDevice”
+property which Greg objects to because it is not sufficiently
+descriptive, not sufficiently documented, and policies about trust
+don’t belong in the kernel. Rajat describes the “untrusted” flag’s
+current use, controlling IOMMU and Greg suggests naming the flag
+“use_iommu” or “able to do DMA.”
 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 1fa3110b142a..5eabefb0ad14 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -507,6 +507,64 @@ static int rk_iommu_disable_paging(struct rk_iommu *iommu)
- 	return ret;
- }
- 
-+/*
-+ * The helpers above only act when every bank agrees. After a reset of the
-+ * master, one bank can still be paging; stop it bank by bank.
-+ */
-+static void rk_iommu_quiesce_paging_banks(struct rk_iommu *iommu)
-+{
-+	int i, ret;
-+	u32 status;
-+
-+	for (i = 0; i < iommu->num_mmu; i++) {
-+		void __iomem *base = iommu->bases[i];
-+
-+		if (!(rk_iommu_read(base, RK_MMU_STATUS) & RK_MMU_STATUS_PAGING_ENABLED))
-+			continue;
-+
-+		dev_warn_ratelimited(iommu->dev, "bank %d still paging, status %#08x; disabling it\n",
-+				     i, rk_iommu_read(base, RK_MMU_STATUS));
-+
-+		if (rk_iommu_read(base, RK_MMU_STATUS) & RK_MMU_STATUS_PAGE_FAULT_ACTIVE)
-+			writel(RK_MMU_CMD_PAGE_FAULT_DONE, base + RK_MMU_COMMAND);
-+
-+		rk_iommu_base_command(base, RK_MMU_CMD_ENABLE_STALL);
-+		ret = readl_poll_timeout(base + RK_MMU_STATUS, status,
-+					 status & RK_MMU_STATUS_STALL_ACTIVE,
-+					 RK_MMU_POLL_PERIOD_US, RK_MMU_POLL_TIMEOUT_US);
-+		if (ret)
-+			dev_err(iommu->dev, "bank %d: stall timed out, status %#08x\n",
-+				i, status);
-+
-+		rk_iommu_base_command(base, RK_MMU_CMD_DISABLE_PAGING);
-+		ret = readl_poll_timeout(base + RK_MMU_STATUS, status,
-+					 !(status & RK_MMU_STATUS_PAGING_ENABLED),
-+					 RK_MMU_POLL_PERIOD_US, RK_MMU_POLL_TIMEOUT_US);
-+		if (ret)
-+			dev_err(iommu->dev, "bank %d: disable paging timed out, status %#08x\n",
-+				i, status);
-+
-+		rk_iommu_base_command(base, RK_MMU_CMD_DISABLE_STALL);
-+		ret = readl_poll_timeout(base + RK_MMU_STATUS, status,
-+					 !(status & RK_MMU_STATUS_STALL_ACTIVE),
-+					 RK_MMU_POLL_PERIOD_US, RK_MMU_POLL_TIMEOUT_US);
-+		if (ret)
-+			dev_err(iommu->dev, "bank %d: disable stall timed out, status %#08x\n",
-+				i, status);
-+	}
-+}
-+
-+static bool rk_iommu_banks_disagree_on_paging(struct rk_iommu *iommu)
-+{
-+	int i, n = 0;
-+
-+	for (i = 0; i < iommu->num_mmu; i++)
-+		n += !!(rk_iommu_read(iommu->bases[i], RK_MMU_STATUS) &
-+			RK_MMU_STATUS_PAGING_ENABLED);
-+
-+	return n && n != iommu->num_mmu;
-+}
-+
- static int rk_iommu_force_reset(struct rk_iommu *iommu)
- {
- 	int ret, i;
-@@ -947,6 +1005,9 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
- 	if (ret)
- 		return ret;
- 
-+	if (rk_iommu_banks_disagree_on_paging(iommu))
-+		rk_iommu_quiesce_paging_banks(iommu);
-+
- 	ret = rk_iommu_enable_stall(iommu);
- 	if (ret)
- 		goto out_disable_clocks;
+V3 of this patch series [6] proposes recognizing “DmaProperty” with
+slightly altered semantics from Microsoft’s documentation. Greg
+suggests adhering to Microsoft’s semantics for “DmaProperty” and to
+introduce a new property with new semantics instead. Greg again states
+that the flag being named “untrusted” is confusing.
 
-base-commit: 909ef7a9a30fa139e69e555e3606680f5cca7726
+V4 renames “untrusted” to “poses_dma_risk”. Christoph suggests
+“untrusted_dma” and Rafael agrees.
+
+V5 renames the flag to “untrusted_dma”. Bjorn asks for clarification
+about whether the semantics of this flag will match Microsoft’s
+documentation. Rajat responds that Microsoft has agreed to update
+their documentation to have aligned semantics, in particular “the
+property is not restricted to identify ‘internal PCIe hierarchies’
+(starting at root port), but to "any PCI device". As of today,
+Microsoft’s documentation does not appear to have been updated.
+
+In V6 Rajat updates a link to Microsoft’s documentation, renames a
+function to pci_dev_has_dma_property() and uses
+acpi_dev_get_property() to read “DmaProperty”.
+
+In V7 (Nov 2024) Joshua re-sends and Greg requests a summary of the
+history of discussion about the name for the “untrusted” flag and
+justification of the new name.
+
+In V8 Joshua renames the “untrusted” flag to
+“requires_dma_protection”. Greg requests more information about the
+threat model, what does this property convey, and why we should use
+Microsoft’s DmaProperty and its semantics instead of inventing
+something new.
+
+In V9 Joshua updates the cover letter with more information from
+previous submissions in this series and the “untrusted” flag’s
+introduction.
+
+In V10 Dmytro rebases the patches onto the newest kernel (v7.1-rc5)
+and applies s/system may need protection/system needs protection/
+per Greg's suggestion in V9. No other changes since V9.
+
+In V11 Dmytro rebases the patches onto the newest kernel (v7.4-rc4).
+Also collect the links to all 10 previous versions of the series in
+one place in the cover letter for convenience.
+
+V1: https://lore.kernel.org/all/20220120000409.2706549-1-rajatja@google.com/
+V2: https://lore.kernel.org/all/20220202020103.2149130-1-rajatja@google.com/
+V3: https://lore.kernel.org/all/20220216220541.1635665-1-rajatja@google.com/
+V4: https://lore.kernel.org/linux-pci/20220320062907.3272903-1-rajatja@google.com/
+V5: https://lore.kernel.org/linux-pci/20220325184609.4059963-1-rajatja@google.com/
+V6: https://lore.kernel.org/linux-pci/20220426000640.3581446-1-rajatja@google.com/
+V7: https://lore.kernel.org/linux-pci/20220426172105.3663170-1-rajatja@google.com/
+V8: https://lore.kernel.org/all/20241118193024.2695876-1-jperaza@google.com/
+V9: https://lore.kernel.org/all/20250221000943.973221-1-jperaza@google.com/
+V10: https://lore.kernel.org/all/20260525224023.2753569-1-dmaluka@chromium.org/
+
+Links:
+[1] https://lore.kernel.org/linux-arm-msm/20210624101557.v2.3.Icde6be7601a5939960caf802056c88cd5132eb4e@changeid/
+[2] https://lore.kernel.org/lkml/20181129155153.35840-1-mika.westerberg@linux.intel.com/
+[3] https://lore.kernel.org/all/20220120000409.2706549-1-rajatja@google.com/
+[4] https://www.intel.com/content/dam/develop/external/us/en/documents/intel-whitepaper-using-iommu-for-dma-protection-in-uefi-820238.pdf
+[5] https://lore.kernel.org/all/20220202020103.2149130-1-rajatja@google.com/
+[6] https://lore.kernel.org/all/20220216220541.1635665-1-rajatja@google.com/
+[7] https://lore.kernel.org/all/20250221000943.973221-1-jperaza@google.com/
+
+Rajat Jain (2):
+  PCI/ACPI: Support Microsoft's "DmaProperty"
+  PCI: Rename pci_dev->untrusted to pci_dev->requires_dma_protection
+
+ drivers/acpi/property.c     |  3 +++
+ drivers/iommu/amd/iommu.c   |  2 +-
+ drivers/iommu/dma-iommu.c   | 16 ++++++++--------
+ drivers/iommu/intel/iommu.c | 10 +++++-----
+ drivers/iommu/iommu.c       |  5 ++---
+ drivers/pci/ats.c           |  2 +-
+ drivers/pci/pci-acpi.c      | 22 ++++++++++++++++++++++
+ drivers/pci/pci.c           |  2 +-
+ drivers/pci/probe.c         | 10 +++++-----
+ drivers/pci/quirks.c        |  4 ++--
+ include/linux/pci.h         |  7 ++++---
+ 11 files changed, 54 insertions(+), 29 deletions(-)
+
 -- 
-2.43.0
+2.56.1.831.g720f3f5937-goog
 
