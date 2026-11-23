@@ -1,80 +1,109 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795447250;
-	b=W1VCvr+T0KfOtp6O/jTxZKJnDDb6BGRXPSWzOZ/8A/A88jraSWNMjOvkj+a/F2e3fMVW
-	 181SlIcuJ824U4pHucnYiU1ltImpp+Y2ZJEcccyFIovvTbjslE2JLQWdMXh7lQ1m7ESv0
-	 k4bwK/UynMp9/xKP4rZK8yFVvS7AzpMexm7MqRzxL+ya6DbL1r27mldAQYuJ2mTk2b5C1
-	 iAli7ViL1sBWmjZsgEWzNghqFQxzTcgp6PgKYUluB/mZwPtkmQFY+oRa2e9Ygybwc+hMn
-	 k0T8u++CbVaA7IfnQojpTqH4HX6wPuid5TbOggMtRcWhbTQ5Lcq/iXRUDZDIrbgJPvw==
+	t=1795447599;
+	b=wGfV+j3r1SOMdEhsY+DvH5UVxoFQVkqQ03bdi5VqkfEtpJ6SQrDQBdzvbYqtfLjrpW18
+	 mutFpFh0q+AfXqWXp0tHBRG6O6hKO3R1palCKM+VyqZTfCLuA0YxMirWpyA5eC3QnQzGB
+	 M0cajmvrb8Rs67jaCs/Y9/suQd9rWazyHHZkLSU5EudRYtpJ3fTWUATP/X8Y2bP85wMcd
+	 5i/zbhsnzXkgUtT87Ay2b7K84P4BSsTyKCtP2yCmx7YgH7oeDKQsypfp1GB3oiJSDktU2
+	 CEfWFZZKeKexjSJ9QC7YWLrLZszET0ER1wOI+d90O5O8+uuTsH5mSJPV8aFWYzJ7J7Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795447250;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=KnHPy1hhJFM96Jur6TKylq8tiIqT2jgnnLbxXbR2WEA=;
-	b=r8qPc9LSpozFvtdRtWFEE0SnOFEH1TPDs3irAnSoZEg5H/2EZUKSDy2SShEGGtMi8rPs
-	 rH9ylBNrcrsVQ+T36OMd/BJnX4RudrTpbcypRzNB1T0yOIhntrAXNGsQffpK9VwLVFCUs
-	 n91gLDpR+/ql0P5FcodCYI31uUaym7o/KeosjQKF4tmHOzdwfT5dZ6zHVShZwMy0kaaTo
-	 y1NFwRCnj6gWndNztXw+g6nZiia6V2PziRtbYMzlbrgD7DPATDvIYDYAbPIDrFPXKbc04
-	 eXwYxFA+ffbp41sRCeeo72Hth+bEwBz/QOV7ExuOlpj4LAXy7uoD+9QIqmWlfKRh0yQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795447599;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:
+	 X-Received:X-Received:Received:Message-ID:Date:MIME-Version:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-Proofpoint-ORIG-GUID:
+	 X-Authority-Analysis:X-Proofpoint-GUID:X-Proofpoint-Spam-Info:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=WuUxIXOTitidaH3hOzfbjH0n5miOrk3cJGjFf9YeLq4=;
+	b=YtuwN8H1EHCDoxzpzOmdAAckk6uel1Y9qFhzJfeJW009FCAjyz19XIQfFiWBcLbL0qD7
+	 hGC6dFLES+EHHgYHjMkGX5+2kbKzPYrWB4ATaXtIORj6GTZvcUZu26vzJAjKy3UsN8+kJ
+	 bAjjczMqh6z9NgJT3ZUYcA8/z9WQaVtid4Uj6Cd62Aroqi++pUN7ZOvCMHim3t6/FG+0E
+	 HgWL68XJwtAtc1YtDgMjM1QkzwkXCRbjnfkJ5hCEmZ2He0zaP9nzgsKIFTqd4vJGhPXmN
+	 oJYA8f6TWoIpwMoZ9JAJEJ4MFDj5c5/grfyja8FgQhbwioZ6XmLYp5C7YhIq79kl7DQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=eM5cupxw;
-	arc=none smtp.remote-ip=192.198.163.16
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=oss.qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=dW4qkRhD;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=CNdOdny7;
+	arc=none smtp.remote-ip=205.220.180.131
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEBF3606A321;
-	Mon, 23 Nov 2026 15:20:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DEBF3606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CB64606A327
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 15:26:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1CB64606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=eM5cupxw
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795447250; x=1826983250;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jEhltNhYqHsmjiCu7dIjRvqg/4zmhsCr7YHqofX1yDo=;
-  b=eM5cupxwEPk8HfJd4+Da27sPZW5WRsoDzy8g01iL5Q19GaJnSbKZhnFD
-   PgMLwKpPo6gKAV6trnUFVyQjHXfe6wBFMBHc0c536J+MdlmiDeUSrhS4v
-   UMX+aOrW2XjR2G6eiZmhuDCwOk7aNFhpj9fI+noNarj8S2ABmIScGfiSR
-   bYbpFkuRWQmAEsR5oISCCTtdH+3h2OAl0hTZ2k9JxsPG4F76c2PCZr9ZX
-   ujU4f4PVGlM6ThrbKr2gmalajAixKRlkVnSsIuWpSixCpIXrHLaGKTzyy
-   /BbeTrTqNg9IVWai24XYno5zUU0h17AZduWTaSw8nX2pYes878elYwdl4
-   A==;
-X-CSE-ConnectionGUID: ROWbQygSRDyFcRC9Pc+2eA==
-X-CSE-MsgGUID: Y7Whf/AcRqWM6e9GOwFt/Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4292271"
-X-IronPort-AV: E=Sophos;i="6.27,229,1787036400"; 
-   d="scan'208";a="4292271"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 07:17:56 -0800
-X-CSE-ConnectionGUID: CeKYDNsLTKeqsA654pVU/w==
-X-CSE-MsgGUID: N6b6/JfDTT6hqzBIDYN4UA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,229,1787036400"; 
-   d="scan'208";a="11523457"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.47.46])
-  by fmviesa002.fm.intel.com with ESMTP; 23 Nov 2026 07:17:53 -0800
-Date: Mon, 23 Nov 2026 23:08:12 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, x86@kernel.org, linux-coco@lists.linux.dev,
-	kvm@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>, Kiryl Shutsemau <kas@kernel.org>,
-	Rick Edgecombe <rick.p.edgecombe@intel.com>, xiaoyao.li@intel.com,
-	Chao Gao <chao.gao@intel.com>,
-	Binbin Wu <binbin.wu@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 4/9] iommu/vt-d: Add interface for tdx-host when
- enabling trusted DMA
-Message-ID: <awRW3ESp3sBoxtJ9@yilunxu-OptiPlex-7050>
-References: <20261112043054.2664857-1-baolu.lu@linux.intel.com>
- <20261112043054.2664857-5-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=dW4qkRhD;
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=CNdOdny7
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6ANDKxSZ1974245
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 15:26:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	WuUxIXOTitidaH3hOzfbjH0n5miOrk3cJGjFf9YeLq4=; b=dW4qkRhD6imxWpO8
+	u5HFt+cbJ2A5mj1c1Ds7HXJFBiwHhG8/isQUmEVOmN7Q5yCgvPESuKphzSseuY4X
+	F9YEIBVBT1rILBMztZWXjiPF+1SnhEwm5opt4/mrlJNr0M6zeY/dB36oxtnRyUoM
+	tDMuRHv5ZaVAwy8If3ybdWC85Fbh0ZVD+q6ZeC2t2NuTIqYUGrLY3sdwXP2lBrbd
+	Z9w4j5qU5t1595g8SPztX96GWeNFLLPFKdg3McdjKgraKLdhZahNnueNV0togGOP
+	KfoZa9K1/Q+EdN7BO+S9pKid3qQllXMCtbsoH4td8IOMjY46VyK6qcXYVJWcNfBV
+	OubzFg==
+Received: from mail-vk1-f197.google.com (mail-vk1-f197.google.com [209.85.221.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4j4m7us0c5-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 15:26:36 +0000 (GMT)
+Received: by mail-vk1-f197.google.com with SMTP id 71dfb90a1353d-5ee4ca14454so95145e0c.2
+        for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 07:26:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1795447595; x=1796052395; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=WuUxIXOTitidaH3hOzfbjH0n5miOrk3cJGjFf9YeLq4=;
+        b=CNdOdny7CWQWPhqTn2K99U2qHDpkjRxZMMBNHWN6EzOeVt2KDfQNZeWmPmZNPS0ccE
+         Rjj8CCQsUN6oTw2snF3Ouio5T1Spib/XrQ4ZlxMQ3LXmpy3ZCCgGDPm25z30/hJ9UQNh
+         /IdwQC6aIVAOK/XxdP8Q9eYtMtn+n86U/CXUHIxT8BRiLbxWnEYysHT5BkIb07cjAd0C
+         34Fp4Z2kP1MaNM289PHP6E/dshrxBXQIXhozkQaiXjKwWPcn0gOLHh0vJgwja+oC+FiO
+         SknEYWMv6VN3H1pO5IV3uvCjNClr3x5Ha/lrYklORqVjWqxlQQEu4WpQ1FvKAtAmJ0xl
+         QRJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795447595; x=1796052395;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=WuUxIXOTitidaH3hOzfbjH0n5miOrk3cJGjFf9YeLq4=;
+        b=OAEWkd2Suqzp7/kfNliX9kSfmcXxzgreXdTksKN+lCg5PNkZdBBXdXc0+VRvDOjRCf
+         ZiDZLdt8869qTmrVTmgIuDryQOoUcnW10kqa23LXU4FjehMd8jkUutZI39+jGDvQPe5Q
+         bBU81D1m2aZv0gIUz/rhP0Eu04evXaylwctKLLcF9JalAjEPa09IEwdm2yi3za5kf7jd
+         YTOhvUCYBSlx69jUM1zq44Ug+/Z16goe/x0D6Z4KEeK4ByFOHwGRyZ6uGOeKoLbTeMGa
+         kBAPJoeCi00MKwZjVLLN7jlNvVY9afp+F1DeEAlxCp91SZbVVE5p+UaZADR8amR3NzoI
+         evhg==
+X-Gm-Message-State: APuU4Z8iC8NuLkJ7zkak/rsquppEcsw9t0sVLf5wU76tg8y6urpYlGK5
+	hGFwZ+oexdInVQlOjSG+RrQAxAvv0uJb/wWTF24HDHQBOyFgf30lcVuNMZ/TrWJGNWQLwGh5nW4
+	DIVVHkKyGRvN+vzP1VY3l8SVPFnTVvrVQu+V1oTsBjM5yCgckN0GyubFakA==
+X-Gm-Gg: AZFdTZd89ePYlRsVckCRaxn7NKSXperSr7dg+OMf1dD4BmaFJCl+LZfeM+br22/yXBE
+	ru3w3jz83ZW23qQwFQuxTwuedCeNZudAFzoDTzNVVUQjqiqimeityLA0KRaz1gndbwzCv7xaWLr
+	KI8HGJvpF9lVTPa1iSLlMlMsAVnsiaY7QT42ZHETPF9jFSdrO50Y3Pzw7Ir8V4//0dZQIDbz0On
+	I8TzICsc534YiVwMMeGlFEc737/U9syXGyKsW3K7ZQ/Mvp85xPE3x6hP9yJGAkBVCEpDfwSE6p/
+	5KhE5qv2OV0XapIVLmJkS5Kxn1JL7QsUTgCwFI5j0hYOjKJ5syCsuZj5i29o3k1/DcNiSjkVOcs
+	dGK5+xTqlqiLLsuTdHJ6ogOyDPuO+VLTAXuVAJf0AKzxFIBiSm3BTWjDKPMq/xeHdaL5CwWw=
+X-Received: by 2002:a05:6122:c20f:b0:5ec:b681:f4ca with SMTP id 71dfb90a1353d-5ee8afd6c93mr7291725e0c.4.1795447595275;
+        Mon, 23 Nov 2026 07:26:35 -0800 (PST)
+X-Received: by 2002:a05:6122:c20f:b0:5ec:b681:f4ca with SMTP id 71dfb90a1353d-5ee8afd6c93mr7291684e0c.4.1795447594833;
+        Mon, 23 Nov 2026 07:26:34 -0800 (PST)
+Received: from [192.168.226.72] ([178.235.128.140])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c513acfe25asm420926666b.11.2026.11.23.07.26.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Nov 2026 07:26:34 -0800 (PST)
+Message-ID: <8560f4a8-41e4-4f78-bd0f-3aabe731b79a@oss.qualcomm.com>
+Date: Mon, 23 Nov 2026 16:26:32 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -84,140 +113,69 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261112043054.2664857-5-baolu.lu@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/qcom: Disable clocks if restoring the secure config
+ fails
+To: shyckless@gmail.com, joro@8bytes.org, will@kernel.org,
+        robin.clark@oss.qualcomm.com
+Cc: iommu@lists.linux.dev, robin.murphy@arm.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20261122-qcom-iommu-v1-1-ecb20a28871f@gmail.com>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <20261122-qcom-iommu-v1-1-ecb20a28871f@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: JIMsU2vZeiI4UL8Wd-sViEOv7O6ADddM
+X-Authority-Analysis: v=2.4 cv=KurYSmWN c=1 sm=1 tr=0 ts=6b045b2d cx=c_pps
+ a=JIY1xp/sjQ9K5JH4t62bdg==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
+ a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=_2H1bLmklXDtjbdw0hQA:9 a=QEXdDO2ut3YA:10
+ a=ZXulRonScM0A:10 a=tNoRWFLymzeba-QzToBc:22
+X-Proofpoint-GUID: JIMsU2vZeiI4UL8Wd-sViEOv7O6ADddM
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTIzMDA2MSBTYWx0ZWRfX3kptFj256MQy
+ 03n0rkDB4R1O7iiKInoPY7q5tRGBC0yfuyeFotmiRICHXkWlbrgqlbUUsORMA6Paf2xLeobSegX
+ JagVK+c5MWHZdQlsYp/RmOK/TNSmw2c=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTIzMDA2MSBTYWx0ZWRfX2FYTvIBicE4+
+ ykPNU0vtec8qfKB1Zsm81KyUvG63HmrNVQkDnjp45ygS+mnekWYnfN3YACI3ImSdKDEsoBHamp3
+ JDqPKMRS1iDYlCBfmuR14zZLuSNjOE+tnjACd/r1IKKdpXwTFHDwMlGH5UyXdSCFuyKOgrdTnk5
+ X12fbq0h7pz2LB/raEFFPXJfIo6hq6hybPVJTUYa8YN6HagXxC9f/aWTSDHU6yZNjudKEcoC3s+
+ up5+FV2NDpxBPcIdYxrqOgxZoXj40oiHQUqj306myudVQly3KEY/WLa6X+AwaXIbYy+93IkvXSW
+ YhASwxiTfrHyB3T1veJvgORih0GdkQ6161af21S73ObIy41Ev05hewj6fDdbhVwrNeNMaw0rkNO
+ VqmLsO0EdlQeICzQFHYjRH9Wjm9vbKdb2VV3d7FnsHIbd8E7Tx9gQn8yNz/Ll14owJ1koT0CdUf
+ qtVgGIAjdVsaqOBJJqQ==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-23_03,2026-11-23_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 lowpriorityscore=0 bulkscore=0 phishscore=0 spamscore=0
+ malwarescore=0 adultscore=0 suspectscore=0 clxscore=1015 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611230061
 
-> Add a per-device interface so that an IOMMU is put into Secure TDX Mode
-> only when a device behind it needs trusted DMA. tdx-host tracks how many
-> devices use each IOMMU and calls into the VT-d driver only for the first
-> and the last of them:
+On 11/22/26 11:11 AM, Suyuan Wang via B4 Relay wrote:
+> From: Suyuan Wang <stevewong@hust.edu.cn>
 > 
-> - dmar_tdxc_get_params() looks up the DMAR unit translating the device
-
-I think tdxc is not a good name since "TDX Connect" is not preferred as
-a technical term. These APIs would be used by x86/tdx, so can we at
-least avoid using tdxc for these APIs?
-
-[...]
-
-> +static void dmar_tdxc_fill_params(struct dmar_drhd_unit *drhd,
-> +				  struct dmar_tdxc_params *params)
-> +{
-> +	params->reg_base_addr = drhd->reg_base_addr;
-> +	params->node = drhd->iommu->node;
-> +	/*
-> +	 * params->drhd stays valid because trusted DMA-capable units are
-> +	 * never hot-removed.
-> +	 */
-> +	params->drhd = drhd;
-
-Why we store drhd in the params, any information to expose to TDX via
-drhd?
-
-[...]
-
-> +/*
-> + * dmar_tdxc_get_params() - Get the IOMMU information for a device
-> + * @dev: PCI device that will use trusted DMA
-> + * @params: Filled in on success
-> + *
-> + * Look up the IOMMU that translates @dev and return what tdx-host needs
-> + * to issue TDH.IOMMU.SETUP and TDH.IOMMU.CLEAR on it. This only reads
-> + * information and doesn't change any state. Devices behind the same
-> + * IOMMU get the same @params->reg_base_addr.
-> + *
-> + * Return 0 on success and error code on failure.
-> + */
-> +int dmar_tdxc_get_params(struct pci_dev *pdev, struct dmar_tdxc_params *params)
-> +{
-> +	struct dmar_drhd_unit *drhd = dmar_tdxc_find_drhd(pdev);
-> +
-> +	if (IS_ERR(drhd))
-> +		return PTR_ERR(drhd);
-> +
-> +	dmar_tdxc_fill_params(drhd, params);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_FOR_MODULES(dmar_tdxc_get_params, "tdx-host");
-> +
-> +/*
-> + * dmar_tdxc_acquire() - Acquire an IOMMU for TDH.IOMMU.SETUP
-> + * @dev: PCI device that will use trusted DMA
-> + * @params: Returned by dmar_tdxc_get_params() for @dev
-> + *
-> + * Call this right before issuing TDH.IOMMU.SETUP for the first user of
-> + * the IOMMU. On success, the caller must issue TDH.IOMMU.SETUP and call
-> + * dmar_tdxc_release() if it fails. The caller owns the per-IOMMU refcount
-> + * and must serialize all calls for the same IOMMU.
-> + *
-> + * Return: 0 on success and error code on failure.
-> + */
-> +int dmar_tdxc_acquire(struct pci_dev *pdev,
-> +		      const struct dmar_tdxc_params *params)
-> +{
-> +	struct dmar_drhd_unit *drhd = params->drhd;
-> +	struct intel_iommu *iommu = drhd->iommu;
-> +	int ret;
-> +
-> +	if (WARN_ON(dmar_tdxc_find_drhd(pdev) != drhd))
-
-We can get drhd via pci_dev, then why we require callers to input
-this info and judge? Like an intelligence test?
-
-Thanks,
-Yilun
-
-> +		return -EINVAL;
-> +
-> +	guard(mutex)(&drhd->tdxc_lock);
-> +	/* Still set if TDH.IOMMU.CLEAR failed and tdx-host was reloaded. */
-> +	if (iommu->tdxc_acquired)
-> +		return -EBUSY;
-> +
-> +	/*
-> +	 * TDH.IOMMU.SETUP requires DMA translation, queued invalidation and
-> +	 * scalable mode to be enabled. Catch these here so the error is
-> +	 * -EINVAL rather than an opaque TDX_IOMMU_INVALID_STATE.
-> +	 */
-> +	if (!(iommu->gcmd & DMA_GCMD_TE) || !iommu->qi || !sm_supported(iommu))
-> +		return -EINVAL;
-> +
-> +	ret = dmar_tdxc_reserve_did(iommu);
-> +	if (ret)
-> +		return ret;
-> +
-> +	dmar_tdxc_set_acquired(iommu, true);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_FOR_MODULES(dmar_tdxc_acquire, "tdx-host");
-> +
-> +/*
-> + * dmar_tdxc_release() - Take an IOMMU out of Secure TDX Mode
-> + * @dev: PCI device whose IOMMU was acquired via dmar_tdxc_acquire()
-> + * @params: Returned by dmar_tdxc_get_params() for @dev
-> + *
-> + * Call this if TDH.IOMMU.SETUP fails, or for the last user of the IOMMU
-> + * after TDH.IOMMU.CLEAR has succeeded.
-> + */
-> +void dmar_tdxc_release(struct pci_dev *pdev,
-> +		       const struct dmar_tdxc_params *params)
-> +{
-> +	struct dmar_drhd_unit *drhd = params->drhd;
-> +
-> +	if (WARN_ON(dmar_tdxc_find_drhd(pdev) != drhd))
-> +		return;
-> +
-> +	guard(mutex)(&drhd->tdxc_lock);
-> +	if (WARN_ON(!drhd->iommu->tdxc_acquired))
-> +		return;
-> +
-> +	dmar_tdxc_set_acquired(drhd->iommu, false);
-> +	dmar_tdxc_unreserve_did(drhd->iommu);
-> +}
-> +EXPORT_SYMBOL_FOR_MODULES(dmar_tdxc_release, "tdx-host");
-> -- 
-> 2.43.0
+> qcom_iommu_resume() enables the clocks and then, for an IOMMU with a
+> power domain, calls qcom_scm_restore_sec_cfg(). If that call fails, the
+> error is returned but the clocks stay enabled. The PM core then treats
+> the device as still suspended, so qcom_iommu_suspend() will not run to
+> turn them off.
 > 
+> Disable the clocks again when qcom_scm_restore_sec_cfg() fails.
+> 
+> Found with a static analysis tool and checked by hand.
+> 
+> Fixes: 268dd4edb748 ("iommu/qcom: restore IOMMU state if needed")
+> Cc: stable@vger.kernel.org
+> Co-developed-by: Kaixuan Li <kaixuan.li@ntu.edu.sg>
+> Signed-off-by: Kaixuan Li <kaixuan.li@ntu.edu.sg>
+> Signed-off-by: Suyuan Wang <stevewong@hust.edu.cn>
+> ---
+> Compile tested on arm64 (W=1). I don't have the hardware.
+> ---
+
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+
+Konrad
