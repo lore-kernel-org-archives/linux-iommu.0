@@ -1,156 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.11.78
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795430894;
-	b=AHWOQ3dYKIYg76iScHwuMgy2jadQ7koielfBBH8MH5o1Ifvxey+pStirwkGA1u3i8sId
-	 4kngo93dH09G2faWgZH/KKqE3mzJEr0liGIfha2K85kqXrF1PrHovWmkRpg21NPGq2hnQ
-	 nLP65oG/lAvl15vsgjHOcHQOg/L5cWmUH2uppiFcFjf7ciS5yZcjKy+gsP7MWBjmWezej
-	 PhlpshUL3Zf7hEkyyasag0AYJhvF5E0VCM9LpjBU9hYra9vM0sSUeC5Hhq4ityY1Zeuqv
-	 eGMk2D1NGysl3dNO4cchO7dn3Yh6PHAj0FqY+KRMrWJ8+BbWmIhVsKfxtt0mxtBVA+w==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795430894;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:CC:Subject:
-	 Thread-Topic:Thread-Index:Date:Message-ID:References:In-Reply-To:
-	 Accept-Language:Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
-	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
-	 x-ms-office365-filtering-correlation-id:
-	 x-ms-exchange-slblob-mailprops:x-microsoft-antispam:
-	 x-microsoft-antispam-message-info:
-	 x-ms-exchange-antispam-messagedata-chunkcount:
-	 x-ms-exchange-antispam-messagedata-0:Content-Type:
-	 Content-Transfer-Encoding:MIME-Version:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
-	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-originalarrivaltime:
-	 X-MS-Exchange-CrossTenant-fromentityheader:
-	 X-MS-Exchange-CrossTenant-id:
-	 X-MS-Exchange-CrossTenant-rms-persistedconsumerorg:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=xmA1Wyo926oEe/q3rVojBDXq62ZgfN7BQbs5FWr5Tg4=;
-	b=1J5Noo7AcZgq8HoAW1z6PEnXxno73pZ+pmxh/peaZHNOTeWD0o9AJg6F3xQNSC7x6LR3
-	 Qzv80EhgdQhZWkwzbLoLFTUa0lmcw1l+r1J9/WwGFtWYF6z3wFKNXlf4EXe6+AgNPVZ3I
-	 R7mzkjEZD+PQvCTA4hKafupmbZheUZ2mfstFdwk9Zvj32AVjLRII41jAaGkqZo1wJBMcP
-	 42tn9L3C/ufYemlcSUrEDUu1Y4oQECPdyiHQyDskTd0EsnDTLDzpCyRwiNq7i/Qx+sycZ
-	 hfJyrc27CO0oVM4QJSzL6//9dATx3hSup122bONpogl5xfc95VDjPuRcXU94rIW8YLw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=outlook.com;
-	spf=pass smtp.mailfrom=outlook.com;
-	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=azNL9ylh;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.11.78
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazolkn19012078.outbound.protection.outlook.com [52.103.11.78])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DBDD606A681
-	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 10:48:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8DBDD606A681
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795431936;
+	b=HpD9vU7dAVnhSDHe1669hm+G0hl4Z5hdkranDlUec6eajlA2FQbLLwh0x/iNb4S+hlIq
+	 1I1npKg8DZCgNh8AZ4WrSDPYw5hzw9IvnkXwcAIabh16m4AQtoqsKcX0ECruYdE3FZgKf
+	 U32Pf+r27WqI2l5QPB3hzBv64H7mmp+UuKe6LWJV6b42IhvJB2nz74eoQwFptXGNzRo9z
+	 7N4EQTulfcBtCVByhz8HqaHUFH57HI8wO3zaX1C94RW/t7PsX6paaZ2IZgnK6Qs279xl4
+	 Cp3PR4+9d5Kfk8egb0HfeNwY2TQG5LWN5d1mMlhZuFsU/x6bE5TbP6Jc4URhrwMW7VQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795431936;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=y+pXRncvtOc4nB9TtW4KG6FLyRulzoczl3trVZwKBJI=;
+	b=gKcdcbLrWHqGEd7xqEF/g38O5TEvhEC9iwDwBx/By1vTQlS22oj7k8NWCiuxRkmk1Ch9
+	 MPx0EQCBGbYQwMvr6cihp3rHeVG0s74yMDCgCXg8nAAcysVDLEANjbsW7lImeZuXS2avE
+	 oHWxdHNNvYi+3fzGNXVy3lHnUvxzRS6qtgGd+5L9jQptPCTBaHHH5uYu358WFFahxlJMz
+	 YdHgmaB+ZnAD/6+gBGc15QwRiDNVey52sU/Wfdkpz+seRrcW0cHSKRjrONkfcvHfRT7rQ
+	 n7dtR8hKjSnMPK0kZd3ZfE9/lj12CW3k4wDItMCyVgZwdCVOqum95xW2tHfJrEgcZBg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=KvhrT8NK;
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0680606A31E;
+	Mon, 23 Nov 2026 11:05:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B0680606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=azNL9ylh
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=I9ck8bJoZgfkq0sekMZpkvmakH2qQKUtRLAIN+yZ4h0FiHIZWhJsJdoaWnUo1szTbsIslUmsridY/mhNVY/EOyA0HzmqZdi+6AIfZeTllT28Is0UAjbbI3Fx3+frMVDwDQXJp6lKpF+BRaiirFsMmhJUp3uhA1gd2R6kBSbanZfWF9M/gE4fPOPX8t5iFDzUbygjIAE4ZHoGcfkdZL20CI8k+up/I1deXdJfdUYeNsW4kpnYIzJiWKM+HuPOev+FksiSQx6lrCzR3g7Gl/AocelxsbPHTKd8vmNmSq81zA6SYMhU9KWxsk0pMz+3WrjIMw4+va6cWVWHoHlSnqxmgg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xmA1Wyo926oEe/q3rVojBDXq62ZgfN7BQbs5FWr5Tg4=;
- b=AggIpBlUCcQ9hz0RvP5zKgvkM+CyZ2HkOCgvUgR9jzSagJ/zvxX4vmbIegldsZ2TEZ7e15AKif2V5U+ZyQaKmu3+5QEe4v7fc/BziHSFJRlM4rfWIhJvqmwXAXf2xPdHaNGz60K57BiOr0IrnH9p4Qjlq1B27/LWZiI8PPtknsgzD+c2Mj4wtqXtcBoXoFJVqL4CoNNQEWr/RHc3/40jCeGQDToQ7KKkI+2s/ig53TjMxUq+AoUxcxTrHmFTsoZ1TOi51bD6mHFEX1A2Odw9B/Qm32SFym7httUjrJS/s0Y1cF8DlG4sEiv2aN6zdfbXCj/zUvMM/mbKQ4uLliiAlg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xmA1Wyo926oEe/q3rVojBDXq62ZgfN7BQbs5FWr5Tg4=;
- b=azNL9ylh1DYpsayromys/y39yDukvqL7hce5RY30WebCdOYiveEqM1n7Kgo3nEBzuqtRcbMsx1LJF2XsdNWiiddj6e5gnpo+LBX42DsO0LBcE20tpUrEsvJ7Vr+P7Vsr5fyDoA41YHLdv6KaX/CZjJ2gPpSFlNh4CzyBAXT3E4f6ebXkVs0Oqsiy5a3r7KEB4Z0iQe4yEMMgZMsyjx890mALqSQ7PaKj1btPYFjtoXKeIEuIjkNogxJZa4DVbrB1kWqXPT3RFCsth5qIRtl44yt9hkDn8nacmBk34eO+l4wHQ8IegVJushAnMIQRv3hJYnyiof4Ohe0baptsMtJHBQ==
-Received: from MN2PR02MB6863.namprd02.prod.outlook.com (2603:10b6:208:1d7::20)
- by SJ0PR02MB928093.namprd02.prod.outlook.com (2603:10b6:a03:2a8::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.13; Mon, 23 Nov
- 2026 10:48:09 +0000
-Received: from MN2PR02MB6863.namprd02.prod.outlook.com
- ([fe80::da67:fd0f:d96d:ac53]) by MN2PR02MB6863.namprd02.prod.outlook.com
- ([fe80::da67:fd0f:d96d:ac53%4]) with mapi id 15.21.0639.012; Mon, 23 Nov 2026
- 10:48:09 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Yuho Choi <oss.patchbox@gmail.com>
-CC: Will Deacon <will@kernel.org>, Wei Liu <wei.liu@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Haiyang Zhang <haiyangz@microsoft.com>, Dexuan Cui
-	<decui@microsoft.com>, Yu Zhang <zhangyu1@linux.microsoft.com>, Easwar
- Hariharan <easwar.hariharan@linux.microsoft.com>, Jacob Pan
-	<jacob.pan@linux.microsoft.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 0/2] iommu/hyperv: Don't free a paging domain the
- hypervisor did not delete
-Thread-Topic: [PATCH v2 0/2] iommu/hyperv: Don't free a paging domain the
- hypervisor did not delete
-Thread-Index: AQI83YYoiMXxR9hl+Da1t3KlxwRuFgKG1JtCtmh+C5A=
-Date: Mon, 23 Nov 2026 10:48:09 +0000
-Message-ID:
- <MN2PR02MB68630C9F5A4AD705B3838FABD4452@MN2PR02MB6863.namprd02.prod.outlook.com>
-References: <20261112195710.1417744-4-oss.patchbox@gmail.com>
- <awQOkV6RFl0TM6Hb@8bytes.org>
-In-Reply-To: <awQOkV6RFl0TM6Hb@8bytes.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MN2PR02MB6863:EE_|SJ0PR02MB928093:EE_
-x-ms-office365-filtering-correlation-id: ef1a7b49-de1b-4ffa-1623-08df494f439b
-x-ms-exchange-slblob-mailprops:
- Vs63Iqe4sQkGaLwEdeYxLY7yqos8lGqVhgR33Y1C2m4xULn6yRW7JDuYLFUxQ/KqoNfnYKOngVoR4/EYrDx4Vx/f/te9rB/HAa3e4GupZ0B6fkd5NBCcPmT2botVhBzDipvpr89D1hjUJ5MsxiH/RS3j7lDklBmm4Y+ofYexiqAd718o+f4EUiQrEg0nNNTH9dYVe+cImRI+cbGrpdlCOm8RpW4KsSDSXmebi2n8aOrphsgBP17fxwxKAUVFcuFJgpMVYKtJZrGKRRWWlQDVPvcSR54QXPttp8tdNkt2bekv5KzixzQrdk79AaVtuLDZW8A6YCIOpI3kMD/8CfTg0EklE5V2KFhzJlMKFJ6OPECyWD+dbgQGYiQL0usBcD1UvulNLfU/S6TGF7azoifmX82gzTNIp5jqA0rD/uCGfVwESSkFV5Dty/t5QTGgC2gJV4nf6c8WexUzvXRVuGZUXRcgEc9vdJM9qUu8K3Wa/z8EIUSKXbKEDWV+sf6aZT7Si4UX/pJmjfoRIqmrL8SZdDUhBOXo3tO1iTPf+xNwJgJ6lgOQRr9Uxa5dSWFTKYbA6Uc/eYh1sX3Z0WYIaEkGuHCW2lfyJIYhxES9KLHF/rANPeD0wTQ0PVuBL9jHoHFnE+s+LN2jTZqzue17VZw2CIFo5+g14ugC+ulBpT6bR1zIDNw636nmp6VEYyNyCb5dA6deUh15/Pe2GQRH4KKnNdErxvGNh5hUFSyk18khycE=
-x-microsoft-antispam:
- BCL:0;ARA:14566002|24021099003|55001999006|13091999003|25010399006|51005399006|8062599012|15080799012|8060799015|19110799012|37011999003|31061999003|11031999003|40105399003|102099032|3412199025|440099028;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?PJBWwuPLhdRgXbzQxN0jH6ro6CiQySmaYHX16ONv6T1vxZzy/ztfVhFto6RX?=
- =?us-ascii?Q?xbxMpMAgfRcxzG9Pc83mkrYNSMykopefcltyB8Efj8if5LTkbVfV9egNnvJO?=
- =?us-ascii?Q?4nehu2Idw/RnZ1HKKKisUOEY58VAUWf5lThqFQ/hd0O/5t6t6U9LlENgqQ/X?=
- =?us-ascii?Q?dEJVp2dPwIkz9edc5AJf/RlKfVft3P0lYU/tPgP7Sz06W8+0FTJABEuW9TSV?=
- =?us-ascii?Q?GFBKO3gyHYElnMJFNlD5daXlATl7HzZsIXRZFUxe1gkFFD0HEFzxYj5+4+61?=
- =?us-ascii?Q?24SvsL1WppgrkVt+TDzUtc9BCu8sVIfzbk828Wdw55wF6rB0UDWjR2KoPPta?=
- =?us-ascii?Q?RRq/j58fhyuF+mliwuUqdN7HGwvxRZa56I6Gk8qkOJuMU8t1IzykpHDXNdG7?=
- =?us-ascii?Q?uIKgJE+iyQqkkJBz5l9JXtJOH/YpTdGk7lmj0qhVv4fjtxfE66WjbE9O4OuK?=
- =?us-ascii?Q?usrmJdufWp8Fn/UX2jJeUub//hSYh34zQka0/k8oq/5uhwi0Ohr+jbU5bmf8?=
- =?us-ascii?Q?jeTO6zUjOXhTiPI1y94CL7SxqHVUxAtdsU8IoNO6ovht1ecVDp+1gWOp3SoW?=
- =?us-ascii?Q?4GvmgUIBnD9+5ljZnT8g+7YOYgOZEDPcd/25z/DR/rsbw7X/pcF/Ybrra4S9?=
- =?us-ascii?Q?w7lbyGT2pZfKcwqkB0piMLnJT/peLspBlInMIPk47y1dS0fYrDj37Wim9lVj?=
- =?us-ascii?Q?O630vAtr4SCTNFnuVx7minJVZuRZ8rUguASQImB/NmrNH7YXXaRzM7tl881T?=
- =?us-ascii?Q?ZKXk6kUCsZ0ExmeBQhA/fib9Ez8j6rTPA4v+KyOMRB2UjD0KQV9rP+47OiIW?=
- =?us-ascii?Q?1UgCX4DnRFkEeA+pn3Uw6EwJpLkjUxz4ckH7124m0aTuYZ+wNzuXyN472YTV?=
- =?us-ascii?Q?nTowAKHKtTaj/YGa/zaZC6CZFOSDIvRaM8BAMBXA9ATdngcA+DBh96bj6xD8?=
- =?us-ascii?Q?eD+erKontM+KiVzIOjpo1eYmtOK49k/CEpgLECEeY8HfM8lrGr6tZb/jvmkQ?=
- =?us-ascii?Q?lWYqyhESEnG21EkKRB0iW+U4+QLgYfzkzOuM+gb6pdtkqQRVjKrAl7Q/7RsJ?=
- =?us-ascii?Q?ugK33+6R?=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?gavmZHNlreXFGocMk71pEs/OdmvYsU2YBFuaj2Vlacm12phiFbUHc/Z0CfKy?=
- =?us-ascii?Q?aXXfOEhnkMW0wLoLM17onT5lOrHcr8GXbNSK2MubIRKSOvXfJpF3nI8YClaA?=
- =?us-ascii?Q?giKgZCNYYD252rJHLdMJvCryF38ckOrTwQmfgy9wisrUtyfPhanThyKs+ViL?=
- =?us-ascii?Q?o3H42BDZSsVIwE0G6dpLfSYtCMuB6n4yiA76wVIhPW+OUXk/RTTLhMxb7S3e?=
- =?us-ascii?Q?BCcSBLwqfKkW4T44G+v5pQcmZv5y9FQFe5JnS97EF2llhOZi3f6LuwMm01gb?=
- =?us-ascii?Q?4EEysVMyrbwpZRy1v96fc9tC0C0Ln2smM1l6Uoyw9+WxTcK/+hQ7A+XaMfTT?=
- =?us-ascii?Q?QePwhrEVGJr8FkZ8Qn4OSNnKHNDLSOP8bG33aHwd5Zj+HL3tkCB1YPKt8SxH?=
- =?us-ascii?Q?NxFG6MY306i8bhWBdo5Erl6T3JlyoHMX2ALPFBl9dNF9Gc+TSM/IvDmVrSXT?=
- =?us-ascii?Q?3uzm/8q4W3ED2Nvov/J8Knucf4GorQ/3D3i/ki8v+hWaI/WnQdznuAYFEqTC?=
- =?us-ascii?Q?7JMZ5AGmCrXp5bmta6VzJ3BPOXqm30pxzxxd3WvIla66rVdju2SkDsAM0uSN?=
- =?us-ascii?Q?tDS+FxIbdACuOLUrtcLQT/cuLcBureOXwCL8K23gzfUp1bTpeut9fzT46PFa?=
- =?us-ascii?Q?juwa+rJefgBbOnqI0m1eltIAICg9UK6VLQn4Dm0vgY62Bq8djPBnOqV49oFQ?=
- =?us-ascii?Q?KerfY+p3dVN6C8Lm6h+bEYGXPp4Gs4ceVqOmMJ8jCTQ1IXrBHGbPEkD0p0ys?=
- =?us-ascii?Q?bhsVzj4DNCt15O250y83TjBnCu3TysYF5+gElRup64DWzWDAJ/Z2o6SkzKV5?=
- =?us-ascii?Q?+cuuHYCyIaCFBJl7AFtoSg7wuhUxbMaQinKEk/KxDfb/TOeAOcPad6HmkfO6?=
- =?us-ascii?Q?EjBxgxayq7ngiBQKEUL+nZY4f+CkhJu+RbEFVr498mWJWi6KiJCzsckMW87j?=
- =?us-ascii?Q?3/3GyF236ICdrEqTLSO/WuOFG/oOS07q2We5V/VSyBKWEJrKBnY1hy9+tGeF?=
- =?us-ascii?Q?D3Y0eKolehW4wliXNFIxXTkEa4KUJZJO3X7mLrhJwNHYJSZn9mO6bgYTAf1E?=
- =?us-ascii?Q?DhIT6tyhtjXwUK3krDxasv+3CrNtu/jySy0K51WpGUB3qq2qdLpxthgRw4fV?=
- =?us-ascii?Q?TXdyfdXW09YY/9MhJy9e45ZIDPXJLLR3HlSDUY1XcGZ/BP5jTEzduWbj5Ebl?=
- =?us-ascii?Q?sdFEgJb7YHu87bPu2K0uUjUAuYMw5MGaPyD8hszMetPgJ22rh3UHEd+zgpLG?=
- =?us-ascii?Q?uEYXiJjAtf1Tjv1PSn4wsunMcWW+9kEstNduSFZf8Vz4imGNNtXgi9PUqEUV?=
- =?us-ascii?Q?VajdEtNeoIIegoCvfkR9eMLEdxEXklkhmTCEAjB2q0T0Pxm7og+CXfiemfZe?=
- =?us-ascii?Q?wlePrgU=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=KvhrT8NK
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 218E3143D;
+	Mon, 23 Nov 2026 03:05:32 -0800 (PST)
+Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A83273F882;
+	Mon, 23 Nov 2026 03:05:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1795431935; bh=kCUeWgNlDSox1V+xXIV0FoQklIwe01iQtQShkTSpFns=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=KvhrT8NKkwfUQlN/JVYJ5xdBVy5POFXKjhsTfodMnif/DZoxUXBTRSE+v99DKNllE
+	 5d1fBxUVR51g74P9by/+O7T3jZUmuCzToT2ynvCd+snaLJQPIjfE7jA9gHVgHouzT3
+	 DFYSeENRGheUkSn0CCeE9f0MsFw+W0BZ+uXNA9WQ=
+Date: Mon, 23 Nov 2026 11:05:23 +0000
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Cc: linux-coco@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>,
+	Baoquan He <baoquan.he@linux.dev>, Mike Rapoport <rppt@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>,
+	Mark Rutland <mark.rutland@arm.com>, Radu Rendec <radu@rendec.net>,
+	"T.J. Mercier" <tjmercier@google.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Ritesh Harjani <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H . Peter Anvin" <hpa@zytor.com>, Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	"K . Y . Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+	Long Li <longli@microsoft.com>, Paolo Bonzini <pbonzini@redhat.com>,
+	Vitaly Kuznetsov <vkuznets@redhat.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	linaro-mm-sig@lists.linaro.org,
+	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
+	linux-mm@kvack.org, kvmarm@lists.linux.dev, patches@lists.linux.dev
+Subject: Re: [PATCH v10 04/13] irqchip/gic-v3-its: Allocate shared tables
+ using CoCo shared memory allocator
+Message-ID: <awQd81MwZqi55gf8@arm.com>
+References: <20261116091137.94252-1-aneesh.kumar@kernel.org>
+ <20261116091137.94252-5-aneesh.kumar@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -160,29 +105,110 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR02MB6863.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef1a7b49-de1b-4ffa-1623-08df494f439b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2026 10:48:09.5123
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR02MB928093
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261116091137.94252-5-aneesh.kumar@kernel.org>
 
-From: Joerg Roedel (AMD) <joro@8bytes.org> Sent: Monday, November 23, 2026 =
-2:00 AM
->=20
-> On Thu, Nov 12, 2026 at 02:56:58PM -0500, Yuho Choi wrote:
-> >  drivers/iommu/hyperv/hv-iommu-guest.c | 29 +++++++++++++++++++++------
-> >  1 file changed, 23 insertions(+), 6 deletions(-)
->=20
-> Applied, thanks.
+Hi Aneesh,
 
-Hmmm. Did you apply this v2 patch set, or the v3 that Yuho posted a
-few hours ago?
+I'm replying on this patch rather than on the one introducing the API. I
+think it's more obvious here why I think we can make things simpler.
 
-Michael
+On Mon, Nov 16, 2026 at 02:41:27PM +0530, Aneesh Kumar K.V (Arm) wrote:
+>  static struct page *its_alloc_pages_node(int node, gfp_t gfp,
+>  					 unsigned int order)
+>  {
+> -	struct page *page;
+> -	int ret = 0;
+> +	struct cc_shared_pages mem;
+>  
+>  	if (node == NUMA_NO_NODE)
+>  		node = numa_mem_id();
+>  
+> -	page = alloc_pages_node(node, gfp | gfp_flags_quirk, order);
+> -
+> -	if (!page)
+> -		return NULL;
+> -
+> -	ret = set_memory_decrypted((unsigned long)page_address(page),
+> -				   1 << order);
+> -	/*
+> -	 * If set_memory_decrypted() fails then we don't know what state the
+> -	 * page is in, so we can't free it. Instead we leak it.
+> -	 * set_memory_decrypted() will already have WARNed.
+> -	 */
+> -	if (ret)
+> +	if (alloc_cc_shared_pages_node(node, gfp | gfp_flags_quirk,
+> +				       PAGE_SIZE << order, &mem))
+>  		return NULL;
+>  
+> -	return page;
+> +	return mem.page;
 
+This part is mostly fine but I do wonder why not make this alloc
+function the same as buddy alloc_pages_node() - return a struct page
+pointer.
+
+>  static void its_free_pages(void *addr, unsigned int order)
+>  {
+> -	/*
+> -	 * If the memory cannot be encrypted again then we must leak the pages.
+> -	 * set_memory_encrypted() will already have WARNed.
+> -	 */
+> -	if (set_memory_encrypted((unsigned long)addr, 1 << order))
+> +	struct cc_shared_layout layout;
+> +	struct cc_shared_pages mem;
+> +
+> +	if (WARN_ON(cc_shared_calc_layout(PAGE_SIZE << order, &layout)))
+>  		return;
+> -	free_pages((unsigned long)addr, order);
+> +
+> +	mem.page = virt_to_page(addr);
+> +	mem.shared_size = layout.shared_size;
+> +	free_cc_shared_pages(&mem);
+>  }
+
+Here it gets weird and I don't see why we can't have just a buddy-like
+interface. The kernel-doc for alloc says that shared_size must be
+retained for the corresponding free but without reading the source code,
+you can't tell that cc_shared_calc_layout() gives you the same
+shared_size populated by alloc. We have a similar pattern in dma-buf but
+using the compound page order.
+
+What's wrong with a simpler API:
+
+struct page *alloc_cc_shared_pages_node(int nid, gfp_t gfp, unsigned int order);
+struct page *alloc_cc_shared_pages(gfp_t gfp, unsigned int order);
+void free_cc_shared_pages(struct page *page, unsigned int order);
+
+Both alloc and free take the original request order and perform the
+round up internally without exposing the details to the caller. Alloc
+shares the whole resulting buddy block and free makes the same block
+private before releasing it. We can document that free takes the
+original requested order and releases the whole allocation. Partial
+frees aren't supported.
+
+We can get rid of layout and mem structures (or at least not as
+part of the API). Of course, this assumes that the shared granule size
+remains constant for a guest's lifetime but I don't think that's a
+problem.
+
+> @@ -278,7 +267,8 @@ static void *itt_alloc_pool(int node, int size)
+>  		if (!page)
+>  			break;
+>  
+> -		gen_pool_add(itt_pool, (unsigned long)page_address(page), PAGE_SIZE, node);
+> +		gen_pool_add(itt_pool, (unsigned long)page_address(page),
+> +			     cc_shared_granule_size(), node);
+
+Here we can introduce:
+
+unsigned int cc_shared_page_order(unsigned int order);
+
+and just use (PAGE_SIZE << cc_shared_page_order(0)) for gen_pool_add().
+
+Was there a caller you had in mind that needs the common allocator to
+share less than the whole buddy block?
+
+-- 
+Catalin
