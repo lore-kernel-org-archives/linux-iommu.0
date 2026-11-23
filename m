@@ -1,138 +1,108 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.51
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=170.10.129.124
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795468663;
-	b=eSCMoyVP5ol50zg/Elg+M75up0Wwsvm0U5SnaKGWOIly0tU+oJoVUp90Fv5DRicmJ2w/
-	 /D64lBs2PrZbX8kY1X21c+JkpPu5ClKyNlEc8Ugx49nGv/lUyWMEWnDMKrRb/9gzWv89F
-	 ymdYIv3JorvYoaCr0vdQ57Cmtn0NcKwU0z2Gescff+QDtD+peqn9JZj4gZXkvSkkHBcdY
-	 WALK7Am2DoJWXReEXtNlfzdoKBS0gqaCpWfbP0SAEJbPN6hv3m4bBvEDKaYS4XT8DJCIH
-	 bQuBEBHuil1kmiLhmFJxgdGi1VyrGs1iq3jKLYU7mQVGpII2ril++f/Kope9Aer5Yyw==
+	t=1795470572;
+	b=2xSuVq/ifJ0eAOrEf57vKWqOQVXATPrWcUR8wC3R//OYuU2C3oxjjZpu4MC0Y5J2dtDr
+	 W33zY2GP/DZTto7KVlKdt8SfHFyxILwkweJoKdnEMmzgB/SDUMTXHD6qpX9HHgPdLM8s7
+	 2yQSSPsPW+5me4miVlG4kN0xx1zO0iJMc10AKRnrJn2k9p9G4q21FOCn799+o/0NXs1o0
+	 CKaUVjiFa/9OCC81KAjZzmIDs2qPtuyPIJu/vuagkl0ikThd+IcpASSYbJCbQR5i67YDb
+	 J3+FRc2yX85K8utfIKEPd+NilCUHPJWcI3EYluRToQYze9LrtOM0o6yEqcSKzptEnHA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795468663;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=mEI2MWJHKjiB6vj3bpQygFD6VsBJJyxeJ4zAlBvCIuE=;
-	b=QRaa/LIEBzBVg+cJTetzRKb4UEEKzYPpbmXYT3PUR0EEtF5d9Nd4424jeqka/yU+If7I
-	 bEYlNwqhpT3BqbsGozz12Vl7m6tbVU/h95lFWHl/j6+6RMUpOqbJmDz/ySlgeaiPxTFV+
-	 2G1Id1boDMY+AhmKeUMHf0/z61x6HyZ+LejW8KE787+2XXdEv4B5gf5SLPInr9SrR2Zok
-	 IGK5g8GwRJea4jisLCuL+iKnpkU8QRFphC+7VeiCgnuygmlQO9e4MtIHB2awo0hnlleb6
-	 pEq+cKY0Bn8ayOWX5cAmIwRDqHb0/ADI/oD7vMmc1+goyZCRg6Us9DJ9p/CNmsfS8Zg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795470572;
+	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
+	 X-Mimecast-MFC-AGG-ID:Received:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 X-Received:Received:Message-ID:Subject:From:To:Cc:Date:In-Reply-To:
+	 References:User-Agent:MIME-Version:X-Mimecast-Spam-Score:
+	 X-Mimecast-MFC-PROC-ID:X-Mimecast-Originator:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=EXrg3FsOffaVIw+j1I0rphKMSxfBIiuUxoQNWeelH+I=;
+	b=pD42efC0whfWk4QR7eedV4nbVVEtMSqZYIA8kU3pG4OKymO0g9kL+QdUCwhWq+j8eL7Z
+	 beVphV5fdWrbUAhnr30RXQdo2zq6zBKkfvMpFG7BHE7wmphbn16ZRyz7McJDgD4wfcXbH
+	 Yx863YSFNL8i79huQA17/3+3ywTUaIWEP7Ri8J0byz4Vb7csakvbEJC9WuZW/j+49iRDp
+	 qhIIsOQ6wFdiWUQvfeS4L1hU9xxON9dIRNYMNG7kx54/MUiYidkdWyPIlulzYH+cuYw82
+	 P2pNhxBXU6+ntNWMGtXEM3hLAi3fO5eooiGaEcEuDI0IPQP1IdYI/Sr+QxAur7M2D9A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iOZ2uZQU;
-	arc=none smtp.remote-ip=209.85.221.51
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=redhat.com;
+	spf=pass smtp.mailfrom=redhat.com;
+	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=P8utDJXe;
+	arc=none smtp.remote-ip=170.10.129.124
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C289606A333
-	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 21:17:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3C289606A333
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A772B606A334
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 21:49:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A772B606A334
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iOZ2uZQU
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-4a9be758734so2317487f8f.1
-        for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 13:17:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795468662; x=1796073462; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=mEI2MWJHKjiB6vj3bpQygFD6VsBJJyxeJ4zAlBvCIuE=;
-        b=iOZ2uZQU3NMqPJTvAsBqrp038UyRtbixC5ZB+mWoPTljOKxb3Tvi80YB4lHITqFJJb
-         WPgnC5Z1T9A5XoikqrkgAmRlgzo0Ehy5MNxYgBStw8E7CKZiEFOjd2k7Of+a2RvK8Mn3
-         Bh+HqbYcgPHhbbeDh/khf386zDO/Ce2ohkAiRX9mTiU2V8UhC/7USms8sYCVy19/+A+6
-         8xdGKBQGTOEuLgRpTm+PsmZzC6umT87Z32sCd0T5nnkWs7gczUMsGZ+ifQxoIvObdo8u
-         MYxdlgqMOXAVUP/5Gicdq0NKwP/ZZITQ0TDlGtJFUhmUtViJQM6WB/YfMORIl3qAYeRY
-         W/iQ==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=P8utDJXe
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1795470570;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=EXrg3FsOffaVIw+j1I0rphKMSxfBIiuUxoQNWeelH+I=;
+	b=P8utDJXemWcB23UD8Ny7GUBZQFlqFR2oolQreTffV2mwufBZyHki6jKc6+5UwtuI/kTfo9
+	hasr5FK0ggrkdSg/WOUUIKxpO1wqyCBztiJ51m2FhqAmq03OojH3MGn9TZ5hhHsqySuD/B
+	bU2N2IP9WR6a8PIdTUCWdoQPZnM7OV0=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-495-LRtSyHBRPkyY_IQ61iTq8w-1; Mon, 23 Nov 2026 21:49:28 +0000
+X-MC-Unique: LRtSyHBRPkyY_IQ61iTq8w-1
+X-Mimecast-MFC-AGG-ID: LRtSyHBRPkyY_IQ61iTq8w_1795470568
+Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-91b937ecbb4so67807966d6.2
+        for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 13:49:28 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795468662; x=1796073462;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=mEI2MWJHKjiB6vj3bpQygFD6VsBJJyxeJ4zAlBvCIuE=;
-        b=pJmM4UDVwJ5lqUFuBTrN5l06Ahsqq/OchYUlDpA9Crrc2t3LD7EDKBI5I+StMw9BTx
-         rJAgrhZkMXd1aCwButc6DdbWyCXzBiabBW0NlDHI1SY5rKXMdV4Az7vwPJBpYLiQBduT
-         N7E2RPjGTtSTPyPgVj1wiPcst/GArcLsr17RRznOmIX7uqGZr0t11SZ/DE9v45nsERKX
-         bLMqA8GZpZR4Ptz2I7A/VSS+JVvSnqTM9PurOH04PJ1rHkUg21BvN+JX6ta2jhhKCT1g
-         Pd6WhCCK0eGhoyQYi0HXWP15oAz8jwiMtFGymSj/FLpq7mlDlYyxTcjMI595EAfHWRdN
-         kWhQ==
-X-Forwarded-Encrypted: i=1; AL+hErG4YKIof89Yz7USp+a6ZooEtaj4jIAH1NuJQv5zktFK3vhWtuCJ+JhuxUJm/B10OhKVy5fg+g==@lists.linux.dev
-X-Gm-Message-State: APuU4Z91qAgGJcpwBjRHPzE0pGNBepmPHqjyiqhnppV2os25HiXfvxG3
-	J1yau/kqvKTvOPe1xRYWeCoaWeRVTok04rE9+ImPBocxjNBRWHE/MJi/
-X-Gm-Gg: AZFdTZe1d1TRmqImrrjsXrrqj1nAu5QCijUguOaU6ONbK3+8uRZErQgcavtgi4w2iit
-	PyFI2KNWkQI27vyNGST0FcyibViaS3q9GJL/1V7NVJP1KAagBYq6/2kph+74V/Vj/qV3xNnMW5O
-	QIHu5dcQbGL68tv+2cLa7sptuDyGAUIvHME7KTxys+0gircEs/dv7jZGaRGXu5w2r9PylpM0ccA
-	Eu/Mty/RwR6v09ubOnyAH7QboYQsgriFPVqkJ8+MHJBjEhvbCBgRqhqRvmdslsdb+rzNCeP3UAh
-	zjpFm4+H83xase5/TbeZE4HgJo1yudQcMFxlCXyrzQpdHW2Gj2BLPUDbcdg04IegWNZK/E08i++
-	NeEi74s23+hpna7v6WV6nyZjoVNdPi/b1qwuNIhErt2hoxT8jQ/e7N4VTzTOzKKnJB/Phco7feQ
-	pNGQDAdfVu5LtaFAploEFzU7lvp+G8Rs/YTUYiVzJZniD0yntpvpBxQKJEyLyN6FoofgFgIeJPT
-	SeNRNHYWygFqxXlBeLQHbx+nlMQWA3kJC5xIgesWqodIA+yru84+ZZ77Wqfk1tOXneP73Pdw7FD
-	Vz8k5bSjbyijEJj3ZYdwLBM3eenO8Xux6h289dyKV9eYzMjW
-X-Received: by 2002:a5d:4605:0:b0:4a4:14db:2348 with SMTP id ffacd0b85a97d-4abb29105d1mr18698069f8f.35.1795468661504;
-        Mon, 23 Nov 2026 13:17:41 -0800 (PST)
-Received: from flare5 ([212.58.121.92])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab658e2e6dsm24513121f8f.6.2026.11.23.13.17.35
+        d=1e100.net; s=20260707; t=1795470568; x=1796075368;
+        h=mime-version:user-agent:content-transfer-encoding:content-type
+         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=EXrg3FsOffaVIw+j1I0rphKMSxfBIiuUxoQNWeelH+I=;
+        b=NZHd8NkENq198B7YIIISXbam4mZjrJ2LdV4FZ1AH56FBr2Yg7YhovSvX/hbNZ3xF/v
+         NQ7XIPXt8KFZHcYkvdXMbaImsJGdlU6EIUkVoEQw4eiuGKCFLxak4uXcxEIpaJvnoB8V
+         M+XrexWeeHaDSotbJIvluP24N4dAs3c77Rb3E5rb96rsbFNWhGu5o+ITB/rMR+UkEalp
+         tCb6DhuurZiT78rnghSMRRhGQEGpB6Bt2k+fhgWMMBKUy1aVA/gCRenac3kLrtCofx0K
+         Ca8l0g6SJft/rGmtlopJ/jN9T/KVa+IoSNAMsaknj99EHF16+FsYwXpgwZErsW9mSBns
+         WpRw==
+X-Forwarded-Encrypted: i=1; AL+hErGvL/0pNlOUGuAdYaAebqVLlFYkOFx2TR22TPjAgqSMyut5jz8kMtZLJCydV1jH9qsbS7xJeg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9YxHkL7/o23JvIpH1wRsSV+zmhwgm0f01Ah+Lg8lclCuI6IdBZ
+	Nu20xlikZ/aXEHJD4zFNYy8RZhJDrA6L6IHvd4Ehkv4KEO/osb2lcFGILD+sX6+qrBEtp7RF7hs
+	gMt+hk/GdJ+3n0kJX2qHsFUT2YSNV7tyMAdkm+GtuQfQcC1OGMpE7PsTJ
+X-Gm-Gg: AZFdTZfFcCtQJIGpnA2i/COTKewkD4mJqr/o1ChmkJVzGkWXmmBG5nXDaZUh90YC66b
+	B4RVTQvxsa32V8tRWWSuaJGWvBjNi+zl4oGsJyIQP8pDjQPSLAqaNPLPY/BMhBBnxdOHWfp2x38
+	QLxuNDMC7xzUXUp8GeuXOXXHZN/nuBK5dcfdGY9Dmwf2+d4Gp/zgunGM1tsgeAL2R3Cg+V419Qx
+	K3t+IR7aKYrADW0vWkG+hsPZMYPtTeoK4oCpq3s5iLbJr29FKQs/n41PbHUYUseZyCncshZ/IIe
+	diiYBpS4SQ683E5C7E12J4V2tujf3IR/Pph/tEXEAz8uFep2Eq7v04a+qiG2KFzrAJwhgYcT4Yb
+	/YmvGYYYjKaM5KbrnUIxU8nVzYfkJoNFo7jR/vP8+p3ULWDwBSYES60R5r8UiyW8YLnPpbhQSrN
+	dWRNd+fED2SjItiy6nwLaMM6XACIgec4lSiGRnWEfgfCN3k6PkXt8HJKD2L7Uv/hTrw4tBtOw=
+X-Received: by 2002:a05:6214:252d:b0:91e:a73b:f9cb with SMTP id 6a1803df08f44-921349d1a8fmr238824566d6.4.1795470568048;
+        Mon, 23 Nov 2026 13:49:28 -0800 (PST)
+X-Received: by 2002:a05:6214:252d:b0:91e:a73b:f9cb with SMTP id 6a1803df08f44-921349d1a8fmr238823796d6.4.1795470567440;
+        Mon, 23 Nov 2026 13:49:27 -0800 (PST)
+Received: from loberman-thinkpadp16gen3.rmtusma.csb ([2600:6c65:2440:d8c:aa2b:ddff:fe88:da74])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-921349d0f6bsm117366396d6.21.2026.11.23.13.49.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2026 13:17:40 -0800 (PST)
-From: Stanislav Aleksandrov <lightofmysoul@gmail.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Abel Vesa <abelvesa@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Robert Marko <robimarko@gmail.com>,
-	Guru Das Srinagesh <linux@gurudas.dev>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Radu Rendec <radu@rendec.net>,
-	Lee Jones <lee@kernel.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Wesley Cheng <wesley.cheng@oss.qualcomm.com>,
-	Vinod Koul <vkoul@kernel.org>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Bart Van Assche <bvanassche@acm.org>,
-	Bean Huo <beanhuo@micron.com>,
-	Stanley Jhu <stanleyjhu@google.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	"David S. Miller" <davem@davemloft.net>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Viresh Kumar <viresh.kumar@linaro.org>,
-	Amit Kucheria <amitk@kernel.org>,
-	Thara Gopinath <thara.gopinath@gmail.com>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>,
-	Lukasz Luba <lukasz.luba@arm.com>,
-	Georgi Djakov <djakov@kernel.org>,
-	Sibi Sankar <sibi.sankar@oss.qualcomm.com>,
-	Ulf Hansson <ulfh@kernel.org>,
-	linux-arm-msm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	mfd@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-usb@vger.kernel.org,
-	linux-phy@lists.infradead.org,
-	linux-scsi@vger.kernel.org,
-	linux-crypto@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Subject: Re: [PATCH v2 13/16] dt-bindings: arm: qcom,ids: Add SoC ID for SXR2250P
-Date: Mon, 23 Nov 2026 21:17:23 +0000
-Message-ID: <20261123211723.1065310-1-lightofmysoul@gmail.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20261123-pastel-barracuda-of-rain-bce8ac@quoll>
-References: <20261116-halliday-dts-v2-0-2c92438c6c46@gmail.com> <20261116-halliday-dts-v2-13-2c92438c6c46@gmail.com> <20261123-pastel-barracuda-of-rain-bce8ac@quoll>
+        Mon, 23 Nov 2026 13:49:23 -0800 (PST)
+Message-ID: <7eb28c6334a655eb5bfbf3035cf1f1ff1041bb3e.camel@redhat.com>
+Subject: Re: [REGRESSION] DMAR fault by Intel H97 SATA controller since
+ "block: Increase BLK_DEF_MAX_SECTORS_CAP" (6.17-rc1)
+From: Laurence Oberman <loberman@redhat.com>
+To: Niklas Cassel <cassel@kernel.org>, Tobias Laas <tobias.laas@posteo.de>
+Cc: Damien Le Moal <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>, 
+	regressions@lists.linux.dev, linux-block@vger.kernel.org, 
+	linux-ide@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org,  David Woodhouse <dwmw2@infradead.org>, Lu
+ Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>
+Date: Mon, 23 Nov 2026 16:49:07 -0500
+In-Reply-To: <awSs5Cw3hFkf4O4T@ryzen>
+References: <5ad27a97aafbc08a8702d5b90d09cd59@posteo.de>
+	 <awSs5Cw3hFkf4O4T@ryzen>
+User-Agent: Evolution 3.60.2 (3.60.2-3.fc44)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -142,18 +112,118 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: PXzjP0m0uBsaOVd6L5xf-9m4kJV0Bb1tMHN6Nb3Jw2I_1795470568
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 23, 2026 at 01:09:26PM +0100, Krzysztof Kozlowski wrote:
-> This should be rebased on my patch removing the IDs.
+On Mon, 2026-11-23 at 22:15 +0100, Niklas Cassel wrote:
+> Hello Tobias,
+>=20
+> On Mon, Nov 23, 2026 at 06:51:03PM +0000, Tobias Laas wrote:
+> > One way forward could be to a new entry to __ata_dev_max_sec_quirks
+> > similarly to the recent commit
+> > a12cc63129380a5364e787d92b30a3257f66c250
+> > ("ata: libata-core: Add max sector quirk to INTEL SSDSCKKB240G8").
+> > However,
+> > I wonder, whether that would fix the underlying issue or rather be
+> > a
+> > workaround, because 4088 does not fit the pattern of all other
+> > entries,
+> > which specify either a power of 2 or a power of 2 minus 1.
+>=20
+> Your attached kernel log shows that you have a
+> Samsung SSD 860 PRO 1TB, FW: RVM02B6Q
+>=20
+> This SSD is probably quite common, so I somewhat doubt that it is the
+> SSD that is at fault here.
+>=20
+>=20
+> >=20
+> > Furthermore, the first error messages are DMAR faults, and a SATA
+> > SSD that
+> > isn't functioning properly shouldn't cause any DMAR faults, because
+> > the SATA
+> > controller should never read from or write to areas outside its
+> > memory
+> > region.
+> > Since the issue with mounting the rootfs disappears with
+> > intel_iommu=3Doff, I
+> > wonder, whether there is a limitation on the maxmium block size
+> > either by
+> > the hardware or from the configuration of the IOMMU and SATA
+> > controller by
+> > the kernel.
+>=20
+> Considering how common your SSD is, my guess is that it is somehow an
+> IOMMU or a BIOS/ACPI bug (since the BIOS generates specific ACPI
+> tables -
+> DMAR on Intel).
+>=20
+>=20
+> We have seen similar reports here:
+> https://bugzilla.kernel.org/show_bug.cgi?id=3D220693
+> https://bugzilla.kernel.org/show_bug.cgi?id=3D221713
+>=20
+> Does it work if you revert:
+> d373449d8e97 ("iommu/vt-d: Use the generic iommu page table") ?
+>=20
+>=20
+> It would be nice if we could involve some Intel IOMMU experts.
+>=20
+> If the ACPI DMAR is at fault, perhaps it is possible for the kernel
+> to
+> patch the ACPI DMAR for your platform.
+>=20
+>=20
+> Kind regards,
+> Niklas
+Hi Niklas, Tobias,
 
-Thanks for review. I will rebase it, but I am not sure about
-the order, could you please clarify?
+I tried to help here but (full transparency) I had some LLM help for
+further ideas after I coul dnot repriduce this on my platform.
 
-1. Should I wait for sending v3 until your patch is applied?
-or
-2. Should I apply your patch locally and then send v3 based on it?
-(but if something changes in your patch a v4 might be needed)
+I tried to reproduce this on a Coffee Lake desktop (i7-8700, Cannon
+Lake PCH AHCI 00:17.0) whose INCLUDE_ALL DRHD reports the same
+relevant capabilities as Tobias's dmar1:
 
-Best regards,
-Stanislav
+  dmar1: cap d2008c40660462 ecap f050da
+  (SLLPS =3D 2M|1G, ecap.C =3D 0, MGAW 39, SAGAW 4-level only)
+
+with intel_iommu=3Don, DMA-FQ default domain, max_sectors_kb =3D 4096.
+
+- 6.12-based kernel (pre d373449d8e97, i.e. the old VT-d page table
+  code, with the larger BLK_DEF_MAX_SECTORS_CAP): 2M O_DIRECT reads,
+  clean.
+- 7.4.0-rc1 (generic iommu page table): 2M and 4M O_DIRECT reads and
+  2M writes from hugepage-backed buffers against a SATA SSD, ~15k
+  I/Os, no DMAR or ATA errors. The iommu:map tracepoint shows
+  2 MiB-aligned iova/paddr mappings, and domain_translation_struct
+  shows 2 MiB leaf PDEs (e.g. 0x000000039c200082, PS set), so the
+  superpage path was exercised.
+
+The 4088 vs 4089 threshold matches exactly the point where a request
+first needs a full 512-page (2 MiB) IOVA, which is where superpage
+mappings become possible. All three of Tobias's fault addresses fall
+in the same 2 MiB window at 0xff400000.
+
+So on this hardware neither the old nor the generic page table code
+shows the problem, which supports Niklas's suspicion of something
+platform specific. One difference: on Tobias's system dmar0 reports
+no superpage support (cap c0000020660462) while dmar1 does; on mine
+both do.
+
+Tobias, a few things that would maybe help narrow it down:
+
+  1. Boot with intel_iommu=3Don,sp_off and an unmodified cap. If the
+     faults go away, superpages are involved.
+=20
+  2. The full dmesg from a failing boot, including the DMAR/DRHD
+     lines. The faults are reported as DMA Write while the outstanding
+     commands were WRITE FPDMA QUEUED, and I'd like to see what else
+     was in flight.
+
+Regards,
+Laurence
+
