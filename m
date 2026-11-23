@@ -1,101 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795431936;
-	b=HpD9vU7dAVnhSDHe1669hm+G0hl4Z5hdkranDlUec6eajlA2FQbLLwh0x/iNb4S+hlIq
-	 1I1npKg8DZCgNh8AZ4WrSDPYw5hzw9IvnkXwcAIabh16m4AQtoqsKcX0ECruYdE3FZgKf
-	 U32Pf+r27WqI2l5QPB3hzBv64H7mmp+UuKe6LWJV6b42IhvJB2nz74eoQwFptXGNzRo9z
-	 7N4EQTulfcBtCVByhz8HqaHUFH57HI8wO3zaX1C94RW/t7PsX6paaZ2IZgnK6Qs279xl4
-	 Cp3PR4+9d5Kfk8egb0HfeNwY2TQG5LWN5d1mMlhZuFsU/x6bE5TbP6Jc4URhrwMW7VQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795431936;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=y+pXRncvtOc4nB9TtW4KG6FLyRulzoczl3trVZwKBJI=;
-	b=gKcdcbLrWHqGEd7xqEF/g38O5TEvhEC9iwDwBx/By1vTQlS22oj7k8NWCiuxRkmk1Ch9
-	 MPx0EQCBGbYQwMvr6cihp3rHeVG0s74yMDCgCXg8nAAcysVDLEANjbsW7lImeZuXS2avE
-	 oHWxdHNNvYi+3fzGNXVy3lHnUvxzRS6qtgGd+5L9jQptPCTBaHHH5uYu358WFFahxlJMz
-	 YdHgmaB+ZnAD/6+gBGc15QwRiDNVey52sU/Wfdkpz+seRrcW0cHSKRjrONkfcvHfRT7rQ
-	 n7dtR8hKjSnMPK0kZd3ZfE9/lj12CW3k4wDItMCyVgZwdCVOqum95xW2tHfJrEgcZBg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arm.com;
-	spf=pass smtp.mailfrom=arm.com;
-	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=KvhrT8NK;
-	arc=none smtp.remote-ip=217.140.110.172
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0680606A31E;
-	Mon, 23 Nov 2026 11:05:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B0680606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.40
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795432115;
+	b=fvjvCNWN+uGJEIpZFUhAQ/3y4PbITHIgHpGh3IL4Dzk52FYa0lv/IFjuOO9KHdsas5R2
+	 eJpn5f/w5R2qBvMcJHkurAzCDfJLYC4G/hHexdp8CyCijcRwRy3Yu9+y0th6/o9j7cTLX
+	 33ZrccDfsMZAjUAFVlCtMYc3fpSS81xjIfXuNeh5tfalMfZQBR5EnSqGgIN105ZIyytvF
+	 ZA0cQBZlHYSsy4AeU2DQe5u8KGwF29yd2cw12vUx/baRyTgdPNShqcwz1LBIhijVaVkTs
+	 i+pAE9mv9AU9mKPbMz1ZW7ixyfQi+ox3yeo9jZ1lQnmz4UFeFVw2jpduMct/tt1+/8A==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795432115;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=H/i3cH5wu2q3CqnPEoamEzXK0JUM0CMUIWay1gsGg6w=;
+	b=z2jbxSA29dL9ZVzVjBlckYl6LV+SBYrYrlG/As0fuc0ptONiFliHBQiDu4kepnrlloHI
+	 27rEwuV+/oT22hvYb9ZC3j9y7OnAl3q5RU3BGyi0c0ZTZJM3kLJ8D7HBvc2qS/isjJYHP
+	 G9QdAKa8Fn80mVPnKxjDgnu9yoFDLgV5qLOYPJDQ9wAwvt+YEucRz/XIPPDiIEIajqHid
+	 DFI4oJ0N1t6OnyYd8mhggD43/Gug9ZRo5YitsMD2Es/jOROW+6fGh1b4iqmeW70tfZlyj
+	 pD7kVCamqooupJHc9uUqrrGEg9DCKj/RMCNPGKEjQ91Ht+s5RF8izSiqEHKBBg358gw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=SkK6MruN;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.40
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011040.outbound.protection.outlook.com [52.101.52.40])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2DA8606A330
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 11:08:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C2DA8606A330
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=KvhrT8NK
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 218E3143D;
-	Mon, 23 Nov 2026 03:05:32 -0800 (PST)
-Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A83273F882;
-	Mon, 23 Nov 2026 03:05:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1795431935; bh=kCUeWgNlDSox1V+xXIV0FoQklIwe01iQtQShkTSpFns=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=KvhrT8NKkwfUQlN/JVYJ5xdBVy5POFXKjhsTfodMnif/DZoxUXBTRSE+v99DKNllE
-	 5d1fBxUVR51g74P9by/+O7T3jZUmuCzToT2ynvCd+snaLJQPIjfE7jA9gHVgHouzT3
-	 DFYSeENRGheUkSn0CCeE9f0MsFw+W0BZ+uXNA9WQ=
-Date: Mon, 23 Nov 2026 11:05:23 +0000
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: linux-coco@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>,
-	Baoquan He <baoquan.he@linux.dev>, Mike Rapoport <rppt@kernel.org>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
-	Marc Zyngier <maz@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-	Brian Starkey <Brian.Starkey@arm.com>,
-	John Stultz <jstultz@google.com>,
-	Mark Rutland <mark.rutland@arm.com>, Radu Rendec <radu@rendec.net>,
-	"T.J. Mercier" <tjmercier@google.com>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Ritesh Harjani <ritesh.list@gmail.com>,
-	Shrikanth Hegde <sshegde@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"H . Peter Anvin" <hpa@zytor.com>, Kiryl Shutsemau <kas@kernel.org>,
-	Rick Edgecombe <rick.p.edgecombe@intel.com>,
-	"K . Y . Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	Long Li <longli@microsoft.com>, Paolo Bonzini <pbonzini@redhat.com>,
-	Vitaly Kuznetsov <vkuznets@redhat.com>,
-	Andy Lutomirski <luto@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-	linaro-mm-sig@lists.linaro.org,
-	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
-	linux-mm@kvack.org, kvmarm@lists.linux.dev, patches@lists.linux.dev
-Subject: Re: [PATCH v10 04/13] irqchip/gic-v3-its: Allocate shared tables
- using CoCo shared memory allocator
-Message-ID: <awQd81MwZqi55gf8@arm.com>
-References: <20261116091137.94252-1-aneesh.kumar@kernel.org>
- <20261116091137.94252-5-aneesh.kumar@kernel.org>
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=SkK6MruN
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=dr2MCr4IsDrfx0WEsfoFcUnHqowNzaDbSyfR2Eb6FgltKhoAFdOD7L+ahkOTnSMmAlzeodLZCNW4l6417nHxa7M0asoDuSRI+ajGoszwtYsKBaMjBnVEXiBkpG5NFyUAPKbBkg+Z7iyhCowd7IqN/sWeA2EaZEbLkELBEZ11dCefGwzfJ3u9qu2EaY2ihptkEd7lRmyMoWXQxxkMBPpXDwYPMjcVOv5NA3h0dnRpaCgxt008CEYnxLc5s1vbCBZcmhqUxSmaMw0HCwUqczs6ggTBa+MTKbvOnO0K4Smol/8f/H25QQqB3Jjd7gPxSn3uQn0yuzO7cXuhG3Sa2ZL8qw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=H/i3cH5wu2q3CqnPEoamEzXK0JUM0CMUIWay1gsGg6w=;
+ b=n3RENVcykHdqLqHWSG/Q0BQm9Vc4SXwE5zWDR0pkwtzSZ0pu/Hl+SPIW+32PlkxYHPUng61rTwwK0DBu8Z4fTxBg58ZekrFl7hwLxyXNBMiEyKzdZPOQQQ0oUjs82bSR79LqMHM3L4PBaB6h7WN1hPXCBiF7r4R0AzuG/9KwiG6+2cvSrOPsasqouQFA6D/9cmtxqSmAS5Olef6Fe9+2JgCoqpqP/G9QozacHjVu1EwGkCGfPfNOYlXaQaEFxMQpSnx5zkfs1M3bu7LKfSfw+XcoTMS6U1nImBAoZK7x2dL/H+cr7cADm6WlVzNw4HSCk3o4y1dh8lbz8k+Obk5CsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=H/i3cH5wu2q3CqnPEoamEzXK0JUM0CMUIWay1gsGg6w=;
+ b=SkK6MruN+WTIRqQ8lrqV4CUYTJSNum6xRyOYE/fAg82B5bJcEO7dLTsPC6zfxXzDX7WJD2AM+L/OhnQBmFopc/BfZWChPEFZa1RH/FZmuftRLZxuvL8kEOCuBBSzB13XAk1DKdhq4JVgTWoaCAreyH6CJ8uQCsw5fitHt7ROg28=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
+ by SAEPR12MB328447.namprd12.prod.outlook.com (2603:10b6:802:209::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.12; Mon, 23 Nov
+ 2026 11:08:32 +0000
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0639.011; Mon, 23 Nov 2026
+ 11:08:31 +0000
+Message-ID: <96ad4d0f-6454-4ff7-ab81-8bbfc88d6e0b@amd.com>
+Date: Mon, 23 Nov 2026 16:38:24 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1] iommu/amd: Prevent spurious IRQ disable on high-rate
+ GALog MSIs
+To: Sairaj Kodilkar <sarunkod@amd.com>, Mina Almasry
+ <almasrymina@google.com>, Joerg Roedel <jroedel@suse.de>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Jerry Snitselaar <jsnitsel@redhat.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, stable@vger.kernel.org
+References: <20261101062102.1000477-1-almasrymina@google.com>
+ <b426d646-5dd7-40b3-812b-e9377ecce4e9@amd.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <b426d646-5dd7-40b3-812b-e9377ecce4e9@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA0PR01CA0089.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:ae::15) To BL4PR12MB9505.namprd12.prod.outlook.com
+ (2603:10b6:208:591::16)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -105,110 +102,156 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261116091137.94252-5-aneesh.kumar@kernel.org>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|SAEPR12MB328447:EE_
+X-MS-Office365-Filtering-Correlation-Id: 544e85ff-2422-4775-2110-08df49521c1a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|376014|1800799024|366016|4143699003|261022105027099003|261022075727099003|11063799006|56012099006|10067099003|261009223027099003|261102123227099003|261021121427099003|261026140227099003|261026121527099003|261028144727099003|22082099003|18002099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	9cU6hEDD7tl3q/9QAGvRecVLOxkWj/IZDVTRW/rB0fkGRooiLce5BLHmrHavuP6hhSdJFnwG+W2/fuIhqRLOpTfXv1yX5TvNHoy8gLuYZylyIbnaZmK+ka/3b9IhcW14dMGa7yQkjds4odJqjU2IVhXrSKw5gLSjhvYw7ahDEBOXSbs8AlL1FU6YMoO1J+Vodv/s4/oBT6Nli/t79C2npGmNjQ7HiQptZPOW4u7NhFVSzmycUW7qcr6SF8AVPCvPI0kDhtihvzLrNAfLANO9DNljXbKyPNenjO6ccu/y8k+fQjJBGZ8BkrXO3db9ROIVcqApPmkepdUgirsP+6z6mLrrSlmQtFd2UWAczb2rVPr7GzoNM4FqvADJiYtGxDvA3IJuYaOKbfbhzFvIape4XiT3+io/JCyXvJO5kZUBZH5uoaH8GBpyUYjAlr/WgIpTo/zlBfx/pRZSmf+BQH66gGq5qkRvnwuLB200oKBr/84IQT+2oJMCK1d+MhYwDALP+QdpTHZgPAaAdbq+v46BCM6+dltUspqtGKYURXZz2MqkkqtRcJR//MC59QeB9taBaoB6+Mb2Etzk+Wsqd9OnqX3BUuPo+XQgqQ2wXmBAPUP5XSoQtMCBhRm5jeMjDBKgJJhuDwwG6NmCtyo9iOda3GqWTSVNH22YOwzgR4fFDx4=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(366016)(4143699003)(261022105027099003)(261022075727099003)(11063799006)(56012099006)(10067099003)(261009223027099003)(261102123227099003)(261021121427099003)(261026140227099003)(261026121527099003)(261028144727099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?UjI2dTdLS2s2NCtjdlZzRnN1QkZVZGVhRWJ6RXFkdFRrNDQ1UjRsOUQveHdN?=
+ =?utf-8?B?NGlsQlFzcnNQTEVpZkt5NXBXa05yODJrWW5jMkRQbW9nU2xLcTdoN1RPdm1J?=
+ =?utf-8?B?c0NQYzQweFFlS0Y2c3pmUkNzV1ovYWhUS3VmeHNwMkVhZXpSYmlEWXJmREps?=
+ =?utf-8?B?MDZvSC8wLzJrYTNlOVYvU25pSGttRzRlTDVrc1RLclRWTUw5bnBRQ25EdDgv?=
+ =?utf-8?B?RWtPSzZrS0wzZThlK01mQVlGZFVXRlppcDNpMmttbkxwLy84cnhPcHN3TmMr?=
+ =?utf-8?B?V3hyZEl3cEtkdTZGZVkvM0EvNUtDeTdNSmxRTHhYbVpERUtLN3FnUng0RGdP?=
+ =?utf-8?B?TTV2ZFZwdDhBREZxVGFralNJTVJQWjhsT3RDS05tRWJ5Y04zU3B3THVyNkI4?=
+ =?utf-8?B?MDNtT3JtSFI4NWoxZzd1ays4NUNZTnZ0Y0c0YVZrQXpoVzFrQ0oyZlk5cGRa?=
+ =?utf-8?B?M0dJTUlPcnFiS2NZYnI3QVVMbWkvMDFrakYyR2xvTU1GRWZJS3BzeEp3ZUlk?=
+ =?utf-8?B?MFZ3aXB2RzlUVVRESGNwVmxNejZCRUhWb0t5cGZ2emd4WDV5MXZaN0MvaVJT?=
+ =?utf-8?B?SVd4SVBJd2F0L1ZCM1pTQmJzU1VlRmFpWGhxVVB6dDJPaGhNM2JjeFJGeC9W?=
+ =?utf-8?B?eE1QdmNxZ20wZjNSeC9FY0luMW5uc09OWjhiTitXdU03UXJUY1QwemJOWCs1?=
+ =?utf-8?B?MVoxekZicDQ0WTlzak9MZGRXOE44aXlOSFI1RW0zMXFCYm5mbTA0OWFmeU9n?=
+ =?utf-8?B?Zk5YM3dOOEpETmVOUXBVRjM5NGFUVy9CZlV6NnVLb0wzbXYvejU1Tk9mZTRw?=
+ =?utf-8?B?b3lybjY0eHkxZTR0Tnc3T2RqczNhZWkxZU1CQXdObmRMWG8wdEc5WDhlWkY0?=
+ =?utf-8?B?ZEt6aEtkNWVETUlqT25rblMwbGtyNWNNMmE4Y2pURDVNT2xwSU5rc3ZZaE4r?=
+ =?utf-8?B?MzdIU0xTSWdaQnNmeUlET0VseE5aL1EvZk9zcEo0RmFweFlnekV6aDZtUUdX?=
+ =?utf-8?B?N0VMT2VGMU8rbGR6RzFKcUM1UDIwTVJrbnMzOGUxNDhHbjh1UVZzNGc3WWYz?=
+ =?utf-8?B?RVRnYVlCS3NEYld4MTVmNkVrWTlYVytXbnBXUGwyUS9aVHRSMkdiRDNGRG5E?=
+ =?utf-8?B?MitTWkhCQjVOYlNQQnpxYStyWVAyMXRteWlBUWtLeWd2UjFjVVNmaGZsalI4?=
+ =?utf-8?B?VmNHQUlZRmpyeFZoMXpWV3lWbURaNUNldVNLMyswSW84R2xYUG01QUF1WlY1?=
+ =?utf-8?B?akpwaTBwNGd3NTdXRmJoME1jR2UvS0xDeTQvY3BFYWY5ZVVVcWlQM3daNlk1?=
+ =?utf-8?B?anphSzhUK0NJYnphSFBVTmlJcFpldEhucjcvUlI0S0plVHVBSy9IUHNUZnJJ?=
+ =?utf-8?B?VzhhZUxiNld1cFZrYWFudXdOK0JpUVpQNnpRNDgycUJkOGVva0pjOStZR1Rv?=
+ =?utf-8?B?UW9JYytRVjNJZDRrQW9UUlJlMFN0U0VsMjJXa2g0NGhPMHdlKzdXcjV0Wnhx?=
+ =?utf-8?B?SWNuUEhONUx6MTZKMnJCNUcveWVDeE5YSlRxWFVJak16NHF2RC90OGh6UVpv?=
+ =?utf-8?B?Yiswd3VBMEtweFRFNHhqeTU1MnJhbG5adSsyR0ErYys1bkg2N3hXT2ExQWx0?=
+ =?utf-8?B?L2l3akhRMS9GbXZVRjR3NW53YnQ2VENUZnYvS3kwWUllVks0WEJ0SnhtZVpW?=
+ =?utf-8?B?VGgxRHFySGlXQ2VhR2RvdE1aTXJLRTB4ekl6WGxVSkhtaEh3M0gvY3pwYXQ2?=
+ =?utf-8?B?UnNVWGRYZVdPdUdON1pTVU5nWDNIMEdSTFdFMXhCK2h3aWlGQ2hUcytqbWh3?=
+ =?utf-8?B?ekMzbVN2SGJTRkdTNnp3MGUvcHFURldzaTVZYTFHTTYxRmJabkNsVHNCVGpX?=
+ =?utf-8?B?QXp4dEpqMXhpVDZORzBjbzRDczkwUjRWa245QXk3N3NsTzV4Ykp6NDZOUTUy?=
+ =?utf-8?B?cUlpcFppNWdFazFnQ1RIdld2Z2xva2d4Tk9ha1UzRE9FR3EwRk91cUVsdU9E?=
+ =?utf-8?B?ckFWV2hmKzlmSmptSlAydDhDMDBzOEZ1QkpxRWdIVGNjQXM5dE90ajlQYSt3?=
+ =?utf-8?B?TkZrbzZmRUcrbzVPdkw0Y1d2LzdZSEIwV29vcHVSanBTU21BTjRIaUtHSjFB?=
+ =?utf-8?B?NW96T3RtaTlnR3M1ZUdkejRZWk8veVR6Zzh6NE1jTWp6RWRMcEpjTE9mS29t?=
+ =?utf-8?B?YUxrVjhTMk1kMkJYN1d6ZmFjSUVjSFlQamxZeWw5ejA2SHJHT01LWlZvcStm?=
+ =?utf-8?B?R012Q28yY0ZPMzFMQWU3aENZRWVMcFZvSUFIR3JpOHpjTVZkTXFyemRreUgv?=
+ =?utf-8?B?SmdEOGsvSk5oR043cTlTM3BJWFVqN2czZ3NNcVFQUXB1bXVwQms5dz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 544e85ff-2422-4775-2110-08df49521c1a
+X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2026 11:08:31.8510
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GPklJPYTI631sOpuzl9Qv3osaC4hgK6LZN1T0BxEor+1a20FX52p0YThBwtpxC9qV7dHjF/XiOOEqM3VDOnAoA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SAEPR12MB328447
 
-Hi Aneesh,
 
-I'm replying on this patch rather than on the one introducing the API. I
-think it's more obvious here why I think we can make things simpler.
+Mina, Sairaj,
 
-On Mon, Nov 16, 2026 at 02:41:27PM +0530, Aneesh Kumar K.V (Arm) wrote:
->  static struct page *its_alloc_pages_node(int node, gfp_t gfp,
->  					 unsigned int order)
->  {
-> -	struct page *page;
-> -	int ret = 0;
-> +	struct cc_shared_pages mem;
->  
->  	if (node == NUMA_NO_NODE)
->  		node = numa_mem_id();
->  
-> -	page = alloc_pages_node(node, gfp | gfp_flags_quirk, order);
-> -
-> -	if (!page)
-> -		return NULL;
-> -
-> -	ret = set_memory_decrypted((unsigned long)page_address(page),
-> -				   1 << order);
-> -	/*
-> -	 * If set_memory_decrypted() fails then we don't know what state the
-> -	 * page is in, so we can't free it. Instead we leak it.
-> -	 * set_memory_decrypted() will already have WARNed.
-> -	 */
-> -	if (ret)
-> +	if (alloc_cc_shared_pages_node(node, gfp | gfp_flags_quirk,
-> +				       PAGE_SIZE << order, &mem))
->  		return NULL;
->  
-> -	return page;
-> +	return mem.page;
+On 11/4/2026 2:49 PM, Sairaj Kodilkar wrote:
+> On 11/1/2026 11:51 AM, Mina Almasry wrote:
+>> On AMD EPYC (Turin) hosts with AVIC enabled, passed-through SR-IOV VFs
+>> in KVM guests log interrupts targeting non-running vCPUs into the IOMMU
+>> Guest Virtual APIC Log (GALog) ring buffer and signal the host via an
+>> edge-triggered IntCapXT MSI (AMD-Vi*-GA).
+>>
+>> Both __iommu_setup_intcapxt() and iommu_setup_msi() register their
+>> handlers via request_threaded_irq(..., NULL, thread_fn, IRQF_ONESHOT,
+>> ...), using irq_default_primary_handler() (which returns
+>> IRQ_WAKE_THREAD), while intcapxt_irqdomain_alloc() sets handle_edge_irq
+>> which does not mask edge-triggered MSIs during oneshot thread execution.
+>>
+>> Previously, amd_iommu_handle_irq() cleared MMIO_STATUS_OFFSET at the top
+>> of the while (status & mask) loop before calling int_handler(iommu)
+>> (iommu_poll_ga_log()). Under overcommitted multi-VM TCP_RR workloads
+>> (1,000 to 10,000 flows across 4-8 VMs with vCPU overcommit), new VF
+>> interrupts for non-running vCPUs arrive while iommu_poll_ga_log() is
+>> draining the ring buffer, causing GALogInt to transition 0 -> 1 and fire
+>> additional hardware edge MSIs while the IRQ thread is still inside
+>> amd_iommu_handle_irq(). Because desc->threads_handled only increments in
+>> irq_thread_fn() after action->thread_fn() returns, note_interrupt()
+>> (kernel/irq/spurious.c) accounts every intermediate edge MSI as IRQ_NONE
+>> (desc->irqs_unhandled++). Once desc->irqs_unhandled exceeds 99,900 out
+>> of 100,000 interrupts, __report_bad_irq() logs "irq <N>: nobody cared"
+>> and permanently disables the IOMMU GALog IRQ, breaking guest VF MSI-X
+>> wakeups.
 
-This part is mostly fine but I do wonder why not make this alloc
-function the same as buddy alloc_pages_node() - return a struct page
-pointer.
 
->  static void its_free_pages(void *addr, unsigned int order)
->  {
-> -	/*
-> -	 * If the memory cannot be encrypted again then we must leak the pages.
-> -	 * set_memory_encrypted() will already have WARNed.
-> -	 */
-> -	if (set_memory_encrypted((unsigned long)addr, 1 << order))
-> +	struct cc_shared_layout layout;
-> +	struct cc_shared_pages mem;
-> +
-> +	if (WARN_ON(cc_shared_calc_layout(PAGE_SIZE << order, &layout)))
->  		return;
-> -	free_pages((unsigned long)addr, order);
-> +
-> +	mem.page = virt_to_page(addr);
-> +	mem.shared_size = layout.shared_size;
-> +	free_cc_shared_pages(&mem);
->  }
+.../...
 
-Here it gets weird and I don't see why we can't have just a buddy-like
-interface. The kernel-doc for alloc says that shared_size must be
-retained for the corresponding free but without reading the source code,
-you can't tell that cc_shared_calc_layout() gives you the same
-shared_size populated by alloc. We have a similar pattern in dma-buf but
-using the compound page order.
 
-What's wrong with a simpler API:
+> 
+> We also encountered same issue recently, I think right way to fix is to
+> address the underlying root cause -->
+> 1. GALOG is a circular buffer and any new entries created by the IOMMU
+> can be handled in a single interrupt.
+> 2. In an high interrupt rate environment The ga-log handler keeps
+> looping without incrementing threads_handled.
+> 3. This causes note_interrupt to disable irq since it thinks that
+> handler is stuck.
+> 
+> The solution that I had in mind (not sure if its a right way) is to
+> break the while loop inside amd_iommu_handle_irq() after certain number
+> of iterations.
+> 
+> This works because.
+> 1. We enable the interrupts before processing the entries
+> 2. Any new interrupts that arrive during the entry processing will set
+> IRQTF_RUNTHREAD.
+> 3. If we break the loop after that, the irq_thread_fn() will increment
+> threads_handled.
+> 4. And irq_wait_for_interrupt() will return true because it sees
+> IRQTF_RUNTHREAD and irq_thread() will call the handler again.
+> 
+> Although I am not sure what should be a right value for number of
+> iterations, the initial tests with 10000 iterations resolves this issue
+> but increases the interrupt latency.
 
-struct page *alloc_cc_shared_pages_node(int nid, gfp_t gfp, unsigned int order);
-struct page *alloc_cc_shared_pages(gfp_t gfp, unsigned int order);
-void free_cc_shared_pages(struct page *page, unsigned int order);
 
-Both alloc and free take the original request order and perform the
-round up internally without exposing the details to the caller. Alloc
-shares the whole resulting buddy block and free makes the same block
-private before releasing it. We can document that free takes the
-original requested order and releases the whole allocation. Partial
-frees aren't supported.
+I did look into errata, spec and kernel change history.
+Orignnial commit: d3263bc29706 iommu/amd: Workaround for ERBT1312 (Joerg) never
+had continuous loop issue.
 
-We can get rid of layout and mem structures (or at least not as
-part of the API). Of course, this assumes that the shared granule size
-remains constant for a guest's lifetime but I don't think that's a
-problem.
+Later Commit 3f398bc7762a iommu/AMD: Per-thread IOMMU Interrupt Handling
+(Suravee) introduced this continuous loop issue.
 
-> @@ -278,7 +267,8 @@ static void *itt_alloc_pool(int node, int size)
->  		if (!page)
->  			break;
->  
-> -		gen_pool_add(itt_pool, (unsigned long)page_address(page), PAGE_SIZE, node);
-> +		gen_pool_add(itt_pool, (unsigned long)page_address(page),
-> +			     cc_shared_granule_size(), node);
+Of course we have bunch of follow up patches which tried to improve interrupt
+handler path.
 
-Here we can introduce:
+Looking into the errata, looks like its with MSI Interrupt generation mode only.
+I don' think newer INTCAPX (x2apic mode) has this issue (I will double check
+with HW folks).
 
-unsigned int cc_shared_page_order(unsigned int order);
 
-and just use (PAGE_SIZE << cc_shared_page_order(0)) for gen_pool_add().
+So IOMMU is configured with x2apic interrupt mode, then I am tempted to break
+this continuous loop. Other option is to wait until interrupt bit like GAInt
+becomes zero. But in stressed environment this may result in overflow issue.
 
-Was there a caller you had in mind that needs the common allocator to
-share less than the whole buddy block?
+@Sairaj, Can you try above approach and see if that works?
 
--- 
-Catalin
+
+-Vasant
+
+
+
