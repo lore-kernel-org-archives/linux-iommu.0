@@ -1,124 +1,96 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795463054;
-	b=Kk+D5G/iwhsWTCMs99mRdgQa6Z6IdWFCS/mlwWf+KY6vYAZ/xhyop4+GfeMEWzYT70IT
-	 wUCQLngcNyRoi3mkHm77WrVQ5xuLE4vIyFI6F1m0+yZctAbFM+4ZKxevNrFb1S/nZrwJs
-	 rKN6quZ/KunGuOqr5x9/3/OvV25avUBJH2WbtpFeE3im+pq0qYf3tjBqAqd+4jKmC2mFz
-	 p6NXohO5c1Q+dgHXJ0emP2YdHMUxurUIic01MLVhSOV1PPmId7X95qvR4IzuG0L5hYRsw
-	 71a2ebiWvqfWr+JTyCAZ++UQA2Vxux0/SbysLrzoY/rywZOXt+Rrx23My/ayml0nkGw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795463054;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:Date:From:
-	 To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-ORIG-GUID:X-Authority-Analysis:X-Proofpoint-GUID:
-	 X-Proofpoint-Spam-Info:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=jmqs384t4urG0xO7kZnecCDgSxT8h0KsuOljD4Hr4ko=;
-	b=X0r0s1LzZc+NFeIiVcxR6z09dTSoKwcykLJ7IxBFP3kqs9b/rUKSgE+bGuh/Vv89tBeA
-	 Yc+TCsydIcLoabmHV3CKkmXG5wxv3j87s708nOXg3JP1Q3lgGp792sJqXNkXI/KP+F4Yu
-	 BR3HkOh6dQeHoKvo0081Ldc3Ahgpb6FjNN/XnMaEU1onvMD4OQaompaJPYlMBfbHfOnQh
-	 E4XL/5TJZrMgW3xSb+TemxTHk1eLhqzktwqNV+cYtNQDp3DFEza/jSdX3dxgSCSYlRqYT
-	 HSv1ouUshyQxd+MrFANUCN/82fzOA8vqr7xNBcLXc+H9AV1MUBxROIxYDIAqasaXUrA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=Yxzx6m9m;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=Uc8RLQiO;
-	arc=none smtp.remote-ip=205.220.180.131
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.222.49
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795464461;
+	b=g/oz896EJX5WWGjnMAUU4Bi7Xag0eWhXYfaF1i5V3EbmNwnI4FT0tzKmqwCROZaB7s3+
+	 QCRFjKfKESvGPYl/ota+236MWyqoisN3/eIV0fKx7VvlRdgnpuY+eRE9+H2O/Y5xN4R0p
+	 GkSnbImi4iYybIxb3+rMFvcv2PkX+xKLwzSN3SsniA79jHQRPkhhaROqU+JAGdtND2DSE
+	 k8f0Zj/CJzoDgOo8DlcRhJKuTaYGjYC6onlCwut9vaKoMNxh7BuQVa0aQCFPB7PQ/UJl8
+	 ABH4vAC7RtMIYfR2V6OTPOFROsMX30V5R+p7nMzH4pmjv8z6VVx92LOvE+uWLTYnFiA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795464461;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:From:Date:
+	 X-Gm-Features:Message-ID:Subject:To:Cc:Content-Type;
+	bh=NQwD0p6pD20fIKDUmVHWYfX8KC4EnMm+ad/mGxChYFw=;
+	b=jj6sz9CdY1MzXk4gjSe34mVMv4207PzUjOPiLh8oitnE6yeorYgxEjdJ+bQxKmtCjXEs
+	 stGser/+T3J7P13wMMK1t//6YBEzLJ6if4NG18eHYLDpLSZeIlIWhejB0P3ZeLyQ28Idc
+	 q6DgVzRIedF35S2NDyGQ6tCCJP/R9tPQSYEKkJbierTTZ+ppb/4V/DK527YPH0jfm5fvC
+	 dG8z8GeHz54pT0m2Yo1XlMN5hKajDE8NrUi1RqwCcHIuvYhoMpzq+StGSJo9c9KUsBMSA
+	 GAfQRzXeYwY+PwPXbBV6Wd1wx+yZulwLAlVTicEtvUbcboXkTG2gKYtRRXwwml59zlg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iotBkPV9;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.222.49
+Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com [209.85.222.49])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CF21606A31E
-	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 19:44:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9CF21606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55B9F606A31E
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 20:07:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 55B9F606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=Yxzx6m9m;
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=Uc8RLQiO
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6ANGH3gg2487357
-	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 19:44:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=jmqs384t4urG0xO7kZnecCDg
-	SxT8h0KsuOljD4Hr4ko=; b=Yxzx6m9meyKMWzTUoV4ZM00fA/PyHef1MQwgy++0
-	RsvNxCLo4tLsnC2untVDjNHHdCQ9VpYwX5wEUV/++y0CugsVH50C62mvbhDkqYtN
-	WsObSAYlGtkK8b7emb42vlaMjRZxilMbLZ4afLPRoE51dE8zanhqyuVJnGu20bxR
-	tBfO8q37WsXv6bJzgMAAElayDj89NcOUIajq7PWYVdPaXOeMBhaFW54DESkD9qgI
-	TR+irxyQpXpqKCFCc0RFn7BepbJAEt/iaiKHZjXzriyAH6D3O0umBbtlDlMsGc8g
-	ED3iJAs96p+kHNqiozocaNlcP5qjyjs3iTh+A6kCtoGgiA==
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4j4fy036ux-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 19:44:12 +0000 (GMT)
-Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-94961511b61so623834985a.3
-        for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 11:44:12 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iotBkPV9
+Received: by mail-ua1-f49.google.com with SMTP id a1e0cc1a2514c-980c4f5c921so936803241.2
+        for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 12:07:40 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795464459; cv=none;
+        d=google.com; s=arc-20260327;
+        b=f2K62C9k5pUD08GkFCD8c/YPReMn6tv7mKp1wOf36tcOLTCyvZDvuStl7ES6l921OZ
+         6Eaglom8yTmiWrax0A9HMejh9XQqIs5xc7+BvbwaXItkEICm6CLtduzzjBAEBGAH2xtN
+         6Fr42zjxVM60IFBrVl8/N/uwlDqibuXirw8RbTeAkxE0dWF9AyFVD2sxgdLHXX8pEp3N
+         2bSU08964H6O0d5AAYmrkkyfvgIr+IopysCdkVyzkmC1wnlwzWTgI4zhagviEPnaie3U
+         e0MGfAM0qeoWPp9rflO9bFvPRQn9zZpqUukVphsy88R5QPNb1TyTh4F3OLLnQBt4Sl1g
+         GujA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=NQwD0p6pD20fIKDUmVHWYfX8KC4EnMm+ad/mGxChYFw=;
+        fh=qbZQVmPP6vKkcjfhb0L4m+ewTsrRLxBrYJ88xGO0Pjg=;
+        b=cq6q9TZdGJ3valHwdYrQKa6865bDamkmKZjNcafniKD0kjuQprT3dv8XCRKif/z7JK
+         pt5NbNYQRo+D2Gn3ajQwvbhQ7Eg2d042PcHYPI4g7PS1+UR9WXmkYp2bnvmEaE1dmImp
+         NdlpA9tmKE8bianou1ayyGhFEBQkq5F2kkIpood1s9hp1LFbyVo17cUP6UHaExR29TSC
+         I3VgCPtTCvhHY6SVUpq97VPJHgQMhELcYhFbNdsMEDFXFg9+z95DeNFNzVpAYpCicHMg
+         NI4cQzb75/Y6LIwkHo9u8xDtpSZ2TTh4MghWtDJl3NNBi78qITvkXf95inI0YO6h+dDy
+         uFGA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1795463052; x=1796067852; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=jmqs384t4urG0xO7kZnecCDgSxT8h0KsuOljD4Hr4ko=;
-        b=Uc8RLQiOcUyptrryNF/JoqT5UF6dLtVlJBQGUCGPtzABVw+eTrTzZ52o1vJg4HaiGc
-         3cvcilZiu6HD/sixeLxfS2s4y6ijYNwLLxiRTmGwtBO+ho0B9R0DMWoFnP+wJVJK6t/z
-         0ccED0/LxoItYnDDyTdTXIJwAMYiiu5NLP/KmIaX4FY/RosAxcqEp+3dMItMjub/6U+H
-         /0ouhJxU7Rxro2xvfWLc12tT2ybZDOdjGlF7wi/6xUFsq2gpzzlK0l1gtZKXeA3Rf7NC
-         a7PCtjpa12qUud8pxnzsnJysknA/NSN7gYfgJ4Wj1Z212TH33VdHDC6hhgsHMkMQLa/I
-         TNmg==
+        d=gmail.com; s=20260707; t=1795464459; x=1796069259; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:from:mime-version:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=NQwD0p6pD20fIKDUmVHWYfX8KC4EnMm+ad/mGxChYFw=;
+        b=iotBkPV9Bq6itgu5t7AKKUQJHcCdvH3MdU4MeagWF6tahTHKrc4PA2Fr5aIB5IaWCi
+         Xed3NAv0ij/qgTOV8ukjj7wb28QwHamqf9ESXKY5MVNZHDOFT14RilA1VcsTt3mXkC0a
+         zSNulprb70VpDVEu+Q5Racr2bN0Rm4t7L+rYSu+5U7trpcYXSng/08buzxzhNFjQjf9Q
+         0zMgP7pdaKw79OgD+E9iFFQD/5mjACNXOggcn2lQzfdpnHmNTc5OMvAPdHntBafLUJaP
+         SEb5h4z9vdCx29BmAMXAQs8qZ/T7A524FB66SkwClAcv2bhW8LgTNC654PKwOfqptu9K
+         fqqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795463052; x=1796067852;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=jmqs384t4urG0xO7kZnecCDgSxT8h0KsuOljD4Hr4ko=;
-        b=zO4mWr9xRncocPhG1w+B3RojB6djPo7r0swtiKgSkIB7yD0/l2A1TN/IWOZeYMpk/W
-         ilJN+MxfW+iM6DhXhFxdYLvQcqDVdyLPYRqeSA8UKlauS5r9fHZmFQ94urtx8HZfM0/x
-         uspfH7a3AtP1IOFhKN57vxZ7deFHdoOZFsknBzgyewS7TM1nqm7Ggi4gpXIRJPZymK1b
-         XlN1fmd6gYm7Bg/mWvGCc0GNI0Fe0yOYX2z3EVZhdyuq6yS6SyvRu7Sw4BHRg3FcEhh7
-         h5n2lgtbCi3iKzGxjWOOcW5JhxbCDxXVFt+ti+vniNNatjhebVFiNo5EY4MlP6hoh4Hd
-         mXlw==
-X-Forwarded-Encrypted: i=1; AL+hErFmQmQ+g/OnHNmf7kHM3W7IUfX6VQ/VakgM4lGLuNAcQdK+7NpTTijgRgXq7331sBNqKIf3dQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/zdBzJnGSE/hu5+y4iK77P4mpZ+5a1z35kdMbjrKxicXCFAvig
-	gxkMRjPNgOLRTYdcFUldbsSvWNwtVbepDK6CGHUDXbKaqL1RJCbOLsd6MOmVCQFKPZcgZwMuzo0
-	pfojTouXJU3Ena41NxdN4tvWki7yIPzt3tV6ZPpgpNQ/feDawSZRM9L2dYA==
-X-Gm-Gg: AZFdTZcbC1x5V/oVgI1ICqOO08DA3YvOwoGgld7vblfVv5o9r2sMJmXm5d59OxzWHiD
-	H9GY3HW/sEjK9UpSKWNltw3yaOqi00c1Lsha3B/tQyjdZNHpJL8VE89dWYhidTjrqtPRmLXbq63
-	JnCOewWtM9Ry7uJa9Z7QqwLDLKrha10l5qe/Ss/foPtzCMdM/rqsxn0ermcPGOMESpX3udwG0Jh
-	y3kloyeFTKJrfA/nceECuY+sdkwp8NlwjNCP63xMaFU1o75a/UddIdG9cZ/+S4+C9mznt0TxchS
-	tB/nl3nMwnaCgQna9KRQATulLda2VdlAAlom7cbDgNi9aFi7I2si/qJIqkEIloDQXiVdJkaXWst
-	Gwst3Fm1qZQE1AFOscaZQ5mxZOcX3xgcsUBn76gxH7yWtc/Nf5xs1L0I9mU+5wLSJ
-X-Received: by 2002:a05:620a:6481:b0:949:90a3:3ccb with SMTP id af79cd13be357-949ba9fe6e3mr2063646485a.61.1795463051693;
-        Mon, 23 Nov 2026 11:44:11 -0800 (PST)
-X-Received: by 2002:a05:620a:6481:b0:949:90a3:3ccb with SMTP id af79cd13be357-949ba9fe6e3mr2063640385a.61.1795463051048;
-        Mon, 23 Nov 2026 11:44:11 -0800 (PST)
-Received: from oss.qualcomm.com ([188.27.161.77])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6c340df4sm27593394f8f.55.2026.11.23.11.44.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2026 11:44:10 -0800 (PST)
-Date: Mon, 23 Nov 2026 21:44:09 +0200
-From: Abel Vesa <abel.vesa@oss.qualcomm.com>
-To: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Abel Vesa <abelvesa@kernel.org>, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH RESEND v4 20/20] arm64: dts: qcom: sar2130p: Add GEM_NOC
- interconnect for adreno SMMU
-Message-ID: <lafjekmlbln5uccdgrqqrclgoeu7mrsgxbuze4cu7u7zoyrplq@7qdploxt4a7r>
-References: <20261120-smmu_interconnect_addition-v4-0-be30526391d9@oss.qualcomm.com>
- <20261120-smmu_interconnect_addition-v4-20-be30526391d9@oss.qualcomm.com>
+        d=1e100.net; s=20260707; t=1795464459; x=1796069259;
+        h=content-type:cc:to:subject:message-id:date:from:mime-version
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=NQwD0p6pD20fIKDUmVHWYfX8KC4EnMm+ad/mGxChYFw=;
+        b=ioicWm35/sHZQLkvuPwwBXfW7WA2H9aJ+zuMiIQvvcAqONT3vp/N7bspFqXtVnsiYb
+         Lcgh2aYUFkUIyd4O3pgPt7OkXEMUaY6OJ0Ib5lqJxQNgkZVj8q6pcHZYZGJQiUWOpJC1
+         8RTsiLdrutXvCltAAN5T8pJkGu34Bg5McMIlA6eGZdS4vNVNshVwEkisleT0AbHPSShx
+         RZdfutYTcT//7HOaLFUl0breT4WnAUIfRs1m/+kICpCYqWYM5SIP8zDACapZd33DJ6+w
+         GamaNYAsWawnEDSxtp1SRJOJ44G9R5of3iC4EV192808bSxYGpjg9kme2InoDEzH8NB3
+         3XUQ==
+X-Gm-Message-State: APuU4Z+aBzPbpGUP4yJskhQcS2y5bjuEQAXTS89QRmytFFrzNCJb5/lk
+	KWWHlEgkhep5VJACBAQ2z6dMQI2vBxuTnb+0sbndObHeeJVBfX8LdIwtHk3on9rRopdaTnT1C1m
+	KeCZaKx90Lj7mFfR1q65Es+adfh2J9qITw3/sLqDsrg==
+X-Gm-Gg: AZFdTZc+aYQRRtBg8T/0J21Q95GtOegUHZbhnJbO/1WJxkEaJKqioT2Q3bNc0w5jVUA
+	TDqmGFxl5ej54YRJChoL0otkv8U6TPyAmTHNGZXqsgYQ9O0ESOGdgAYFEO7ERXW/Z+6mKkjU03u
+	wbG+x+S3kpofGAV0WX+y2MDpLMsuJXAtNQUO3r3JDvmu7Xwmjntu7wnUlymeJW1uyi/5ClGbAdR
+	S0RQwbWRVK25GIFdJseFPaNGljt9j3wrLsQux92lNulTFOop0ClsW8pLGGW65prpXtGkGphq0fy
+	Mgv4Z1NKxtHaRlg0hItBu0rJSiIBcI/kVsEc5/CfwL22De/zOYJRhlmNJub8aiawjCpsVivCU8c
+	6qKxiEqjozuR0GUgK4R1FB14RIiu2jF6+WZ8+GZein01JfGCVFchhv+n9blYo79vQtsu8ABGakl
+	5oBSpKy4CDtvcOCA==
+X-Received: by 2002:a05:6122:328c:b0:5ce:76cf:fb2e with SMTP id
+ 71dfb90a1353d-5ee8af35d70mr6725035e0c.16.1795464459085; Mon, 23 Nov 2026
+ 12:07:39 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -128,46 +100,178 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261120-smmu_interconnect_addition-v4-20-be30526391d9@oss.qualcomm.com>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTIzMDA3OCBTYWx0ZWRfX1GSD1mrIur4u
- DFr/QkXcGQWnALCXGdTmryMk8mfy0RCyh+Qy+r6lgJZWzUxlqw+Be33XBTv3zhl6/WgJtOJ6ymj
- j9M9Z9FzOwitTgsxHwi0lf15d8a+k4FydsZYF7XgOXOZzGEUm5iwxgASvoDiqszNcprPXRDXese
- 3uDVhB3RnZ0eV9QZZ9Vo3vKoytu9Xgd2squmEP9nYbHbE2UjgJ5pMK0n/GMgCi2nGgD9ORHV6Nj
- nHCk3rCoyGcnvr44IXoyyiH2i9B5zC8RQRXG4lZDPbtqHcHJ/Mbd8dOXx7UaTTHHyXvVkm1bbXp
- zJkCF12iAR3c41vwouzqDVQjDi5trZcfFIWL1LC55A6NaDxv2YsBNNRGj3NVbB5bUWX+XM+BAik
- 2qo/Oi7kgKVbJW4Prb2/LVtoGE+CukVRao+cpNlqfP99WQkaMFAeWB9iut3GD/+J94ODR2Qoy9Z
- BbE1lmsCO+0gy49jl/A==
-X-Proofpoint-ORIG-GUID: kFJFw3wWC2jAQiyyFcimmHeBse0MWrvD
-X-Authority-Analysis: v=2.4 cv=QrXLTlyd c=1 sm=1 tr=0 ts=6b04978c cx=c_pps
- a=50t2pK5VMbmlHzFWWp8p/g==:117 a=asF+/XNaGoxFafzDDLC1GQ==:17
- a=kj9zAlcOel0A:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22
- a=EUspDBNiAAAA:8 a=jAy75CqWmSRsgNc4pWAA:9 a=CjuIK1q_8ugA:10 a=zZCYzV9kfG8A:10
- a=IoWCM6iH3mJn3m4BftBB:22
-X-Proofpoint-GUID: kFJFw3wWC2jAQiyyFcimmHeBse0MWrvD
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTIzMDA3OCBTYWx0ZWRfX1EX6rZcmxnee
- 8ws11NI8qvB8qnGYACKX01+YjBoN84Tnj3J91bIa5umCAcQK/WEOMY3VHj164dY7/ni0z0UgF9v
- oD3DcUYYTiBqQN+oux1rUSBxuGdykVA=
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-23_04,2026-11-23_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 impostorscore=0 suspectscore=0 phishscore=0 spamscore=0
- lowpriorityscore=0 adultscore=0 clxscore=1015 malwarescore=0 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611230078
+From: Anton Sovetov <anton.sovetov@gmail.com>
+Date: Mon, 23 Nov 2026 23:07:27 +0300
+X-Gm-Features: Aa3M54qXyrancEDMfHrjvmksuaFlp-i4gq05CZB9uxUZiFlTE0nVvvSWnyg9r4o
+Message-ID: <CANLiQWrVGN00Hn8s3X7nyDZxh3x0wJ1YqTVzYsLUPM3s-Pkp1A@mail.gmail.com>
+Subject: [RFC PATCH] iommu/rockchip: program the MMU even when the device is
+ not in use
+To: iommu@lists.linux.dev
+Cc: heiko@sntech.de, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	linux-rockchip@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 26-11-20 19:11:51, Bibek Kumar Patro wrote:
-> On SAR2130P the Adreno SMMU GPU TCU is a separate hardware block with a
-> dedicated alm_gpu_tcu master port on GEM_NOC. Without an explicit
-> interconnect bandwidth vote, the GEM_NOC path to DDR can be left
-> unvoted during sleep/wakeup transitions, causing intermittent SMMU
-> register access failures.
-> 
-> Add the required interconnect to ensure reliable register access.
-> 
-> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+Hi,
 
-Reviewed-by: Abel Vesa <abel.vesa@oss.qualcomm.com>
+I hit three related problems in drivers/iommu/rockchip-iommu.c on an RK3566
+(Radxa Zero 3W) with the out-of-tree NPU driver. All three have the same shape:
+the driver gates work on pm_runtime_get_if_in_use(), which is 0 unless somebody
+already holds a reference, and for a device that keeps its DMA domain for its
+whole lifetime that is the normal state.
+
+1. rk_iommu_irq(), line 583, gate at 592.
+
+   A page fault raised while the device is running, outside a map or unmap
+   call, finds usage_count 0, so the handler returns IRQ_NONE without touching
+   the registers. The fault stays latched: INT_RAWSTAT bit 0 and INT_STATUS bit
+   0 remain set, PAGE_FAULT_ACTIVE stays set in STATUS, REPLAY_BUFFER_EMPTY
+   clears, and nothing is printed. The device then sits on a stalled
+   transaction and dmesg says nothing at all, which is the worst part for
+   anyone trying to debug it.
+
+   Observed on the NPU: after a job that never completed, the MMU read back
+   dte 0x480000 status 0x2b rawstat 0x1 intstatus 0x1 fault 0xdc80, and the
+   handler had never run. A normal fault report would have printed "Page fault
+   at 0x0000dc80 of type read" plus the page table walk.
+
+2. rk_iommu_zap_iova(), line 680, gate at 694.
+
+   The comment says "Only zap TLBs of IOMMUs that are powered on", but the test
+   is the usage count, not the power state. An unmap that happens while nothing
+   else is using the IOMMU skips the shootdown. A device that keeps its domain
+   but is idle at that moment, which is the usual case when the process that
+   owned the buffers has exited, keeps stale entries, and the next owner of the
+   same iova can still be translated to the previous physical page.
+
+   I could not prove this one with a bus trace, so I am reporting it as a code
+   observation and not as a measured failure.
+
+3. rk_iommu_attach_device(), line 1008, gate at 1040.
+
+   Detach plus attach is how a driver resets its IOMMU domain. On attach, when
+   the usage count is 0, the function returns 0 without calling
+   rk_iommu_enable(), so paging stays off, DTE_ADDR stays 0 and INT_MASK stays
+   0. The caller is told the attach succeeded.
+
+   Observed on the NPU: its soft reset does iommu_detach_device() and then
+   iommu_attach_device() on the same domain. After the first reset the MMU read
+   dte 0x0 status 0x18 intmask 0x0, no translation at all, and every later DMA
+   ran on raw iovas. Before the reset it was dte 0x480000 status 0x19
+   intmask 0x3. Holding the MMU device with pm_runtime_resume_and_get() around
+   the detach/attach makes the same sequence end with dte 0x480000 status 0x19,
+   which is how I convinced myself the gate, and not the reset itself, was
+   responsible.
+
+The patch below resumes the device around the attach and the zap. Both run in
+process context, so pm_runtime_get_sync() is fine there. For the interrupt
+handler I only added a log line on the drop path, because I do not want to
+touch registers from hard irq context while the device may be suspended.
+
+What it fixes: the MMU now stays programmed across a detach/attach cycle, and a
+fault that arrives while nothing is mapping gets reported instead of vanishing.
+
+What it does not fix: the reason I went looking. Our NPU still stops executing
+jobs in IOMMU mode after a few separate processes, with a healthy MMU and no
+page fault at all. That is a different problem and I am not claiming this patch
+touches it. I am sending these three because each one is a real failure mode on
+its own.
+
+Tested only on rk3566 with the v1 block. I have no rk3588 hardware and would
+rather not guess about the v2 path.
+
+Questions:
+
+- Is the usage count gate deliberate, in the sense that register access is
+  unsafe unless someone holds a reference? If so, is the right fix to keep the
+  MMU programmed for as long as the device is attached to a domain, instead of
+  tying it to the map/unmap window?
+- For the interrupt path, what is the intended behaviour when a fault arrives
+  while the IOMMU device is runtime suspended? Ignoring it leaves the device
+  stalled and the status latched, which is what we see today.
+
+Signed-off-by: Anton Sovetov <anton.sovetov@gmail.com>
+
+---
+ drivers/iommu/rockchip-iommu.c | 42 ++++++++++++++++++++++------------
+ 1 file changed, 28 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 07e3517..a3da612 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -590,8 +590,11 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
+  int i, err;
+
+  err = pm_runtime_get_if_in_use(iommu->dev);
+- if (!err || WARN_ON_ONCE(err < 0))
++ if (!err || WARN_ON_ONCE(err < 0)) {
++ dev_err(iommu->dev,
++ "interrupt while the mmu is not in use, ignored\n");
+  return ret;
++ }
+
+  if (WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks)))
+  goto out;
+@@ -691,17 +694,19 @@ static void rk_iommu_zap_iova(struct
+rk_iommu_domain *rk_domain,
+
+  iommu = list_entry(pos, struct rk_iommu, node);
+
+- /* Only zap TLBs of IOMMUs that are powered on. */
+- ret = pm_runtime_get_if_in_use(iommu->dev);
++ /*
++ * The usage count says nothing about the power state, so an
++ * unmap that runs while the IOMMU is idle skipped the
++ * shootdown and left stale translations for the next owner of
++ * the same iova.
++ */
++ ret = pm_runtime_get_sync(iommu->dev);
+  if (WARN_ON_ONCE(ret < 0))
+  continue;
+- if (ret) {
+- WARN_ON(clk_bulk_enable(iommu->num_clocks,
+- iommu->clocks));
+- rk_iommu_zap_lines(iommu, iova, size);
+- clk_bulk_disable(iommu->num_clocks, iommu->clocks);
+- pm_runtime_put(iommu->dev);
+- }
++ WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks));
++ rk_iommu_zap_lines(iommu, iova, size);
++ clk_bulk_disable(iommu->num_clocks, iommu->clocks);
++ pm_runtime_put(iommu->dev);
+  }
+  spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+ }
+@@ -1037,13 +1042,22 @@ static int rk_iommu_attach_device(struct
+iommu_domain *domain,
+  list_add_tail(&iommu->node, &rk_domain->iommus);
+  spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+
+- ret = pm_runtime_get_if_in_use(iommu->dev);
+- if (!ret || WARN_ON_ONCE(ret < 0))
+- return 0;
++ /*
++ * Detach plus attach is how drivers reset their domain, and the caller
++ * has no way to notice that the MMU was left unprogrammed. Resume the
++ * device and program it.
++ */
++ ret = pm_runtime_get_sync(iommu->dev);
++ if (ret < 0) {
++ dev_err(dev, "cannot resume the mmu, ret: %d\n", ret);
++ return ret;
++ }
+
+  ret = rk_iommu_enable(iommu);
+- if (ret)
++ if (ret) {
++ dev_err(dev, "mmu enable failed, ret: %d\n", ret);
+  WARN_ON(rk_iommu_identity_attach(&rk_identity_domain, dev));
++ }
+
+  pm_runtime_put(iommu->dev);
+
+
+-- 
+With respect,
+Anton Sovetov (co-Founder and CEO of 3d-club LLC")
+https://3d-club.ru                        tel:+7 (999) 246-78-36
