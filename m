@@ -1,51 +1,48 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=85.214.250.239
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795424145;
-	b=oa2CoU/5WYlP4Uf9y9BOp1VZyf39BzroaVDld15CB95gJW2cukf0lAmyhLy4iuwGZP3N
-	 9PM8F96zfVE4+h5FHvJUGFziXNQNRo3uS6UnANb+Wt6+s1fi7VM12JnKyi7nUajwilXzD
-	 Wpk63gzlZggtaNNx6g8W/qYKsIwcNFK87pzriulvROqmHxPO7uXscS+g3gTzgK4+DsSJi
-	 gSCk5T8Z5XnBPzCGcYui6PHbv8DBSGB5ccmpbeo8Hk3rDv3K1FpRYYkfvKE3/Bcywknbd
-	 GnlVC/4DXio9Ob5p2Ecp0V4XF6AvHGmejiBqqhx7A0CITbB+XaY+BU5dP8Jx50lEt0g==
+	t=1795424248;
+	b=cpFvBeGCTOxMZWqvnE7pDJVV5pvTT6T3rRwb8cCB6IMahpt5tbcZW3XH4KKOEiiXVnhG
+	 tNPFx6JwA10VCIa22vYQ2cos803fIkqJe3w/yNUcIawRUe9KRvsbAb8J0Ypb+4bvf4XXk
+	 aIq1wU+AEZw6y3DVwpmZ8VF+gPdMevCsBU8icGIIJf1B8FZ8kg5WtEDjdlFeLWfUGCy8h
+	 aTPCoFrlHbnpv3s1TOfvRP67aHPoqgFkWNAI9esqXpLteoOOwFg3Oyj4lPWshn+KO4bys
+	 ZmxzBOcuJt20ry++YKFL1rAQQz/7iJImVXqIAT12EO7fsu8eKROfdS7w86n9+2qHkAQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795424145;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795424248;
 	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
 	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=aZ8iY72BDIX7Lb6nq1K3Ub9imyQBaBRIv4gacmQR40U=;
-	b=Zf7UpAdvVqSO9yQtnTNfwepbyIbtx7EWQLtrlQJ7p3PHoffkBh1OWXKJpiTS8N+LbVWX
-	 gYXW0UtNESFhuakGwqAOctcJ2mrTXfmngrmp3+vgQehHYq6DrirQvyFl+m62LWSN9qQCs
-	 gLn+NQjjNRvCnT9asqyJoIRAV7QqEmoQsOc89wlNIWRGrjPOq4o//uND8xkNzozcVtL86
-	 TTaqDwKytDTyG70uMNSjivnOI7T1nKQ7Ej8xisFH1VNU/3Q+zB8wz4j1/nQVaQFBXmos6
-	 Vq7nS1qvfjXXioEyQU/829aorQwl8u0qCw1jjFIFp0BD61q3bsX+LYEzuA3lNa38kcg==
+	bh=EN2Bg5eVxZXsvBNAnQoxpyUS4DRjW1tvWkJO+HXo9CY=;
+	b=yeuU3NUXi3VxxQ5ltOifkxtj7a4IEodYdW0zzYQMKO7pd5RdDVCiruN4i75sXew8Nm10
+	 ZAaLsBqagm571xOj3v18eSMWXFCxuC8SADvHFCERI9xUtIq3zJFCAUH4BacYeuasJsJY8
+	 uHQ2HuOFqBpBcOgJwEhKzSU0ct3eaVLi0UFtSeEGHCVfzX32Pqg7VUke591imP/H4nMrG
+	 VVCqRk0l/IVsh8DAEiCECkY8i8S0xly9w7NDAxgHSDhTpo2JH54UKjYz6jIMkQuhwCpZ1
+	 XwouobsnG7iAofxPwVygeTGtFfH4Gdrhhh51SkfS6g1CtVovBnYE5tykzMrvZSPuPNA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=8bytes.org;
 	spf=pass smtp.mailfrom=8bytes.org;
 	arc=none smtp.remote-ip=85.214.250.239
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D2DB7606A31A
-	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 08:55:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D2DB7606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E900E606A331
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 08:57:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E900E606A331
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Received: from 8bytes.org (p549216fa.dip0.t-ipconnect.de [84.146.22.250])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 4B87F2436B3;
-	Mon, 23 Nov 2026 09:55:38 +0100 (CET)
-Date: Mon, 23 Nov 2026 09:55:37 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Peizhe Liu <peizheliu@utexas.edu>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@nvidia.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Jean-Philippe Brucker <jpb@kernel.org>, 
-	Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>, 
-	Roman Gushchin <roman.gushchin@linux.dev>, Shakeel Butt <shakeel.butt@linux.dev>, 
-	Muchun Song <muchun.song@linux.dev>, iommu@lists.linux.dev, linux-mm@kvack.org, 
-	cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/sva: Charge IOPF allocations to the faulting mm's
- memcg
-Message-ID: <awP_epk66QlZF7rj@8bytes.org>
-References: <20261012200823.699316-1-peizheliu@utexas.edu>
+	by mail.8bytes.org (Postfix) with ESMTPSA id ECAAE2436B3;
+	Mon, 23 Nov 2026 09:57:26 +0100 (CET)
+Date: Mon, 23 Nov 2026 09:57:25 +0100
+From: "Joerg Roedel (AMD)" <joro@8bytes.org>
+To: Pawel Zalewski <pzalewski@thegoodpenguin.co.uk>
+Cc: Tomasz Jeznach <tomasz.jeznach@linux.dev>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, iommu@lists.linux.dev, 
+	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/riscv: Use named initializers for acpi_device_id
+Message-ID: <awP_4yyEoGoMggNL@8bytes.org>
+References: <20261014-acpi-iommu-v1-1-1744523fa658@thegoodpenguin.co.uk>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -57,10 +54,10 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261012200823.699316-1-peizheliu@utexas.edu>
+In-Reply-To: <20261014-acpi-iommu-v1-1-1744523fa658@thegoodpenguin.co.uk>
 
-On Mon, Oct 12, 2026 at 03:08:23PM -0500, Peizhe Liu wrote:
->  drivers/iommu/iommu-sva.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+On Wed, Oct 14, 2026 at 11:26:33AM +0100, Pawel Zalewski wrote:
+>  drivers/iommu/riscv/iommu-platform.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
 Applied, thanks.
