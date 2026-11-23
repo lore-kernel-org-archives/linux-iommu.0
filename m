@@ -1,47 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=13.77.154.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795425911;
-	b=wjNFd4Qy9JqlOYXnhtQqf6/CBFQb/0u8jG5QaS5tDLNtxIKMBwmaRbE4PlmDlIdkSXr+
-	 /TFDmA7+gdwSMmXlWbZJo4J8hw50Y2yjhHaPUkNW0cqG0c1G11X6tYpAlR+aCKpE2RLIq
-	 qmkt43kC+pIEsnEw2Q+Ct7smRGRmVnmrhvLQ30rDDWjZG1RvNoxCItJBjAxwa3CMmmUTa
-	 QH4aNZKEIs9i/uKFJ1R9PMRR/+svq3IOR7HpLqfEmGJzNarh/h3J81k/qnIgjEOlVqj5U
-	 pi0y0+Np7Kt9CW1sXNRV9KM8iRx/4Woyp172L0LBgJTqoECekiAQWV/hU5G8BM6Z06Q==
+	t=1795426403;
+	b=WIcVbUSmVcqwKRwkjojcjJ9ZhtoaBdPKr1bpzRLH2j5OEuDHBujNanCfaYOjM9QxiM+E
+	 zIKKfj2oflTHAcYQOXAYYawRCLiBeiYZMTByzjPATF+JhA8TgNPIFDZYo1Sf66bdUjKzE
+	 xyPvRIMu5iwGbNPUg0wxuCihSYCQBIZ+SH1kyKqYPtwpXgKJZ49BaHF8FPxQdsaBFuUKO
+	 2EisJPchRKwIZIR1Fl4AcYZZpRuIH2XaTQR5SsogtY6rSN90K3SaIDQaFSuXby0MtVQCm
+	 HQIsmsl8N18Sx3MhqV7SR90JgrynCdpW+wVaK1zw3rwBZSkEGdMki7CVhOqHjTBCxcA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795425911;
-	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=EGHXVFudJQgrigdJDc3r+sYIi6a6KP1wbs0YNcEORm0=;
-	b=DNOPIfCToKU6uv/laGPuBRV/9O7gi3YAHtG27Pf8Lr5AXW7LJc2kimiklRTlDrmvt7Tp
-	 mLVbH3fE1eJrzeHD8rMUtDjcBLd4F0Wi9Xo1Fp2PVWn/v/hDtnpeBPeFmn+LnuZcRd+Hm
-	 GYnRs7FKu9Mb86KsLSE553/IfbJDLY9DhlUssdJTAwVHjCtXIBZnL8EAZx/A5C1gq2k6m
-	 Bib/J5j3KBjOaxvjRHJ5W7Qc0KvTP5YlVXR+cUABzaHIrfu7GSb3cwMbrIiG0i89epwA6
-	 RIWZjxb7twpDNzt4PstrUmvpzTQlCxlElA1UryxGGZCcNQNr2ynshqsnzZVFrh5PhEQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795426403;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:X-Spam-Status:X-Spam-Checker-Version;
+	bh=jKhKtTQjIJE6EfezE1d2i+cGBwefJa4Rpfrdc7KyzQg=;
+	b=IKv1rZ/WJ3kj+qVzGfI/a2VYpL87nPUWkGrJYkilXh0usDKzQuC08NC3qHNTuEKllIst
+	 hFMiv4lPYoSsWDWCTOXWH/CFpiPsud1cWdvNmPmxvQqIsQPCrjKhlIeNaWaQS3S/8Jr2v
+	 GIt94eM1+8C0ZP8CUqVm/ZmXwWOeTxy412GZcWFvN2LoZLfv7NxEQkPNaqlgdAj+W0RBx
+	 D2Cnho2GC5OwmNwFcDEWmGPmiy2kTYMW50EiPUM3y3PGGydmE6Tc2bZcPigVC4pgqzh6g
+	 k7/yexyZwLDTEB9drUAtnDYg5Bipsv5oF+Gmj67Y1VxaBrPD65Lt9tbyZg1dihbAgpg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=8bytes.org;
-	spf=pass smtp.mailfrom=8bytes.org;
-	arc=none smtp.remote-ip=85.214.250.239
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13056606A31F
-	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 09:25:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 13056606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Received: from 8bytes.org (p549216fa.dip0.t-ipconnect.de [84.146.22.250])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id ECAAF244CA1;
-	Mon, 23 Nov 2026 10:25:09 +0100 (CET)
-Date: Mon, 23 Nov 2026 10:25:08 +0100
-From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
-To: fangyu.yu@linux.alibaba.com
-Cc: will@kernel.org, robin.murphy@arm.com, joerg.roedel@amd.com, 
-	jgg@ziepe.ca, jgg@nvidia.com, dan@reactivated.net, vasant.hegde@amd.com, 
-	kevin.tian@intel.com, Ankit.Soni@amd.com, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, guoren@kernel.org
-Subject: Re: [PATCH v2] iommupt/kunit: Skip the page-table leak check on SMP
-Message-ID: <awQGZIKqZOHcuTqP@8bytes.org>
-References: <20261031085536.18555-1-fangyu.yu@linux.alibaba.com>
+	dmarc=pass header.from=linux.microsoft.com;
+	spf=pass smtp.mailfrom=linux.microsoft.com;
+	dkim=pass header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=MBHCxdZZ;
+	arc=none smtp.remote-ip=13.77.154.182
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4BF8C606A330
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 09:33:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4BF8C606A330
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=MBHCxdZZ
+Received: from localhost (unknown [167.220.233.38])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 7D05E20B7167;
+	Mon, 23 Nov 2026 01:33:12 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7D05E20B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1795426392;
+	bh=jKhKtTQjIJE6EfezE1d2i+cGBwefJa4Rpfrdc7KyzQg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=MBHCxdZZeHLGsZAYcZ5DvIphhCAlf1qfltfp4ConW7vvy4yWxm+cNC17BJmr7jZf0
+	 xBfznlulWTDhnmupSW8O/8COGnre75kK6seImc56vpMhqPifFHWg6baTnw4IDhrBb/
+	 SvGDfDUNQUcHbFt/c419OhfGpiL2hbtvtF8uiOkI=
+Date: Mon, 23 Nov 2026 17:33:13 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Yuho Choi <oss.patchbox@gmail.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Wei Liu <wei.liu@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Haiyang Zhang <haiyangz@microsoft.com>, Dexuan Cui <decui@microsoft.com>, 
+	Easwar Hariharan <easwar.hariharan@linux.microsoft.com>, Jacob Pan <jacob.pan@linux.microsoft.com>, 
+	Michael Kelley <mhklinux@outlook.com>, Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev, 
+	linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v3 2/2] iommu/hyperv: Keep a new domain's page tables if
+ it cannot be deleted
+Message-ID: <hfqiba643klm6y2onbgipn3hc3obyywhn25wl7daqdf4uu3tlq@52oylmrpaujg>
+References: <20261123060419.119078-4-oss.patchbox@gmail.com>
+ <20261123060419.119078-6-oss.patchbox@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,10 +66,67 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261031085536.18555-1-fangyu.yu@linux.alibaba.com>
+In-Reply-To: <20261123060419.119078-6-oss.patchbox@gmail.com>
 
-On Sat, Oct 31, 2026 at 04:55:36PM +0800, fangyu.yu@linux.alibaba.com wrote:
->  drivers/iommu/generic_pt/kunit_iommu_pt.h | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+On Mon, Nov 23, 2026 at 06:01:56AM +0000, Yuho Choi wrote:
+> When hv_iommu_domain_alloc_paging() fails to configure a new device
+> domain, hv_create_configure_device_domain() deletes the domain again,
+> and the caller then frees the page tables with pt_iommu_deinit(). The
+> page tables are freed even if the delete fails and the hypervisor
+> still has the domain.
+> 
+> The current Hyper-V implementation does not adopt the page table root
+> when HVCALL_CONFIGURE_DEVICE_DOMAIN fails, so the page tables are not
+> referenced in this case today. This change is defensive: it avoids
+> relying on that while the hypervisor still has the domain.
+> 
+> Create and configure the domain in hv_iommu_domain_alloc_paging()
+> itself, and leak the page tables and the domain when the delete fails,
+> as hv_iommu_paging_domain_free() does.
+> 
+> Reported-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> Closes: https://lore.kernel.org/all/20261105141427.00005946@linux.microsoft.com/
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> Signed-off-by: Yuho Choi <oss.patchbox@gmail.com>
+> ---
+>  drivers/iommu/hyperv/hv-iommu-guest.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/hyperv/hv-iommu-guest.c b/drivers/iommu/hyperv/hv-iommu-guest.c
+> index aa1db9db1e97..0110a1529a23 100644
+> --- a/drivers/iommu/hyperv/hv-iommu-guest.c
+> +++ b/drivers/iommu/hyperv/hv-iommu-guest.c
+> @@ -540,10 +540,23 @@ static struct iommu_domain *hv_iommu_domain_alloc_paging(struct device *dev)
+>  	settings.page_table_root = pt_info.gcr3_pt;
+>  	settings.flags.first_stage_paging_mode = pt_info.levels == 5;
+>  
+> -	ret = hv_create_configure_device_domain(hv_domain, &settings);
+> +	ret = hv_create_device_domain(hv_domain);
+>  	if (ret)
+>  		goto err_pt_deinit;
+>  
+> +	ret = hv_configure_device_domain(hv_domain, &settings);
+> +	if (ret) {
+> +		/*
+> +		 * The current hypervisor does not adopt the page table root
+> +		 * when the configure call fails. Still, keep the page tables
+> +		 * while it has the domain, as hv_iommu_paging_domain_free()
+> +		 * does.
+> +		 */
+> +		if (hv_delete_device_domain(hv_domain))
+> +			return ERR_PTR(ret);
+> +		goto err_pt_deinit;
+> +	}
+> +
+>  	return &hv_domain->domain;
+>  
+>  err_pt_deinit:
+> -- 
+> 2.56.1
+> 
 
-Applied, thanks.
+Reviewed-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+
+B.R.
+Yu
