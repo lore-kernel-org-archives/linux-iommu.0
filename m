@@ -1,138 +1,127 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.83
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795474583;
-	b=vCG2AtQXvARrtzNy2YiM1LYwp38THOE7N5QPzN7Axqp8Ar5via7h/Zmfm0HMUOSfz4t5
-	 C1o0K+hfKmDYTAdFkytX6C6OMhBP92TxmHKt1MdzUXrqKrGd2bGLVu5E3MR6tlYkqUhZf
-	 iNRrNHOAlOhPOEyHN1LycHynYyFlnRURqenoUGfWWxkQN6ZlsN5bQrHmgc3ExEffk3MTP
-	 X2hy/Imq6msLuJUjTOE+yNXmIt3cUpHDMa00TjutcW/yH9ka1HWIPshsim3gqH52i1bPO
-	 hphcgnXGG22UzpanbISumyUcfMIGvUvwLoWeM7ic3CY0nClACGX2QzPmQkjY8XK7ptA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795474583;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:Autocrypt:
-	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:
-	 MIME-Version:X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=j0frWXDTGXB3Ge+mKWv/opT3qbbCm62LPoOdTei7k6w=;
-	b=DSr4Z+97t4Ov8azqfAgALF67l1WGu+eWlBHOpveyjOGsLnOmf8YdG2Y0w77rZ4q/ivSn
-	 7Wn0n28QOzITRhZbna2xAsooikM6iRoG8yn+cXWO9hjTs+mIdo+iKS9jaMNqNRO4jv+6m
-	 H0U4kQZ0bz5J1RGx0ZNXvSeDnv9BWHeXu4b0he/Mwk8DCwynSqnlcbN51L/0tLQyeGEDp
-	 rBcBR0MB7HK9/SYYVN/pXipKaKEb7t9MTUtyKvTgpAHqmC8mkk+t17ZsUaT6kxgDsNgwr
-	 LiGszOX+PDp5wEmC/zx3joGSHFIDSsinWOMAZxGZRoxjMtZIfeCmMQmwpuXFqbBbIrw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=kuleuven.be;
-	spf=pass smtp.mailfrom=kuleuven.be;
-	dkim=pass header.d=kuleuven.be header.i=@kuleuven.be header.a=rsa-sha256 header.s=selector1 header.b=c3A8UkN2;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.83
-Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11020083.outbound.protection.outlook.com [52.101.69.83])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=202.12.124.151
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795477926;
+	b=ATr8o19L4UCoTsJMMTvQjbYcMoJuieRpM5Drj7wPwIFFgKMkOk7VI+6QzAD/FAYrBWyy
+	 Y7yrZpv5M43N8YUD4GmtJmx0e1A0uhCmvSV2QliMETMclHnIDjvvoFdpICRd6snhyXvw+
+	 /DNU9LQHOpegdOx2SCCv7wtIABnQ0z3y4VaGAyYYS8/pwGrJ/QPBa6PyeK0aqhZ8/krFH
+	 YYoRFFpQoAEm0qy45z1ldtTjVh+u5KJ1ymIkOiKlH/nsoAxnZC9FWFQiRC3LVZp5Pd1/v
+	 263UWTfJjzJ882RQ9hGVZkkNWQfz6uab2BvkqVw4XqsuDgD/k0iBso6CCAz2PxQ9Oig==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795477926;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
+	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
+	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
+	 Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=IybjlPb0LVZ7QOrAFKKCkNNJ886YmIr8unCCc4l7uQU=;
+	b=0mzJlpAEVn7ujN7MNYS26wIa0+6jMOcKTmd8D7trKFbZNJ1AUsKnYAX3jb9o4FJxAhoY
+	 dYL/0T+rZTKTMxvNsNH4fdUs0eB7C4R9Fa5TdbL0P85J1rJO0bWXeZ6gNRanyHsLlIC0Z
+	 Ng2fPRzc9u3BdG3cUgiwzfYIWXXX2k2De+BLb1SPbuxpd9BIXXbSk/9FOGxapflkPk0gq
+	 VqHNQFjFVjMHeylyeE/OTWfiM6XdVn+WZvI2WJNBG4XW5j2ZMJ2m+o4K154hN1CyWt03u
+	 5SdZ1Ry2CEoXGe10tN+SRyY0nZwD15EE3u64HEx1GbLA6rP2o613Dz9s1oonncWDGMA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gahingwoo.com;
+	spf=pass smtp.mailfrom=gahingwoo.com;
+	dkim=pass header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm2 header.b=CPYfRbcB;
+	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=uTacps4U;
+	arc=none smtp.remote-ip=202.12.124.151
+Received: from fout-b8-smtp.messagingengine.com (fout-b8-smtp.messagingengine.com [202.12.124.151])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DE7E606A321;
-	Mon, 23 Nov 2026 22:56:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3DE7E606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=kuleuven.be
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kuleuven.be
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB068606A322
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 23:52:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CB068606A322
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=kuleuven.be header.i=@kuleuven.be header.a=rsa-sha256 header.s=selector1 header.b=c3A8UkN2
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=J/jf5QbBuotHYIet/G3Jvw5rA5UbJ/YuyxRnq8/aHEa1LaC5ns2+WnqpIKT+xxgBMa6tq2uUOyUgtukUIGaI/FWORxpzGu56jfL/iGAxtxYWLztpMhEXpmc9N24iok6LCO+WVYPzomN72JqZik/mouQoS/Hiu1XLLx3cBzbR3YgKfInp5vqrz/nLjeoJWcrAoegZ19ymarrsP28Z1UGQuvVdf6U9eUqMBpo5tPFHE2STgPpQM+ChQzX+OcJpH9HRrPw2MbE6YLdOBShq+88CMvYupNujuYs/wLuW6HfkBYosWBgP94MtonZscFuPa6+o3EW0BtLxLGIDjt0x7h/pMg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=j0frWXDTGXB3Ge+mKWv/opT3qbbCm62LPoOdTei7k6w=;
- b=RMjpnAp8MRm37hcppzbDpwIvDDqu1LfNU7emCAQlQyQd5AYi5HT2e45Hpean6K1orQCTJKC7WG6HQzGnRWFC9vCrrZNb9klM/c3n43755WmsYd7rlP88TzWb0O+8glFZyUn35fxk/I6+XmDJaFCJM1+XOiWeEqkiDoM2UmrLTDvN3xm2ZWqxroGVeaSVQjqDkqTI4Ki/loY7CaUg+SqbHMy+j7HW4y2eFSNJuBI4UC2U2eZ1yal7UayZgfO2ird7rB9jaRKUgVS1seFqB6DIApD0uoFPmLYe2TS+2RNKdEsPsw8vbcXRK75XdHSo6lG3sVgyVskjvBSYRJ7z1QRQOg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kuleuven.be; dmarc=pass action=none header.from=kuleuven.be;
- dkim=pass header.d=kuleuven.be; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kuleuven.be;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j0frWXDTGXB3Ge+mKWv/opT3qbbCm62LPoOdTei7k6w=;
- b=c3A8UkN2LpCNvIAgAAKpkw52qwmcExH3lhce4goz7KNgN57nEhJwmHokwraFU1/jMx4zLXOzyvq4tmaZQXGRpfqhcOJVLfxqndgYRLTuSDA7lt4JaDZou4n6Oa7BRPOwmoP4kWFGStSdCDuiNRWOz/RWxh06ouMomObN6W6uZMc=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=kuleuven.be;
-Received: from AMDPR08MB999846.eurprd08.prod.outlook.com
- (2603:10a6:20b:70a::22) by PAVPR08MB9089.eurprd08.prod.outlook.com
- (2603:10a6:102:322::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.13; Mon, 23 Nov
- 2026 22:56:19 +0000
-Received: from AMDPR08MB999846.eurprd08.prod.outlook.com
- ([fe80::a2f1:726a:58fb:8320]) by AMDPR08MB999846.eurprd08.prod.outlook.com
- ([fe80::a2f1:726a:58fb:8320%5]) with mapi id 15.21.0639.012; Mon, 23 Nov 2026
- 22:56:19 +0000
-Message-ID: <9bc0d7ed-0799-45dc-8d74-25ed66851a20@kuleuven.be>
-Date: Mon, 23 Nov 2026 23:56:18 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] swiotlb: clear read bounce buffers on confidential guests
-To: "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>
-Cc: "jo.vanbulck@cs.kuleuven.be" <jo.vanbulck@cs.kuleuven.be>,
- "Reshetova, Elena" <elena.reshetova@intel.com>,
- "pasic@linux.ibm.com" <pasic@linux.ibm.com>, "kas@kernel.org"
- <kas@kernel.org>, "carlos.bilbao@kernel.org" <carlos.bilbao@kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
- "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>
-References: <20261123205302.1034348-1-shukai.ni@kuleuven.be>
- <3a70a26adccc47b1bae3a22e4907174271703a10.camel@intel.com>
-Content-Language: en-US
-From: Shukai Ni <shukai.ni@kuleuven.be>
-Autocrypt: addr=shukai.ni@kuleuven.be; keydata=
- xsDNBGqhcXMBDACulabhxpnQEtJux5NvUSg3iAGJZJs2qy5Il5a8MlGp/N6C3S33lTkGytY4
- kd2Zf/JqtyBMnHUe7a1q+EAKDaCCsTbbhotHoBWp8VtLaa3OOAoWwGM9y+K8UFgvCYGcvlOJ
- 3GaJxXF1g0JSRj9Vu63V6ZeaVNQKPPsPyEH1DPm4BYIThIbwc97GmygJGM+VQI2OBe0xtpN4
- yaznauXFHEFcv9SeaBtoHZCe9NcZh3dNW2aw8e6YPJff9bVs01gMfyFbM6gE+2OHwiI65rPy
- h6ipqoEDaNWchuDg1fCH4wEJvhIs+OwV7aIMnkJ7kMFEcu5Yaok1GORaDF/1Cxx4C3MVX107
- 5Yo9vDw5cMBIuQUftbDy+PwWicZiNcyK1WnFjhgFRO/wICr0oaxzNvSxA/T0XhmhEsOewZpD
- AD6I/Yt3VgyV8X6DGmxS6zs2sprtQkbyaXCFeqM7LHOwwKjbF8aTnRSzuiooqKvJj3M+inpM
- cIF3E5WSHEGHrYT+G3tyNbUAEQEAAc0hU2h1a2FpIE5pIDxzaHVrYWkubmlAa3VsZXV2ZW4u
- YmU+wsENBBMBCAA3FiEEk8Mo+xDErIqK1aiaVhE8b4VGfeYFAmqhcXMFCQWjmoACGwMECwkI
- BwUVCAkKCwUWAgMBAAAKCRBWETxvhUZ95gM8C/9SUoUpUpv0X6dScqEn+mPHJ65856cQ/pMd
- Z7Z6hab2kACiSacH1olCsw3PpCwL+jYSlLX9iXA9bROIo9sfAbMgkIImmjNTTwhWUZiP1L41
- k1TLNqFM5Qs78fZtfes9u3k41EgH4M1KJ4+zuEvjVGmFmdaYDeB5WzM8ZDJsweRFSrMbGjhV
- 2+DTWriKRylFf1tTkD6uaG3UZGZfVCV0tdfNiekOM4aeACSZws7dpyXZwZul0h5EUp8wFiEj
- HpqJlD2uPJzTf6zbwJm3lTkxtkFbYk1BMRGqo7ZT4XF4d0ZDQWS3aiE/bem2g+pwaWT1g30K
- J9z0D84TSpy0AwSW49PuotnLwN57IejSmCekF4m3B7IzonfoTekz3iq09vqsA+h/4q7/so2T
- MTQhgDpQgg0eX4eqgYdRcHJmP2KynVxm8zpAF5pNZGL3Y3/UgO7Ow2HWi7ENXGxqIVlImScs
- 2Vw3zBqvsI8pMB9r23l8L02bY9riNEPE7vBge2Do9KOAQXzOwM0EaqFxdAEMANvvlRgvAzds
- Nmw9MsZhWX+bznKHc2Qq5Ii3a4wSD773LeSsKIVlYGGcoJ8yo9bClfbm7pO391msalNurxdz
- ERx22nmANyBimxTw3MGQ1RPUKc1fww+YZ3STbAoqg3aXCqJPUTpgYaGFffBTxkGwyFLBxoye
- h19WTvHQ+plId75c81M8nHJLe3R4n0vAGjgm6OnqqjUnTFsCqtwP9p2Ehuj2VMley/fjUZnR
- IfcfFH5LDrcVuedUfBMm1qK2sgYDZdnBlEAUrQNF+zRDJDp8BmTo3jd4RvbX+5LuP17wfM84
- XR+HIN1jU3165+hbGFWfzC850jaCGlv1LmoEY+5K1rWm5HfGvHsJpblpqWGDXiYLDqR6t0JJ
- zXjFZXB2s8HCR+xWrePyN+LgpyWP9xNGCjP1FfSHJ/8mlC7EdmKZ0IoyqGxxyKlWyxA6Zn3q
- gfEgGcO64+TqeBw239OaHFR5d07Ve0KXQv6ysiNTCyWRkChYDQYk9EeXWkEJUfe00wovYQAR
- AQABwsD8BBgBCAAmFiEEk8Mo+xDErIqK1aiaVhE8b4VGfeYFAmqhcXQFCQWjmoACGwwACgkQ
- VhE8b4VGfeZ9NQv7BL9WBp6IXIFheIL8XcHQzVSWDSPs3TYU8YWRhixUIQ5z3FlAA3Kjcyk6
- ye1XUPW9PeQ5s2n0Urdi1JvDElqBOqHxK6b8wzxYPtwEuXoAbK+JzfbdukjtZhjIDck8qlHs
- o6q983L49xn+h+X1YmdnrwgA+1dWAy4Wz62a9aNTQMABQ+sNSbcmsaXF1nwlKFHBqK+itbd3
- PNxydi7CrJ5/qKH3fqcwUoV+E0ED4+ohWEbvofA/ihIWFblWBbPnkjYOvrSyaEXFdHzcC3yG
- vTb9l6Fj7Z7h2ukmUOhrX3OspMWk+cvygPblaiIsC1xM8G2hnzjOkl4ud/0lG0DfO+dXJD7T
- cUkNDb0Yc+gvgjBLxKs/hkGGJuAh0+fFE0UQqwbmctij9AKLJpjL4jlpVRT0zo72zC46ndu8
- DCC4h1syzMYkTcwQSoxsn7paSd03OL+xx8zekNCBqYBfb+yYfHVkXczyJNm9cUzbiKrMPTPv
- qQzAq6/nlHM/bMUHgzNXNIMB
-In-Reply-To: <3a70a26adccc47b1bae3a22e4907174271703a10.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AS8PR04CA0138.eurprd04.prod.outlook.com
- (2603:10a6:20b:127::23) To AMDPR08MB999846.eurprd08.prod.outlook.com
- (2603:10a6:20b:70a::22)
+	dkim=pass (2048-bit key, unprotected) header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm2 header.b=CPYfRbcB;
+	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=uTacps4U
+Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
+	by mailfout.stl.internal (Postfix) with ESMTP id EC2B21D00636
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 18:52:03 -0500 (EST)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-01.internal (MEProxy); Mon, 23 Nov 2026 18:52:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
+	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
+	:from:in-reply-to:message-id:mime-version:reply-to:subject
+	:subject:to:to; s=fm2; t=1795477922; x=1795564322; bh=IybjlPb0LV
+	Z7QOrAFKKCkNNJ886YmIr8unCCc4l7uQU=; b=CPYfRbcBBrg7/V9O3wjaPCSf5J
+	k7ahECh+Td41Nh3WV874GvdzmLJrXDD/OlBAXv8e9eLflbum4+/Dx+jYK2Ql+IZo
+	ntHexnWr8jTjyTDPFL79OqXvUCW8zSvPic8moGM1uIK3iXo9eHFOcaZWxK1woHcK
+	GhkCz763bnkmfJEl983rsOBp2ivPYuIw+srDOeXOVzHbDqTkZ9ShpN7uXD1hieRj
+	oUKVIdwMcSmqQPX7G0bTKUFx82u8pLcCduzJjZql9QWlkrm3C+mwEH4OqGPlx2Y3
+	izD/qOjcnDp1wZJsLxt6RfYQWboBVyPJvbBv430vTMk743FJoekPCohP3n4Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1795477922; x=1795564322; bh=IybjlPb0LVZ7QOrAFKKCkNNJ886YmIr8unC
+	Cc4l7uQU=; b=uTacps4UBTdqNXSA/ZYq/EdYMuORnzKAjwshymbVPFPMZeiLpsO
+	mjBxTVc8GbLrHQjKqtoWMsAYF+UNR+w02vIHtcAjQyDxyswD/koZJO/dDaz3ScHe
+	8rTpL/g37zcbmrwhdWNy0/1gUE2hVD3K7BgjWX+e0d3lgpF27wIg9CI9jQgbkLBY
+	jd/wHDLDNt3/C6vR0C2xJ18LS57b4Sgapm9vzaVlgwPbcCw06pPnlvSa0L+RVLBx
+	fyIY/+GkA7epr8FoTCRReFZP6j5WgIdhvytF8UA5mSh9Nu/CqUPJmHcjZWpuoCX0
+	uKekc0czs23FP+aZUyezKwberEiPwiomwoA==
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=sign d=gahingwoo.com a=rsa-sha256;
+DKIM2-Signature: i=1; m=1; t=1795477922; d=gahingwoo.com;
+	mf=PGdhaGluZ0BnYWhpbmd3b28uY29tPg==;
+	rt=PGlvbW11QGxpc3RzLmxpbnV4LmRldj4=;
+	s=fm2:rsa-sha256:WyENN/C8RyBNb5oaylZ6BAnUlVgkY2CQNHPQ0RjviLrdjAP
+	kr2m9uMYBidGvf2HwAVOtNJxcjYMKruVpDrrgxRusf/z4u3DWuJbHecOQun2Afm5
+	7SucFCvz/M8ZKHX7Y07JB/tJjI+7z5A+rH1bHTwp+9vxg7ensYkGFE2MKGnTvaDE
+	Th7wNGXAzT6cRBiZ+WXr5VflME0Z3VtNHFKDpSSbnoUcm6KPGu3Vijj/4M2R4muv
+	/88XA7vADlZjalSpGVr/mlWN06XpwEagAqr4CU8lU+QDlcS74pKAC6M1JHAdzfQX
+	K8lNmu2y65i5cUoyZYsNs94a2f29d8kF5a0Y90g==;
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=mi-m=1; hc=9;
+	hn=cc,content-transfer-encoding,date,feedback-id,from,
+	message-id,mime-version,subject,to;
+Message-Instance: m=1; h=sha256:snLsPNsbCz4VYOV2yj47o6aRDOxjWYqyPbozGNNs8VY=:P1o165xLoA2qPuWrWFB5pBAq5tFyty/t5vGj9pxnMhE=;
+X-ME-Sender: <xms:oNEEayNBhIsU1UsD4wcEKvo0F7MVcHuRFBk7UpQ2QN0e_m-K_rFQdw>
+    <xme:oNEEa9Wt-eCR0KFCQfpEhkNvInUAZuyiqoWWNKM09uQfu_Bc5yFMli7BFEpsIbvpJ
+    pijCkXMummPZerpiV_S3AU-fOMt_VJCNnVTDJ7N72szWB7KVigdK7U>
+X-ME-Received: <xmr:oNEEa9vyk1XhCip0WNq7twhcbfXgFs_dXjNlOTmLOOFXifPBa3VIt-6z5WOys9_whlW3fzKY>
+X-ME-Proxy-Cause: dmFkZTGJb1GdD04PLpCAwZXXn7KZFUQpgvhFpeiMNWdTsgQSXg4su9r1wkz1eWzPIWOfBk
+    FJ9NY1WQK6z+GMRPOeRa/xAcpLpGhZ3i3rHu5zB/D89kM2qY3MxfXxhF110D0CRcXEf2fs
+    4MN8MAYO53DHxq/1TxDxLsW5l7z73MpX6FTTFOLL15TnPkCKO8+O8eTU+J7YY12pzpLN9D
+    p/Kfr1ryp9Wgd2f7QZubaklTf0nB4k6SUJquczvZb3B/7xgpFlcJ0khWtpNl6yBmu4hGTG
+    rRsYCFoUn1baSUqCSDWvFHpznLOQrwKiCna74wQ9/Gjj2KmMpF+aQXmxNWCHIUGenuXuJh
+    7S3H+o9zDSJGKzoghBTYfKDpTcrMP8uXEMuxALYb/6VCSTKN566GB/8nyz/Wod6HIjG1RJ
+    ggCKta78hvrnZZZmTSy5AjuBmN0Z+eCbSKfT0pxpOhQol3WDC/xm0duisMs4leMcI2X4bm
+    vElPhLbZwcp8fFyfcud8QwdbASs/s9OHFa2l34KCDcDJoVV73h7OYUsJMoCVtX8tY4kYra
+    YBGMqVPC1naNhEqezi3z9gcD/pzGewTMhtrXBkjPD4czMToAIjEwz8zslcpWt72BD8ThG+
+    s4aY8/tdWsw96+Mj9zvaymtCPXiBR2ss+/GFpYC+3lTl90JY7qAdmQgEvcMw
+X-ME-Proxy: <xmx:oNEEaw0-SK_YQXOqR6vG6JDwO3SMTOonxH7AI6Qkpj3Jt0T5AtOmfw>
+    <xmx:oNEEa265RLCMuUWeLqN_Et1li24zw51GNx9ZNrpsXJJ8mKxMmU3XUA>
+    <xmx:oNEEa_XrqjxsazoJvxACg2og9xgDzysaS0fyq_8BQ0efYoVFd_GZLw>
+    <xmx:oNEEa2iay_QGchCQCamWbZuZRRbbAd7njZtZxz1iT-B5qsHgXdVYTA>
+    <xmx:otEEa9IbXmXQVeWTV5gWRzJeSD0Si6hsRP_FhIDNSdEyRkWZo8GclPrN>
+Feedback-ID: i7a5e4b5f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 23 Nov 2026 18:51:56 -0500 (EST)
+From: Jiaxing Hu <gahing@gahingwoo.com>
+To: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	heiko@sntech.de
+Cc: tomeu@tomeuvizoso.net,
+	ddrake@baylibre.com,
+	sidong.yang@furiosa.ai,
+	anton.sovetov@gmail.com,
+	chaoyi.chen@rock-chips.com,
+	iommu@lists.linux.dev,
+	linux-rockchip@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/rockchip: Disable paging on banks that still page before a force reset
+Date: Tue, 24 Nov 2026 12:51:54 +1300
+Message-ID: <20261123235154.315460-1-gahing@gahingwoo.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -142,117 +131,114 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AMDPR08MB999846:EE_|PAVPR08MB9089:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0b1b3e8f-78ce-49af-5093-08df49b4fc7e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|786006|376014|7416014|366016|261026121527099003|261026140227099003|261028144727099003|261022105027099003|261021121427099003|261102123227099003|11063799006|5023799004|4143699003|56012099006|10067099003|261009223027099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	fFG+23Zkq4OZzBSamglYSelwAN9+lPDuujWnKN+c+y97eQmMPulzDEQL+e7Gh4sWnm50FnafF0/cQ+ztE4CiJccB6m3tCaavsxRB9IMkOiRNrZ8Tn/Vk9ZXrmm6y91iytwBDl63wLjVmqT7jmsj4lQSlaPlIO5HBxk6r1xmz2CI7MO7TEjJv0HZ2mxcRQmD+Wl0TePIbVV7YfMme+xrlrmA/zK8SpneXfHLmKPtn4luknSSeYLi4DXLH7twsbuAJBhjj9NffKUs2lcpUEKjkNxPAHsX484V6YpjiXVXTDtaFCxUqHWQZ9gFrWwvI76y1nhZNAdql6siyrrIfqkAmv04iGXu09NahmoCY8/NyBXShdMi3NlkeFOtAjX6Qs69yVu6GN/XAsliF2HILb6ubSWgAtncFOUe3brQJO7a+fvtp390//WEGWTGGb510kJJGTqwZ0RlMtGlsohqZ0DsULxH33XXc19z8W6kWJ54hn4lSVfVZpEXo4ftIndfXdYNk4jlNCjKo15hvICkqRm+ykKfuofQ7cTPpnVpRKMmjrhcUfyZLcpAdQzaf60QS0hLh0fdpqk9Eh9DcOJ3ezjNilvWlDdnhghogIoGGZIcncN0NPrS90+EA5KMf/6AhpIT3zTMOeKkhmvmmwi6vuhhlHz4fEGsOqYlZOFyZoZKxeXc=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMDPR08MB999846.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(786006)(376014)(7416014)(366016)(261026121527099003)(261026140227099003)(261028144727099003)(261022105027099003)(261021121427099003)(261102123227099003)(11063799006)(5023799004)(4143699003)(56012099006)(10067099003)(261009223027099003)(18002099003)(22082099003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WldOdFA3dUJDYlF6cDM4alZ0cU10c0hCS0M2UHRZaTJnM3pZYTFsSE5aQmRR?=
- =?utf-8?B?cHlnSkhvdS83WmJxU0FWRmJwQkhJRi9obXdwWk1UWmdKTUV5blRNS1ZjNHpr?=
- =?utf-8?B?bkZkUHZkNlNpbTlqUGRUOTVEU0hIcFJTMGF1Q09FeXVGSDltVmo4aHp3dDgz?=
- =?utf-8?B?N1RGdERWTHFwR2QzUnE2MU5SbitDaWdWWElFYnA0cEVWNXczK0xZaUNsZEhO?=
- =?utf-8?B?WDBBZU0rOFJqb05JN3lkTWVnUzh4OW80bkpKOFV5UlluZ2JianAyVzArRXZm?=
- =?utf-8?B?eUNLTkZoTk12S0Z5dHQwRFk5ZytZaUFMMlpLdGFsWWREYm5RRU1UbzloQTdO?=
- =?utf-8?B?MTZESVZHU2ZLZDFlN1BJMk5WWkJpTDdpRWxJL0t1SE1HQUtTdEI1OXhDRTBJ?=
- =?utf-8?B?Y0FxSWpoWEdMbUZnektHalVOYzlWaDZwczNvaXlMZUk0WGhKdUQvSTNPY3pD?=
- =?utf-8?B?TzJBVHZTVVVnWDlvK1R0V2puZXR6ejg1cjVDejNJUDBGa2kzQ3dkdDlkUlhP?=
- =?utf-8?B?T2hyRE5xOGU0am91cXpvVy9WRHRzOVVrcmZzdU9aM21uaHdSSTBnWGFKSkY3?=
- =?utf-8?B?Q1BpcWtJbFExcURVWi9VSTIzM1lINy92bWFESmtVNGZXN1RJWmQwbGlreVI5?=
- =?utf-8?B?TEZDcjR0c0t6eWovdGdxV0V0dThqaWNwQ1RuTlF6YzJ5SEhEZmpjbFdlRHRi?=
- =?utf-8?B?Yk9yRFZ6MjlqZmJJeE0zRTJMY21HVnBkY1RLaWpXYVhnelQzQmVEZU16NDlC?=
- =?utf-8?B?UTc5UEFIcEk2WHJWT1loU0pKZVp6UTNtWlpBazI1cDZNZmpvYjZsanpLakM5?=
- =?utf-8?B?QkExL1VjYWRIREdnNjlVeGVRa21GRy9sNlhpalhDMnNzQkhoZ3djK3VIMFg4?=
- =?utf-8?B?bGxLMXNvK3ZXQm9DeWlxdkFObEhyWDcvM3RxY1d0Z3p4VlBFMGp6cE9JTGJ1?=
- =?utf-8?B?NXlGM0ZnbFQva1NaNkNNTlY4VFp4eEI4VDZoQ1I0SGpvOGoraUdRVm1oVjhF?=
- =?utf-8?B?bHRvdW5nNjVHOHd0dkdxdXBjYXZtcVduT05JS0UvZWczTTNOMFltN2R1aWVh?=
- =?utf-8?B?MTV4UVVoTUZTN2dRclJ3d3Y1d0Y1OS83MytQZjcybHJOZUNvNHNSOENWSUg1?=
- =?utf-8?B?dFU4Zy9sWTVCTGZ1UnNneVhxbHJ5U1lBbGdFZW1zRlA5dHVhRWRUZ2Z6WC82?=
- =?utf-8?B?T3ZUMnY1dWY3czgxZGxBMXJoZUpZaVp6eXhWeHo1VGF6Q1A1Q3dFb2tYbVRi?=
- =?utf-8?B?SzhkTytWQ201M0doSHd0Sm45Wm1PMTQzeFE3a3Qycy9lOGtBMW9KOUNEeXBQ?=
- =?utf-8?B?d3BKMDBTNkZoS2s0K1owT1JyeU5jcml5ZVFGbkEwSEtHMzNPMWcxbnZRbG5z?=
- =?utf-8?B?MmpIK3cyZ28xajFSOXI2aUlQc09QbVB5T3ZtZW5xc2pmYlg1UDFLR05VeGY5?=
- =?utf-8?B?aUlEdW9MU2Y4bEQyTTJuUUdwcWljWGJNSmdEaENsQU00YlpoNEZRSU5QMXV2?=
- =?utf-8?B?U0JEcDVvTkxydlNONjZPN2NBNzB0NWZEV3pqdGh5cTFQYnIvM1dyOHJwVGg1?=
- =?utf-8?B?NlZVZXk0T3MwclJvMnpOWWdnbzFCL1FOWXByMkY2U2tCZC9uaVAyK2NONnRN?=
- =?utf-8?B?WFRpWDZveUtTSzhvM1UyZzNpTUdTa01YOUlzMk90KzhjMzhROXhmUllHbW11?=
- =?utf-8?B?Vk9IZEhZTHBTL1ZGY3lESHR6UDRJTWg0NC8xZEJtcmYrZmFZcjVHM3ptSVVr?=
- =?utf-8?B?S3dtelgrYjFOL2hVYk5ZVW05VHhqcndOQ0pGUzBITkVTL1YwT1A1ajVXYTUv?=
- =?utf-8?B?Ty96Mm9KT3oveGQ1VVNMY25ld0FpRHl2NGZ2N2ttdXBDK3FoMjVFL05zeGxK?=
- =?utf-8?B?cUlqNWZxbWJmcWxxUEpJMDF0MlpaQlQ2SzV2ZGhGaTh2QjR5VUdzUUdKZ1Z6?=
- =?utf-8?B?UXpzam9FTTJlT1BMZUpIOVNCb2ZJdS9LblZvcEUvQjRGODZJQTlPN1kvYlIy?=
- =?utf-8?B?RjF6MkFaVTYyWXA5Wi9EbG8xOEplS3c4Y1JSbHZaVHlxTzR0Ri9WWGFLbnZN?=
- =?utf-8?B?QzBXbGFNdlJEcFBIUjExTzFVdnF0UjBLTnFwZjB2NUtuZ2piVlFoU2EvQzBh?=
- =?utf-8?B?ZnJOL1N5NlpGN0dYdmpZM1VwTlJSK0V2SGczLzZWSWlBNWZxc2pEK2ZxWm5M?=
- =?utf-8?B?d2thT2xIcVZqSk9Yd1UzcTloaWtIVnJYY3FXQjV1Y2ZtRnYvWXVjSFNvSzlo?=
- =?utf-8?B?dDZXTmdnTHI1cmhWay9SMnU3Ym9UenZCWUhWSFVpN0U0a0hIYk5qdkpKa0lo?=
- =?utf-8?B?Q0pEaDNCd3hsWk9OOW1uMjU2NjVWcElaanVpMDl4eVBNUkkwbWNVdz09?=
-X-OriginatorOrg: kuleuven.be
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b1b3e8f-78ce-49af-5093-08df49b4fc7e
-X-MS-Exchange-CrossTenant-AuthSource: AMDPR08MB999846.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2026 22:56:18.9980
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3973589b-9e40-4eb5-800e-b0b6383d1621
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HY60TESmPJzxgekh9W2FyT6SyIkPAunv1WmsCbH2Js9kamByO6kjtGVDF3VgI1dqgNC1poDM1jmQPyy7pbDaEA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR08MB9089
+Content-Transfer-Encoding: 8bit
 
+After an RK3576 NPU job timeout resets the core, the banks of its IOMMU
+can be left in different states: bank 0 is still paging while bank 1
+has been reset.
 
+In this state the existing stall and paging helpers do nothing, so the
+force reset that follows fails as well. The IOMMU can then no longer be
+enabled, and the NPU stops working.
 
-On 2026/11/23 23:18, Edgecombe, Rick P wrote:
-> There is an existing usptream position around coco driver hardening, that the
-> drivers should be fixed. In some ways this another thing that could be fixed in
-> a driver? The driver could zero memory before sharing it for DMA_FROM_DEVICE.
-> 
-> But the swiotlb was supposed to be sort of a generic solution to the problem of
-> not inadvertently sharing private memory. Instead of marking an entire page as
-> shared (which might have private contents elsewhere on the page), the bounce
-> buffer allows for only sharing the minimum specified.
-> 
-> So you could maybe look at this issue as fitting into the general problem of not
-> inadvertently sharing the private data inside the buffer. But also that is
-> covering for driver gaps.
+When the banks disagree, stop paging on the banks that still page
+first, then run the existing sequence.
 
-Thanks for looking at this, and we had very similar thoughts when 
-writing the patch. Our impression was that in many cases the driver
-doesn't own the buffer (page cache, dm-crypt, O_DIRECT), so fixing it
-there seemed hard, which is why we tried swiotlb instead. But we may be
-missing something.
+Tested on a ROCK 4D with repeated forced job timeouts. Without this
+patch, one in every 2 to 10 timeouts was not recovered from; with it,
+20 out of 20 recovered.
 
-> It seems like the fixes commit was arguing that copying the contents to the
-> swiotlb buffer was more transparent. So this patch kind of goes back against
-> that argument. That seems to be another point that the drivers should be fixed.
-> If this is essentially more of a potentially behavior altering kernel hardening,
-> then I wonder about putting it behind some kind of hardening config like
-> CONFIG_INIT_ON_ALLOC_DEFAULT_ON.
+Fixes: cd6438c5f844 ("iommu/rockchip: Reconstruct to support multi slaves")
+Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
+---
+Not tested on the RK3588.
 
-As far as we can tell, keeping the old contents for DMA_FROM_DEVICE
-was never really promised. Before ddbd89deb7d3, swiotlb
-didn't do it. That commit was mainly about not returning stale bounce
-data to the caller, which zeroing should still prevent.
+LLM-assisted.
 
-In case it helps, we have a PoC on SEV-SNP that leaks MariaDB data from 
-a LUKS-encrypted disk through this path, and we're happy to share it.
+ drivers/iommu/rockchip-iommu.c | 61 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 61 insertions(+)
 
-> Ohh, but I guess the problem is the buffer getting copied could have come from
-> userspace? So then you would have to fix userspace... But then this patch could
-> also potentially break userspace if there is any partial write assumptions. Oh
-> boy.
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 1fa3110b142a..5eabefb0ad14 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -507,6 +507,64 @@ static int rk_iommu_disable_paging(struct rk_iommu *iommu)
+ 	return ret;
+ }
+ 
++/*
++ * The helpers above only act when every bank agrees. After a reset of the
++ * master, one bank can still be paging; stop it bank by bank.
++ */
++static void rk_iommu_quiesce_paging_banks(struct rk_iommu *iommu)
++{
++	int i, ret;
++	u32 status;
++
++	for (i = 0; i < iommu->num_mmu; i++) {
++		void __iomem *base = iommu->bases[i];
++
++		if (!(rk_iommu_read(base, RK_MMU_STATUS) & RK_MMU_STATUS_PAGING_ENABLED))
++			continue;
++
++		dev_warn_ratelimited(iommu->dev, "bank %d still paging, status %#08x; disabling it\n",
++				     i, rk_iommu_read(base, RK_MMU_STATUS));
++
++		if (rk_iommu_read(base, RK_MMU_STATUS) & RK_MMU_STATUS_PAGE_FAULT_ACTIVE)
++			writel(RK_MMU_CMD_PAGE_FAULT_DONE, base + RK_MMU_COMMAND);
++
++		rk_iommu_base_command(base, RK_MMU_CMD_ENABLE_STALL);
++		ret = readl_poll_timeout(base + RK_MMU_STATUS, status,
++					 status & RK_MMU_STATUS_STALL_ACTIVE,
++					 RK_MMU_POLL_PERIOD_US, RK_MMU_POLL_TIMEOUT_US);
++		if (ret)
++			dev_err(iommu->dev, "bank %d: stall timed out, status %#08x\n",
++				i, status);
++
++		rk_iommu_base_command(base, RK_MMU_CMD_DISABLE_PAGING);
++		ret = readl_poll_timeout(base + RK_MMU_STATUS, status,
++					 !(status & RK_MMU_STATUS_PAGING_ENABLED),
++					 RK_MMU_POLL_PERIOD_US, RK_MMU_POLL_TIMEOUT_US);
++		if (ret)
++			dev_err(iommu->dev, "bank %d: disable paging timed out, status %#08x\n",
++				i, status);
++
++		rk_iommu_base_command(base, RK_MMU_CMD_DISABLE_STALL);
++		ret = readl_poll_timeout(base + RK_MMU_STATUS, status,
++					 !(status & RK_MMU_STATUS_STALL_ACTIVE),
++					 RK_MMU_POLL_PERIOD_US, RK_MMU_POLL_TIMEOUT_US);
++		if (ret)
++			dev_err(iommu->dev, "bank %d: disable stall timed out, status %#08x\n",
++				i, status);
++	}
++}
++
++static bool rk_iommu_banks_disagree_on_paging(struct rk_iommu *iommu)
++{
++	int i, n = 0;
++
++	for (i = 0; i < iommu->num_mmu; i++)
++		n += !!(rk_iommu_read(iommu->bases[i], RK_MMU_STATUS) &
++			RK_MMU_STATUS_PAGING_ENABLED);
++
++	return n && n != iommu->num_mmu;
++}
++
+ static int rk_iommu_force_reset(struct rk_iommu *iommu)
+ {
+ 	int ret, i;
+@@ -947,6 +1005,9 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
+ 	if (ret)
+ 		return ret;
+ 
++	if (rk_iommu_banks_disagree_on_paging(iommu))
++		rk_iommu_quiesce_paging_banks(iommu);
++
+ 	ret = rk_iommu_enable_stall(iommu);
+ 	if (ret)
+ 		goto out_disable_clocks;
 
-Yes, a short read into a pre-filled user buffer would now see zeros. We
-did a pass over the drivers commonly used in CVMs and didn't find any
-that rely on the old contents being kept, but we'd be glad to hear if
-someone knows of a case.
-
-Thanks,
-Shukai
+base-commit: 909ef7a9a30fa139e69e555e3606680f5cca7726
+-- 
+2.43.0
 
