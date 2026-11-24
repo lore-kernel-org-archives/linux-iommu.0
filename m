@@ -1,49 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795543026;
-	b=5ANqvLNOUFW59IWvdehoFLz6jJuoT63HIIz+b/6VNR215oLLntqt4iBKb9r0wxv4J9I+
-	 0BkIyCiSA+o6s+NyVWmgfs3m94OqMij4a5qHlWrFwH5oR1IV41JpXEBJf/B5Nbi59h8XO
-	 Fl04zzwxVQAhB9diZvFS6etsUp5sqnesa28Bd5QKTJqxcnX7gBF0k+IhQaYzRwVb7wgHG
-	 dg8il3mFWEv0jXedMHyI0PuSxTY36jSIpsmm1EdajzZyEnFngpjYXlihPSA9mfjbRLw7l
-	 EyhuiCyLKzsrzA1EVCFH+E5K2JLCfInWDUbr70rTUu4tNfWs4odZg5fgAkXjddHlHsA==
+	t=1795543415;
+	b=YMG/AZXf3qknk+kIqxbJ7qaFDVYMC0dxFgIw842Ls93KuW1hsycaOFL32ILE05eqHP8F
+	 jTPxdGm0iYrfQrTI8Mn/7WShTlNTdWXGhq+LF7GOmSmA4hUUZYzZHBQYMdYA6fhNkjKqP
+	 gL451I42qrGQ7wTCxDNr/xyXyPLcpUuseXV22cJfSKHWxdb+7fYMfGpx8/jNIANTStebI
+	 QrcZYaoQEIRA7OM/c5N9cpDMJC9TUaZ7f9l8iMTcJlGWqz3ECKEVS7SrLDuMv58g/vz+u
+	 34JzrEOXwdnPD2UpEsiEYVkjCfY92VaPXeDTduKT/HrR05VQ19B/f5J/LKqI0ZN/PUQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795543026;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
-	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=QAfn4/fyucj8w9tvIqm0t/BfQJuC1gSulyNyHXm2Fv8=;
-	b=KxLVxVmm54dTroANhnuc6p5yxgzTxR7bGI3qUjJNESqllzd397ZVnJiFXVoJw8BwMFW1
-	 KR/UrJWEq6eQZgqT0JvZQOi3HX1fTIyqq31vK/T2ap3NXyBJRS2NEXjQxdKK7nfSbN6pM
-	 wFNEuUKKNLrdxLvuBlL7aOj993aelzBDKMorVv9EZDjXdH/GwxTXd4SN+wgEoKfy3S8kH
-	 qbyFA36VzMbHGiYgT/M6Nj7ayvaE1Nyes1MdEl6katlFf5Azu4gXAfBUuaH0roJq+NSa/
-	 5SX7VKdLGsENV4O3heL/RUmRDsw+U0XIWgpHt9TunPeFjGu9+dxjOZdSlodgnAgF1kA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795543415;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=NhTEfKWb6DbluRd1mldD3BYSLbGgDbbN8zaDAjpM6uw=;
+	b=1ji9w/5YY7z4fbeFfbRMz3LwJsJznZML6Jl7yGxom69JoBoF7CtfmKb06Cgcs53M8+fk
+	 mWjxGWqGNyahlEvWX2DcgHrCeCZfx3RoMKow9JYZJn8/5jBDJybm5801TXkdUHEuxfbqb
+	 pRSbze+/HwjBxXYU95m9peDOYuskVgoorxx3eLR5zYzNoahIcDlqUWXX/Bn2Fqca4mU4y
+	 05Ad6jLP2n1o0e//eSbgUcG6inhUubhv4IRqCIsT2jRrRcoaF+Nemff9AfzjFapaOVm9P
+	 SGzJLHFaOLp7mh1GdRmiNgMr7xYWcVPaJ9ECEgt4Vf2vzQbvMo4e7Q0gpJWeUtUSp8A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arm.com;
-	spf=pass smtp.mailfrom=arm.com;
-	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=c6lqprQY;
-	arc=none smtp.remote-ip=217.140.110.172
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 87BAE606A31E
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 17:57:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 87BAE606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	dmarc=pass header.from=chromium.org;
+	spf=pass smtp.mailfrom=chromium.org;
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=lAqaTRNM;
+	arc=none smtp.remote-ip=74.125.82.50
+Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99423606A329
+	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 18:03:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 99423606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=c6lqprQY
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8752C339;
-	Tue, 24 Nov 2026 09:57:01 -0800 (PST)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7AE6F3F763;
-	Tue, 24 Nov 2026 09:57:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1795543024; bh=I6pw8uS8s5roJNHb7M2GM3OgWZOUcGnGgtSmOYmDpLA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=c6lqprQYOctmM+/fQeuolrZ+/sAfDhBlYn6i0fniglNB+4MwNRaFwVhU0AWexLKDd
-	 0dJaJktHsbqbhj5212vBrwIuPIFS42nLlbTpJMeJv0tuzeczJCMQ6LYG8UiGsa/0Nu
-	 OJH2NEs+0VqstSHCG9YNw4T5EUmsHdco4iHEkoqc=
-Message-ID: <d4f010f9-44b3-4f0e-9f84-f85ad9c82b3e@arm.com>
-Date: Tue, 24 Nov 2026 17:57:01 +0000
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=lAqaTRNM
+Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-1a2af4c8d00so2061824c88.0
+        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 10:03:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1795543414; x=1796148214; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=NhTEfKWb6DbluRd1mldD3BYSLbGgDbbN8zaDAjpM6uw=;
+        b=lAqaTRNMsaoB2X4JdnC5Ko+7kI5vulLvS0HoYck/rHL6NvYsqoTCws5qQG2u7RQ7Ga
+         bjGXARD/pM+rmShZtxqsa7eylZaUt4nD792NYpwdeQC15sKf9Qs6IKVzeGPwS2+O+6mY
+         +78FN1W8cRH4a1f7hGQ1/xquukktVdgrB2B8c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795543414; x=1796148214;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=NhTEfKWb6DbluRd1mldD3BYSLbGgDbbN8zaDAjpM6uw=;
+        b=y+MK6IO/iLmRmytOd8OxY3gENlncU25sI+PZZQAZS9paxuy7zd+Ga6n9cSqj2BTBsm
+         lHPcbc3u9OMpuZudn3qKVZ1tXLxsE7h8E+VHzL1DY4C7u1oSuMtzQBgIMEprVjCjzX45
+         0qlOz3xYsWs8rIz0NurSEvjKtlVY+8Gm2CuAkCT99cGnqckam4Nlzzh6sRnRshJ5M0z2
+         mZuHtvF/wx3Jw8dIRh9aPyuT9W10vnkR+Sggj7mRyve798dlw6lLJlfbCttshWbARMlz
+         AGe0QgQ7bkhj+uk/rxhoqGCkBBSyEvVW4I1pF8WebfiGj/kQ4UDXViGdqfIAlZXi+1pi
+         xoDQ==
+X-Forwarded-Encrypted: i=1; AL+hErHMfmGXn4stzVQLS3zeguPCIcORFf1yw/mdlSrDxKykpjsmSoKelerClqdU698GozBqn/Kbcg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9Kbgc8de3tMsALQKb9WciWi49MpTl2+m1d55JoPOsQc83CipnG
+	zMFrIKeg4VKSQ/jJQNxXQb9f/Uq5vgF7rG5uSZj//GTkGLkf+bGtlP35wN5xd/L7lw==
+X-Gm-Gg: AZFdTZfUJdmmz9Rd9yAgCA3BipZQxkgg3qztkuDpXDTYcjaib++bXrBWJejyI84quor
+	1dDhxPjxjWvqaQDFB/FDXz4IkVHV5myiPtdrtLudJTX98smb2FrYL/lR2BL3CQjQZXz7+9aJtYI
+	luQCr7m4ko5wcDq5z2VqwVGSGT7T6H83LLBZHICC5Y85zhiLPYY/+6He65MIvM3xx8bGog3INjV
+	Cr3AasnLJhfWVdIlGYldnGxAMYjWu8yLSA28HzwyOFfFQ9g1IuT8dD60UIe0bNKC9CUVgUW5Xfz
+	L9Lau09vGQB0plW8fYfFb+/4Vi2is6rWUIiv7HlZIwD2LWoSNcXOcEGXLa3YGRi2U6YvQYE5zbI
+	ZytDcmKF6cTfT7W7UFTtYn9M77NxzyB4UIEdqdxaHshPeNhU42P6oPAa6Mz9eZqeg1oJ8gwZlyV
+	k1xiI00aGoTBEjvvF6KTsFOlZGXYqJUw7xCJU4OPp262v3QMQ7scYGQMrNez/1+4IYOK1UZfw3d
+	0Cg4dEnZUkTYBc18IQ7eGBj67vXbCKfuI0uAHLIiWNi1EmjWlxutliEiotMo2gu2w/vuRIKG0II
+	btrVzE/o00SJzWqnxj3kYairfjIsCvr2Kl+1XeMif1svTj2QeiCgjQxqylE9OULpzMv9O0oZlwA
+	wmtNDVArVwGRfZg==
+X-Received: by 2002:a05:7023:a41:b0:1b2:649d:dc23 with SMTP id a92af1059eb24-1b556901b95mr16214334c88.35.1795543413661;
+        Tue, 24 Nov 2026 10:03:33 -0800 (PST)
+Received: from localhost ([2a00:79e0:2e7c:8:6ad2:8ba0:aedd:5a84])
+        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-385666e99fdsm58381434eec.5.2026.11.24.10.03.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 Nov 2026 10:03:33 -0800 (PST)
+Date: Tue, 24 Nov 2026 10:03:31 -0800
+From: Brian Norris <briannorris@chromium.org>
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Linux PM <linux-pm@vger.kernel.org>,
+	Linux Driver Core Development <driver-core@lists.linux.dev>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, iommu@lists.linux.dev,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Ulf Hansson <ulf.hansson@oss.qualcomm.com>,
+	Prakash Gupta <prakash.gupta@oss.qualcomm.com>
+Subject: Re: [PATCH v1] PM: runtime: Eliminate __pm_runtime_put_autosuspend()
+Message-ID: <awXRc5mqhe6h6MGi@google.com>
+References: <13014755.O9o76ZdvQC@rafael.j.wysocki>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,204 +99,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH] iommu/rockchip: program the MMU even when the device
- is not in use
-To: Anton Sovetov <anton.sovetov@gmail.com>, iommu@lists.linux.dev
-Cc: heiko@sntech.de, joro@8bytes.org, will@kernel.org,
- linux-rockchip@lists.infradead.org
-References: <CANLiQWrVGN00Hn8s3X7nyDZxh3x0wJ1YqTVzYsLUPM3s-Pkp1A@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <CANLiQWrVGN00Hn8s3X7nyDZxh3x0wJ1YqTVzYsLUPM3s-Pkp1A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <13014755.O9o76ZdvQC@rafael.j.wysocki>
 
-On 23/11/2026 8:07 pm, Anton Sovetov wrote:
-> Hi,
+On Tue, Nov 24, 2026 at 05:36:41PM +0100, Rafael J. Wysocki wrote:
+> From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 > 
-> I hit three related problems in drivers/iommu/rockchip-iommu.c on an RK3566
-> (Radxa Zero 3W) with the out-of-tree NPU driver. All three have the same shape:
-> the driver gates work on pm_runtime_get_if_in_use(), which is 0 unless somebody
-> already holds a reference, and for a device that keeps its DMA domain for its
-> whole lifetime that is the normal state.
+> There are two users of __pm_runtime_put_autosuspend(),
+> pm_runtime_put_autosuspend() and arm_smmu_rpm_put(), but
+> the latter duplicates the code from the former.
 > 
-> 1. rk_iommu_irq(), line 583, gate at 592.
+> Fold __pm_runtime_put_autosuspend() into pm_runtime_put_autosuspend()
+> and make arm_smmu_rpm_put() call the latter.
 > 
->     A page fault raised while the device is running, outside a map or unmap
->     call, finds usage_count 0,
+> No intentional functional impact.
+> 
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-That sounds wrong - if "the device is running" then its RPM state should 
-be logically active, which should in turn hold the IOMMU active via the 
-device link. And if the client device is still doing DMA and able to 
-cause page faults while logically suspended, that would seem like a bug 
-in the client driver.
+Ah, it's about time. I was thinking Prakash's patches would handle this
+semi-naturally eventually, but they seem to be stalling.
 
-> so the handler returns IRQ_NONE without touching
->     the registers. The fault stays latched: INT_RAWSTAT bit 0 and INT_STATUS bit
->     0 remain set, PAGE_FAULT_ACTIVE stays set in STATUS, REPLAY_BUFFER_EMPTY
->     clears, and nothing is printed. The device then sits on a stalled
->     transaction and dmesg says nothing at all, which is the worst part for
->     anyone trying to debug it.
-> 
->     Observed on the NPU: after a job that never completed, the MMU read back
->     dte 0x480000 status 0x2b rawstat 0x1 intstatus 0x1 fault 0xdc80, and the
->     handler had never run. A normal fault report would have printed "Page fault
->     at 0x0000dc80 of type read" plus the page table walk.
-> 
-> 2. rk_iommu_zap_iova(), line 680, gate at 694.
-> 
->     The comment says "Only zap TLBs of IOMMUs that are powered on", but the test
->     is the usage count, not the power state. An unmap that happens while nothing
->     else is using the IOMMU skips the shootdown. A device that keeps its domain
->     but is idle at that moment, which is the usual case when the process that
->     owned the buffers has exited, keeps stale entries, and the next owner of the
->     same iova can still be translated to the previous physical page.
-> 
->     I could not prove this one with a bus trace, so I am reporting it as a code
->     observation and not as a measured failure.
-
-The physical power state shouldn't matter - as long as the IOMMU is 
-logically suspended then we should have been through rk_iommu_suspend() 
--> rk_iommu_disable(), after which we're not going to touch it again 
-until rk_iommu_resume() -> rk_iommu_enable() which inherently does an 
-RK_MMU_CMD_ZAP_CACHE. Thus resuming a suspended IOMMU, invalidating all 
-the TLBs in the process, just to issue a command to re-invalidate 
-nothing, then disabling it until the client device next resumes it and 
-invalidates all the TLBs yet again, clearly seems a bit silly.
-
-> 3. rk_iommu_attach_device(), line 1008, gate at 1040.
-> 
->     Detach plus attach is how a driver resets its IOMMU domain. On attach, when
->     the usage count is 0, the function returns 0 without calling
->     rk_iommu_enable(), so paging stays off, DTE_ADDR stays 0 and INT_MASK stays
->     0. The caller is told the attach succeeded.
-> 
->     Observed on the NPU: its soft reset does iommu_detach_device() and then
->     iommu_attach_device() on the same domain. After the first reset the MMU read
->     dte 0x0 status 0x18 intmask 0x0, no translation at all, and every later DMA
->     ran on raw iovas. Before the reset it was dte 0x480000 status 0x19
->     intmask 0x3. Holding the MMU device with pm_runtime_resume_and_get() around
->     the detach/attach makes the same sequence end with dte 0x480000 status 0x19,
->     which is how I convinced myself the gate, and not the reset itself, was
->     responsible.
-
-Again, that sounds very much like something is wrong with either the 
-device link or how the out-of-tree client driver is managing its own 
-RPM. And since the device link support has been upstream and apparently 
-working fine with the upstream VOP/RGA/etc. client drivers for over 8 
-years now...
-
-Thanks,
-Robin.
-
-> The patch below resumes the device around the attach and the zap. Both run in
-> process context, so pm_runtime_get_sync() is fine there. For the interrupt
-> handler I only added a log line on the drop path, because I do not want to
-> touch registers from hard irq context while the device may be suspended.
-> 
-> What it fixes: the MMU now stays programmed across a detach/attach cycle, and a
-> fault that arrives while nothing is mapping gets reported instead of vanishing.
-> 
-> What it does not fix: the reason I went looking. Our NPU still stops executing
-> jobs in IOMMU mode after a few separate processes, with a healthy MMU and no
-> page fault at all. That is a different problem and I am not claiming this patch
-> touches it. I am sending these three because each one is a real failure mode on
-> its own.
-> 
-> Tested only on rk3566 with the v1 block. I have no rk3588 hardware and would
-> rather not guess about the v2 path.
-> 
-> Questions:
-> 
-> - Is the usage count gate deliberate, in the sense that register access is
->    unsafe unless someone holds a reference? If so, is the right fix to keep the
->    MMU programmed for as long as the device is attached to a domain, instead of
->    tying it to the map/unmap window?
-> - For the interrupt path, what is the intended behaviour when a fault arrives
->    while the IOMMU device is runtime suspended? Ignoring it leaves the device
->    stalled and the status latched, which is what we see today.
-> 
-> Signed-off-by: Anton Sovetov <anton.sovetov@gmail.com>
-> 
-> ---
->   drivers/iommu/rockchip-iommu.c | 42 ++++++++++++++++++++++------------
->   1 file changed, 28 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 07e3517..a3da612 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -590,8 +590,11 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
->    int i, err;
-> 
->    err = pm_runtime_get_if_in_use(iommu->dev);
-> - if (!err || WARN_ON_ONCE(err < 0))
-> + if (!err || WARN_ON_ONCE(err < 0)) {
-> + dev_err(iommu->dev,
-> + "interrupt while the mmu is not in use, ignored\n");
->    return ret;
-> + }
-> 
->    if (WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks)))
->    goto out;
-> @@ -691,17 +694,19 @@ static void rk_iommu_zap_iova(struct
-> rk_iommu_domain *rk_domain,
-> 
->    iommu = list_entry(pos, struct rk_iommu, node);
-> 
-> - /* Only zap TLBs of IOMMUs that are powered on. */
-> - ret = pm_runtime_get_if_in_use(iommu->dev);
-> + /*
-> + * The usage count says nothing about the power state, so an
-> + * unmap that runs while the IOMMU is idle skipped the
-> + * shootdown and left stale translations for the next owner of
-> + * the same iova.
-> + */
-> + ret = pm_runtime_get_sync(iommu->dev);
->    if (WARN_ON_ONCE(ret < 0))
->    continue;
-> - if (ret) {
-> - WARN_ON(clk_bulk_enable(iommu->num_clocks,
-> - iommu->clocks));
-> - rk_iommu_zap_lines(iommu, iova, size);
-> - clk_bulk_disable(iommu->num_clocks, iommu->clocks);
-> - pm_runtime_put(iommu->dev);
-> - }
-> + WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks));
-> + rk_iommu_zap_lines(iommu, iova, size);
-> + clk_bulk_disable(iommu->num_clocks, iommu->clocks);
-> + pm_runtime_put(iommu->dev);
->    }
->    spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
->   }
-> @@ -1037,13 +1042,22 @@ static int rk_iommu_attach_device(struct
-> iommu_domain *domain,
->    list_add_tail(&iommu->node, &rk_domain->iommus);
->    spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
-> 
-> - ret = pm_runtime_get_if_in_use(iommu->dev);
-> - if (!ret || WARN_ON_ONCE(ret < 0))
-> - return 0;
-> + /*
-> + * Detach plus attach is how drivers reset their domain, and the caller
-> + * has no way to notice that the MMU was left unprogrammed. Resume the
-> + * device and program it.
-> + */
-> + ret = pm_runtime_get_sync(iommu->dev);
-> + if (ret < 0) {
-> + dev_err(dev, "cannot resume the mmu, ret: %d\n", ret);
-> + return ret;
-> + }
-> 
->    ret = rk_iommu_enable(iommu);
-> - if (ret)
-> + if (ret) {
-> + dev_err(dev, "mmu enable failed, ret: %d\n", ret);
->    WARN_ON(rk_iommu_identity_attach(&rk_identity_domain, dev));
-> + }
-> 
->    pm_runtime_put(iommu->dev);
-> 
-> 
-
+Reviewed-by: Brian Norris <briannorris@chromium.org>
