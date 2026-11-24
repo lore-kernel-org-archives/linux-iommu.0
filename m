@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795513572;
-	b=GPKatWzourUTgI1eqwFUmdDqgQEOHm4/a9Dxwo+QJWuNGj1W56tQXADG/0kh9VsBZTWR
-	 xrrZd49JOn/Wa0CGVPzKuMYXvDTA4owbj4S403DinyRqkY468EQ4zY4GDN8s1nTgqqtoy
-	 vrY5pHCUYuw1WyT+k+Uy/NLSHLnWdlJE6lhDW1aNKhCVYvc9YBQIGtQx5VG4uSrRo6rfE
-	 YKBo1Mh2VLxY8ITMVKmefOhG+f34rwaFcRD4QBKU5RhnpuZLr1lsy/MNBNG8s85J2cXss
-	 ZqQ/Att1HuayIamU6DBOMzihb91s5usIfqJKENLZM99NwqdOYZY9LlXsnttjqxWo6ug==
+	t=1795513576;
+	b=Ztcnt6yshtn2dWMNpZZMJ8+QAnUqlx1OviYtb3uI/9ctx2aqWMBjTVga+PipmaVgHv87
+	 LWYfgyDRWEy6RirV2pgT7se3Q6MhQQuS3pwdbP73QslyIVK5MDIRTGwsurCQrkKeVwLZ/
+	 XM5fFovVhm0sV8GQ95rIEQGRixGFAbeRVgFn34eI9xgDyoPdUaP3WqEJX9rmNQS8pi5kO
+	 z1WNqbWY7ovIhFedk17ZzDizpYzp16TuB7LE6KGIhbN0gYN35eYfSk7eo3v9RDn6f9IwU
+	 JyJH/ZwIogFIl0DfE/h5x66X7zuveC/iGYFVN/ixGuSIBzlqVUfzjJ2bOZ1gIfq5ZyQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795513572;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795513576;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Type:X-Mailer:
 	 Content-Transfer-Encoding;
-	bh=Atyl0L6xFHCl5JPWP52B33t/L6s6DNfyIvXPWrTkJfA=;
-	b=K2mRJ1u5B/y2T0diA16s3rIkDIgAEZOUiZwN+M0RyUm4vQyui8Si9JFfzmC7Nh2A1aHj
-	 ug+qrGKFTUppKNw/vomfIoFyN4lCJOo/Jcmyn079WeeWwHlpPS/LPGnQdr9YCwB3Onj/O
-	 J6sVKXEQFbvbvFmp6KHmxSNomkdD1oc3+cx8iDtPDvQb17bbuesJQFVSay/bf/Eh9O371
-	 uihJ/7ly79owpsJAJc1BMya69wtGGI2M3fBUQmFw9LSfCSpvCzuIe4pMVSkHAiVBjVvy8
-	 65IYXCgW6XW/wWtNWu8DC1Dl5pRBa3F0TKAPSM0UsLp0YQpmEsi/EJgq1Aiesoe3YyQ==
+	bh=cpTS94Nlb5etqG8ClWRhdF0oxfHbFp//wqSv3Y/5cKI=;
+	b=a2hLA+nyumgHGUjKED/Eu9hTzX4p65QMx968ZMIDehR+rBwV5nERcIVMOsJgGACjrIHw
+	 lqxZT71ZVH3VeEZlPEEKdPLVdgU7KCNLi+mth5hU1WF5JJxLehO138W7u/isAavqq/88a
+	 2QarEDGa/pzIgTsIi2JibXJRvEPS8BZtDTUyQEPRhWcD+Vvy+SQUbQuubhEi0xOFK11z1
+	 V1MsEIXTSd6R9xKcihrVL+vf1p8xKYDl1Us4DVRbHE3EmQn3pk8BEx+++2SvjUBBiiIkc
+	 s4eP4zLz9IVQUCxymeeAhoGE7n1PizmqQSzCOgcFxjOteJjMJcalt0wR5w6tCk9IBbQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DnDPJZho;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Gvw8DUWV;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57592606B79A;
-	Tue, 24 Nov 2026 09:46:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BB16606B033;
+	Tue, 24 Nov 2026 09:46:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DnDPJZho
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D52A51F000D1;
-	Tue, 24 Nov 2026 09:46:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Gvw8DUWV
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D85131F000C4;
+	Tue, 24 Nov 2026 09:46:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795513571;
-	bh=Atyl0L6xFHCl5JPWP52B33t/L6s6DNfyIvXPWrTkJfA=;
+	s=k20260515; t=1795513575;
+	bh=cpTS94Nlb5etqG8ClWRhdF0oxfHbFp//wqSv3Y/5cKI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=DnDPJZhoJrUjPNnt+UtXvXFRtcls2CVb0C0q4CF2ztro4uBquJE76Q+WbtO2sqiT8
-	 y42eJ9iN3lEyPbdn1aYM5fX0PxbJo/HRpRhvTjXClhIoaLqLELPNBVe4iHvi+UlQ79
-	 70pk0kgfNFqdZ8J5IxUPIQIxNhj2Ji9XQDT3QBDHyjlLo9uyaH57CzstlAX1CfJD+4
-	 JQ7Gcyn7N8A3gOWr6bC8HQqLPzupoxhn1Wvb8ZDBbV7qB3XgitWvTCTCrP96Bng9DR
-	 vbf6GOZftX+4DloRAiUMsfbClVk5J3nspQN4ABgX612t3AYUiuZZJPIJpF8MNGVlw6
-	 geY+hRNohn6PQ==
+	b=Gvw8DUWVJURXZPN6ZRi0RTKSYd8JK8tfvyMMCiQKqdmRKRyE+KMgApmRrT9+f9hRg
+	 SoaUHiR/UScRwQ7YxbuXQtviPo4xgeJvxCWRyLrzg518CTKdlmaqGFc+UgwlWJ0ExK
+	 9YaN46IoUKkchdS0CPECdWS30cucl3toj+Ky1fabeo3WTstnBESvd6tkRHLMk/RGIJ
+	 fEcCIzF1iqWmYejBgHuCloMrflvYJl7mfjsahKGSbNtvt+rwHPw4r2k1LLv2TrERcg
+	 t5yQL9tI6ySCfsJGmi59PPrNr4BBN1yFWG7oJ0udsb8Mnq0YsBTJohxfqqIVXG7c8c
+	 X+/f2uxbfx+jA==
 From: Leon Romanovsky <leon@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
@@ -100,9 +100,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Greg Kroah-Hartman <gregkh@suse.de>,
 	linux-sound@vger.kernel.org,
 	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: [PATCH v4 28/33] PCI: Use device trust for platform restrictions
-Date: Tue, 24 Nov 2026 11:43:59 +0200
-Message-ID: <20261124-device-trust-core-v4-28-037eb0d17b1f@nvidia.com>
+Subject: [PATCH v4 25/33] driver core: Expose committed device trust level
+Date: Tue, 24 Nov 2026 11:43:56 +0200
+Message-ID: <20261124-device-trust-core-v4-25-037eb0d17b1f@nvidia.com>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261124-device-trust-core-v4-0-037eb0d17b1f@nvidia.com>
 References: <20261124-device-trust-core-v4-0-037eb0d17b1f@nvidia.com>
@@ -121,194 +121,57 @@ Content-Transfer-Encoding: 8bit
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-PCI topology already identifies devices that need restricted operation.
-Generic trust policy must inherit that classification so authorization
-and PCI restrictions use the same policy.
+After probe failure or unbind, active trust returns to blocked while the
+accepted operating level remains committed. IOMMU state and other
+infrastructure can outlive the driver, so active trust alone cannot tell
+them which operating level was accepted.
 
-Resolve discovery-time restrictions from the requested policy, since active
-trust is established only before driver setup. Retain the untrusted flag
-for IOMMU consumers until their conversion. The initial target is
-confidential computing guests without an IOMMU; synchronizing later
-authorization with IOMMU domains and ATS remains follow-up work.
+Expose the retained commitment separately. This lets infrastructure honor
+the original level after probe failure or unbind without mistaking inactive
+driver state for a new authorization opportunity.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../driver-api/driver-model/device-trust.rst          | 10 +++++-----
- drivers/pci/ats.c                                     |  4 ++--
- drivers/pci/pci.c                                     |  5 +++--
- drivers/pci/probe.c                                   | 19 +++++++++----------
- drivers/pci/quirks.c                                  |  7 ++++---
- include/linux/device.h                                |  5 +++++
- include/linux/pci.h                                   | 10 ++++++++++
- 7 files changed, 38 insertions(+), 22 deletions(-)
+ drivers/base/trust.c         | 13 +++++++++++++
+ include/linux/device/trust.h |  1 +
+ 2 files changed, 14 insertions(+)
 
-diff --git a/Documentation/driver-api/driver-model/device-trust.rst b/Documentation/driver-api/driver-model/device-trust.rst
-index b93426b58852d..3c6babdba80e9 100644
---- a/Documentation/driver-api/driver-model/device-trust.rst
-+++ b/Documentation/driver-api/driver-model/device-trust.rst
-@@ -246,11 +246,11 @@ Adversarial policy does not require an IOMMU. Without an IOMMU group, or
- with IOMMU support compiled out, binding uses the platform's normal DMA
- configuration. Adversarial policy alone does not provide DMA isolation.
- 
--Device trust admission does not change DMA handling, IOMMU domain selection,
--or ATS permission according to active trust. Those remain governed by existing
--bus and platform mechanisms. Integrating them with admission is separate
--work. A setup failure after commitment leaves the chosen mode fixed; it
--cannot fall back to unrestricted.
-+The initial target is confidential computing guests without an IOMMU.
-+On systems with an IOMMU, policy changes after discovery are not yet
-+synchronized with domain selection or ATS configuration. That integration
-+is follow-up work. A setup failure after commitment leaves the chosen mode
-+fixed; it cannot fall back to unrestricted.
- 
- Drivers that manage DMA themselves must provide their own containment.
- Drivers that do not use DMA need no domain.
-diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-index 9cb23780093dd..c8c96acc26343 100644
---- a/drivers/pci/ats.c
-+++ b/drivers/pci/ats.c
-@@ -21,7 +21,7 @@ void pci_ats_init(struct pci_dev *dev)
- {
- 	int pos;
- 
--	if (pci_ats_disabled())
-+	if (pci_ats_disabled() || pci_dev_default_is_restricted(dev))
- 		return;
- 
- 	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ATS);
-@@ -40,7 +40,7 @@ void pci_ats_init(struct pci_dev *dev)
-  */
- bool pci_ats_supported(struct pci_dev *dev)
- {
--	if (!dev->ats_cap || dev->untrusted)
-+	if (!dev->ats_cap)
- 		return false;
- 
- 	if (dev->is_virtfn)
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 7c6f2aba81443..a60701bdece4c 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -1016,8 +1016,9 @@ static void pci_std_enable_acs(struct pci_dev *dev, struct pci_acs *caps)
- 	/* Upstream Forwarding */
- 	caps->ctrl |= (dev->acs_capabilities & PCI_ACS_UF);
- 
--	/* Enable Translation Blocking for external devices and noats */
--	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
-+	/* Enable Translation Blocking when ATS is unavailable or restricted. */
-+	if (pci_ats_disabled() || dev->external_facing ||
-+	    pci_dev_default_is_restricted(dev))
- 		caps->ctrl |= (dev->acs_capabilities & PCI_ACS_TB);
+diff --git a/drivers/base/trust.c b/drivers/base/trust.c
+index b968bfc937346..ddd570773a070 100644
+--- a/drivers/base/trust.c
++++ b/drivers/base/trust.c
+@@ -155,6 +155,19 @@ enum device_trust_level device_get_trust_level(const struct device *dev)
  }
+ EXPORT_SYMBOL_GPL(device_get_trust_level);
  
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 9a178e0e5f7f4..606ab8a3aa8ed 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1738,24 +1738,21 @@ static void set_pcie_cxl(struct pci_dev *dev)
- 
- }
- 
--static void set_pcie_untrusted(struct pci_dev *dev)
-+static void pci_set_default_trust_policy(struct pci_dev *dev)
- {
- 	struct pci_dev *parent = pci_upstream_bridge(dev);
- 
- 	if (!parent)
- 		return;
--	/*
--	 * If the upstream bridge is untrusted we treat this device as
--	 * untrusted as well.
--	 */
--	if (parent->untrusted) {
--		dev->untrusted = true;
-+
-+	if (device_policy_is_adversarial(&parent->dev)) {
-+		dev->dev.trust_policy = DEVICE_TRUST_POLICY_ADVERSARIAL;
- 		return;
- 	}
- 
- 	if (arch_pci_dev_is_removable(dev)) {
--		pci_dbg(dev, "marking as untrusted\n");
--		dev->untrusted = true;
-+		pci_dbg(dev, "setting adversarial trust policy\n");
-+		dev->dev.trust_policy = DEVICE_TRUST_POLICY_ADVERSARIAL;
- 	}
- }
- 
-@@ -2082,7 +2079,9 @@ int pci_setup_device(struct pci_dev *dev)
- 
- 	set_pcie_cxl(dev);
- 
--	set_pcie_untrusted(dev);
-+	pci_set_default_trust_policy(dev);
-+	dev->untrusted = device_policy_is_adversarial(&dev->dev);
-+	device_trust_init(&dev->dev);
- 
- 	/* "Unknown power state" */
- 	dev->current_state = PCI_UNKNOWN;
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 7f1f47ea2ee41..1afad28d1b5e0 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -5525,8 +5525,8 @@ static void pci_quirk_enable_intel_rp_mpc_acs(struct pci_dev *dev)
-  * Currently this quirk does the equivalent of
-  * PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF
-  *
-- * TODO: This quirk also needs to do equivalent of PCI_ACS_TB,
-- * if dev->external_facing || dev->untrusted
-+ * TODO: This quirk also needs to do the equivalent of PCI_ACS_TB when the
-+ * device is external-facing or ATS is restricted by trust policy.
-  */
- static int pci_quirk_enable_intel_pch_acs(struct pci_dev *dev)
- {
-@@ -5567,7 +5567,8 @@ static int pci_quirk_enable_intel_spt_pch_acs(struct pci_dev *dev)
- 	ctrl |= (cap & PCI_ACS_CR);
- 	ctrl |= (cap & PCI_ACS_UF);
- 
--	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
-+	if (pci_ats_disabled() || dev->external_facing ||
-+	    pci_dev_default_is_restricted(dev))
- 		ctrl |= (cap & PCI_ACS_TB);
- 
- 	pci_write_config_dword(dev, pos + INTEL_SPT_ACS_CTRL, ctrl);
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 2914b7191d342..5c86e7a19e47b 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -933,6 +933,11 @@ static inline bool device_iommu_mapped(struct device *dev)
- 	return (dev->iommu_group != NULL);
- }
- 
-+static inline bool device_policy_is_adversarial(const struct device *dev)
++/**
++ * device_get_committed_trust_level - Return the lifetime trust commitment
++ * @dev: device to inspect
++ *
++ * Return: %DEVICE_TRUST_BLOCKED before admission, otherwise the level fixed
++ * before driver setup. The commitment survives setup failure and unbind.
++ */
++enum device_trust_level device_get_committed_trust_level(const struct device *dev)
 +{
-+	return READ_ONCE(dev->trust_policy) == DEVICE_TRUST_POLICY_ADVERSARIAL;
++	return READ_ONCE(dev->trust_committed_level);
 +}
++EXPORT_SYMBOL_GPL(device_get_committed_trust_level);
 +
- static inline bool device_policy_is_blocked(const struct device *dev)
- {
- 	return READ_ONCE(dev->trust_policy) == DEVICE_TRUST_POLICY_BLOCKED;
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index aa3765a20a96c..5da9f7fabf1e5 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -616,6 +616,16 @@ static inline struct pci_dev *to_pci_dev(const struct device *dev)
- {
- 	return container_of(dev, struct pci_dev, dev);
- }
-+
-+static inline bool
-+pci_dev_default_is_restricted(const struct pci_dev *pdev)
-+{
-+	enum device_trust_policy policy = READ_ONCE(pdev->dev.trust_policy);
-+
-+	return policy == DEVICE_TRUST_POLICY_BLOCKED ||
-+	       policy == DEVICE_TRUST_POLICY_ADVERSARIAL;
-+}
-+
- #define for_each_pci_dev(d) while ((d = pci_get_device(PCI_ANY_ID, PCI_ANY_ID, d)) != NULL)
- #define for_each_pci_dev_reverse(d) \
- 	while ((d = pci_get_device_reverse(PCI_ANY_ID, PCI_ANY_ID, d)) != NULL)
+ /**
+  * device_is_adversarial - Test whether a device is operated as an adversary
+  * @dev: device to inspect
+diff --git a/include/linux/device/trust.h b/include/linux/device/trust.h
+index a3a583eeb484c..1ac9cb5b3ceb3 100644
+--- a/include/linux/device/trust.h
++++ b/include/linux/device/trust.h
+@@ -48,6 +48,7 @@ int device_trust_set_policy_locked(struct device *dev,
+ 				   enum device_trust_policy policy);
+ int device_trust_set_policy(struct device *dev, enum device_trust_policy policy);
+ enum device_trust_level device_get_trust_level(const struct device *dev);
++enum device_trust_level device_get_committed_trust_level(const struct device *dev);
+ bool device_is_adversarial(const struct device *dev);
+ 
+ #endif /* _DEVICE_TRUST_H_ */
 
 -- 
 2.56.1
