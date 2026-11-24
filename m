@@ -1,49 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.181
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795539636;
-	b=CO0DIDTVsqi2qxIfha5FCHcSBJ76Vy1Jd6clT96qoZTCQ0cHOUBOhzunC0UNCCB+RLS5
-	 UF2K4FBPyPUVk7AWssIw8df0/+2vtYgBs9yyg5/eiamb5sH6kzRwk6KxlCLewzuKT2QWl
-	 BVZdyYexNxKQdX7zKcFjhyByZuMVBWXLTN+M+WbTKzEwuE93e/RajdDrk7QmQl0AGZdTa
-	 8aVfylHzGwpN6854FRik7s+4IG++CqVqoW44EE17y7GccqgbQEM9GMeV3Q4rQCTmA+Vwu
-	 ICzupLzQkht/D21b/V8s01UoM+/O5rb6OBdE86uCMkWiUKN56gWIpmRnOzhK0bKuKkg==
+	t=1795542011;
+	b=C6ydjbqqRSY/573Pcrs9w/z2cTWMdAXaCwQhXcLuT7jjksmAeEY/B44PI0X7fgxfttR4
+	 SCfOdRIDSxoUABfi/y84mdDNCHL/GZ5U7rpj4PnWFhAggFlsJP/GCXu43LAHxOW5hhqT2
+	 chOuWqwVmg18WLl2pkvEAQvWS0TXEb2atfaObEPGvl1IroPtF6txJ+lL4O+/lKH/KBBBq
+	 e3v55pAKKGRldLDFWHvEnF0pUhpCKnXgZkZEGUX6VwPJQ6zdPs5tLTISocQIgysNB/TIY
+	 BdLukMTi4mazKIGfKihpCvT7geBkLN2q0dleNRKdR9RI/2pQxz8QQz/Dw8DhC9nuEPQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795539636;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
-	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=0II4ljEDv0KUEOXTn1IfR+YqrPY597L6UYRDSKuHB+Y=;
-	b=r4Nga4IrIFuml8DdymZne8iIoZn9rTf+uBS8ZnmI+NfEvMDbTJKHGpU66/qQK9yyEUFj
-	 DpnL4V5XPIMHBQgu5bAQqDVcyh7TAaiwDW/uF1GrV/7KV1ZE+dauxa954SWt7/M5avj9/
-	 C9pKqtGLJqK2nabwXWljD8sJKk8/1z6XdS1E/S3v9cLsgwm/9fD7HBGMc79btXJdOHn5N
-	 WdKYQGABai4DNpjcPQKkthFiETHrPOucNw4WRg0dLVTrGDmdWxpzxInn790i3xVeFXi7c
-	 rLctxKsHxqN6WAsbXyJRD397VlX+P8dSx/V/pVTkGyhJiNgzZFKUkG9G2HlByRh5yIw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795542011;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=miqMkDmR7uPJ+RMX/Y388NkwoGQvWXSbN62ZuELGneA=;
+	b=Ko/+0oRLP9cYagZ4PcO/5a1Ze7RmW5Uqd0yHWFKfjvcidFnLv4DseDC3/IWG2Hvp8JKK
+	 jQDZqE48469rVrUvUQx+tZdV7WO+5CMEfHNL7Z23mx2+TsExzDm2vyG1Jtam0WRFwTwuB
+	 8nfrdAasnilamHt1UTB9zVfqMqV1pNj3Yqj2l+Ece6xGd/LNKeFwDVBuw0zu8sEttHaMt
+	 8v8L15E+/OuCwko3/v1MiugHv031/bbd2FvLnf3hESziEf3SKk5n1zMAbEh8Pl4i/kjqb
+	 CGAY6OFJt+YQsBLQEoZ7/jxCmq+54lMMO1On26tr7QLMz7ascBWrdunzXlWpwde8LbA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arm.com;
-	spf=pass smtp.mailfrom=arm.com;
-	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=Gri3ywFb;
-	arc=none smtp.remote-ip=217.140.110.172
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E3E20606A330;
-	Tue, 24 Nov 2026 17:00:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E3E20606A330
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=m0Oryv5Y;
+	arc=none smtp.remote-ip=209.85.214.181
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55566606A321
+	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 17:40:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 55566606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=Gri3ywFb
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3ADFF339;
-	Tue, 24 Nov 2026 09:00:31 -0800 (PST)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B60893F86C;
-	Tue, 24 Nov 2026 09:00:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1795539634; bh=z8lJkegZYqKQAhYH3KELOe4ZmkhKnWLIUsCGvv6e6b0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Gri3ywFb6diRQ/1inXrBODLn5+HfbiqgZrEtYtH5OIFleXzz7NfhPbLJqA5kJXMG0
-	 ivaGIl5DoCe3Phi1oADie/3IcidpAvWvZ8mK348FK1nqLEHJ/vZoF8CUgRuCxcDdC+
-	 TY0AWUaBpMoNftMAh9ag9otVAmaFl/UJRP8WFJZk=
-Message-ID: <090c12e4-2331-4d6f-be30-65303c5731d0@arm.com>
-Date: Tue, 24 Nov 2026 17:00:30 +0000
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=m0Oryv5Y
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2f048bc09d7so212505ad.0
+        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 09:40:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1795542011; x=1796146811; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=miqMkDmR7uPJ+RMX/Y388NkwoGQvWXSbN62ZuELGneA=;
+        b=m0Oryv5Y+/rU9fcjsg44A7vr6HalyxIiHRLQ5LY3M6Owgp6e+xQbD0TY6RDhn70hYh
+         oYX2kCFwmLTW2EHEdLsieeWK2BVGIRvvjRUTXSMwkJqiPz3F5+t1GV1EstVTmmLe7oWf
+         GycYVfYbDr5uoNA/neuAFkT5+tgKKVi3Hoa17Z4T+LH8YpvtiD27wXE432jO3D3NqDUI
+         AqUfMlV7fZfL+zWe7DnCNGmGjLnmOCSZnpPudRFQdWmDDgBnx6GCFce6ZDGXkxM5fGuM
+         79eTPX+oX5veb+8AC2ti1MPgoFy86QByyqYCpTUQ4O2zp9F/hDsjuTBnU5U3y8/iCgjF
+         2H1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795542011; x=1796146811;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=miqMkDmR7uPJ+RMX/Y388NkwoGQvWXSbN62ZuELGneA=;
+        b=XojkYJUWiHgiL9LjqIYOjX3nJGSpbpW/kpKCRNG34+OaD6saduaUkP1zE6ClzkwF9H
+         6rkff03yLblWFPjBgh2YHOZTqp0BLaoo3fiqz5BD48lp/akSbqI0RjOBM/t2dTEPAj6Y
+         UWfANEKQMW2MLsflP4SJq0FoY+8sMk8eOdxrOl14Qu/OAwldLOegyifePHxsRE99otnO
+         MQSGO2njMkulONdC7oOAzch/9YHi0qaMNfMe/EQPFNskWioYzOBsEYNneNE6yupDASeD
+         ESBGfgCIgN/DXtNB4Osw7oJwl//JPdxoW2R4RKLrwKjiHcFT839ezpYl+cZXSZ8L/rmA
+         ZRqw==
+X-Forwarded-Encrypted: i=1; AL+hErGIralg9RpAAMlksykBCDYzJPTfwWS2i51bTAEuwevyNP8j/0qCpg/ME4aJLUoinyU1Z7/vOA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8H4Zv+KaJHwW9DkWKniZHo/gMezNb/oc4etdMYFr0071esLNlA
+	3tw0Kd3inlJnsLUcjgXCw8aeJPlhqvFVO91PBFvi9Eu0+zgKBLuhm+YfJaxwZKuS4A==
+X-Gm-Gg: AZFdTZeE7Vz4Xj+dt+jc+SQK3DvS1jvj2hq++MW52cVSISaZKcyY7nAdFz9hP7EsMMn
+	7MJTFCm9woFZFsMjU88RE+qH8fbEqjK5AJG05zbc3dLPA01esY5aIroEtkPiSdqBVox4gs26zvX
+	/mGgbunRk0F68gLVRy08E9ENKG4G1yidKNNxHjrzqyU2w2DDl2/SjbocGUw8O8IALLhFSvy41p6
+	nYsx1L1pTSUm5uzO1H43mpJJTzpSCBH0GA+MzcosBryuiKF6CjN5P1MnTB4hkiAQlHo66kTIsiv
+	kB28C37AuoTsEfvmKstOnqX0fPx91id1D/iR3UrI2W5OEzUd2iOqTw/t1FiGNJP1qD+kh6WtQPB
+	7ywaKe+nvZK0POBNCCRGLgAFzgNIllJXj0ZR1tY3leXsjn23nqaZh9XAwEGeYWNX+9mOKGZwMHt
+	/jVUE7yNKdsc4olrlZyi7hD07BTXmvvLVmUjprrqj+M8Yf3C7Cxr8RKoLnSeR3YH5HOqAtf7Hvi
+	EsoTxs9m3BPWJpfDgfwZjTApitcYVShkD6Ft9LhvfWwlng2X/qdKYwa5pZPkNAlnbBHQ1AIH79D
+	UEDgGdtf1kPzrHW5aLn4A93t1DGfLMFdZ1Ew0JP2EPihnl053C+pCCzFwAHbGPpvqQC/N4aGFhf
+	ryi8wjQ/6BICRYYNM2aq7bQ==
+X-Received: by 2002:a17:903:19e3:b0:2d5:db38:8010 with SMTP id d9443c01a7336-2f066708a17mr12958045ad.15.1795542010063;
+        Tue, 24 Nov 2026 09:40:10 -0800 (PST)
+Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2f03f122548sm72700355ad.66.2026.11.24.09.40.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Nov 2026 09:40:09 -0800 (PST)
+Date: Tue, 24 Nov 2026 17:40:05 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Ankit Soni <Ankit.Soni@amd.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	David Woodhouse <dwmw2@infradead.org>, Pranjal Shrivastava <praan@google.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Vipin Sharma <vipinsh@google.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
+Subject: Re: [PATCH v8 05/18] iommu: Implement IOMMU domain preservation
+Message-ID: <awXL2cLfpbowuO0m@google.com>
+References: <20261123044949.3610702-1-skhawaja@google.com>
+ <20261123044949.3610702-6-skhawaja@google.com>
+ <ngjof224lsvn3aamehaaowcsk6lyrypjw7uidwwbxxpzot53t6@462wqwsp65bw>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,120 +106,22 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] PM: runtime: Eliminate __pm_runtime_put_autosuspend()
-To: "Rafael J. Wysocki" <rafael@kernel.org>,
- Linux PM <linux-pm@vger.kernel.org>
-Cc: Linux Driver Core Development <driver-core@lists.linux.dev>,
- Will Deacon <will@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
- iommu@lists.linux.dev, Brian Norris <briannorris@chromium.org>,
- Sakari Ailus <sakari.ailus@linux.intel.com>,
- Ulf Hansson <ulf.hansson@oss.qualcomm.com>
-References: <13014755.O9o76ZdvQC@rafael.j.wysocki>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <13014755.O9o76ZdvQC@rafael.j.wysocki>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <ngjof224lsvn3aamehaaowcsk6lyrypjw7uidwwbxxpzot53t6@462wqwsp65bw>
 
-On 24/11/2026 4:36 pm, Rafael J. Wysocki wrote:
-> From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-> 
-> There are two users of __pm_runtime_put_autosuspend(),
-> pm_runtime_put_autosuspend() and arm_smmu_rpm_put(), but
-> the latter duplicates the code from the former.
+On Tue, Nov 24, 2026 at 05:23:18AM +0000, Ankit Soni wrote:
+>On Mon, Nov 23, 2026 at 04:49:36AM +0000, Samiullah Khawaja wrote:
+>> Add IOMMU domain preserve and unpreserve APIs that can be used to
+>> preserve an IOMMU domain across liveupdate. These APIs use the iommupt
+>> preserve and unpreserve ops of the domain to perform the respective live
+>> update operations.
+>>
+>> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+>> Reviewed-by: Pranjal Shrivastava <praan@google.com>
+>> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+>
+>Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
 
-Aha, indeed it was only this way to minimise conflicts with Sakari's 
-original refactoring, since that led us to realise that we did actually 
-want the mark_last_busy behaviour here anyway[1]. Evidently it missed 
-anyone's to-do list to come back and clean it up post-merge - thanks for 
-finally sorting it!
-
-> Fold __pm_runtime_put_autosuspend() into pm_runtime_put_autosuspend()
-> and make arm_smmu_rpm_put() call the latter.
-> 
-> No intentional functional impact.
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-[1] https://lore.kernel.org/all/ZxpnFPsk2OBC8vqd@google.com/
-
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> ---
->   Documentation/power/runtime_pm.rst    |    1 -
->   drivers/iommu/arm/arm-smmu/arm-smmu.c |    7 ++-----
->   include/linux/pm_runtime.h            |   26 +-------------------------
->   3 files changed, 3 insertions(+), 31 deletions(-)
-> 
-> --- a/Documentation/power/runtime_pm.rst
-> +++ b/Documentation/power/runtime_pm.rst
-> @@ -338,7 +338,6 @@ It is safe to execute the following help
->   - pm_runtime_put_noidle()
->   - pm_runtime_put()
->   - pm_runtime_put_autosuspend()
-> -- __pm_runtime_put_autosuspend()
->   - pm_runtime_enable()
->   - pm_suspend_ignore_children()
->   - pm_runtime_set_active()
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -79,11 +79,8 @@ static inline int arm_smmu_rpm_get(struc
->   
->   static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
->   {
-> -	if (pm_runtime_enabled(smmu->dev)) {
-> -		pm_runtime_mark_last_busy(smmu->dev);
-> -		__pm_runtime_put_autosuspend(smmu->dev);
-> -
-> -	}
-> +	if (pm_runtime_enabled(smmu->dev))
-> +		pm_runtime_put_autosuspend(smmu->dev);
->   }
->   
->   static void arm_smmu_rpm_use_autosuspend(struct arm_smmu_device *smmu)
-> --- a/include/linux/pm_runtime.h
-> +++ b/include/linux/pm_runtime.h
-> @@ -588,30 +588,6 @@ static inline void pm_runtime_put(struct
->   }
->   
->   /**
-> - * __pm_runtime_put_autosuspend - Drop device usage counter and queue autosuspend if 0.
-> - * @dev: Target device.
-> - *
-> - * Decrement the runtime PM usage counter of @dev and if it turns out to be
-> - * equal to 0, queue up a work item for @dev like in pm_request_autosuspend().
-> - *
-> - * Return:
-> - * * %1: Success. Usage counter dropped to zero, but device was already suspended.
-> - * * %0: Success.
-> - * * %-EINVAL: Runtime PM error.
-> - * * %-EACCES: Runtime PM disabled.
-> - * * %-EAGAIN: Runtime PM usage counter became non-zero or Runtime PM status
-> - *   change ongoing.
-> - * * %-EBUSY: Runtime PM child_count non-zero.
-> - * * %-EPERM: Device PM QoS resume latency 0.
-> - * * %-EINPROGRESS: Suspend already in progress.
-> - * * %-ENOSYS: %CONFIG_PM not enabled.
-> - */
-> -static inline int __pm_runtime_put_autosuspend(struct device *dev)
-> -{
-> -	return __pm_runtime_suspend(dev, RPM_GET_PUT | RPM_ASYNC | RPM_AUTO);
-> -}
-> -
-> -/**
->    * pm_runtime_put_autosuspend - Update the last access time, drop usage counter
->    * and request autosuspend.
->    * @dev: Target device.
-> @@ -635,7 +611,7 @@ static inline int __pm_runtime_put_autos
->   static inline int pm_runtime_put_autosuspend(struct device *dev)
->   {
->   	pm_runtime_mark_last_busy(dev);
-> -	return __pm_runtime_put_autosuspend(dev);
-> +	return __pm_runtime_suspend(dev, RPM_GET_PUT | RPM_ASYNC | RPM_AUTO);
->   }
->   
->   DEFINE_GUARD(pm_runtime_noresume, struct device *,
-> 
-> 
-> 
-
+Thanks,
+Sami
