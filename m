@@ -1,111 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.46
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795513593;
-	b=NKvfOFUUDgXLZLTOnxg/2wtZgZyuDmYfgXrhrhXWdFPiy9vHEnrlQH7pga4vlJZr6ifc
-	 ZkQEMkD3lh9XTSGK5O6WNd4HS4fqODVwmvsf6suS+oHW4G6/MLzvYcC2vccrTUqHMtfMm
-	 39sAHqL6Hn8AXXUnrYwaXJ/iJMi8JhSaE+XMwDhSSnMv5psT1U2d9vQs7v7HQXx726ye6
-	 duLXikrJds5nu89pojfLsnhkYOJXNlnuANDfykbkLEVFIpieLlGpwjnzU++LZ0Wei8Kfd
-	 NuTzhfTSW6kUWzV4jUlvEKo8sPYHBNI92b2Rs3TeqmaIxfvUm6bjG0sLZ9F57k90qLg==
+	t=1795513996;
+	b=c7IjO5h6Kp59tT2Zzmk8NNhvHLOm3BZX/sSPPpoFyv3JL1kQNK52eLGRw7VRP9CyAz9E
+	 5f0Pvm1XBfS5TwCBiLpWjq4J7JNgmrCxqeaC0FbF2p0l70nL50U5Pkdpv9XJ5smuW63Vi
+	 oGV/vUOR7NVdicwPLl92Cs6C9RsPJ1GMTCh4jfaiJMF7huxkPIN4dk8UY3Ujm3G+MWecf
+	 hCXkcpt4WPAKcQndL5fRbv3tCRx73XK5nXZDRjRKsnwOmB+xYQjLd+rum8HCx9VFhIzBd
+	 DJSJgpv1bOrksaA82iuGAPcod2Sygdjybii1R5V2OLZHaFGVuA5rxNzE70ajDMNLt8g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795513593;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Type:X-Mailer:
+	a=rsa-sha256; c=relaxed/relaxed; t=1795513996;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=Rrr1YKajZgK+VK2muxXAdUasewhlPIeLOb2dTyGXgs8=;
-	b=GsHXeASoDdIXZG/LJpB4kH/14nWEHHmxaX5M6xn/+a96QX8gCT2GVi7DBvS/xG7OKapm
-	 A96zoRxbH6VnIfUO1DUvYJf1MdMJpdN0dyPUcxn0wp++Q+AD2CiCYMhe+vl5CGwyJ1hfR
-	 JbUFzphiMv0SEQ8MQ4/DGQK3queqHE1EeAIS64HvcCswctjHGS/jgE9nDh128BogftkrZ
-	 wTyfKW06LpgZBrWY9tF9Jfr8in1vVJmdliTdrgek3Vsx8g7HKt2eiMpkOFn4kIflxfM04
-	 7emSd5TI3ARisIYaRpVvcBJPXC5v5s+YAO+Tta9gfAuLhG7nQGjcV/kHY96EoeAoaLA==
+	bh=s3HEy2luFzOKtpXEMJaCVU6qsnBsmUBR+KRo1CZ+Kxc=;
+	b=xUC42dDjcRZg9aqJ3ub1x0ZbsEbU0s95Sj6ljJZZ4a4KJ9muCPVtW2B0eZsNtFQZRnGy
+	 i8ZMXg93+Ca4mKeQW7Ct8o9tZWTUtWDT0+0Pu9brOnuoe3AyaU1IgSbtj0HqEAax7jJ+l
+	 Nd0kB1hvoaa+h1jbbzR0FmIyfPav+nhZLyAkYB3ijU7hygGHBfWgDCpEdjSIFWKQCPfCm
+	 Fzr+XsVqioQ97JvY1iZ2qvyDAp4NFGQ/WyKp0qC8hUNFDE8Bv25cZ9uuNVyY16Z5cRWwp
+	 SLj29FAbiSYsbUfR9Pv2YmhE1Ffbn27W+nVeetys+kzduCePh88d+43D0fB99vipDjA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jHjejmQ8;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=baylibre.com;
+	spf=pass smtp.mailfrom=baylibre.com;
+	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=IRYGbHDH;
+	arc=none smtp.remote-ip=209.85.221.46
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB592606A844;
-	Tue, 24 Nov 2026 09:46:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96DA2606A682
+	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 09:53:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 96DA2606A682
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jHjejmQ8
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75D9E1F000C0;
-	Tue, 24 Nov 2026 09:46:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795513593;
-	bh=Rrr1YKajZgK+VK2muxXAdUasewhlPIeLOb2dTyGXgs8=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=jHjejmQ8zM6hIFsRDYW2ZEQsnN1I7aP2YBhg68GePLC8U0WlOntJt6VGNegw4Bi2X
-	 sOugj9kDKM28D5pctYTfal2yWC1Y6MlXe/cauxtjmOU5lB01EXrT77z7v9G1CxKL2r
-	 +KZ82gUK2XDClFn4e+zkykTtJJ/bfmqR+GTIC1uM/IvYYboPr1bE11RbikRLPDNa6E
-	 S1DmEMoqLuqe27MyMfzvtlp7LdmfAy5VyF7aEoXCQmhXaS7fTI+w+hZevPtzPyr8bm
-	 ZWvOowvW0HF+wBsi0WUtTUGLkL3LOYISZWc27xKo2BrXIv6tPENlqaN78A0tbSo1nh
-	 mhdPlXAIMhHyg==
-From: Leon Romanovsky <leon@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Eric Dumazet <edumazet@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	Chris Lu <chris.lu@mediatek.com>,
-	Mans Rullgard <mans@mansr.com>,
-	Alan Stern <stern@rowland.harvard.edu>,
-	Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Cornelia Huck <cornelia.huck@de.ibm.com>,
-	Andrew Morton <akpm@osdl.org>,
-	Jeff Garzik <jeff@garzik.org>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Bart Van Assche <bvanassche@acm.org>,
-	Alexander Duyck <alexander.h.duyck@linux.intel.com>,
-	Dan Williams <djbw@kernel.org>
-Cc: linux-kernel@vger.kernel.org,
-	driver-core@lists.linux.dev,
-	linux-input@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org,
-	linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org,
-	linux-acpi@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-	Greg Kroah-Hartman <gregkh@suse.de>,
-	linux-sound@vger.kernel.org,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: [PATCH v4 33/33] USB: Authorize devices through device trust
-Date: Tue, 24 Nov 2026 11:44:04 +0200
-Message-ID: <20261124-device-trust-core-v4-33-037eb0d17b1f@nvidia.com>
-X-Mailer: git-send-email 2.56.1
-In-Reply-To: <20261124-device-trust-core-v4-0-037eb0d17b1f@nvidia.com>
-References: <20261124-device-trust-core-v4-0-037eb0d17b1f@nvidia.com>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=IRYGbHDH
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-4a2f4ca0dcfso2458153f8f.1
+        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 01:53:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1795513991; x=1796118791; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=s3HEy2luFzOKtpXEMJaCVU6qsnBsmUBR+KRo1CZ+Kxc=;
+        b=IRYGbHDHaFZOgqCsR3LK3Hytp8FmAyESMBlzoZ2w+EicKyINYByE3vRSZiagOPSaOc
+         uZYbAiXKXPa+QuD5E4F6O85ZUD57lhYTY5bJQ+91CaA1TzvO3mXohs410DB8JrcLLieK
+         vA8XxpwfVy11WN/h1fsAykX3Zhmzn4tPS0Od26WjoUC/Yer4iLe0sGRHOipC/ovOeag5
+         LFLSO7W10gcbbexyZwZNLwx1KT/me5aHf6MYpEOzYvrCAcqllaBdOG2U9VWEe7PiM3db
+         tpART4MK1WbwMUUavhBu2uA/R5FFEgoSkqh1uN0el3yX12xzZELSrcampkjFx+zJgfyo
+         UZzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795513991; x=1796118791;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=s3HEy2luFzOKtpXEMJaCVU6qsnBsmUBR+KRo1CZ+Kxc=;
+        b=w0eyP/l+g/DcbdLXMOPKjE9Ml1IjCornfAnKJEWgw9ClmNC7/v19Ow2F5Bf0Frz8OF
+         xoDEwFfPUNAUR2P1IOZz0bK+Qci5ZOPIjSp6AICInjaHlH90f9vw4kkGg5Wf7fMpGX/p
+         UfgMu2qlxbqKze3thrRrq/+G/j56KrTIXVzYEmGgH8wiv6gPt3NezvYfqumfWj3P3Day
+         RmSdZaZ0HuGQ/+Oltg/sJug1J0rTQop+ApMWJxqJsRwCp5rTybWgUftiVLHmpRKTblXT
+         oI7uz6JgF6GUi7KpSJZgQ1N6eYP19oAYqS1U4DmJkPE7bs60zh+bGFmqnPLDOqQCLQ7D
+         AN6A==
+X-Forwarded-Encrypted: i=1; AL+hErEV6+h45WmM09yvPwutQtit2bzd/DInG/o2AOzkFkGiZSQIJ/3v+MgC2LTWqL0ItV4rugMnjA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+uSXjyZPOKoEUjzLjokFzUiOPhq7OxsTQT8Z4/5L5eepYnPyXX
+	pqyZ95vdCDDPL/RHPw8edXltgcqXqnqnbFXLWevXAAYfSV5uQ7XZWIQzY+IzJb48Crs=
+X-Gm-Gg: AZFdTZeJHqu7EyhvwQbQRw7dlt3v/g4MGB5yCBrL1azRXRIxCrb+jOArCHykstyUpRg
+	zpZYC1SpOfekusStDzlvFDNBaCDr2k9zFGO9BTmDK4HVajknS/xanDRVQGBU4dNhxwebDUf3KWl
+	k0GjjZXBrxwpKKXk1bCr2Kmv3iL6OUhCaoIqQqQusCJDSSL9ktSDigJShEk0R1HrTpJVySHPS1+
+	k0TtfvR0AYkw/CaQr1uzbGoBrFbs/9csoahPtWmHsRMUY8PzVHojc+coMDcTMFWdgdqYa0BZ7ID
+	kBIR/xEDpYF4ryAJBqUfuN97ke2QOGJxinr0Aba7ZHRjrwZcwJeelJUS2/3IxgG3fv3tX6uuzS3
+	QmkmGXh5ZSuqkZ2mCE+WnKk508x22Lgi4meXXJrYZRNU9CEOirjToLL+DGBmvTpUqt/Rrjtn/f3
+	D0W2f7jIsNFZnznMaM+wM2y53nJNEbR7rauAQwao7J8teRFt4NMOuR1EYmRO2haB/+CErUWcaSX
+	WyrZs5npC25wUXM3kGLJlnktfyWWgcv+/WmJjT7EO+VwX0siLIi7+MOQ548FfkjhkIkmwhGLL+8
+	oPY4Qttf3zGi5qbLI6Zx0fTbe4RiYdP7Uf8WjySoWuJ4tcY2XMqbyGDw8eeN/AASAb+c4q8AZ+D
+	coA==
+X-Received: by 2002:a05:600c:4e0b:b0:4bb:6f45:2a79 with SMTP id 5b1f17b1804b1-4bb88817920mr309330195e9.22.1795513991045;
+        Tue, 24 Nov 2026 01:53:11 -0800 (PST)
+Received: from ?IPV6:2001:8a0:d6cd:9000:86f4:4e71:9fc8:3183? ([2001:8a0:d6cd:9000:86f4:4e71:9fc8:3183])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb88442995sm435581505e9.2.2026.11.24.01.53.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 Nov 2026 01:53:10 -0800 (PST)
+Message-ID: <2fd706ef-8205-4564-bed7-527b6bae8790@baylibre.com>
+Date: Tue, 24 Nov 2026 09:53:08 +0000
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -115,323 +93,50 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.15-dev-18f8f
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v18 5/8] accel/rocket: add a GET_PARAM ioctl for the
+ hardware version
+To: Jiaxing Hu <gahing@gahingwoo.com>, tomeu@tomeuvizoso.net,
+ heiko@sntech.de, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+ p.zabel@pengutronix.de, ogabbay@kernel.org, zhangqing@rock-chips.com
+Cc: royalnet026@gmail.com, sidong.yang@furiosa.ai,
+ ulf.hansson@oss.qualcomm.com, abel.vesa@oss.qualcomm.com,
+ sebastian.reichel@collabora.com, chaoyi.chen@rock-chips.com,
+ shawn.lin@rock-chips.com, finley.xiao@rock-chips.com,
+ diederik@cknow-tech.com, alchark@flipper.net, leonard@lausen.nl,
+ vlwwwwww@gmail.com, jeff.hugo@oss.qualcomm.com,
+ dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <cover.1795478392.git.gahing@gahingwoo.com>
+ <cbb77a43deedadb6667a84bd1c57030cf1c9ce74.1795478392.git.gahing@gahingwoo.com>
+Content-Language: en-US
+From: Daniel Drake <ddrake@baylibre.com>
+In-Reply-To: <cbb77a43deedadb6667a84bd1c57030cf1c9ce74.1795478392.git.gahing@gahingwoo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On 24/11/2026 00:01, Jiaxing Hu wrote:
+> Add DRM_IOCTL_ROCKET_GET_PARAM so that userspace can tell which NPU it
+> runs on. DRM_ROCKET_PARAM_HW_VERSION returns an enum
+> drm_rocket_hw_version value, taken from the compatible's match data when
+> the first core probes. The PC_VERSION registers cannot be used: the
+> RK3568 reads 0 from them.
 
-USB authorization can configure a device and expose its interfaces. With
-generic trust enabled, that must wait until the device driver has been
-admitted, otherwise configuration bypasses policy.
+I also spotted that the vendor driver uses compatible-based matching for
+this kind of thing.
 
-Keep authorization, attachment and the configuration result under the
-device lock so concurrent requests cannot report each other's failures.
-Allow configuration retries after failure while preserving authorization
-and any active configuration. Retain the existing flow on legacy boots.
+> @@ -197,6 +224,9 @@ static int rocket_probe(struct platform_device *pdev)
+>  		devres_close_group(&drm_dev->dev, rdev_group);
+>  	}
+>  
+> +	if (hw_version != rdev->hw_version)
+> +		return -EINVAL;
+> +
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- Documentation/ABI/testing/sysfs-bus-usb | 13 +++++++++++
- Documentation/usb/authorization.rst     | 26 ++++++++++++++++++++++
- drivers/usb/core/driver.c               | 10 +++++----
- drivers/usb/core/generic.c              |  2 +-
- drivers/usb/core/hub.c                  | 39 +++++++++++++++++++++++++++------
- drivers/usb/core/message.c              |  7 ++++--
- drivers/usb/core/sysfs.c                |  2 +-
- drivers/usb/core/trace.h                |  2 +-
- drivers/usb/core/usb.c                  |  6 +++++
- include/linux/usb.h                     | 12 +++++-----
- 10 files changed, 98 insertions(+), 21 deletions(-)
+This check can be dropped, we can assume that a DT that gives cores with
+a mix of hw versions is invalid and broken.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-usb b/Documentation/ABI/testing/sysfs-bus-usb
-index 62e326710ef5f..dbe70c481e7c8 100644
---- a/Documentation/ABI/testing/sysfs-bus-usb
-+++ b/Documentation/ABI/testing/sysfs-bus-usb
-@@ -33,6 +33,19 @@ Description:
- 		drivers, non-authorized one are not.  By default, wired
- 		USB devices are authorized.
- 
-+		With device trust enabled at boot, a device that is not
-+		authorized by default starts with the "blocked" trust policy
-+		(see sysfs-devices-trust). Writing 1 requests the "unrestricted" policy
-+		if the policy is blocked, then binds and configures the device.
-+		Configuration errors leave authorization granted. If setup failed
-+		and no configuration remains, write 1 again to retry, or select a
-+		configuration through bConfigurationValue after driver admission.
-+		Writing 1 preserves an existing configuration. Finding no suitable
-+		configuration remains successful authorization without setup.
-+		Writing 0 deconfigures it without changing its committed trust
-+		level. Without trust boot options, the existing authorization
-+		flow is unchanged.
-+
- What:		/sys/bus/usb/drivers/.../new_id
- Date:		October 2011
- Contact:	linux-usb@vger.kernel.org
-diff --git a/Documentation/usb/authorization.rst b/Documentation/usb/authorization.rst
-index cc419a11ffc43..327519c803768 100644
---- a/Documentation/usb/authorization.rst
-+++ b/Documentation/usb/authorization.rst
-@@ -92,6 +92,32 @@ can fake descriptors and device info. Don't trust that. You are
- welcome.
- 
- 
-+Device trust
-+------------
-+
-+Without device trust boot options, USB authorization is unchanged. With
-+device trust enabled, authorization uses the policy described in
-+Documentation/driver-api/driver-model/device-trust.rst. A device that the
-+authorized_default setting does not authorize starts with the "blocked"
-+trust policy and reads 0 in "authorized". Boot device rules can replace
-+this initial policy.
-+
-+Writing 1 to "authorized" for such a device requests the "unrestricted" policy and
-+binds the device, which configures it. To operate it as an adversary,
-+enable trust policy writes at boot, for example with
-+``device_trust.default=default``, and write "adversarial" to its
-+"trust_policy" attribute before writing 1. The choice is fixed for the life
-+of the device: writing 0 deconfigures it, and a later 1 configures it again
-+at the same trust level.
-+
-+Configuration errors leave authorization granted. If setup failed and no
-+configuration remains, write 1 again to retry, or use "bConfigurationValue"
-+to select a configuration after the device driver has been admitted.
-+Writing 1 preserves an existing configuration. As before, failure to choose
-+a suitable configuration is not an authorization error; an explicit
-+"bConfigurationValue" selection remains available.
-+
-+
- Interface authorization
- -----------------------
- 
-diff --git a/drivers/usb/core/driver.c b/drivers/usb/core/driver.c
-index 80f4d2644023b..0eb35e64b7708 100644
---- a/drivers/usb/core/driver.c
-+++ b/drivers/usb/core/driver.c
-@@ -335,7 +335,7 @@ static int usb_probe_interface(struct device *dev)
- 	if (usb_device_is_owned(udev))
- 		return error;
- 
--	if (udev->authorized == 0) {
-+	if (!usb_device_authorized(udev)) {
- 		dev_info(&intf->dev, "Device is not authorized for usage\n");
- 		return error;
- 	} else if (!usb_interface_authorized(intf)) {
-@@ -1350,8 +1350,7 @@ static int usb_resume_device(struct usb_device *udev, pm_message_t msg)
- 	if (udev->state == USB_STATE_NOTATTACHED)
- 		goto done;
- 
--	/* Can't resume it if it doesn't have a driver. */
--	if (udev->dev.driver == NULL) {
-+	if (!udev->dev.driver && !device_trust_enabled()) {
- 		status = -ENOTCONN;
- 		goto done;
- 	}
-@@ -1366,7 +1365,10 @@ static int usb_resume_device(struct usb_device *udev, pm_message_t msg)
- 	if (udev->quirks & USB_QUIRK_RESET_RESUME)
- 		udev->reset_resume = 1;
- 
--	udriver = to_usb_device_driver(udev->dev.driver);
-+	if (udev->dev.driver)
-+		udriver = to_usb_device_driver(udev->dev.driver);
-+	else
-+		udriver = &usb_generic_driver;
- 	if (udriver->generic_subclass)
- 		status = usb_generic_driver_resume(udev, msg);
- 	if (status == 0 && udriver->resume)
-diff --git a/drivers/usb/core/generic.c b/drivers/usb/core/generic.c
-index a48994e11ef3d..bcfc01eefd09c 100644
---- a/drivers/usb/core/generic.c
-+++ b/drivers/usb/core/generic.c
-@@ -242,7 +242,7 @@ int usb_generic_driver_probe(struct usb_device *udev)
- 	/* Choose and set the configuration.  This registers the interfaces
- 	 * with the driver core and lets interface drivers bind to them.
- 	 */
--	if (udev->authorized == 0)
-+	if (!usb_device_authorized(udev))
- 		dev_info(&udev->dev, "Device is not authorized for usage\n");
- 	else {
- 		c = usb_choose_configuration(udev);
-diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 372bd6368cc94..c94539b0c697c 100644
---- a/drivers/usb/core/hub.c
-+++ b/drivers/usb/core/hub.c
-@@ -2773,7 +2773,8 @@ int usb_new_device(struct usb_device *udev)
- int usb_deauthorize_device(struct usb_device *usb_dev)
- {
- 	usb_lock_device(usb_dev);
--	if (usb_dev->authorized == 0)
-+	if (!usb_dev->authorized &&
-+	    (!device_trust_enabled() || !usb_dev->config_error))
- 		goto out_unauthorized;
- 
- 	usb_dev->authorized = 0;
-@@ -2787,17 +2788,41 @@ int usb_deauthorize_device(struct usb_device *usb_dev)
- 
- int usb_authorize_device(struct usb_device *usb_dev)
- {
-+	bool attach;
- 	int result = 0, c;
- 
- 	usb_lock_device(usb_dev);
--	if (usb_dev->authorized == 1)
--		goto out_authorized;
-+	if (device_policy_is_blocked(&usb_dev->dev)) {
-+		result = device_trust_set_policy_locked(&usb_dev->dev,
-+							DEVICE_TRUST_POLICY_UNRESTRICTED);
-+		if (result)
-+			goto out_unlock;
-+	}
-+
-+	attach = device_trust_enabled() && !usb_dev->dev.driver;
-+	if (!attach && usb_dev->authorized == 1 &&
-+	    (!device_trust_enabled() || !usb_dev->config_error ||
-+	     usb_dev->actconfig))
-+		goto out_unlock;
- 
- 	result = usb_autoresume_device(usb_dev);
- 	if (result < 0) {
- 		dev_err(&usb_dev->dev,
- 			"can't autoresume for authorization: %d\n", result);
--		goto error_autoresume;
-+		goto out_unlock;
-+	}
-+
-+	if (attach) {
-+		usb_dev->authorized = 1;
-+		usb_dev->config_error = 0;
-+		result = device_attach_locked(&usb_dev->dev);
-+		if (result <= 0) {
-+			if (result >= 0)
-+				result = -ENODEV;
-+		} else {
-+			result = usb_dev->config_error;
-+		}
-+		goto out_autosuspend;
- 	}
- 
- 	usb_dev->authorized = 1;
-@@ -2816,10 +2841,10 @@ int usb_authorize_device(struct usb_device *usb_dev)
- 	}
- 	dev_info(&usb_dev->dev, "authorized to connect\n");
- 
-+out_autosuspend:
- 	usb_autosuspend_device(usb_dev);
--error_autoresume:
--out_authorized:
--	usb_unlock_device(usb_dev);	/* complements locktree */
-+out_unlock:
-+	usb_unlock_device(usb_dev);
- 	return result;
- }
- 
-diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
-index 534f8e645a856..17ce694bb7dac 100644
---- a/drivers/usb/core/message.c
-+++ b/drivers/usb/core/message.c
-@@ -2081,7 +2081,7 @@ static int usb_set_configuration_internal(struct usb_device *dev, int configurat
-  * channels are available independently; and choosing between open
-  * standard device protocols (like CDC) or proprietary ones.
-  *
-- * Note that a non-authorized device (dev->authorized == 0) will only
-+ * Note that a non-authorized device (see usb_device_authorized()) will only
-  * be put in unconfigured mode.
-  *
-  * Note that USB has an additional level of device configurability,
-@@ -2115,7 +2115,7 @@ static int usb_set_configuration_internal(struct usb_device *dev, int configurat
- 	struct usb_hcd *hcd = bus_to_hcd(dev->bus);
- 	int n, nintf;
- 
--	if (dev->authorized == 0 || configuration == -1)
-+	if (!usb_device_authorized(dev) || configuration == -1)
- 		configuration = 0;
- 	else {
- 		for (i = 0; i < dev->descriptor.bNumConfigurations; i++) {
-@@ -2128,6 +2128,9 @@ static int usb_set_configuration_internal(struct usb_device *dev, int configurat
- 	}
- 	if ((!cp && configuration != 0))
- 		return -EINVAL;
-+	if (cp && device_trust_enabled() &&
-+	    device_get_trust_level(&dev->dev) == DEVICE_TRUST_BLOCKED)
-+		return -EPERM;
- 
- 	/* The USB spec says configuration 0 means unconfigured.
- 	 * But if a device includes a configuration numbered 0,
-diff --git a/drivers/usb/core/sysfs.c b/drivers/usb/core/sysfs.c
-index b8974e9db3a22..189fb917b81ee 100644
---- a/drivers/usb/core/sysfs.c
-+++ b/drivers/usb/core/sysfs.c
-@@ -728,7 +728,7 @@ static ssize_t authorized_show(struct device *dev,
- 			       struct device_attribute *attr, char *buf)
- {
- 	struct usb_device *usb_dev = to_usb_device(dev);
--	return sysfs_emit(buf, "%u\n", usb_dev->authorized);
-+	return sysfs_emit(buf, "%u\n", usb_device_authorized(usb_dev));
- }
- 
- /*
-diff --git a/drivers/usb/core/trace.h b/drivers/usb/core/trace.h
-index 903e57dc273af..42f9cfcd8b0f2 100644
---- a/drivers/usb/core/trace.h
-+++ b/drivers/usb/core/trace.h
-@@ -27,7 +27,7 @@ DECLARE_EVENT_CLASS(usb_core_log_usb_device,
- 		__entry->speed = udev->speed;
- 		__entry->state = udev->state;
- 		__entry->bus_mA = udev->bus_mA;
--		__entry->authorized = udev->authorized;
-+		__entry->authorized = usb_device_authorized(udev);
- 	),
- 	TP_printk("usb %s speed %s state %s %dmA [%s]",
- 		__get_str(name),
-diff --git a/drivers/usb/core/usb.c b/drivers/usb/core/usb.c
-index 2559a180fdeec..180f4d797b107 100644
---- a/drivers/usb/core/usb.c
-+++ b/drivers/usb/core/usb.c
-@@ -748,6 +748,12 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
- #endif
- 
- 	dev->authorized = usb_dev_authorized(dev, usb_hcd);
-+	if (device_trust_enabled()) {
-+		if (!dev->authorized)
-+			dev->dev.trust_policy = DEVICE_TRUST_POLICY_BLOCKED;
-+		dev->authorized = 1;
-+	}
-+	device_trust_init(&dev->dev);
- 	trace_usb_alloc_dev(dev);
- 	return dev;
- }
-diff --git a/include/linux/usb.h b/include/linux/usb.h
-index 9399c816b367d..34ee4d6f91c19 100644
---- a/include/linux/usb.h
-+++ b/include/linux/usb.h
-@@ -617,11 +617,8 @@ struct usb3_lpm_parameters {
-  * @persist_enabled:  USB_PERSIST enabled for this device
-  * @reset_in_progress: the device is being reset
-  * @have_langid: whether string_langid is valid
-- * @authorized: policy has said we can use it;
-- *	(user space) policy determines if we authorize this device to be
-- *	used or not. By default, wired USB devices are authorized.
-- *	WUSB devices are not, until we authorize them from user space.
-- *	FIXME -- complete doc
-+ * @authorized: USB authorization flag; trust policy may also restrict use,
-+ *	see usb_device_authorized().
-  * @authenticated: Crypto authentication passed
-  * @tunnel_mode: Connection native or tunneled over USB4
-  * @usb4_link: device link to the USB4 host interface
-@@ -756,6 +753,11 @@ struct usb_device {
- 
- #define to_usb_device(__dev)	container_of_const(__dev, struct usb_device, dev)
- 
-+static inline bool usb_device_authorized(const struct usb_device *udev)
-+{
-+	return udev->authorized && !device_policy_is_blocked(&udev->dev);
-+}
-+
- static inline struct usb_device *__intf_to_usbdev(struct usb_interface *intf)
- {
- 	return to_usb_device(intf->dev.parent);
-
--- 
-2.56.1
+With that change feel free  to add my Reviewed-By
 
