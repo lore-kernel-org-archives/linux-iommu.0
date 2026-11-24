@@ -1,102 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.195.32
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795532934;
-	b=0+hOpaU/O1x4+pxvDlfJHkJ8lWU8KEjK6prGIszZGby4lDsnWYYCzLLHU51CutUlppLA
-	 26AXvtxD4W6OFixdA0jhRBBqAnHrCVto63NCH6Rx/tANTvCEMqwguk4C0bxLLmAfz0fYX
-	 qdRBH7YrwqgkM/7/JB5v0ayAenWTSSc81/2UyqPepVmlhwywZmVGcukjIn9fn7DxLcNSu
-	 tjd/eyf9+pcVoYokb5mxFJzDbnhOzp92012AWwSlGmF4l2+ky8iJoyA3mIBgCeXuHdcS0
-	 r8fLJM77mEOR4vJWPDuDmzNv00lZfXRbQhscVmeTarjUsdzHkidmdXXR6xRiZof0C7g==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795532934;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:Content-Type:Content-Disposition:
-	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=//Ui4esF1Voj9IyBK6IL/pQOihG6TXNtfV1kLTKEK3I=;
-	b=pSheYyL+FEks85E37BM/mf2Tdr34BKnSjpfU3zx7e9vc+GzF5avTkSEjyZLWofB6NngO
-	 IcHoTJl0vfbUBCO3ZGm7m3tLxtzSlLrJ17YIXJEcu5Tz85hzzR3CWidkW36sUg23Wp2my
-	 bAogMzihsxWXW1gEQzf7pMs0uFPUdbcKTTDFETSIVF8aLDx34zocz47Awb2/gzUVtx8e7
-	 5lNBEHrr6M3SR/aDUMJkah4SEQQBJOOsKTbtq91mCXpNpcj9e1c/RgsRXE5sWoY6h2ndF
-	 yTPv0hdX+wzngQtGunI02BgjsFsm8LaWporiLAzwJ10+HHUgzi7FwJS0eNTYUPYGX/A==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=YvymbGkZ;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.195.32
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012032.outbound.protection.outlook.com [40.93.195.32])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795533445;
+	b=nSfgH0t5/dKN+ghQcUXLgoE8GJ2Sea0QbbCTva94I+XohC70F50nEEgTZmMvBZ1LereC
+	 VqRaeBp/+s/+iS4bmLqjXKH28GKfXlIfB1eRH9VgJ4sg2yURl9fmJM5ESIcF4fU98kmP2
+	 nn1FUMWNS/44BmKIW/mk6UQeKHS+57eo2SBMDoyE0/zsgoFozSUFEOZ7+J4aI0TZSyTbA
+	 Ii9NOTfaUH9DEf5wpCOxSUo1EYTzsZhc88avStaxxxXvMNsOrmruD0rmQ+wQfDpJjU448
+	 nSWA6P0z1s9OjO6Bx24gmkr7eV37Ll15EcsEoTnJUOk+vQaw1j7bPxmhqPgxs+fcIDA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795533445;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
+	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
+	 X-CMS-RootMailID:References;
+	bh=IaacVAvKGyMmPecRhuxGdgf3LN883I8nJRoVmWEAC8U=;
+	b=teVKKE3dgCHRF6VX2bW+QQaWmXpmkX+RYmTLXVxEvbzDbFa0Ocn80tdngLXzXbiYXBRM
+	 mZg/K3BuXgYslaFK3l00HSHoHgSyY03KbtXVn08Le3k1r1MShch6jKygq13v39hsddHMw
+	 mI+PO7m4SF1ljZ6A429zNXq6sdpmMuKwRVuGAW+aeyXokd+wzS+KicTEE3cBmdukSuZTa
+	 +PX7MzypAI8zma9EPKN3QPd16jLyS4COCJIkdDho1gEFekDT0LCvEdA0fk7kkcYRrHGnZ
+	 WYf2nqFutAss5dVa0mRabcIddSV5vS65xIN5cvcG5pE7cANsezvOb74EOEmraEceUSA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=samsung.com;
+	spf=pass smtp.mailfrom=samsung.com;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=GmT5rvFJ;
+	arc=none smtp.remote-ip=210.118.77.12
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FD8E606A31E;
-	Tue, 24 Nov 2026 15:08:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0FD8E606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 011AE606A32A
+	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 15:17:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 011AE606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=YvymbGkZ
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZXtNq+Bhimer0mfkysmjs5Bsz2bLAc1EP+28773a7o5jucEyoEvPGsoEm8JHB2N3ZNgq05i7SGAYKxsWPV/K3mRifDqjR/v8c/x17+UTr4DiQ+kC4HK7QhIkrKHHbD/iFB0q0juSrEaxYFOkBLVzuzA7OOHidtzVDgEp6OXltfMgk6mdT8mAGHnHkPsx07XjodEBV36id2blkvvp91ZNeRjVvxYdoQ2mTm5EWFV07J3EJ3wALFi0FWq+v8Wh7uGFizJ1B63v17qaheCy2EVKfdIesliSuEXbRjlp5xjMVdVboseY5n/AWwcwMP8Mo4yRvLhJGm2AbbxFrhpY2iSSSg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=//Ui4esF1Voj9IyBK6IL/pQOihG6TXNtfV1kLTKEK3I=;
- b=gsQXeynOZTsu3NWAm0+lunTxgdmNeqCseSAFgUxmZeafufwfeaaDdShaqzu0X2Hk8/9wVPcIgZdLk6JiLPRdyKdnl3NqyBK1JO/kXwvN7/3D1GSbChUzS5f8PbocHeGWhNlJu6xMcRmYDPIBSBDIQ4v8iSBeRO1tpjMnUaZV2IyeQsTZC9C/qWI5nv2gLQdfoPmOGNJlVeNkreKLjsVcdRIl+k+H5KuNlOrIRb9X5cnv8oiiiMKdua+C4ovnzDKs63UpGBcu/y3elclrdLWTNq/r+YnIK/cvtMWO5KRYcAknvixBtH50QzPJfIROr/STSfjtqzeKt68TC3AsRkUEXA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=//Ui4esF1Voj9IyBK6IL/pQOihG6TXNtfV1kLTKEK3I=;
- b=YvymbGkZ2Mh/WvZ27BZNPLjE9DfCi+D4UHa+FG6godD+zvkHIO0+hUgKGRDtkakXOQpWOE360JvXOPwTIsRuc8jhtCRyBtVlyGalqmHuWoBcyogAdTyVxy6hDI/EggwOlK2oCm73MJ7SyKrBL1cds3+PEVZvrkYc7bP2YVuqtWgy2GdNjfCys6XEwFqA7oVlxHnFQ55eCD24zdZAf+M1/DcjGo24tUH/FRbQniHfbGQskqEleKW++MFqG1y4kBUASDd+2xS+Gf7uxfqkHJHMSHO7uf3nAZM3eH6oIhjAltXUIPdo83dqdu9tJ8trC9ohGeZBtxrD04dvnMAJ30p9OA==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12) by PH7PR12MB5711.namprd12.prod.outlook.com
- (2603:10b6:510:1e2::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.12; Tue, 24 Nov
- 2026 15:08:45 +0000
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0639.012; Tue, 24 Nov 2026
- 15:08:44 +0000
-Date: Tue, 24 Nov 2026 11:08:43 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	John Garry <john.garry@arm.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v3 05/13] iommupt/kunit: Skip test configs without
- supported features
-Message-ID: <20261124150843.GC8680@nvidia.com>
-References: <0-v3-97feb2edfbab+748d0a-iommupt_armv8_jgg@nvidia.com>
- <5-v3-97feb2edfbab+748d0a-iommupt_armv8_jgg@nvidia.com>
- <awUg0O0WQUBcuUvC@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <awUg0O0WQUBcuUvC@nvidia.com>
-X-ClientProxiedBy: YT4PR01CA0195.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:ad::17) To CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12)
+	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=GmT5rvFJ
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261124151722euoutp02c5c4a60d4d7ed2e38cb2217856de3406~rBCcJw30S3185731857euoutp02o
+	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 15:17:22 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261124151722euoutp02c5c4a60d4d7ed2e38cb2217856de3406~rBCcJw30S3185731857euoutp02o
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1795533442;
+	bh=IaacVAvKGyMmPecRhuxGdgf3LN883I8nJRoVmWEAC8U=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=GmT5rvFJ//Q0xjTnt1azHynt9KgxevYNbRk42IQr4pPkhx7CjTpVxdqpnyZZ+tfbl
+	 5lhLj+XQbwWkw6U/JcdvkoNY68kd0mOBRuPUDyQfIQlq0Ynjr1IhpH/2WMFmA6n57V
+	 bji+G50yBzT5nKPlz3Rj5K/sfdNGaWpsBmwDAzic=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20261124151721eucas1p2767fd7a4a3036d2e7d11de472046c7e7~rBCb6IL8Y0751607516eucas1p2G;
+	Tue, 24 Nov 2026 15:17:21 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20261124151720eusmtip10daeaa7910796136f5c7ea55a3ba4bd9~rBCagtcn-0894308943eusmtip1z;
+	Tue, 24 Nov 2026 15:17:20 +0000 (GMT)
+Message-ID: <42415609-c784-45d4-a79d-ef3cc5e6c3ef@samsung.com>
+Date: Tue, 24 Nov 2026 16:17:20 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -106,69 +64,107 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|PH7PR12MB5711:EE_
-X-MS-Office365-Filtering-Correlation-Id: c3d23114-96c9-4089-6269-08df4a3cd4e3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|7416014|376014|1800799024|366016|261021135927099003|10067099003|5023799004|4143699003|11063799006|56012099006|261021123027099003|261102123227099003|261021121427099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	imE1cL6nhehvZoDE9WHLuNzt4eXbCO5cU3GlVzB+xmcfGrv/AQaxgZHFkGNZk3hjvgBC5LYhefe2/IXNzpBQ2j3gu9snI40H4gs+4ZmApxnzy2s/0OoqiLPUYbnc4hab9Mtqu/UV87IQg3b+5unWXhniArpkZZr15vFxuoCHlwxHZGzpZMBSoX9W7gnPJTknhKcBlO0ULcrhD2vw3Hei77pHrMzHHgo5SM/VC9EECjWTvIHiaevwz6l4IEaBLsUwGcbt3PW0Ok+bbJApnCRdX0hKNLFzmq3d95hKkhkOxFRSZEmdbx/Eh97pjwfsIRqULG+QnxMOCESKiK7IuVxUTFI8WnJhaLu8MrU0gvfSUlg41ADoZDdDMx+6Lr8zmanghK62rJ5E00+Fsv+mOAQLyzraF1GvSjU9p1dXdeu7LLwf0dRV4fJowSLtqaK0ZUBwBpzB78xW5T2WF4D7pEo8vtqTgUBJ08Azvzb7RLNfWuTvmI0VF2YApcMTzma8wQXoBw/Fx5rKSAQPmVFYFSNKgPzY7B5IgCpJiPG5VmvYQrzak/K2CvE3HubkYDJMW940QIsVdgizO9uldgNKx8HWIfLwNrsybEWIRBG6ipIkoptbDGxX6zMRsb88QDY0gatun4ZSq57pqeLfeQWwTHTF9Cv1MRT3KskpDc2V2t4avpc=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(376014)(1800799024)(366016)(261021135927099003)(10067099003)(5023799004)(4143699003)(11063799006)(56012099006)(261021123027099003)(261102123227099003)(261021121427099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?PpvzhZ1tPrab6AqCVc9D+WH66EmGbh50wGaZs8JhCU8lYSWX9wamwjZlPjnt?=
- =?us-ascii?Q?uIe1piJW+VPjZdcIXNbqAXNWFvsucx4XxZWZpTKpYadTY1/gB+qoX9p7yeKP?=
- =?us-ascii?Q?Y9ihhUg1kjvp8Tqawbo0JJnvIFAgJdJ7AxFLuq8xgNRTvhc9IanYyIrme+P+?=
- =?us-ascii?Q?idMM/p50MqIibdMtqDCvssA3zR870xCIiqk5/nV0ocP6DUd522+BJR9hNNb7?=
- =?us-ascii?Q?dMESos4Flzy8/P8JSGExpr7u++ftpdAKwv0H1rSG3mMyqXVVoKwmK1zbjGdm?=
- =?us-ascii?Q?M5vE8n8jt1gVK8mbmKAmuTMJsP0AR56iouxnMkRyhy3f73o21vQbR7FjB2hI?=
- =?us-ascii?Q?CcZPUA1kHSR/gYr5PdEi5bbARtHDgZ9mNCgsRmrXx9zRNU04/xtOIlensTJd?=
- =?us-ascii?Q?VExWkrt/FdHAPNAMiXcXPY4GPPsKsliPNp3ZzSkBnnD320K/w6bsCG8KJXbv?=
- =?us-ascii?Q?RdBzcnoanRxvcen4ZD7nWaiu4n1t+eRDF3qa0aJtl3Y41i5GMhtHoZKf4F26?=
- =?us-ascii?Q?vqRRk33T0ArBA+pgwSiE0ZRMMZoFNqbUqaSyvrVq1Oydvw4+7iGBW33ATIny?=
- =?us-ascii?Q?FoTTcf/TnbVJlqRn9iRx2du5HLFYGnr4SMVTSRAjAeavwSOh19f00bcIs59K?=
- =?us-ascii?Q?vuGz+fcSy6v8Cq3ggtYMKIhgln3ZYgTu6QDmYbBA1EpnPzaZ0TLBMuuFSOKy?=
- =?us-ascii?Q?7k8aIyS2N+5Cku8PMQIwImckP+iThCDnDpz2879onkT4ZFa+4DWgJaLU6f1/?=
- =?us-ascii?Q?O8mcJ5SYjvpQ4TheILgRC/sMnni8s9asG3+HWRW8nCmadhuw7zrk/+fJr1R7?=
- =?us-ascii?Q?bkVIga4idKUi+Ez5hgZOUlz6G2HBjSQFmdTug1Z7WCbbFsSLHhln6b+5zfrD?=
- =?us-ascii?Q?IkEuyOL+fpBBZQ+v9sEX0+ZgzKiAg8HSIj4J6BHBQahPAPgRVvGcWamNYpjF?=
- =?us-ascii?Q?zXija+kNmf6JlkrsVDaUJKvjuCEE4cNd0OmnUlPXPRrWEdRTH21QlZR0ONr/?=
- =?us-ascii?Q?H4bWg2URNzMFFGb4zCp6wbVaINCLQC0bDMKtWhyCWy1CBljYkT+0AtkGptZb?=
- =?us-ascii?Q?yKbzpFewKJlTau+SJ49w4LWVDZm8d7S/0341Pm92sCOHqmuISFQ7iFHXN01x?=
- =?us-ascii?Q?IZY1ZNT9rI6yKsDysxw4UF7l/fnYIz6aOxkXe03c1UQmnFRiysl/lZx9dV+f?=
- =?us-ascii?Q?f9xY8J+1850d9Fcie3cJ/zDIRIK6qY7wH05iCOzvvMM2HzIQ14pmcy6kioAG?=
- =?us-ascii?Q?ZPYBAO/mYlqPEkVWfK+Z1x7+rMmK1AjU3oCuOLAXVW6f+yHsuOS/4egT7OXw?=
- =?us-ascii?Q?Gxqugb8VvHIgFtrLXNVeL/jV+2Y8agULu+/MpWclsC28Ac02y8dAPJWHtOp9?=
- =?us-ascii?Q?B2cONLJAmz175DGAU8RnSA2TimZb/KRAQPeFO3RDnVjt38gHFuucIhXQ/iro?=
- =?us-ascii?Q?JCL87N4y6jV+tvCoItK5kzVNbmVqgxuaUlN0QAH6ffb6iHtfgUAqo6tmqMrN?=
- =?us-ascii?Q?W74FB6JWBeoRdSCRfKrGD3p2kM/kyVDNWosEyU68OO2y/xsSBs2xw7eZNER7?=
- =?us-ascii?Q?FvpqGkJn9x0nSuPuR9RFWD4cGU3AE+6IcgmcyfVXmteR5qC7d//4yFm6Ig3X?=
- =?us-ascii?Q?neCmL3+luQaaUEOL/gtwzZhhnIo8/7ArPKEC5eRXkW3l3vubazG5LcW0xRzg?=
- =?us-ascii?Q?Vfs9Hof8KYL0kNuL1ZEBiEat7bu/gBcvTuvKaSDrvZ0ezCIk?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3d23114-96c9-4089-6269-08df4a3cd4e3
-X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2026 15:08:44.1101
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8OHujypUyTuiEd7SFgzpX3k7T6nZ2Cs41iV4onAJmrgnMcpduk4qfQZJyzkgXuTf
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5711
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] swiotlb: clear read bounce buffers on confidential
+ guests
+To: Shukai Ni <shukai.ni@kuleuven.be>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: Halil Pasic <pasic@linux.ibm.com>, Tom Lendacky
+	<thomas.lendacky@amd.com>, Kiryl Shutsemau <kas@kernel.org>, Rick Edgecombe
+	<rick.p.edgecombe@intel.com>, Elena Reshetova <elena.reshetova@intel.com>,
+	Carlos Bilbao <carlos.bilbao@kernel.org>, linux-coco@lists.linux.dev,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+	Jo Van Bulck <jo.vanbulck@cs.kuleuven.be>, Jason Gunthorpe <jgg@ziepe.ca>,
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20261123205302.1034348-1-shukai.ni@kuleuven.be>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20261124151721eucas1p2767fd7a4a3036d2e7d11de472046c7e7
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20261123205317eucas1p2f96032281e0f5e9f17acc7ec343acced
+X-EPHeader: CA
+X-CMS-RootMailID: 20261123205317eucas1p2f96032281e0f5e9f17acc7ec343acced
+References: <CGME20261123205317eucas1p2f96032281e0f5e9f17acc7ec343acced@eucas1p2.samsung.com>
+	<20261123205302.1034348-1-shukai.ni@kuleuven.be>
 
-On Mon, Nov 23, 2026 at 09:29:52PM -0800, Nicolin Chen wrote:
+Hi!
 
-> The leak check reads NR_SECONDARY_PAGETABLE with global_node_page_state().
-> That only returns the global counter. Each CPU also keeps a small delta of
-> page updates that is folded into the global counter only after it exceeds
-> a threshold. So the value can be off by a few pages without any leak.
+CCed Jason and Aneesh.
 
-There is a patch already in my tree to deal with this, this test only
-works when you use the kunit runner
+On 23.11.2026 21:53, Shukai Ni wrote:
+> On confidential guests (AMD SEV, Intel TDX) all device DMA is bounced
+> through swiotlb, whose pool is shared with and readable by the untrusted
+> host. swiotlb_tbl_map_single() copies the destination buffer's current
+> contents into the bounce buffer at map time even for DMA_FROM_DEVICE. For
+> a reused read buffer that still holds private data, the host can read
+> that data from the bounce buffer before the device overwrites it.
+>
+> For DMA_FROM_DEVICE into a host-shared pool, zero the bounce buffer
+> instead. Zeroing rather than skipping the copy keeps a short read from
+> returning a previous transfer's data.
+>
+> Fixes: ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE")
+> Cc: stable@vger.kernel.org
+> Co-developed-by: Jo Van Bulck <jo.vanbulck@cs.kuleuven.be>
+> Signed-off-by: Jo Van Bulck <jo.vanbulck@cs.kuleuven.be>
+> Signed-off-by: Shukai Ni <shukai.ni@kuleuven.be>
 
-Thanks,
-Jason
+
+I'm not sure if DMA-mapping or SWIOTLB is the right place for such fixups.
+
+Drivers should be aware that doing DMA from unsecure device to the given
+secure page might reveal its content to the host or other parties and
+prepare for that (like zeroing that page).
+
+> ---
+>
+> Notes:
+>     We are open to discussing a different approach: e.g. clearing the
+>     residual when read back, scrubbing slots on free, or extending zeroing
+>     for bidirectional DMA.
+>
+>  drivers/iommu/dma-iommu.c | 3 ++-
+>  kernel/dma/swiotlb.c      | 7 ++++++-
+>  2 files changed, 8 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 78742aeba..42e0bfced 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1187,7 +1187,8 @@ static phys_addr_t iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
+>  	 * Untrusted devices should not see padding areas with random leftover
+>  	 * kernel data, so zero the pre- and post-padding.
+>  	 * swiotlb_tbl_map_single() has initialized the bounce buffer proper to
+> -	 * the contents of the original memory buffer.
+> +	 * the contents of the original memory buffer, or to zero for a read on
+> +	 * a confidential guest.
+>  	 */
+>  	if (phys != (phys_addr_t)DMA_MAPPING_ERROR && dev_is_untrusted(dev)) {
+>  		size_t start, virt = (size_t)phys_to_virt(phys);
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 786954bc5..351bc7c54 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -1630,8 +1630,13 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+>  	 * the original data, even if it's garbage, is necessary to match
+>  	 * hardware behavior.  Use of swiotlb is supposed to be transparent,
+>  	 * i.e. swiotlb must not corrupt memory by clobbering unwritten bytes.
+> +	 * Exception: on a confidential guest the bounce buffer is host-shared,
+> +	 * so for a read zero it before sharing.
+>  	 */
+> -	swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE, pool);
+> +	if (dir == DMA_FROM_DEVICE && mem->cc_shared)
+> +		memset(pool->vaddr + tlb_addr - pool->start, 0, mapping_size);
+> +	else
+> +		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE, pool);
+>  	return tlb_addr;
+>  }
+>  
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
