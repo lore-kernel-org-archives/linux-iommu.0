@@ -1,55 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.67.36.65
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795504842;
-	b=VezuP3S8ujDyRd5DcPwxgnMF0ME1v2i4rKK6YqEKdnhVwTlxY6S8zHeZVFm3qyRsGvuo
-	 VHgXPsyETzGLBvlhdA+u3NRtLNnNwSsGVqL5ji6WkTJ/Dnsqvn6Usx0mFI69mbiw3wec5
-	 1k1nu3Lpg6gTpXz11h5NPrn/OyL4J3Icaho9xic3L8AW3AHJzOEXz/O2Gkc4v+riodLrA
-	 cj59SLmFCiIUvCXqQJVbDO2559Oci6yf1yDobqoSmzWTBngpl3zAzXzKmfPAIm/Li8R90
-	 7vW/pmBbYX6uLvU6k1QoQ/cIuloJ07YdYcIReLsuixnZNw59bBbMq1gjooFX9oFdptQ==
+	t=1795506443;
+	b=ccBpVP6GJyZexpA7jVoG3TC7ft3EsRfEuwffD1+cZnoSpH5d8t8jgbtRxMTE+3bW+0/5
+	 MQKVPnTL0i9xr7Z6PnpItIpP95GFXJmQCyPuuWuGc8MizIRWQm9Sc4C2nrRtnEq7JoVb6
+	 q2AsmRiTCqwKYkmpG3BF2mnsNL9pnoLaA5DoGEVMDL26tfRcnDMjs2XfTZ6dGmXMhL7N0
+	 miE3OE9Um9If0rU05ic+s0DoeniP2yXlXPJunFldAkghlD+1mnIDm+WBdFYmVIxGn8Urd
+	 +Jsmwvq23aGUE+/bJ/IyhX4+sV5KeLvHRDDGXzh7qWoS4m+VrNq4TmCFc0AJDQ6YSCg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795504842;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:MIME-Version:Date:From:
-	 To:Cc:Subject:In-Reply-To:References:Message-ID:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=tHvSxvXCf5VkLnPhHQoHOjXTPcUMHCtMx3XeIE3rH08=;
-	b=3s5h7Wlk8Dp43CRnHxPDjMaUX6KK6uK3UKVx3+bimtvXLxVuWKv4uHK9sbk8igLhw15m
-	 pRvHs1UOOUdLGe85BrRhbidXOY+bPIKFxWngjB1p5GGARL1h1Il5JO4H7NYIh8pnNC8Dr
-	 46yQ3t7wjK5l+T6NW4MuG2EU0rzIPL9gcuPwZlSGdv8+q1u7DAfbhkC2RRJXYP8XhRcPI
-	 Tq9k92rGJgtmmFb8BNycQYZlVywomiy/HSrwI26r6hmYjdP+h8egpm+GjWYDuQxGAivEH
-	 40q5J7ewgWP9cPyDfVSYq438As5sfxW7ukECsC20KlRirsBkojhyd01eOO+1zMsHKeQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795506443;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=cZCl0OxNsgxdA/QB5hhJ6JhPi9t4AL/d2MvvIkbtiIg=;
+	b=G15hF3YD8o/gHQ3nLK8JoxDK6m6shIIfHzDnP6ux0gMP+ckfbNFzbg4itvc40Wo6ccp1
+	 A4zeLUk8WOENydr4Sj6ysC1vNZ0KXj7rVx2JfC3wY5NwY3b6gXRKGSeeq4uBKElWoOvlh
+	 k6muhnJ1rA8a36pEcw/pyksO3/nM6Uf78AshkQ7nGgZaBGgFySzEPunT3AnwkSP9fjpnK
+	 lNFz0UVY0WnMC9TnWj2ysecBoBdZdCw93IOOCg3o1k8cj/aawgpe0riT1H6Eovcw1Pvpi
+	 9SoEHa6f1LZUeawJnvh+RUSY9ndZhbSQG8dIvKcubN50T17Y02TdDEXSs5CdnRo24TQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=posteo.de;
-	spf=pass smtp.mailfrom=posteo.de;
-	dkim=pass header.d=posteo.de header.i=@posteo.de header.a=rsa-sha256 header.s=1984.8680eb header.b=CsoC5hck;
-	arc=none smtp.remote-ip=185.67.36.65
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mRYcY5jN;
+	arc=none smtp.remote-ip=192.198.163.12
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 057EF606A32E
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 07:20:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 057EF606A32E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29A7C606A326;
+	Tue, 24 Nov 2026 07:47:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 29A7C606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.a=rsa-sha256 header.s=1984.8680eb header.b=CsoC5hck
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id E501A240028
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 08:20:39 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1795504839;
-	bh=tHvSxvXCf5VkLnPhHQoHOjXTPcUMHCtMx3XeIE3rH08=;
-	h=MIME-Version:Date:From:To:Cc:Subject:Message-ID:Content-Type:
-	 Content-Transfer-Encoding:From;
-	b=CsoC5hcktA08PIURAy8uvdKnj1gYgr5vDUKTQma8mgYzRrKQ38bWNDlB8LJ97gi4w
-	 rK3727e8WOkEgU7XgZnOg5EMSySyOKmfVb+C061+W1AJ1wOCmg57Pf/VPG0Nu5uKCS
-	 fvlhYRQ5MLZBJbHORM3Jd6++PHSsXpnqSBCX6D8BqSn4lhRIfkJtynDJ/B2akwqWFQ
-	 P0ojy/ceRnTi8T7tf0dZOtuJJ3dh1xCbAQb7HN6/Iw+TgDU6Ixqwm87X5HSYG+0jnM
-	 GhsAsP7OioCl6JweO0wkLN68Xr2dqc4pvyorANu2ykPcgwb4lF9xBJ9uAkxoDu1Wtj
-	 iHKlpdzmsrTCQ==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4jYZ3B1gqXz6tsb;
-	Tue, 24 Nov 2026 08:20:38 +0100 (CET)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mRYcY5jN
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795506443; x=1827042443;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=eDEio4NP4XHZFYRC9FiY7B/+b8uO1ZLby2dslNMzlwc=;
+  b=mRYcY5jNpzCsd4FLIGyJVfj13XFBFJ4XJeODX59bwcLBpmKEnODijY7a
+   bATCSTxhR1qmC84CSCfauYxs+PN8OZFmSJxDbPZKDTVgmPvMjvbisw3lz
+   3O6+jGqUqxPTGYbJgeMEhRusRkUSBbps4R6PEJc126OmR4s7LjnuGl73y
+   27ilyIjQ0z4YBnxMSs7T/QjQlpzkI0onfaJxNHCHymA5VpZUL+aZswU0v
+   Nv8s9uggaOVadUKSt8dSPW2BlEbLOHui5Hcaisu1gtS/lCAemVgCFkPA1
+   B+sYEufTVOt6YqdKsVLHgtP/LPo/od4APLrhqaOJiaf1+Zrl/xgeBwMsV
+   Q==;
+X-CSE-ConnectionGUID: 80zuOGW9S1WDBz70KNLFmw==
+X-CSE-MsgGUID: 5sZojpOnQl6zdCv1g/qVsw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4209493"
+X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
+   d="scan'208";a="4209493"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 23:47:22 -0800
+X-CSE-ConnectionGUID: Y7ovl1FcTrODbD1EE6Ad8w==
+X-CSE-MsgGUID: uPqfXCORR+6F4Zx05hLBug==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
+   d="scan'208";a="11674543"
+Received: from unknown (HELO [10.238.1.144]) ([10.238.1.144])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 23:47:18 -0800
+Message-ID: <9ab1e5b7-fa03-473a-a251-91153fe5c7b3@linux.intel.com>
+Date: Tue, 24 Nov 2026 15:47:16 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -59,105 +72,111 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Date: Tue, 24 Nov 2026 07:20:39 +0000
-From: Tobias Laas <tobias.laas@posteo.de>
-To: Niklas Cassel <cassel@kernel.org>
-Cc: Damien Le Moal <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>,
- regressions@lists.linux.dev, linux-block@vger.kernel.org,
- linux-ide@vger.kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, Lu
- Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>
-Subject: Re: [REGRESSION] DMAR fault by Intel H97 SATA controller since
- "block: Increase =?UTF-8?Q?BLK=5FDEF=5FMAX=5FSECTORS=5FCAP=22=20=28=36=2E?=
- =?UTF-8?Q?=31=37-rc=31=29?=
-In-Reply-To: <awSs5Cw3hFkf4O4T@ryzen>
-References: <5ad27a97aafbc08a8702d5b90d09cd59@posteo.de>
- <awSs5Cw3hFkf4O4T@ryzen>
-Message-ID: <572a3776f303846961d9897c55421a0e@posteo.de>
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev, x86@kernel.org,
+ linux-coco@lists.linux.dev, kvm@vger.kernel.org,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+ Kiryl Shutsemau <kas@kernel.org>, Rick Edgecombe
+ <rick.p.edgecombe@intel.com>, xiaoyao.li@intel.com,
+ Chao Gao <chao.gao@intel.com>, Binbin Wu <binbin.wu@linux.intel.com>,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 4/9] iommu/vt-d: Add interface for tdx-host when
+ enabling trusted DMA
+To: Xu Yilun <yilun.xu@linux.intel.com>
+References: <20261112043054.2664857-1-baolu.lu@linux.intel.com>
+ <20261112043054.2664857-5-baolu.lu@linux.intel.com>
+ <awRW3ESp3sBoxtJ9@yilunxu-OptiPlex-7050>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <awRW3ESp3sBoxtJ9@yilunxu-OptiPlex-7050>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Am 23.11.2026 22:15 schrieb Niklas Cassel:
-> Hello Tobias,
-> 
-> On Mon, Nov 23, 2026 at 06:51:03PM +0000, Tobias Laas wrote:
->> One way forward could be to a new entry to __ata_dev_max_sec_quirks
->> similarly to the recent commit 
->> a12cc63129380a5364e787d92b30a3257f66c250
->> ("ata: libata-core: Add max sector quirk to INTEL SSDSCKKB240G8"). 
->> However,
->> I wonder, whether that would fix the underlying issue or rather be a
->> workaround, because 4088 does not fit the pattern of all other 
->> entries,
->> which specify either a power of 2 or a power of 2 minus 1.
-> 
-> Your attached kernel log shows that you have a
-> Samsung SSD 860 PRO 1TB, FW: RVM02B6Q
-> 
-> This SSD is probably quite common, so I somewhat doubt that it is the
-> SSD that is at fault here.
-Hello Niklas,
+On 11/23/2026 11:08 PM, Xu Yilun wrote:
+>> Add a per-device interface so that an IOMMU is put into Secure TDX Mode
+>> only when a device behind it needs trusted DMA. tdx-host tracks how many
+>> devices use each IOMMU and calls into the VT-d driver only for the first
+>> and the last of them:
+>>
+>> - dmar_tdxc_get_params() looks up the DMAR unit translating the device
+> I think tdxc is not a good name since "TDX Connect" is not preferred as
+> a technical term. These APIs would be used by x86/tdx, so can we at
+> least avoid using tdxc for these APIs?
 
-thanks for the the quick reply. Indeed the Samsung SSD 860 PRO series is 
-quite common.
-> 
->> 
->> Furthermore, the first error messages are DMAR faults, and a SATA SSD 
->> that
->> isn't functioning properly shouldn't cause any DMAR faults, because 
->> the SATA
->> controller should never read from or write to areas outside its memory
->> region.
->> Since the issue with mounting the rootfs disappears with 
->> intel_iommu=off, I
->> wonder, whether there is a limitation on the maxmium block size either 
->> by
->> the hardware or from the configuration of the IOMMU and SATA 
->> controller by
->> the kernel.
-> 
-> Considering how common your SSD is, my guess is that it is somehow an
-> IOMMU or a BIOS/ACPI bug (since the BIOS generates specific ACPI tables 
-> -
-> DMAR on Intel).
-> 
-> 
-> We have seen similar reports here:
-> https://bugzilla.kernel.org/show_bug.cgi?id=220693
-> https://bugzilla.kernel.org/show_bug.cgi?id=221713
-Thanks for the pointer. The first report sounds as if it discusses 
-several issues. I agree with Ivan's comment at 
-https://bugzilla.kernel.org/show_bug.cgi?id=220693#c42 .
+I'm open to this. I used the dmar_tdxc_* prefix because the VT-d spec
+calls this feature "TDX Connect Support". Since these are interfaces for
+the tdx-host module, I'm fine with renaming them to dmar_tdx_*.
 
-I am afraid the second report is specific to HP server mainboards. In 
-contrast to the logs in the Debian bug report, I have never seen the 
-following error:
-DMAR: DRHD: handling fault status reg 2
-DMAR: [INTR-REMAP] Request device [01:00.0] fault index 0x1c [fault 
-reason 0x26] Blocked an interrupt request due to source-id verification 
-failure.
-On my mainboard, I have only observed DMAR errors with [fault reason 
-0x0c] non-zero reserved fields in PTE.
 > 
-> Does it work if you 
-> revert:https://posteo.de/webmail/?_task=mail&_id=4553111306b0538dd90e75&_action=compose#
-> d373449d8e97 ("iommu/vt-d: Use the generic iommu page table") ?
-To be honest I built many kernel versions between the increase in 
-BLK_DEF_MAX_SECTORS_CAP (~ 6.17-rc1) and HEAD for the bisection, and 
-since the change you mention was not included until 6.19-rc1, I have 
-tested kernels with and without this change, so I doubt a revert would 
-help.
+> [...]
+> 
+>> +static void dmar_tdxc_fill_params(struct dmar_drhd_unit *drhd,
+>> +				  struct dmar_tdxc_params *params)
+>> +{
+>> +	params->reg_base_addr = drhd->reg_base_addr;
+>> +	params->node = drhd->iommu->node;
+>> +	/*
+>> +	 * params->drhd stays valid because trusted DMA-capable units are
+>> +	 * never hot-removed.
+>> +	 */
+>> +	params->drhd = drhd;
+> Why we store drhd in the params, any information to expose to TDX via
+> drhd?
+> 
+> [...]
+> 
+>> +/*
+>> + * dmar_tdxc_get_params() - Get the IOMMU information for a device
+>> + * @dev: PCI device that will use trusted DMA
+>> + * @params: Filled in on success
+>> + *
+>> + * Look up the IOMMU that translates @dev and return what tdx-host needs
+>> + * to issue TDH.IOMMU.SETUP and TDH.IOMMU.CLEAR on it. This only reads
+>> + * information and doesn't change any state. Devices behind the same
+>> + * IOMMU get the same @params->reg_base_addr.
+>> + *
+>> + * Return 0 on success and error code on failure.
+>> + */
+>> +int dmar_tdxc_get_params(struct pci_dev *pdev, struct dmar_tdxc_params *params)
+>> +{
+>> +	struct dmar_drhd_unit *drhd = dmar_tdxc_find_drhd(pdev);
+>> +
+>> +	if (IS_ERR(drhd))
+>> +		return PTR_ERR(drhd);
+>> +
+>> +	dmar_tdxc_fill_params(drhd, params);
+>> +
+>> +	return 0;
+>> +}
+>> +EXPORT_SYMBOL_FOR_MODULES(dmar_tdxc_get_params, "tdx-host");
+>> +
+>> +/*
+>> + * dmar_tdxc_acquire() - Acquire an IOMMU for TDH.IOMMU.SETUP
+>> + * @dev: PCI device that will use trusted DMA
+>> + * @params: Returned by dmar_tdxc_get_params() for @dev
+>> + *
+>> + * Call this right before issuing TDH.IOMMU.SETUP for the first user of
+>> + * the IOMMU. On success, the caller must issue TDH.IOMMU.SETUP and call
+>> + * dmar_tdxc_release() if it fails. The caller owns the per-IOMMU refcount
+>> + * and must serialize all calls for the same IOMMU.
+>> + *
+>> + * Return: 0 on success and error code on failure.
+>> + */
+>> +int dmar_tdxc_acquire(struct pci_dev *pdev,
+>> +		      const struct dmar_tdxc_params *params)
+>> +{
+>> +	struct dmar_drhd_unit *drhd = params->drhd;
+>> +	struct intel_iommu *iommu = drhd->iommu;
+>> +	int ret;
+>> +
+>> +	if (WARN_ON(dmar_tdxc_find_drhd(pdev) != drhd))
+> We can get drhd via pci_dev, then why we require callers to input
+> this info and judge? Like an intelligence test?
 
-Best regards,
-Tobias Laas
-> 
-> It would be nice if we could involve some Intel IOMMU experts.
-> 
-> If the ACPI DMAR is at fault, perhaps it is possible for the kernel to
-> patch the ACPI DMAR for your platform.
-> 
-> 
-> Kind regards,
-> Niklas
+The drhd was there so the VT-d driver could check that @pdev and @params
+match. But you're right that the check only exists because the API takes
+both. I'll drop drhd from the params and make acquire()/release() take
+only the pci_dev, so there's nothing to mismatch.
+
+Thanks,
+baolu
