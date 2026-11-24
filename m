@@ -1,71 +1,108 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.178
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795533952;
-	b=XxZ2MEM1E1ViOHdlGYWzB0qV8Tef3T1oo/ZIDXn3LRik4lD+HuElmiqCmiJSXF1a447Y
-	 gCk1FYSg8oAm9Zqf2COuJ+cFRAA7PuIMMgwMOySvzadqwhuRg66R+EcXH73juAlC7bUS9
-	 m/qkqni1d9XyO5PVd28zr8V5ej/iX4N9zr2nsHa09HzHt+PZlhrSQ7laqkInclI5GZ0jE
-	 VmGUFJDCSWYGTrMKkPyTT3g/Y5WCeQTbLS0JvoLhYb9PdGHdprxJY1fkv5JTrYfc2iYg+
-	 K3+sUfd07RZc3vbrZbrmFZf59Pof9B3pTBPIkahX/mXy/NV3/wwsFq62JzUKLfi8CDg==
+	t=1795534578;
+	b=uhvFXN/DPuPHDiiL8FES27ksI7bjY7PdbA6eIn3Aq4dnnxAdKGtfjwzJwiR8yuhU2UQE
+	 yzlgrM/GWXgdeoCKFLz3W7QtnRCbSFYt2oF6Dxlco4+216jBpNAxnRGH2sti10v6Hkl3Q
+	 2k/UkTd6hWIFzr6HacaPNjgnIvgvMEVDRJwfxG2J7vgmZ1d7VRUonADs3oh4ylU66qfai
+	 8FJeXtuMZJHAQljZYu5OvjooajXDQ8MpcQfK5i704LhPmsS92TuekzBMeEyy1JrvTJx10
+	 NESynFxsYauRzR+L+jOhnJNWjrEolT5zk6oJmBMVEVmzKS0/+oYBd3OuWyVRdzYzp8w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795533952;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:References:
-	 Date:Message-ID:User-Agent:MIME-Version:Content-Type;
-	bh=1UXh4PQJOR3VknqTlOD7G3LYkfB1ZlA2WQOnvCIXzSk=;
-	b=kLq1/+WG4TYcO/uA8IAkGtuy+mV7QZF8nxiKSioWgR+s/CN1rhvTLizJWLtUENrVeb7U
-	 R/4ryCp1D+jUh1SiDuK/uzKhiwBdgnW8iMPZpn3Z0fnhdgT+GEI1U2Fo6ecWeL6E7fAUd
-	 9Mk+97y0WzT9uSFTAb2SbI4gYs+SkiW5+mLsjGDx77jFi4cJjMiuWE6NUxrRw0hQA0VZ/
-	 b7jlWap/BBhip40tN7HhOLD5OoCgDBfo7sXuZ5XWy9pff8bIOFZXc+T1KagCr5CbDy/qa
-	 yQ9QJu9J8ytckSEepFfEECgR+NwocNrnp7gt+u/uG0mtN0gaZz7DXHOAWuPBvjFnBCQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795534578;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=pztq+Cm1+ZAP57GA6CuWEqPVZxEOeq25+Hlck3k+Nv8=;
+	b=touOACkeF7L2t6MbbxLnkkgJlpT3UWDrfPGHmmXgNTo3wMct246zOq4NvdcbR2dpEsZ7
+	 qROBkS/rMdlC/J9gavN2TNuFqP1tESwo9e1GNLUjV20rpVh4y70TtcFbxrQphg16yJdB8
+	 SGfiXmI2GjsKnjQxt98dVAj8Ebd90O80VUM/As2kOn3fvV0QXQt8TCysRC5A5X5qyHksz
+	 gzZB3hs+2FLZ52oc3udeciR9DnswGOKkw4iDI1DwFUKPbIOSr7Df1AklIh04n76/eWjmA
+	 J64BwgnKo6A4tLPX4ALVi522vHpiK12EiY619nTGvZ/vAKzTvi8HMKZsYdWF7q+gSgA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BZKayue7;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=icW55hv6;
+	arc=none smtp.remote-ip=209.85.222.178
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6C7D606A32D;
-	Tue, 24 Nov 2026 15:25:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E70DF606A327
+	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 15:36:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E70DF606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BZKayue7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12CC31F000C6;
-	Tue, 24 Nov 2026 15:25:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795533952;
-	bh=1UXh4PQJOR3VknqTlOD7G3LYkfB1ZlA2WQOnvCIXzSk=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=BZKayue7T+OsylZjV79b6R0ytIW756sZrlscpck2YyZhapT9Gi9uxQD2TAqTTjgK1
-	 Ny12Sm0RAzgn+HtgnA1nCyeqansp2lHh7ivIj/Ix1qFbH4HuVOa8qCEjIyvtoi9D6R
-	 +jHmiVlbd0ZMEtoLUPptwix0CB+DWa1XVAy1+YYY895ci0d7bJUu/p9MbsNhjGaGh1
-	 rfdPKCuFn+l+eN4jST+wJuMHZLweG6N0w74drNJ6WDvCm0j+qp/odn0AgQomKQb69w
-	 XBI0ZPyD+v+OEE7bdKKZ7xDxe6TzGo/x9t8gCGRgnlp50DOQffqNVxBveg3UN2VOyB
-	 +YF0ajNdmMBkw==
-From: Pratyush Yadav <pratyush@kernel.org>
-To: "David Matlack" <dmatlack@google.com>
-Cc: "Pratyush Yadav" <pratyush@kernel.org>,  "Tarun Sahu"
- <tarunsahu@google.com>,  "Pasha Tatashin" <pasha.tatashin@soleen.com>,
-  "Mike Rapoport" <rppt@kernel.org>,  <robin.murphy@arm.com>,
-  <maz@kernel.org>,  <will@kernel.org>,  "Alexander Graf"
- <graf@amazon.com>,  <seanjc@google.com>,  <jgg@nvidia.com>,
-  <loganodell@google.com>,  <arnd@arndb.de>,  <dwmw2@infradead.org>,
-  <baolu.lu@linux.intel.com>,  "Bjorn Helgaas" <bhelgaas@google.com>,
-  <oupton@kernel.org>,  <alex@shazbot.org>,  <gle.com@google.com>,
-  <pbonzini@redhat.com>,  "Andrew Morton" <akpm@linux-foundation.org>,
-  <kevin.tian@intel.com>,  <joro@8bytes.org>,  <kvmarm@lists.linux.dev>,
-  <linux-pci@vger.kernel.org>,  <kexec@lists.infradead.org>,
-  <kvm@vger.kernel.org>,  <iommu@lists.linux.dev>,
-  <linux-arm-kernel@lists.infradead.org>,  <skhawaja@google.com>,
-  <sagis@google.com>,  <linux-arch@vger.kernel.org>,  <linux-mm@kvack.org>,
-  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 05/19] kho: Add feature header for fine-grained ABI
- compatibility
-In-Reply-To: <DN2RQ7LGX224.3W3PSQ2PBHTJZ@google.com> (David Matlack's message
-	of "Mon, 23 Nov 2026 09:32:17 -0800")
-References: <20261110050202.529473-1-tarunsahu@google.com>
-	<20261110050202.529473-6-tarunsahu@google.com>
-	<2vxzse0rzjdn.fsf@kernel.org> <DN2RQ7LGX224.3W3PSQ2PBHTJZ@google.com>
-Date: Tue, 24 Nov 2026 15:25:44 +0000
-Message-ID: <2vxz33sqz1xj.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=icW55hv6
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-9495d543c42so474138885a.3
+        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 07:36:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1795534577; x=1796139377; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=pztq+Cm1+ZAP57GA6CuWEqPVZxEOeq25+Hlck3k+Nv8=;
+        b=icW55hv6Oyz0/hRGNdZ/6vl9MyrOn2rTLqQyx4h9OHl89URqjdSysTsF6tpaMZJzKi
+         TTG91uoZlxJQzko+c+4H+KYjLqZDuQ9TcsQp2Ouq3Nylg7g9LQRmO6WcJsfaW1R04v2h
+         B0CMbB7pv0w8N1cld6m04Uxgvfvi47MwC4Zzn4IgSH9ah+TMmK8NhBvGPZiVrzR6sxMI
+         O2tzim6+gv8yHLgQ4hSEaNtwgawLG1pgVy7w/8tcWVRsoYAdxdkVALd0MVj5uBavLlUW
+         UOcOR3NF+dpXGIzrKs/8erDFZzyJQv11SEglRtl5GgNY2ynnG60gHm7gl02ricExBQ2d
+         d1oQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795534577; x=1796139377;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=pztq+Cm1+ZAP57GA6CuWEqPVZxEOeq25+Hlck3k+Nv8=;
+        b=bKSbzagdBi/y7rJNSuv/KJ1S2/I4sMkYAKmPsd9c2t4KG7s0EfCkDBRzUKYz0AbwjJ
+         Z2RMWlfrr0ev+dDT6k0+FzOYyVHsOHW2YbmXLsRvEaeCU0SxvrtPunLLw14s6I+hY9f1
+         3GFSZm6NrIQtatthRfd2Rpi8JWz8NsHLYbR77Ng9kt3iNMlhTlSE3AaM+VThTFnd6k6B
+         IDAX9dI8MnzkI/j5Q71m7WrJR+eBIy7/P3IHzehphLQbU6rNqbhkgA+2bBq86kUdf4aw
+         sGy1VwJEAsdsSuYWpZGV9WcRqs1o1AzkUHAKKjrjonFifVNIhjTvUK1811YlZZcUB6YD
+         W4Xg==
+X-Forwarded-Encrypted: i=1; AL+hErEwA+Qxb31m93Ljn6InADr1wtZ9sSKBwMBG4Jyvp2g6xuQ9yL7QAzd2VdL0e5weyXvfJi3gUg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9RZOQVf4WqYcnzjjd7uJyoI9T7WGuQmsdgzbqhGBl7/0AAnNl3
+	4u7guE1T199WbqXV4mZi5f2A9MfSbGCYqUdRyMaOA9fUQxJDVZ0DG91fCRRUBi1g/lw=
+X-Gm-Gg: AZFdTZfWgrLj3ZxtJRkiTZg6XjQXb50azDUMC8LD7f5IfeZjQ7vufWDq0mlAIyNMFK3
+	DODIr6275cAD5q1BvLfAHgewexKVDK6741zVM1bYk8UlrLuHXrTCLYeiopSZ/XlXgAneu+4Pv4/
+	z3hG9BlfkSBvj1pfpFvgtT2uZtsUdG6SALloPBKVPGIeA7gyFD844WplyKIxmbLOWXMVw/d7aS6
+	3oNRH81jSrOVX+nd5lF0kyDuEGHKOXaXDdqngi9Hn78DVB1xAU9ij4vgSiHtC1/y8F6o1M/uE5s
+	JNkmXEryMOeQyJyk7gCemfKz3/0U+L4c7MrlEYQi3A5X+rP+vVKCumpzAomeJfBNlWVybaXYkC7
+	HsEiYVMjib0QYPX1qjRFT//20Wh8lD0C/qwp/MoHXmm2rYp6+euGns3bohtbnJQT8NbVi9F2TD2
+	1ixpNZQUrgUxQIXyMoe5E2mw50ssIlrFa8UDScYF4tzyfe99c98Ri2YZgbABb+0/+MJijlxsRwa
+	EGmE7xPKwTdlcEyegN3boL6SsXwZGGFnceg5i0cNlvoZXAHFhHWZS4tAHrzVX32glCtJFeLgD8z
+	bCJK3A==
+X-Received: by 2002:a05:620a:6892:b0:947:7691:7316 with SMTP id af79cd13be357-949bab3d3bemr2564224485a.81.1795534576594;
+        Tue, 24 Nov 2026 07:36:16 -0800 (PST)
+Received: from ziepe.ca ([142.177.118.84])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-949bb4219c4sm1073980385a.41.2026.11.24.07.36.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Nov 2026 07:36:16 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xVsZ5-00000000WyP-1TgI;
+	Tue, 24 Nov 2026 11:36:15 -0400
+Date: Tue, 24 Nov 2026 11:36:15 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Shukai Ni <shukai.ni@kuleuven.be>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Halil Pasic <pasic@linux.ibm.com>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	Elena Reshetova <elena.reshetova@intel.com>,
+	Carlos Bilbao <carlos.bilbao@kernel.org>,
+	linux-coco@lists.linux.dev, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+	Jo Van Bulck <jo.vanbulck@cs.kuleuven.be>,
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Subject: Re: [PATCH] swiotlb: clear read bounce buffers on confidential guests
+Message-ID: <20261124153615.GA114530@ziepe.ca>
+References: <CGME20261123205317eucas1p2f96032281e0f5e9f17acc7ec343acced@eucas1p2.samsung.com>
+ <20261123205302.1034348-1-shukai.ni@kuleuven.be>
+ <42415609-c784-45d4-a79d-ef3cc5e6c3ef@samsung.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -75,113 +112,48 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <42415609-c784-45d4-a79d-ef3cc5e6c3ef@samsung.com>
 
-On Mon, Nov 23 2026, David Matlack wrote:
+On Tue, Nov 24, 2026 at 04:17:20PM +0100, Marek Szyprowski wrote:
+> Hi!
+> 
+> CCed Jason and Aneesh.
+> 
+> On 23.11.2026 21:53, Shukai Ni wrote:
+> > On confidential guests (AMD SEV, Intel TDX) all device DMA is bounced
+> > through swiotlb, whose pool is shared with and readable by the untrusted
+> > host. swiotlb_tbl_map_single() copies the destination buffer's current
+> > contents into the bounce buffer at map time even for DMA_FROM_DEVICE. For
+> > a reused read buffer that still holds private data, the host can read
+> > that data from the bounce buffer before the device overwrites it.
+> >
+> > For DMA_FROM_DEVICE into a host-shared pool, zero the bounce buffer
+> > instead. Zeroing rather than skipping the copy keeps a short read from
+> > returning a previous transfer's data.
+> >
+> > Fixes: ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE")
+> > Cc: stable@vger.kernel.org
+> > Co-developed-by: Jo Van Bulck <jo.vanbulck@cs.kuleuven.be>
+> > Signed-off-by: Jo Van Bulck <jo.vanbulck@cs.kuleuven.be>
+> > Signed-off-by: Shukai Ni <shukai.ni@kuleuven.be>
+> 
+> 
+> I'm not sure if DMA-mapping or SWIOTLB is the right place for such fixups.
+> 
+> Drivers should be aware that doing DMA from unsecure device to the given
+> secure page might reveal its content to the host or other parties and
+> prepare for that (like zeroing that page).
 
-> On Mon Nov 23, 2026 at 6:56 AM PST, Pratyush Yadav wrote:
-> [...]
->
->> When we have all this available, I don't see the point in
->> differentiating between optional and required features at the ABI level.
->> At the ABI level, all that matters is what the incoming kernel
->> understands. If the incoming kernel does not understand a specific
->> field, the outgoing kernel should just not use it. There's no point.
->> Best case, it gets ignored.
->
-> I pretty strongly disagree.
->
-> An optional feature is one that the next kernel does not need to
-> understand to correctly restore the object. A required feature is one
-> that the next kernel must understand to correctly restore the object.
-> Optional features can be enabled without any compatibility concerns.
-> Required features must be enabled carefully (IMO via uAPI) to avoid
-> breaking Live Update.
->
-> I agree it's a good idea for the outgoing kernel to check that the next
-> kernel supports all of the required features it is using, so the Live
-> Update can be stopped before the kexec. But that doesn't remove the
-> need for the distinction. The next kernel still has to decide what to
-> do when it sees a feature bit it doesn't understand, e.g. because no
-> spec was provided, the spec was wrong, or we kexec'd into a different
-> kernel than planned. Without the distinction it can only:
->
->  A. Treat all features as optional, which risks misinterpreting state
->     and corrupting memory if the previous kernel did not properly
->     validate the next kernel's capabilities.
+I think given the semantics we have to support partial write we don't
+have a choice but to continue them as it is the DMA API.
 
-Right, that's a bad idea.
+The driver would have to opt out of partial write support somehow to
+trigger this, and in that case it is more of an optimization and
+shouldn't be linked to CC.
 
->
->  B. Treat all features as required, which means no new feature can be
->     enabled until every kernel it might Live Update to (including
->     rollback targets) understands it, even when those kernels could
->     safely ignore it.
+I'm curious if there is a real issue here with a definitive issue on a
+driver or it is just speculation?
 
-I think this is what we should do.
-
-Why do all kernels need to understand a new feature?
-
-If a kernel can safely parse an object without ever looking at an
-optional feature, why set it in the first place? The outgoing kernel
-already knows its target can't understand it.
-
-So say you add a new optional feature in kernel X+1. For a rollback, the
-kernel X+1 knows it is going to X which doesn't understand the feature.
-It should just not use it in the payload, which means it never activates
-the bit for that feature. All the feature bits X sees are the ones it
-understand, and everything goes smoothly.
-
-And to be clear, I'm saying that the feature bits in the ABI header
-should be set dynamically based on what is used in the payload. The
-feature bits in the spec are static. They say what the target kernel
-understands. The feature bits in the payload are dynamic. They say what
-features are actually used.
-
->
-> Neither of those is a good outcome.
->
->> The semantics of required or optional then become "can I describe this
->> object with the capabilities I can use?". If the answer is yes,
->> serialization succeeds, if the answer is no, serialization fails. So
->> with this, KHO_MAP_F_MULTI_INDEX or KHO_MAP_F_DYN_DEPTH are indeed
->> optional. All memfds can be described without these, they just will be
->> less efficient.
->
-> I think this is a different meaning of "optional". Whether the outgoing
-> kernel can choose not to use a feature is a decision for the serializer.
-> Whether the next kernel can safely ignore a feature's data is a property
-> of the ABI. KHO_MAP_F_MULTI_INDEX is optional in the first sense, but
-> required in the second: a kernel that doesn't understand it will
-> misinterpret the map. The header needs to convey the second.
-
-Right, which is why a payload handed to an old kernel should never set
-KHO_MAP_F_MULTI_INDEX. Even if you have a property that is truly
-optional and ignoring it will still make things work fine, why would you
-want to set it in the first place? You know it will be ignored, so just
-don't use it.
-
->
-> So I see the spec and required bits as complementary: the spec lets the
-> outgoing kernel avoid features the next kernel doesn't support and fail
-> before kexec, and required bits let the next kernel fail safely if that
-> check was skipped or wrong.
-
-I see a marginal benefit in setting the optional bits by adding a tiny
-bit more safety. But even then, it only hides the real problem. The
-previous kernel should not be skipping its checks in the first place. If
-you're lucky, it might only end up using an optional feature and you
-might be able to ignore it. But if the checks don't happen or are
-broken, you'd be just as likely to be unlucky and the previous kernel
-might use a required feature if it skips the spec checks.
-
-I don't think it buys us any functionality. It just hides the problem in
-some lucky cases.
-
-In fact, we could even add a "strict" mode in the future, where the
-outgoing kernel refuses KHO if the spec to the incoming kernel is not
-provided.
-
--- 
-Regards,
-Pratyush Yadav
+Jason
