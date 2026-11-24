@@ -1,118 +1,145 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=103.168.172.146
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795478351;
-	b=1JKUiMd+A0SNHanYaE7JMd0c0eizfckUmfN86ncP6iVUnw1vcdUnNuiumczEBp7mq3tZ
-	 UgXpFpQ8ovsUAW3wp8YcO1TsBrI3DuBiHqSLxu6lQ5+wxtGEz/0LhU6Cjrup6IW7tHSgu
-	 C+eejYY/WA9DY7qzU0g8qK3+lEipTj+rW/yx8TJl+sR4lmBf8/q8jigNbxzVxNi5Lv98Q
-	 p2FMnUxy2imJm8ybVSgUxYGM7bBCln7i4gN2x8VoBIC870owKXCUW7Pr3OjTvP8ndO0j2
-	 Y4rqYdfa93rwD86pfqZG8FkAaFBHqlP06j2yUsyIfhFV2/72/QKzp8rw0kUOe2YIetA==
+	t=1795478521;
+	b=WHi15D3kt0cztQnCRRwg0AL5gjsOi44yy80K9R+N8G8+YsQ6MxsvprWqM97rhn7pzOFY
+	 7MguWI5QWP0wIr7c9ewjuxEVp0wOKKC4YxLSiJVRoRhI19XKGQmnzgQp/ptLReXqVaw4f
+	 tr/FJId1ki83OA6yTK0BJ5QDc5eOI4qO50WEgASWELXD38zCypNfolRF+UYuFMHsFENzA
+	 gtZSH1coIZR3eUISQjpWtuthPsSoy+pPF1wNfaKOyMDw0EZyFPLr9cyTC2FbpRJ40CfXi
+	 y6kHY693ZROKHBkshaxAEnBIAtBf6LSLrnkdCVMt45tBJZcCLo3z9hnAIHPHeB5IrgQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795478351;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=JPIzmh8MgAGzwbd/e1qtcX2ELMVKAJVPBlKusfiCnS0=;
-	b=v58gYEnGo62dh7Zm9oAitqDBvvyZrM+oXfWmLhL5GbZfSaM300tZMBMX1RnzqPDgjLiq
-	 YaGKY8r3rFthMWHtUJ5aBcyExHj9qonMneIidhFwcXLf0u7SSG3MbgG+0YI2Wo1d5MUDB
-	 EurnV5CQwYQTjDnJTv4SNZF/pPziL69Op3FMXTwIAiSAZrFtDyrY54iuGLkyem0J4pxo4
-	 EGqPvAu/+w1jLORnHU4Z8UCaPKxRYcnigVuR+DGFEfhw50YCBD6OfVt1Pc2Od6Z9NN7Ep
-	 IyJ6yNV8e16QGh0XoWfZcjtNyHMmY7I/aYAViPoPQF0HEhkGMrR7V4CA2WSaakevaUA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795478521;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
+	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
+	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
+	 Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=KKx5Q0VuU2/e6f1PoJVzvJ/nSVlotgFqvYyL3B4vcIA=;
+	b=DlqHg4lcDTIbYOWc4RQ9LlfIOWVhbD285bazmTtgUBXmlsThfR9+pcJmMr2Id2ZQQl5r
+	 bi840ixSPSbn7T64lHBJh5jWIZsg4HIDwzGgxGeTS7YhVYcXdr89fH5vFMo+HRnS29lvr
+	 p778+xl2eQLCs1RrQ/zV28mLfDlikIeTOmTSso7NPklc1ybtLFlWfmCBIGfOisGFgqNX9
+	 xewto4Tht1+7JaNaNp24UgUsd9p8McRx2+rwMYJI4rj33p2GcGi+R4mp7ISNC0qNEcnBN
+	 uyMAticcTetd+kV+Wgd7t5R4kHpySGHmtbqQuxTXzYg98rCrtug3hHmFaJzKnG/kE9w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=chromium.org;
-	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=cMJH8Swn;
-	arc=none smtp.remote-ip=209.85.221.54
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=gahingwoo.com;
+	spf=pass smtp.mailfrom=gahingwoo.com;
+	dkim=pass header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm2 header.b=iWP9oYfo;
+	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=gQR7ZRGp;
+	arc=none smtp.remote-ip=103.168.172.146
+Received: from fout-a3-smtp.messagingengine.com (fout-a3-smtp.messagingengine.com [103.168.172.146])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CEC1606A32A
-	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 23:59:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2CEC1606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E359606A321
+	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 00:01:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4E359606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=cMJH8Swn
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-491f34b4e0fso1819673f8f.2
-        for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 15:59:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1795478349; x=1796083149; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=JPIzmh8MgAGzwbd/e1qtcX2ELMVKAJVPBlKusfiCnS0=;
-        b=cMJH8SwnnI7NBk29fG0mmcosA1TBFnttPU9ZdvDCkMw/Q6NwW8rcy1x3W4vui56CJe
-         Jxuew6EykebotzJnd8mMSDlKvTEZ5zEMeP6RZ2qtJjI/TmSSjM+58HMFwM7n14eKzWuc
-         fjor57FA89MFpXDjE2fFwTI+YXAmpctaoMjdE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795478349; x=1796083149;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=JPIzmh8MgAGzwbd/e1qtcX2ELMVKAJVPBlKusfiCnS0=;
-        b=xI/iJ3RyVCzDGbpm6RUFOYtJjPOoSDEEUbcU9zTvq8lz9tIrRLqSOSHoK3C6IN6bKz
-         yila6DKTG4zWKAEz+eUc7RDP3B4WwbsYVb9KgxyaOyl/ffUmGGXlqJyK9zYb+st7zSZ1
-         My/dGz030FQ2mwqx0yTrnaMa5nd2FX8s5aVPF1GAaYYdCnESPFPvABozTPwzH0ezDKhQ
-         Y/13D5gjefpc9wPaxeAgdkFwjLAf1g6zmLV1s9lrN7kA0RggUw6L4sCAT++I5ivQYHyf
-         nsWcqKodgi/hngw1fea2IUmXZ10fYa1qSM0n50YWdD5okxUeI7C4T+n9Wr8u1as3xYsG
-         H+Hg==
-X-Forwarded-Encrypted: i=1; AL+hErHwCD+GJVNNlnC+UJfSWq7MzqXakr0lU8kbDGd0Xsb8ghOFisI7YVqZhA/sZQ3tsJxuuyAgTA==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/V36AEgTTI1tLzEY4kotgcSUVO3OoNCm2Pipz1NNHJpbKejCpe
-	hk26zBAdm9gOeEdLNEMzg/VjU9LAbSbAnQuWmVX04kLhUnAGVbtWmgLWVV1LebVWug==
-X-Gm-Gg: AZFdTZe8rEmPMMgzR8/SkhnIkW9n3JZl4UwzSxLf6+BkdoPT345XjN5PN6MM3eqG5Fu
-	An8SfDB0aGrZqs1S6eDa5mOIaY6wprIWjqx1AWCdmYF1sxIcqj9hPNkscDM1t8aDfxvVqC5wtHu
-	R+0AVfhwlrrWcfCuEUl18w6Bk78Oz0P/o9Ndn+pY0Ouhh/GEpHeVzPwwjrOHj11aTqa9MhwJSNr
-	qF7ulQ8I88HCThzyH08fL1AfYGMtZAiTsehiX/BXREqDdio7BDH7D1hm2BkpODIwkrIWfg7wlVQ
-	5rkxIdHvlveouj/7iY2Z0niwf+pxQ9gsNiKukPtEXDt7EScsgPpCbV1frQgWMtxnQ8zzzDab2bb
-	0egzOYxbT/mETSRfGKqvihw+y8ozO9iTuYu0gzQWgp99U5sHG2tNI3RtIb27+1VRmXFW2nhkWga
-	nacea12JFAIpNzUIz4MmQLP68GzigZ2RLi/D/1C+5lspZPrGQOL/yf0/LcteDO+45VEJH/pEf+j
-	zbpFkfY8N9fQgLrxjVR4sef/FYtqBuiZhoPvWrdht8hUO9lDMhD4GNfB4btHVoVXSriZ8AirbMX
-	Mk5xPqGjTiwi/ynpr7uKnmU+LKT1MRAYYMpze5rpmO5Qm1xlKZLEWgaYE1QEUy28IohCDYKS96G
-	h14cL8m9wtMx1/aPG4A==
-X-Received: by 2002:a05:6000:2883:b0:4a4:39bb:970d with SMTP id ffacd0b85a97d-4abab02c469mr24709044f8f.2.1795478349545;
-        Mon, 23 Nov 2026 15:59:09 -0800 (PST)
-Received: from dmaluka.c.googlers.com.com (120.142.205.35.bc.googleusercontent.com. [35.205.142.120])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6c61e53asm25727068f8f.59.2026.11.23.15.59.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2026 15:59:08 -0800 (PST)
-From: Dmytro Maluka <dmaluka@chromium.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Dmitry Torokhov <dtor@google.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Bjorn Helgaas <helgaas@kernel.org>,
+	dkim=pass (2048-bit key, unprotected) header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm2 header.b=iWP9oYfo;
+	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=gQR7ZRGp
+Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
+	by mailfout.phl.internal (Postfix) with ESMTP id 6D437EC0B15
+	for <iommu@lists.linux.dev>; Mon, 23 Nov 2026 19:01:54 -0500 (EST)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-02.internal (MEProxy); Mon, 23 Nov 2026 19:01:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
+	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
+	:from:in-reply-to:message-id:mime-version:reply-to:subject
+	:subject:to:to; s=fm2; t=1795478514; x=1795564914; bh=KKx5Q0VuU2
+	/e6f1PoJVzvJ/nSVlotgFqvYyL3B4vcIA=; b=iWP9oYfoKz8vdvVNcJkyegK3+z
+	oxjhFo8zLPV1e5JTMsdtpsA71/dRj2MAPN1RaxlitWXRGx2fYBQxhIKv/zgylpQD
+	Tf3vK2EXGngcYtBN9c0+9kYAMut5WqBjt9Q9Z82sFd2nFb+GzYkuXjToxQcoQUoR
+	3wa/umu+6zFYqVpV1ihmJ7JSK9vJvhaym9KrKY0AMjk3OEXCvsRBVf2H0kWOhrrK
+	OPDpadAmmfd/LZFSHt+4nAj18BCPqcDiJmiyLSbgVdECd2O+AG+TQvJmMSJvqUxQ
+	YeCsxuS3Vsk3EM3sYw8SSmAGFTmUX0cR/xTxx+We8BX+zTRNrheEGfPLMhBg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1795478514; x=1795564914; bh=KKx5Q0VuU2/e6f1PoJVzvJ/nSVlotgFqvYy
+	L3B4vcIA=; b=gQR7ZRGpskGrnADFQKWrb14P8mlnCclct9k2/KYMVnN6Gf93Ybx
+	1LU1kQVBem85ahKLYrtkst1Cs7DqG43rz6G7vcwhndP2Zei4wVHxv0ufYTjR7fw4
+	kEargYnXlT/8wRI1E9TJU48GfAJF1RvIT94eNvcnRR6nNBqxRpyd0GJwjdMt3T5y
+	cf83Jwy9z6A1yUjxSfP3xuYSnVJYuMk6AdkTHu25p2kOHsbJC3fBpJMZuW7elhBV
+	/U4b29hoC2vyWgbB0KEMQPIOSIn1wx1Gh9IUARvZ7V0VWmw+J/dVyv4LsDaQBBR4
+	lEv2SDPgagWX7x073PEYlOiufFME48j5bQw==
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=sign d=gahingwoo.com a=rsa-sha256;
+DKIM2-Signature: i=1; m=1; t=1795478514; d=gahingwoo.com;
+	mf=PGdhaGluZ0BnYWhpbmd3b28uY29tPg==;
+	rt=PGlvbW11QGxpc3RzLmxpbnV4LmRldj4=;
+	s=fm2:rsa-sha256:lqNfumoKS8JB5tCGuMlMC73yFYMlVpJfC/YLuRTFDYgxDmS
+	frjXgK+0TTDA6o9jg99W0ko1pLNgNEWGH8bIBArwfD1QKOo0cpYli5+kLSRNAT8V
+	GW18wTE4QSWp8cuMYrSxTiPJV4g8HreB2777k+toSqYY9Lnmhb0KwsbqiclnOrMH
+	XzwruDWxb17LDj8NBikYGpxdalI76Jk8BDMEkbbLv3SXMzZLYQ8WNecfTw2I+x6I
+	Ui1r3rQAsML0+BMsKxu2qjh4bkpxyTYdF2D7pU/A3wxNgyeVkGorKrlA08KKlf84
+	B8qIEaT1t4lwERdyJllT8f0lNBlUuQUT2wYzDtw==;
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=mi-m=1; hc=9;
+	hn=cc,content-transfer-encoding,date,feedback-id,from,
+	message-id,mime-version,subject,to;
+Message-Instance: m=1; h=sha256:XBkiax/mVjOMH/ql7HbN1vjdn1dgmhEk1Pibb2QZj2k=:WYvuWbIIUB3/05DuEse5xWx7f10TYxwWRMKXRK08Xl4=;
+X-ME-Sender: <xms:8dMEa5Q7GFQyWfmn6M9VlmrtPHkVNST4OkH2QALO10rOkYdGcpJlQA>
+    <xme:8dMEa9I9uXZbbBl6PBd5LpSWy3I5vUvriH2bzmx8NTeQ-Ma5SCHGuNG5EPzLNBAcA
+    qdNubJmgBJCV6t8tmo_w7UkW-TJvZ6pGXYLk1tTHiggjpKFT4cra4cB>
+X-ME-Received: <xmr:8dMEa6Z_269ozBlVDI5c3b5mczVizDJ2V8PnXiYVNlEsMffgrL4ei_qXvYG1RRtc4Xn1zYiE>
+X-ME-Proxy-Cause: dmFkZTEO+jdX3VbqHwNFG1H/l5IqV/QA4KK2LxyqGkusUGBknKv3Xj1lEXrn/q0NWh9696
+    uJcRyqwNAgUu1eI3+mw5Mm0lXI+Exbp4rbR7odfV5Ie/H0+KLpwyZZ9uObBJ4SUlfoT+VV
+    jocDoaizgQd+irp/EWqfciQcGw/n6DFOoj1bsZAd80lRzyEqUKsjh5+A1TUQJwLoKPrirF
+    8d754mQQjnz/m7I+bJphRJV6dZeDq5BGGozuCVQyiIOs/eBUa85noikxAgpdNeqSmOEuFe
+    PF00S25zKkH6GNlyYmUPhzJBBYBJYmg4dhW0bNIZ1ocOseioSLu17CndKIRu5UbiZ7B2Wf
+    ATDSyiy6FfIwiCqc/QL1C7jwcUgXg62S5yLczvcCP4qxN3pTTRxSVSuctoE7SO2Jv2ayUH
+    0//0I1s/t/BMhQ+1jndiqqyRhZ63gfp/VP+M2qNceL7vyl9PNi1xi2PFYpDYfMk/kE2CsC
+    SHGVwn9U/i0vmhucAEGBzmh6r/iyGS3AUJiio4tZEGOUlWCvYtGLJT/RdtXNjnmM3FypAq
+    /3dEJc7sfWi4mEASfJV/tN4Kiw3hWAmi/mKOjZG9Cee7fImCoG4tZJPIz7HgDT/wpLuEWa
+    J5ZoXeBdOSpflVemgYwT6jlfQhiiLUe1HXIWLy0L+Q13w/cGAhJRuP1cFzWg
+X-ME-Proxy: <xmx:8dMEa7A4zAOKarBr9xXMWLiVNimIkqor8QYvbth8i3N05OZym_Sr2g>
+    <xmx:8dMEa8XUWsqAPPDWYowJDKdh5vGsj10EcaLLAbu2IZ-Mc9cbuRSlhA>
+    <xmx:8dMEa01imZHdK2-zwjv01fhHmen8aSw_yKvCDuaFrWtrL9OoLbuQYg>
+    <xmx:8dMEa9XAgztFcAtfHyF-goqFUxB_ZAcGa9HN5Xxd406HjJFlpXQSFA>
+    <xmx:8tMEa9HK4cR-7P3qY6agrjudQ3l39i8KhrPlp4qd2TTjwTa3bSsKA5U4>
+Feedback-ID: i7a5e4b5f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 23 Nov 2026 19:01:45 -0500 (EST)
+From: Jiaxing Hu <gahing@gahingwoo.com>
+To: tomeu@tomeuvizoso.net,
+	heiko@sntech.de,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	p.zabel@pengutronix.de,
+	ogabbay@kernel.org,
+	zhangqing@rock-chips.com
+Cc: ddrake@baylibre.com,
+	royalnet026@gmail.com,
+	sidong.yang@furiosa.ai,
+	ulf.hansson@oss.qualcomm.com,
+	abel.vesa@oss.qualcomm.com,
+	sebastian.reichel@collabora.com,
+	chaoyi.chen@rock-chips.com,
+	shawn.lin@rock-chips.com,
+	finley.xiao@rock-chips.com,
+	diederik@cknow-tech.com,
+	alchark@flipper.net,
+	leonard@lausen.nl,
+	vlwwwwww@gmail.com,
+	jeff.hugo@oss.qualcomm.com,
+	dri-devel@lists.freedesktop.org,
+	linux-rockchip@lists.infradead.org,
 	iommu@lists.linux.dev,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Joshua Peraza <jperaza@google.com>,
-	Jesse Barnes <jsbarnes@google.com>,
-	Len Brown <lenb@kernel.org>,
-	linux-acpi@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-pci@vger.kernel.org,
-	Mika Westerberg <mika.westerberg@linux.intel.com>,
-	"Oliver O'Halloran" <oohall@gmail.com>,
-	Pavel Machek <pavel@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Rajat Jain <rajatja@google.com>,
-	Rajat Jain <rajatxjain@gmail.com>,
-	Will Deacon <will@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Vineeth Pillai <vineeth@bitbyteword.org>,
-	Aashish Sharma <aashish@aashishsharma.net>,
-	Grzegorz Jaszczyk <jaszczyk@chromium.org>,
-	Tomasz Nowicki <tnowicki@google.com>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Dmytro Maluka <dmaluka@chromium.org>
-Subject: [PATCH v11 2/2] PCI: Rename pci_dev->untrusted to pci_dev->requires_dma_protection
-Date: Mon, 23 Nov 2026 23:58:29 +0000
-Message-ID: <20261123235845.564027-3-dmaluka@chromium.org>
-X-Mailer: git-send-email 2.56.1.831.g720f3f5937-goog
-In-Reply-To: <20261123235845.564027-1-dmaluka@chromium.org>
-References: <20261123235845.564027-1-dmaluka@chromium.org>
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v18 0/8] accel/rocket: RK3576 NPU (RKNN) enablement
+Date: Tue, 24 Nov 2026 13:01:35 +1300
+Message-ID: <cover.1795478392.git.gahing@gahingwoo.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -124,276 +151,114 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Rajat Jain <rajatja@google.com>
+This series adds RK3576 NPU (RKNN) support to the mainline rocket
+driver.
 
-Rename the field to make it more clear, that the device can execute DMA
-attacks on the system, and thus the system needs protection from such
-attacks from this device.
+Changes in v18
 
-No functional change intended.
+- Rebased onto next-20261120. Patches 1-4 of v17 are in v7.4-rc4 and
+  are dropped. The pmdomain series has been applied by Ulf (1/3 to
+  fixes, 2/3 and 3/3 to next).
 
-Signed-off-by: Rajat Jain <rajatja@google.com>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Joshua Peraza <jperaza@google.com>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Dmytro Maluka <dmaluka@chromium.org>
----
- drivers/iommu/amd/iommu.c   |  2 +-
- drivers/iommu/dma-iommu.c   | 16 ++++++++--------
- drivers/iommu/intel/iommu.c | 10 +++++-----
- drivers/iommu/iommu.c       |  5 ++---
- drivers/pci/ats.c           |  2 +-
- drivers/pci/pci-acpi.c      |  2 +-
- drivers/pci/pci.c           |  2 +-
- drivers/pci/probe.c         | 10 +++++-----
- drivers/pci/quirks.c        |  4 ++--
- include/linux/pci.h         |  7 ++++---
- 10 files changed, 30 insertions(+), 30 deletions(-)
+- 4/8 (was 8/12), following Daniel's review: the clocks are taken with
+  devm_clk_bulk_get_all() and the resets as a reset array, so their
+  number is no longer given per SoC and enum rocket_clk is gone. On the
+  RK3588 this changes the reset deassert order: srst_a is now released
+  before srst_h.
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 41ee4ad1dcf8..aa592a1e5298 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3223,7 +3223,7 @@ static int amd_iommu_def_domain_type(struct device *dev)
- 		return 0;
- 
- 	/* Always use DMA domain for untrusted device */
--	if (to_pci_dev(dev)->untrusted)
-+	if (to_pci_dev(dev)->requires_dma_protection)
- 		return IOMMU_DOMAIN_DMA;
- 
- 	/* Apply device specific quirks */
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 78742aeba932..30f9d108897e 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -589,16 +589,16 @@ static int iova_reserve_iommu_regions(struct device *dev,
- 	return ret;
- }
- 
--static bool dev_is_untrusted(struct device *dev)
-+static bool dev_requires_dma_protection(struct device *dev)
- {
--	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted;
-+	return dev_is_pci(dev) && to_pci_dev(dev)->requires_dma_protection;
- }
- 
- static bool dev_use_swiotlb(struct device *dev, size_t size,
- 			    enum dma_data_direction dir)
- {
- 	return IS_ENABLED(CONFIG_SWIOTLB) &&
--		(dev_is_untrusted(dev) ||
-+		(dev_requires_dma_protection(dev) ||
- 		 dma_kmalloc_needs_bounce(dev, size, dir));
- }
- 
-@@ -611,7 +611,7 @@ static bool dev_use_sg_swiotlb(struct device *dev, struct scatterlist *sg,
- 	if (!IS_ENABLED(CONFIG_SWIOTLB))
- 		return false;
- 
--	if (dev_is_untrusted(dev))
-+	if (dev_requires_dma_protection(dev))
- 		return true;
- 
- 	/*
-@@ -1184,12 +1184,12 @@ static phys_addr_t iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
- 				      &attrs);
- 
- 	/*
--	 * Untrusted devices should not see padding areas with random leftover
--	 * kernel data, so zero the pre- and post-padding.
-+	 * Zero the pre- and post-padding to prevent exposing kernel data to devices
-+	 * requiring DMA protection.
- 	 * swiotlb_tbl_map_single() has initialized the bounce buffer proper to
- 	 * the contents of the original memory buffer.
- 	 */
--	if (phys != (phys_addr_t)DMA_MAPPING_ERROR && dev_is_untrusted(dev)) {
-+	if (phys != (phys_addr_t)DMA_MAPPING_ERROR && dev_requires_dma_protection(dev)) {
- 		size_t start, virt = (size_t)phys_to_virt(phys);
- 
- 		/* Pre-padding */
-@@ -1790,7 +1790,7 @@ size_t iommu_dma_max_opt_mapping_size(void)
- 
- size_t iommu_dma_max_mapping_size(struct device *dev)
- {
--	if (dev_is_untrusted(dev))
-+	if (dev_requires_dma_protection(dev))
- 		return swiotlb_max_mapping_size(dev);
- 
- 	return SIZE_MAX;
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 5a2e705a2f2e..dd75b41f47ab 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2625,7 +2625,7 @@ static void __init platform_optin_force_iommu(void)
- 
- 	/*
- 	 * If Intel-IOMMU is disabled by default, we will apply identity
--	 * map for all devices except those marked as being untrusted.
-+	 * map for all devices except those marked as requiring DMA protection.
- 	 */
- 	if (dmar_policy_off()) {
- 		pr_info("Intel-IOMMU force enabled due to platform opt in\n");
-@@ -3630,13 +3630,13 @@ static bool intel_iommu_is_attach_deferred(struct device *dev)
- }
- 
- /*
-- * Check that the device does not live on an external facing PCI port that is
-- * marked as untrusted. Such devices should not be able to apply quirks and
-- * thus not be able to bypass the IOMMU restrictions.
-+ * Check that the device does not require DMA protection. Such devices should
-+ * not be able to apply quirks and thus not be able to bypass the IOMMU
-+ * restrictions.
-  */
- static bool risky_device(struct pci_dev *pdev)
- {
--	if (pdev->untrusted) {
-+	if (pdev->requires_dma_protection) {
- 		pci_info(pdev,
- 			 "Skipping IOMMU quirk for dev [%04X:%04X] on untrusted PCI link\n",
- 			 pdev->vendor, pdev->device);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b486b8bbd1fc..e0bae0c94741 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1901,10 +1901,9 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
- 		driver_type = iommu_get_def_domain_type(group, gdev->dev,
- 							driver_type);
- 
--		if (dev_is_pci(gdev->dev) && to_pci_dev(gdev->dev)->untrusted) {
-+		if (dev_is_pci(gdev->dev) && to_pci_dev(gdev->dev)->requires_dma_protection) {
- 			/*
--			 * No ARM32 using systems will set untrusted, it cannot
--			 * work.
-+			 * ARM32 systems don't support DMA protection.
- 			 */
- 			if (WARN_ON(IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)))
- 				return -1;
-diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-index 9cb23780093d..34e9147e52c7 100644
---- a/drivers/pci/ats.c
-+++ b/drivers/pci/ats.c
-@@ -40,7 +40,7 @@ void pci_ats_init(struct pci_dev *dev)
-  */
- bool pci_ats_supported(struct pci_dev *dev)
- {
--	if (!dev->ats_cap || dev->untrusted)
-+	if (!dev->ats_cap || dev->requires_dma_protection)
- 		return false;
- 
- 	if (dev->is_virtfn)
-diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-index 5971ffc2a375..f6b199a121bd 100644
---- a/drivers/pci/pci-acpi.c
-+++ b/drivers/pci/pci-acpi.c
-@@ -1454,7 +1454,7 @@ void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
- 
- 	pci_acpi_optimize_delay(pci_dev, adev->handle);
- 	pci_acpi_set_external_facing(pci_dev);
--	pci_dev->untrusted |= pci_dev_has_dma_property(pci_dev);
-+	pci_dev->requires_dma_protection |= pci_dev_has_dma_property(pci_dev);
- 	pci_acpi_add_edr_notifier(pci_dev);
- 
- 	pci_acpi_add_pm_notifier(adev, pci_dev);
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 7c6f2aba8144..a2246049cae7 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -1017,7 +1017,7 @@ static void pci_std_enable_acs(struct pci_dev *dev, struct pci_acs *caps)
- 	caps->ctrl |= (dev->acs_capabilities & PCI_ACS_UF);
- 
- 	/* Enable Translation Blocking for external devices and noats */
--	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
-+	if (pci_ats_disabled() || dev->external_facing || dev->requires_dma_protection)
- 		caps->ctrl |= (dev->acs_capabilities & PCI_ACS_TB);
- }
- 
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 9a178e0e5f7f..d69ac5a746fe 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1738,7 +1738,7 @@ static void set_pcie_cxl(struct pci_dev *dev)
- 
- }
- 
--static void set_pcie_untrusted(struct pci_dev *dev)
-+static void pci_set_requires_dma_protection(struct pci_dev *dev)
- {
- 	struct pci_dev *parent = pci_upstream_bridge(dev);
- 
-@@ -1748,14 +1748,14 @@ static void set_pcie_untrusted(struct pci_dev *dev)
- 	 * If the upstream bridge is untrusted we treat this device as
- 	 * untrusted as well.
- 	 */
--	if (parent->untrusted) {
--		dev->untrusted = true;
-+	if (parent->requires_dma_protection) {
-+		dev->requires_dma_protection = true;
- 		return;
- 	}
- 
- 	if (arch_pci_dev_is_removable(dev)) {
- 		pci_dbg(dev, "marking as untrusted\n");
--		dev->untrusted = true;
-+		dev->requires_dma_protection = true;
- 	}
- }
- 
-@@ -2082,7 +2082,7 @@ int pci_setup_device(struct pci_dev *dev)
- 
- 	set_pcie_cxl(dev);
- 
--	set_pcie_untrusted(dev);
-+	pci_set_requires_dma_protection(dev);
- 
- 	/* "Unknown power state" */
- 	dev->current_state = PCI_UNKNOWN;
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 4a02fc80755d..e081b6ca1fc0 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -5526,7 +5526,7 @@ static void pci_quirk_enable_intel_rp_mpc_acs(struct pci_dev *dev)
-  * PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF
-  *
-  * TODO: This quirk also needs to do equivalent of PCI_ACS_TB,
-- * if dev->external_facing || dev->untrusted
-+ * if dev->external_facing || dev->requires_dma_protection
-  */
- static int pci_quirk_enable_intel_pch_acs(struct pci_dev *dev)
- {
-@@ -5567,7 +5567,7 @@ static int pci_quirk_enable_intel_spt_pch_acs(struct pci_dev *dev)
- 	ctrl |= (cap & PCI_ACS_CR);
- 	ctrl |= (cap & PCI_ACS_UF);
- 
--	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
-+	if (pci_ats_disabled() || dev->external_facing || dev->requires_dma_protection)
- 		ctrl |= (cap & PCI_ACS_TB);
- 
- 	pci_write_config_dword(dev, pos + INTEL_SPT_ACS_CTRL, ctrl);
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index aa3765a20a96..b3fb044c5a4b 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -491,13 +491,14 @@ struct pci_dev {
- 	unsigned int	is_thunderbolt:1;	/* Thunderbolt controller */
- 	unsigned int	is_cxl:1;               /* Compute Express Link (CXL) */
- 	/*
--	 * Devices marked being untrusted are the ones that can potentially
--	 * execute DMA attacks and similar. They are typically connected
-+	 * Devices marked with requires_dma_protection are the ones that can
-+	 * potentially execute DMA attacks and similar. They are typically connected
- 	 * through external ports such as Thunderbolt but not limited to
- 	 * that. When an IOMMU is enabled they should be getting full
- 	 * mappings to make sure they cannot access arbitrary memory.
- 	 */
--	unsigned int	untrusted:1;
-+	unsigned int	requires_dma_protection:1;
-+
- 	/*
- 	 * Info from the platform, e.g., ACPI or device tree, may mark a
- 	 * device as "external-facing".  An external-facing device is
+- 5/8 (was 10/12): GET_PARAM now comes before the RK3576 support. The
+  hardware version is taken from the match data when the first core
+  probes and stored in rocket_device, so READ_ONCE is not needed and
+  core 0 is not assumed to exist. The driver keeps its own enum rather
+  than PC_VERSION, which reads 0 on the RK3568. The UAPI documentation
+  no longer ties the version to a compatible.
+
+- 6/8 (was 9/12): the RK3576 TASK_CON uses a register definition
+  generated from Mesa's registers.xml, selected by the hardware
+  version. The cores are counted in rocket_drv.c. The "# Conflicts:"
+  lines left in v17 are gone.
+
+- 7/8 and 8/8: test notes removed from the commit messages; 8/8 states
+  its dependency on b1bff9ced657 in Ulf's tree.
+
+- All commit messages shortened.
+
+Review tags
+
+Kept: Reviewed-by from Igor and Heiko and Tested-by from Sidong on 1/8,
+Reviewed-by from Krzysztof on 2/8, Acked-by from Conor on 3/8. Dropped
+Sidong's Tested-by on v17 8-10, which were rewritten.
+
+Sidong, could you test this again on the RK3588? The reset and recovery
+path after a job timeout matters most, since the deassert order has
+changed.
+
+Testing
+
+Radxa ROCK 4D (RK3576), v7.4-rc4 with this series, in an image built
+with Armbian:
+
+- Both NPU cores probe.
+- GET_PARAM returns the RK3576 hardware version (2); invalid requests
+  return -EINVAL.
+- 30 inference runs in a row give identical output, with no job
+  timeout, IOMMU error or SError.
+- Booted 3 times with the NPU not enabled: NPUTOP, NPU0 and NPU1 are
+  switched off, and so is the NPU rail.
+
+Known issue
+
+A core reset after a job timeout can leave bank 0 of the IOMMU paging,
+and the NPU then does not recover. The fix has been sent separately:
+
+https://lore.kernel.org/all/20261123235154.315460-1-gahing@gahingwoo.com/
+
+With repeated forced timeouts on the ROCK 4D, about one in every 2 to
+10 is not recovered from without the fix; with it, 20 in a row all
+recovered.
+
+Notes
+
+- 594 MHz (Daniel's question): mainline does not scale the NPU
+  frequency or voltage yet. The NPU boots at 786 MHz and 750 mV, which
+  is not in the vendor's OPP table. That table runs up to 600 MHz at
+  725 mV, so 594 MHz is within it.
+
+- npu-supply: the binding requires it and the RK3588 device trees set
+  it, but the driver does not use it. The NPU rail is switched by the
+  power domain through domain-supply.
+
+- The register definitions are generated from Mesa's registers.xml;
+  the XML change will go with Mesa MR !43804.
+
+LLM-assisted.
+
+Jiaxing Hu (8):
+  accel/rocket: factor the completion tail out of the IRQ handler
+  dt-bindings: npu: rockchip: add rockchip,rk3576-rknn-core
+  dt-bindings: iommu: rockchip: describe the RK3576 NPU MMU
+  accel/rocket: take the core clocks and resets from the devicetree
+  accel/rocket: add a GET_PARAM ioctl for the hardware version
+  accel/rocket: add RK3576 NPU (RKNN) support
+  arm64: dts: rockchip: add NPU (RKNN) nodes to rk3576
+  arm64: dts: rockchip: enable the NPU on rk3576-rock-4d
+
+ .../bindings/iommu/rockchip,iommu.yaml        | 26 +++++++
+ .../npu/rockchip,rk3588-rknn-core.yaml        | 40 ++++++++++-
+ .../boot/dts/rockchip/rk3576-rock-4d.dts      | 22 ++++++
+ arch/arm64/boot/dts/rockchip/rk3576.dtsi      | 70 ++++++++++++++++++-
+ drivers/accel/rocket/rocket_core.c            | 25 +++----
+ drivers/accel/rocket/rocket_core.h            | 13 +---
+ drivers/accel/rocket/rocket_device.c          | 11 +--
+ drivers/accel/rocket/rocket_device.h          |  6 +-
+ drivers/accel/rocket/rocket_drv.c             | 52 ++++++++++++--
+ drivers/accel/rocket/rocket_job.c             | 45 ++++++++----
+ drivers/accel/rocket/rocket_registers.h       | 32 +++++++++
+ include/uapi/drm/rocket_accel.h               | 43 ++++++++++++
+ 12 files changed, 329 insertions(+), 56 deletions(-)
+
+
+base-commit: 909ef7a9a30fa139e69e555e3606680f5cca7726
 -- 
-2.56.1.831.g720f3f5937-goog
+2.43.0
 
