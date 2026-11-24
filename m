@@ -1,89 +1,109 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795512889;
-	b=4jcEnt76ljcOESGQ3r9b/FkrJw2pzb5gpX8dMtVMEMxIHSnRWY7WVnzoW0XVTPgBbESD
-	 nNs8cEx+WRDzN0c7Ch+YHLal5g6puoy3WYXrjd0Erq9X7Dq4a2yCCTwYzS0PXQBMUIUYl
-	 rD5YHptKqpYJCpAFl+jX0Xq16hikp2y2x5uYshTTyUVwxrh7lt30XB16aqllDH+XK4sUo
-	 JDcTOpvTee7ax8HOdGLHd/RhmMLv2ncQygkp4ejyc5luvd+wvz72juo7wgQTMNDb+2RBS
-	 6EjkgG8hVMVNh4tXhzRDw00XaLx8xAVxNoXOSG32OBajpdM/FBXBLlF58gewZBTrozA==
+	t=1795513457;
+	b=MXDvT1veisZNEbpckXlUNmubq3qvDs10bLw7xROHnCUgbhgftn8KNBPfaD6QmHu4oqF/
+	 1DW38P5Ub2JVawzH02f9JpN4DgoWzkCKFEZzN5MtQm+ku78drVYvonZRJVAXq1TF86uWO
+	 QERRQmzv8rzQdDhVGAxW/1tgLrTavEo9YIBKy4afElMR0IX81XScHvgmkh4TmlKxaa3AW
+	 pYN+hQFWmNK5oL7ijX39gfFSbaMpcz5dKiA/u0cuDoSwMdChQFK2iaMY4fP8/Muqvfqtn
+	 gEO15uKGd/Pg0eyQsVLg1PzjyhAx5jDNVsh80tYcIvQOhtoqBd/Fn6AFjqgTGESeZCw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795512889;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
+	a=rsa-sha256; c=relaxed/relaxed; t=1795513457;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Type:X-Change-ID:X-Mailer:
 	 Content-Transfer-Encoding;
-	bh=dzlULNiaNZ0xXGdWA1rlfP/03H+C6Hi4qgErNRy8s+Y=;
-	b=4Bs+8cGYSNjOk8Ck0ajWKZQAD2avzlCgoyeQ0vsTrAHSNeNZ1uKR0P9J5Aj84b0JJVnz
-	 dqIIkhrTsHsdHGvYnH14wAZH5o4S3wo5qATgu08H4J5aeETpBK4Qrn0IPB7BIaRIvZj7H
-	 rru1v12xPSq3mmspEZZ5hobMI+icBKga6yB5s/NBWbZGp96K1JsMk2vy/yg3O0NHAw/jt
-	 2eTL5jc8e3NLq16Cjan/ZTqB1jp9FtI7uU4bW8I0mGKrWDhLvb/qQZ7cyjIrsqh2APdUH
-	 kAcmpQUlaHtXmDiglaG0o42BHFtzGM6tU1QXJF4N1rR9g19zHOeOgLM4q17SP9rT9GA==
+	bh=MVyh89LSnjdyTdIzBNZRkbM9Weu4yYexQ4Ew0x0v/rQ=;
+	b=VaZMYQUpuLoFjJNs4yBMst+ZztBG9QMqwE44Xz2pEb2INQNNINa6jcVA/G7MzzH2D6LO
+	 /c7oqyb+HXR0t0G9OYueczLYHKu1slF9xejmWdXLXwWay55bRtE+7V68eknWbg9hK15fQ
+	 2w15KRWzQJE2uS4HqYN/CMkYRF+Gzvb0cPeXJKOL1a/HyoyO7WhYCmx8iH9y/3FeyQHZs
+	 1h7O5eRTeYWL0aZiH5DCHpoS2Bk3CpD/bRUXWfRuamcdf3KyTUoTlXiumPSZSScrHi7rv
+	 E4phhCe35S90wSHoo9h8+dxdLT+7gHIcamuvAHBL7foxnyjO31ORISjryEKA+hWmCSg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=baylibre.com;
-	spf=pass smtp.mailfrom=baylibre.com;
-	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b="eO/Jkuse";
-	arc=none smtp.remote-ip=209.85.128.54
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dPz5Kqpd;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D4FE606A31E
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 09:34:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7D4FE606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F11F606A336;
+	Tue, 24 Nov 2026 09:44:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=eO/Jkuse
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4a2153c8525so33721145e9.3
-        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 01:34:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1795512887; x=1796117687; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=dzlULNiaNZ0xXGdWA1rlfP/03H+C6Hi4qgErNRy8s+Y=;
-        b=eO/JkuseOmOeshFOovOwdp8IAuc76UPn2kfB2Q5QDKM1Ft3A82BEilifsTwruFWZVT
-         pgyI0A8WdzSrZum08vHSpmirWGdnKIR7d1xXh8zfiavYTYlBJPdiiSBpLIfHHMeqdnEk
-         CTGiGDAymm7hbdAMqZbB/WFLek1Ts9vIyqswddUUPjUMQ/mHTTqGkES8RDi+5+5aQc4G
-         EbTBP/V5tPYq9z03ugrEb6rtj9GRcooba8ktYvNBISETooeST9m7d8lFGkIG/NQzDjOt
-         o2AZaU8cHok6ZmuwtFmz6eoT7g6tt8eWVS+MsnssEMUosSEC1u/TQ/X4CJTn1eZrxIv2
-         rP+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795512887; x=1796117687;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=dzlULNiaNZ0xXGdWA1rlfP/03H+C6Hi4qgErNRy8s+Y=;
-        b=yiczYzB1ov1Yl7sppRLNfPI1f38aI+to+z8NT1z7h1/PcMQfcBGKu/u28gJyK4IovJ
-         lJj2tx3d3/sRma1epN1GDIDIkAmzuHCvBjY/Yv+mWPBr5dQP30yeN/67wmAWLy9eLMI/
-         GXrDlaC02a6akv4FtQW6WLK0p1kTjAG68g5Z1bD3h7SUhi+o89pz68Nttxa7t902hBK5
-         +hCQidKtTBYIUnk++Oh00K55/GUGEJDoMTpWsCumf2u4KCzHGplehM1kIq2h43EhMDJj
-         qb8tnWFrWjcoYLUyrj5kIrjdPEP75IP6qujtkWCQzGI//vxdIomXfYhJz9zm755h1noj
-         m6CA==
-X-Forwarded-Encrypted: i=1; AL+hErE1XyYtxddf+e/JGSYWuUeSS86coaqKpaD0Sw9LiBOgX9rHyb/bqzrplOuyJiF9Qant4LU4IQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8QFXIOLfO9KAk7sBKIF6Y4tETagFYwg8uyxccUk4mD7+YROViL
-	v6a344x8E5KEtU4yA7q3+uMDaUdLIEEmOTIdyvcqDy+V7ywGUXjp8LCOVWKjgublNfU=
-X-Gm-Gg: AZFdTZcti8rmjzgoy2dJWB50dcCabjtQWeSLFfa7F24sqSCIp3FRg70XXREWtZzA9I/
-	uN6eR2BxFqPZvl11Nj4d6unEf6U65psRBKd3lDc75nSPaQkH2eCVw3yqD7iBoz55U2AKrjnRY7U
-	8tVsk0cjI9i8WFtzS6BcRcn1bWqvi/aj+zyl5bu/bsLm12EUhgCMpe5dWlmRwBQTpBh2vo64mNI
-	NUGMANOUMpGwREfO+MbVNqRlwvMH0N+JdKlVoC/gFDmH4sKBYrfRqk8RBEdtJ6qz6CaRxvFkomM
-	/57Drakk1rfDEP0ryjaYD/sNoS8Aj1EjRftqH7tGvu+GyafnCedoW1cmKz0sPxtFFB0Fqq9R7Db
-	Quj93IyJvtmDnIPMx8Ybso5FHlOAnir7Q/12/+pTeGWHDuSkrBjXQJhvHZ7XR4+i2ZLbSbzbXjP
-	22JELvzt4v8uAr3p3PaICUdbBb0/GrULoSqhqM+o0n5W1Gp6dj9xLEMUJGRd8+J8ahtloNzNHan
-	FllAcVZ15jD2veAsfQCU1yyB1fYURV+fzVa4jBp7du6rv8IoM2GDK49SrpQT5dW6Xr0pXF/0F5D
-	6i7wSl7ezQ7Qw4Pt23UnF1XfTgvDdlsui0l/0++4bIr4UkLkYOt8L8C+qWC75UxcrybCuP/fgW9
-	2NQ==
-X-Received: by 2002:a05:600c:5251:b0:4a1:f8cb:7d70 with SMTP id 5b1f17b1804b1-4bb8881e837mr267264845e9.24.1795512886893;
-        Tue, 24 Nov 2026 01:34:46 -0800 (PST)
-Received: from ?IPV6:2001:8a0:d6cd:9000:86f4:4e71:9fc8:3183? ([2001:8a0:d6cd:9000:86f4:4e71:9fc8:3183])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6b110c50sm26488815f8f.37.2026.11.24.01.34.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Nov 2026 01:34:46 -0800 (PST)
-Message-ID: <57582334-45ef-421c-a460-314f5b5ece74@baylibre.com>
-Date: Tue, 24 Nov 2026 09:34:44 +0000
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dPz5Kqpd
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 270941F000C0;
+	Tue, 24 Nov 2026 09:44:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795513457;
+	bh=MVyh89LSnjdyTdIzBNZRkbM9Weu4yYexQ4Ew0x0v/rQ=;
+	h=From:To:Cc:Subject:Date;
+	b=dPz5KqpdK9nRPKUG6HUSe0vOj09Sy3JXT3OmWwG6jKg0jPV//81DZIrqZ9cs4jXkP
+	 e5jysJUgPxSHDEdvRIBPlMnRhve/j0ygvAMePt1RCUH45XYZvtV/aeyfIK/X1Ifn2B
+	 ctYWo+8swz85c0hjAjpMsVLPTHzme8kWcSexD1DD291wZLjXDenM0/ykH4wFjGdmCo
+	 +NEsrDDUg5fjAhyDjb5L5BMmR/S5qSXaJotzaodPFCvmwbSA5grmcSX1/GcsctGDt/
+	 UtKyMHvV7Vr4u82Zoh4tL4cn07Ykj9ze1498N1xgF/MZn7PEu+qOtnZEmsE7mJUa73
+	 hyuQsDuJkX2cw==
+From: Leon Romanovsky <leon@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
+	Chris Lu <chris.lu@mediatek.com>,
+	Mans Rullgard <mans@mansr.com>,
+	Alan Stern <stern@rowland.harvard.edu>,
+	Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Cornelia Huck <cornelia.huck@de.ibm.com>,
+	Andrew Morton <akpm@osdl.org>,
+	Jeff Garzik <jeff@garzik.org>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Alexander Duyck <alexander.h.duyck@linux.intel.com>,
+	Dan Williams <djbw@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	driver-core@lists.linux.dev,
+	linux-input@vger.kernel.org,
+	netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org,
+	linux-acpi@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-coco@lists.linux.dev,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+	Greg Kroah-Hartman <gregkh@suse.de>,
+	linux-sound@vger.kernel.org,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Subject: [PATCH v4 00/33] driver core: Authorize device trust before driver binding
+Date: Tue, 24 Nov 2026 11:43:31 +0200
+Message-ID: <20261124-device-trust-core-v4-0-037eb0d17b1f@nvidia.com>
+X-Mailer: git-send-email 2.56.1
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -93,41 +113,187 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v18 4/8] accel/rocket: take the core clocks and resets
- from the devicetree
-To: Jiaxing Hu <gahing@gahingwoo.com>, tomeu@tomeuvizoso.net,
- heiko@sntech.de, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- p.zabel@pengutronix.de, ogabbay@kernel.org, zhangqing@rock-chips.com
-Cc: royalnet026@gmail.com, sidong.yang@furiosa.ai,
- ulf.hansson@oss.qualcomm.com, abel.vesa@oss.qualcomm.com,
- sebastian.reichel@collabora.com, chaoyi.chen@rock-chips.com,
- shawn.lin@rock-chips.com, finley.xiao@rock-chips.com,
- diederik@cknow-tech.com, alchark@flipper.net, leonard@lausen.nl,
- vlwwwwww@gmail.com, jeff.hugo@oss.qualcomm.com,
- dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <cover.1795478392.git.gahing@gahingwoo.com>
- <82329b6681958350294846c830598ebde29b874a.1795478392.git.gahing@gahingwoo.com>
-Content-Language: en-US
-From: Daniel Drake <ddrake@baylibre.com>
-In-Reply-To: <82329b6681958350294846c830598ebde29b874a.1795478392.git.gahing@gahingwoo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Change-ID: 20260915-device-trust-core-12934e618489
+X-Mailer: b4 0.15-dev-18f8f
+Content-Transfer-Encoding: 8bit
 
-On 24/11/2026 00:01, Jiaxing Hu wrote:
-> The RK3576 NPU core has six clocks and one reset, the RK3588 core four
-> clocks and two resets. Take all clocks and resets the core node lists
-> instead of naming and counting them per SoC; the binding defines them
-> and dtbs_check enforces it. The driver only uses them all together.
-> 
-> On the RK3588 the resets are now deasserted in devicetree order, srst_a
-> then srst_h; before it was the reverse.
-> 
-> Suggested-by: Daniel Drake <ddrake@baylibre.com>
-> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
+Device trust policies need to precede driver setup, including manual
+attachment, so userspace can authorize devices before they operate.
 
-Reviewed-by: Daniel Drake <ddrake@baylibre.com>
+This series introduces device trust policy, authorization, and lifetime
+commitment. Authorization does not reconfigure ATS capabilities or replace
+IOMMU domains selected during discovery and further ATS and IOMMU integration
+will follow in a separate series.
+
+The table below tries to summarize the possible kernel command line
+options and system behavior after that:
+
+Command line                        Initial behavior
+----------------------------------  ---------------------------------------
+No device_trust options             General: existing driver binding.
+                                    PCI: existing ACPI/topology
+                                      restrictions.
+                                    USB: existing authorized sysfs flow.
+
+device_trust.default=default        General: use each bus's initial policy.
+                                    PCI: keep the platform classification
+                                      and its restrictions; device rules
+                                      can replace it.
+                                    USB: devices and interfaces denied by
+                                      USB defaults wait for authorization
+                                      before binding.
+
+device_trust.default=blocked        General: block driver binding until
+                                      authorization.
+                                    PCI: restrict every device from
+                                      discovery; authorization does not
+                                      revisit domain and ATS decisions.
+                                    USB: leave devices and interfaces
+                                      unbound until authorized.
+
+device_trust.default=adversarial    General: allow adversarial binding.
+                                    PCI: restrict every device as
+                                      adversarial.
+                                    USB: allow adversarial binding,
+                                      overriding USB authorization
+                                      defaults.
+
+device_trust.default=unrestricted   General: allow unrestricted binding;
+                                      freeze trust policy changes.
+                                    PCI: replace the platform
+                                      classification; removable devices
+                                      lose their DMA restrictions.
+                                    USB: authorize devices and interfaces
+                                      regardless of USB defaults.
+
+device_trust=...                    General: matching rules select policy;
+or device_trust.driver=...            unmatched devices stay blocked.
+without an explicit default         PCI: rules replace the platform
+                                      classification; a device rule of
+                                      default resolves to unrestricted.
+                                    USB: matching rules select device or
+                                      interface policy.
+
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+Changes in v4:
+- Documentation, commit messages e.t.c
+- Don't fail BT device initialization if WiFI USB claim fails/
+- Rename "adversary" to "adversarial" as was agreed at the beginning.
+- Added new patch to drain usbfs during disconnect.
+- Added another new patch to reject usbfs connect requests for
+  unregistered interfaces.
+- Link to v3: https://patch.msgid.link/20261118-device-trust-core-v3-0-d655875c4bfb@nvidia.com
+
+Changes in v3:
+- Rewrote all commit messages
+- Split USB patches to smaller chunks
+- Introduced special device attach function which works only in
+  untrusted mode
+- Remove the special PHY -EBUSY IRQ handling.
+- Clarify that further ATS and IOMMU integration follows separately.
+- Link to v2: https://patch.msgid.link/20261109-device-trust-core-v2-0-3b12d9a9f861@nvidia.com
+
+Changes in v2:
+- Replace the serio and PHY attachment conversions with
+  device_driver_attach_unrestricted(), restricted to device_trust.default=unrestricted.
+- Add USB authorization on top of device trust: export
+  device_trust_set_policy() and convert the USB authorized attributes.
+- Documentation and commit messages fixes
+- Small USB patches rewrote and split
+- Link to v1: https://patch.msgid.link/20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com
+
+---
+Leon Romanovsky (33):
+      wifi: mac80211_hwsim: lock device for manual driver binding
+      Bluetooth: btusb: Fix MediaTek ISO claim locking
+      USB: Lock interfaces during manual driver binding
+      USB: serial: Register USB drivers with their owning module
+      USB: Reject claims of DT-disabled interfaces
+      USB: Reject usbfs connect requests for unregistered interfaces
+      USB: Release interface claims according to binding state
+      USB: Reject claims after interface registration failure
+      ALSA: usb-audio: Release interface claims when probe fails
+      USB: Pin modules for unregistered interface claims
+      USB: Add helpers to release unpublished interface claims
+      USB: Unwind interface claims after registration or binding failure
+      PNP: Attach card devices through the driver core
+      cdx: Propagate DMA configuration errors
+      driver core: Report deferred probes through sysfs drivers_probe
+      driver core: Add a compatibility API for manual driver attachment
+      Input: gameport - use the compatibility driver attachment API
+      Input: serio - use the compatibility driver attachment API
+      net: phy: Use the compatibility driver attachment API
+      USB: Drain usbfs when a device is unregistered
+      driver core: Introduce a generic device trust level
+      driver core: Expose device trust authorization interfaces
+      driver core: Accept device trust policy on the kernel command line
+      driver core: Accept device trust policy by driver name
+      driver core: Expose committed device trust level
+      driver core: Cover trust authorization and binding with KUnit
+      driver core: Document trust admission and initrd authorization
+      PCI: Use device trust for platform restrictions
+      iommu: Use device trust for DMA restrictions
+      driver core: Allow driver attachment with the device lock held
+      USB: Retain the result of configuration requests
+      USB: Authorize interfaces through device trust
+      USB: Authorize devices through device trust
+
+ Documentation/ABI/testing/sysfs-bus-drivers-probe  |   14 +
+ Documentation/ABI/testing/sysfs-bus-usb            |   18 +
+ Documentation/ABI/testing/sysfs-devices-trust      |   37 +
+ Documentation/admin-guide/kernel-parameters.txt    |   37 +
+ .../driver-api/driver-model/device-trust.rst       |  343 +++
+ Documentation/driver-api/driver-model/index.rst    |    1 +
+ Documentation/usb/authorization.rst                |   37 +
+ MAINTAINERS                                        |    2 +
+ drivers/base/Makefile                              |    2 +-
+ drivers/base/base.h                                |   52 +
+ drivers/base/bus.c                                 |    9 +-
+ drivers/base/core.c                                |   52 +-
+ drivers/base/dd.c                                  |  192 +-
+ drivers/base/test/Makefile                         |    1 +
+ drivers/base/test/device-trust-test.c              | 2487 ++++++++++++++++++++
+ drivers/base/trust.c                               |  509 ++++
+ drivers/bluetooth/btusb_main.c                     |   55 +-
+ drivers/cdx/cdx.c                                  |    2 +-
+ drivers/input/gameport/gameport.c                  |   22 +-
+ drivers/input/serio/serio.c                        |   29 +-
+ drivers/iommu/amd/iommu.c                          |    3 +-
+ drivers/iommu/dma-iommu.c                          |   14 +-
+ drivers/iommu/intel/iommu.c                        |   14 +-
+ drivers/iommu/iommu.c                              |    9 +-
+ drivers/net/phy/phy_device.c                       |   28 +-
+ drivers/net/wireless/virtual/mac80211_hwsim_main.c |    2 +
+ drivers/pci/ats.c                                  |    4 +-
+ drivers/pci/pci.c                                  |    5 +-
+ drivers/pci/probe.c                                |   18 +-
+ drivers/pci/quirks.c                               |    7 +-
+ drivers/pnp/card.c                                 |   12 +-
+ drivers/usb/core/devio.c                           |   12 +-
+ drivers/usb/core/driver.c                          |  118 +-
+ drivers/usb/core/generic.c                         |    2 +-
+ drivers/usb/core/hub.c                             |   42 +-
+ drivers/usb/core/message.c                         |  104 +-
+ drivers/usb/core/sysfs.c                           |    9 +-
+ drivers/usb/core/trace.h                           |    2 +-
+ drivers/usb/core/usb.c                             |    6 +
+ drivers/usb/core/usb.h                             |    7 +-
+ drivers/usb/serial/usb-serial.c                    |    4 +-
+ include/linux/device.h                             |   21 +
+ include/linux/device/bus.h                         |   10 +
+ include/linux/device/trust.h                       |   54 +
+ include/linux/pci.h                                |   18 +-
+ include/linux/usb.h                                |   25 +-
+ include/linux/usb/serial.h                         |    4 +-
+ sound/usb/card.c                                   |    7 +
+ 48 files changed, 4246 insertions(+), 216 deletions(-)
+---
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+change-id: 20260915-device-trust-core-12934e618489
+
+Best regards,
+--  
+Leon Romanovsky <leonro@nvidia.com>
 
