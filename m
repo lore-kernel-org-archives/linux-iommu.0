@@ -1,60 +1,71 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795533445;
-	b=nSfgH0t5/dKN+ghQcUXLgoE8GJ2Sea0QbbCTva94I+XohC70F50nEEgTZmMvBZ1LereC
-	 VqRaeBp/+s/+iS4bmLqjXKH28GKfXlIfB1eRH9VgJ4sg2yURl9fmJM5ESIcF4fU98kmP2
-	 nn1FUMWNS/44BmKIW/mk6UQeKHS+57eo2SBMDoyE0/zsgoFozSUFEOZ7+J4aI0TZSyTbA
-	 Ii9NOTfaUH9DEf5wpCOxSUo1EYTzsZhc88avStaxxxXvMNsOrmruD0rmQ+wQfDpJjU448
-	 nSWA6P0z1s9OjO6Bx24gmkr7eV37Ll15EcsEoTnJUOk+vQaw1j7bPxmhqPgxs+fcIDA==
+	t=1795533952;
+	b=XxZ2MEM1E1ViOHdlGYWzB0qV8Tef3T1oo/ZIDXn3LRik4lD+HuElmiqCmiJSXF1a447Y
+	 gCk1FYSg8oAm9Zqf2COuJ+cFRAA7PuIMMgwMOySvzadqwhuRg66R+EcXH73juAlC7bUS9
+	 m/qkqni1d9XyO5PVd28zr8V5ej/iX4N9zr2nsHa09HzHt+PZlhrSQ7laqkInclI5GZ0jE
+	 VmGUFJDCSWYGTrMKkPyTT3g/Y5WCeQTbLS0JvoLhYb9PdGHdprxJY1fkv5JTrYfc2iYg+
+	 K3+sUfd07RZc3vbrZbrmFZf59Pof9B3pTBPIkahX/mXy/NV3/wwsFq62JzUKLfi8CDg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795533445;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=IaacVAvKGyMmPecRhuxGdgf3LN883I8nJRoVmWEAC8U=;
-	b=teVKKE3dgCHRF6VX2bW+QQaWmXpmkX+RYmTLXVxEvbzDbFa0Ocn80tdngLXzXbiYXBRM
-	 mZg/K3BuXgYslaFK3l00HSHoHgSyY03KbtXVn08Le3k1r1MShch6jKygq13v39hsddHMw
-	 mI+PO7m4SF1ljZ6A429zNXq6sdpmMuKwRVuGAW+aeyXokd+wzS+KicTEE3cBmdukSuZTa
-	 +PX7MzypAI8zma9EPKN3QPd16jLyS4COCJIkdDho1gEFekDT0LCvEdA0fk7kkcYRrHGnZ
-	 WYf2nqFutAss5dVa0mRabcIddSV5vS65xIN5cvcG5pE7cANsezvOb74EOEmraEceUSA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795533952;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:References:
+	 Date:Message-ID:User-Agent:MIME-Version:Content-Type;
+	bh=1UXh4PQJOR3VknqTlOD7G3LYkfB1ZlA2WQOnvCIXzSk=;
+	b=kLq1/+WG4TYcO/uA8IAkGtuy+mV7QZF8nxiKSioWgR+s/CN1rhvTLizJWLtUENrVeb7U
+	 R/4ryCp1D+jUh1SiDuK/uzKhiwBdgnW8iMPZpn3Z0fnhdgT+GEI1U2Fo6ecWeL6E7fAUd
+	 9Mk+97y0WzT9uSFTAb2SbI4gYs+SkiW5+mLsjGDx77jFi4cJjMiuWE6NUxrRw0hQA0VZ/
+	 b7jlWap/BBhip40tN7HhOLD5OoCgDBfo7sXuZ5XWy9pff8bIOFZXc+T1KagCr5CbDy/qa
+	 yQ9QJu9J8ytckSEepFfEECgR+NwocNrnp7gt+u/uG0mtN0gaZz7DXHOAWuPBvjFnBCQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=GmT5rvFJ;
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BZKayue7;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 011AE606A32A
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 15:17:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 011AE606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6C7D606A32D;
+	Tue, 24 Nov 2026 15:25:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=GmT5rvFJ
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261124151722euoutp02c5c4a60d4d7ed2e38cb2217856de3406~rBCcJw30S3185731857euoutp02o
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 15:17:22 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261124151722euoutp02c5c4a60d4d7ed2e38cb2217856de3406~rBCcJw30S3185731857euoutp02o
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1795533442;
-	bh=IaacVAvKGyMmPecRhuxGdgf3LN883I8nJRoVmWEAC8U=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=GmT5rvFJ//Q0xjTnt1azHynt9KgxevYNbRk42IQr4pPkhx7CjTpVxdqpnyZZ+tfbl
-	 5lhLj+XQbwWkw6U/JcdvkoNY68kd0mOBRuPUDyQfIQlq0Ynjr1IhpH/2WMFmA6n57V
-	 bji+G50yBzT5nKPlz3Rj5K/sfdNGaWpsBmwDAzic=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20261124151721eucas1p2767fd7a4a3036d2e7d11de472046c7e7~rBCb6IL8Y0751607516eucas1p2G;
-	Tue, 24 Nov 2026 15:17:21 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20261124151720eusmtip10daeaa7910796136f5c7ea55a3ba4bd9~rBCagtcn-0894308943eusmtip1z;
-	Tue, 24 Nov 2026 15:17:20 +0000 (GMT)
-Message-ID: <42415609-c784-45d4-a79d-ef3cc5e6c3ef@samsung.com>
-Date: Tue, 24 Nov 2026 16:17:20 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BZKayue7
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12CC31F000C6;
+	Tue, 24 Nov 2026 15:25:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795533952;
+	bh=1UXh4PQJOR3VknqTlOD7G3LYkfB1ZlA2WQOnvCIXzSk=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=BZKayue7T+OsylZjV79b6R0ytIW756sZrlscpck2YyZhapT9Gi9uxQD2TAqTTjgK1
+	 Ny12Sm0RAzgn+HtgnA1nCyeqansp2lHh7ivIj/Ix1qFbH4HuVOa8qCEjIyvtoi9D6R
+	 +jHmiVlbd0ZMEtoLUPptwix0CB+DWa1XVAy1+YYY895ci0d7bJUu/p9MbsNhjGaGh1
+	 rfdPKCuFn+l+eN4jST+wJuMHZLweG6N0w74drNJ6WDvCm0j+qp/odn0AgQomKQb69w
+	 XBI0ZPyD+v+OEE7bdKKZ7xDxe6TzGo/x9t8gCGRgnlp50DOQffqNVxBveg3UN2VOyB
+	 +YF0ajNdmMBkw==
+From: Pratyush Yadav <pratyush@kernel.org>
+To: "David Matlack" <dmatlack@google.com>
+Cc: "Pratyush Yadav" <pratyush@kernel.org>,  "Tarun Sahu"
+ <tarunsahu@google.com>,  "Pasha Tatashin" <pasha.tatashin@soleen.com>,
+  "Mike Rapoport" <rppt@kernel.org>,  <robin.murphy@arm.com>,
+  <maz@kernel.org>,  <will@kernel.org>,  "Alexander Graf"
+ <graf@amazon.com>,  <seanjc@google.com>,  <jgg@nvidia.com>,
+  <loganodell@google.com>,  <arnd@arndb.de>,  <dwmw2@infradead.org>,
+  <baolu.lu@linux.intel.com>,  "Bjorn Helgaas" <bhelgaas@google.com>,
+  <oupton@kernel.org>,  <alex@shazbot.org>,  <gle.com@google.com>,
+  <pbonzini@redhat.com>,  "Andrew Morton" <akpm@linux-foundation.org>,
+  <kevin.tian@intel.com>,  <joro@8bytes.org>,  <kvmarm@lists.linux.dev>,
+  <linux-pci@vger.kernel.org>,  <kexec@lists.infradead.org>,
+  <kvm@vger.kernel.org>,  <iommu@lists.linux.dev>,
+  <linux-arm-kernel@lists.infradead.org>,  <skhawaja@google.com>,
+  <sagis@google.com>,  <linux-arch@vger.kernel.org>,  <linux-mm@kvack.org>,
+  <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 05/19] kho: Add feature header for fine-grained ABI
+ compatibility
+In-Reply-To: <DN2RQ7LGX224.3W3PSQ2PBHTJZ@google.com> (David Matlack's message
+	of "Mon, 23 Nov 2026 09:32:17 -0800")
+References: <20261110050202.529473-1-tarunsahu@google.com>
+	<20261110050202.529473-6-tarunsahu@google.com>
+	<2vxzse0rzjdn.fsf@kernel.org> <DN2RQ7LGX224.3W3PSQ2PBHTJZ@google.com>
+Date: Tue, 24 Nov 2026 15:25:44 +0000
+Message-ID: <2vxz33sqz1xj.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,107 +75,113 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] swiotlb: clear read bounce buffers on confidential
- guests
-To: Shukai Ni <shukai.ni@kuleuven.be>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: Halil Pasic <pasic@linux.ibm.com>, Tom Lendacky
-	<thomas.lendacky@amd.com>, Kiryl Shutsemau <kas@kernel.org>, Rick Edgecombe
-	<rick.p.edgecombe@intel.com>, Elena Reshetova <elena.reshetova@intel.com>,
-	Carlos Bilbao <carlos.bilbao@kernel.org>, linux-coco@lists.linux.dev,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-	Jo Van Bulck <jo.vanbulck@cs.kuleuven.be>, Jason Gunthorpe <jgg@ziepe.ca>,
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20261123205302.1034348-1-shukai.ni@kuleuven.be>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20261124151721eucas1p2767fd7a4a3036d2e7d11de472046c7e7
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261123205317eucas1p2f96032281e0f5e9f17acc7ec343acced
-X-EPHeader: CA
-X-CMS-RootMailID: 20261123205317eucas1p2f96032281e0f5e9f17acc7ec343acced
-References: <CGME20261123205317eucas1p2f96032281e0f5e9f17acc7ec343acced@eucas1p2.samsung.com>
-	<20261123205302.1034348-1-shukai.ni@kuleuven.be>
+Content-Type: text/plain
 
-Hi!
+On Mon, Nov 23 2026, David Matlack wrote:
 
-CCed Jason and Aneesh.
-
-On 23.11.2026 21:53, Shukai Ni wrote:
-> On confidential guests (AMD SEV, Intel TDX) all device DMA is bounced
-> through swiotlb, whose pool is shared with and readable by the untrusted
-> host. swiotlb_tbl_map_single() copies the destination buffer's current
-> contents into the bounce buffer at map time even for DMA_FROM_DEVICE. For
-> a reused read buffer that still holds private data, the host can read
-> that data from the bounce buffer before the device overwrites it.
+> On Mon Nov 23, 2026 at 6:56 AM PST, Pratyush Yadav wrote:
+> [...]
 >
-> For DMA_FROM_DEVICE into a host-shared pool, zero the bounce buffer
-> instead. Zeroing rather than skipping the copy keeps a short read from
-> returning a previous transfer's data.
+>> When we have all this available, I don't see the point in
+>> differentiating between optional and required features at the ABI level.
+>> At the ABI level, all that matters is what the incoming kernel
+>> understands. If the incoming kernel does not understand a specific
+>> field, the outgoing kernel should just not use it. There's no point.
+>> Best case, it gets ignored.
 >
-> Fixes: ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE")
-> Cc: stable@vger.kernel.org
-> Co-developed-by: Jo Van Bulck <jo.vanbulck@cs.kuleuven.be>
-> Signed-off-by: Jo Van Bulck <jo.vanbulck@cs.kuleuven.be>
-> Signed-off-by: Shukai Ni <shukai.ni@kuleuven.be>
-
-
-I'm not sure if DMA-mapping or SWIOTLB is the right place for such fixups.
-
-Drivers should be aware that doing DMA from unsecure device to the given
-secure page might reveal its content to the host or other parties and
-prepare for that (like zeroing that page).
-
-> ---
+> I pretty strongly disagree.
 >
-> Notes:
->     We are open to discussing a different approach: e.g. clearing the
->     residual when read back, scrubbing slots on free, or extending zeroing
->     for bidirectional DMA.
+> An optional feature is one that the next kernel does not need to
+> understand to correctly restore the object. A required feature is one
+> that the next kernel must understand to correctly restore the object.
+> Optional features can be enabled without any compatibility concerns.
+> Required features must be enabled carefully (IMO via uAPI) to avoid
+> breaking Live Update.
 >
->  drivers/iommu/dma-iommu.c | 3 ++-
->  kernel/dma/swiotlb.c      | 7 ++++++-
->  2 files changed, 8 insertions(+), 2 deletions(-)
+> I agree it's a good idea for the outgoing kernel to check that the next
+> kernel supports all of the required features it is using, so the Live
+> Update can be stopped before the kexec. But that doesn't remove the
+> need for the distinction. The next kernel still has to decide what to
+> do when it sees a feature bit it doesn't understand, e.g. because no
+> spec was provided, the spec was wrong, or we kexec'd into a different
+> kernel than planned. Without the distinction it can only:
 >
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 78742aeba..42e0bfced 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -1187,7 +1187,8 @@ static phys_addr_t iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
->  	 * Untrusted devices should not see padding areas with random leftover
->  	 * kernel data, so zero the pre- and post-padding.
->  	 * swiotlb_tbl_map_single() has initialized the bounce buffer proper to
-> -	 * the contents of the original memory buffer.
-> +	 * the contents of the original memory buffer, or to zero for a read on
-> +	 * a confidential guest.
->  	 */
->  	if (phys != (phys_addr_t)DMA_MAPPING_ERROR && dev_is_untrusted(dev)) {
->  		size_t start, virt = (size_t)phys_to_virt(phys);
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 786954bc5..351bc7c54 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -1630,8 +1630,13 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
->  	 * the original data, even if it's garbage, is necessary to match
->  	 * hardware behavior.  Use of swiotlb is supposed to be transparent,
->  	 * i.e. swiotlb must not corrupt memory by clobbering unwritten bytes.
-> +	 * Exception: on a confidential guest the bounce buffer is host-shared,
-> +	 * so for a read zero it before sharing.
->  	 */
-> -	swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE, pool);
-> +	if (dir == DMA_FROM_DEVICE && mem->cc_shared)
-> +		memset(pool->vaddr + tlb_addr - pool->start, 0, mapping_size);
-> +	else
-> +		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE, pool);
->  	return tlb_addr;
->  }
->  
+>  A. Treat all features as optional, which risks misinterpreting state
+>     and corrupting memory if the previous kernel did not properly
+>     validate the next kernel's capabilities.
 
-Best regards
+Right, that's a bad idea.
+
+>
+>  B. Treat all features as required, which means no new feature can be
+>     enabled until every kernel it might Live Update to (including
+>     rollback targets) understands it, even when those kernels could
+>     safely ignore it.
+
+I think this is what we should do.
+
+Why do all kernels need to understand a new feature?
+
+If a kernel can safely parse an object without ever looking at an
+optional feature, why set it in the first place? The outgoing kernel
+already knows its target can't understand it.
+
+So say you add a new optional feature in kernel X+1. For a rollback, the
+kernel X+1 knows it is going to X which doesn't understand the feature.
+It should just not use it in the payload, which means it never activates
+the bit for that feature. All the feature bits X sees are the ones it
+understand, and everything goes smoothly.
+
+And to be clear, I'm saying that the feature bits in the ABI header
+should be set dynamically based on what is used in the payload. The
+feature bits in the spec are static. They say what the target kernel
+understands. The feature bits in the payload are dynamic. They say what
+features are actually used.
+
+>
+> Neither of those is a good outcome.
+>
+>> The semantics of required or optional then become "can I describe this
+>> object with the capabilities I can use?". If the answer is yes,
+>> serialization succeeds, if the answer is no, serialization fails. So
+>> with this, KHO_MAP_F_MULTI_INDEX or KHO_MAP_F_DYN_DEPTH are indeed
+>> optional. All memfds can be described without these, they just will be
+>> less efficient.
+>
+> I think this is a different meaning of "optional". Whether the outgoing
+> kernel can choose not to use a feature is a decision for the serializer.
+> Whether the next kernel can safely ignore a feature's data is a property
+> of the ABI. KHO_MAP_F_MULTI_INDEX is optional in the first sense, but
+> required in the second: a kernel that doesn't understand it will
+> misinterpret the map. The header needs to convey the second.
+
+Right, which is why a payload handed to an old kernel should never set
+KHO_MAP_F_MULTI_INDEX. Even if you have a property that is truly
+optional and ignoring it will still make things work fine, why would you
+want to set it in the first place? You know it will be ignored, so just
+don't use it.
+
+>
+> So I see the spec and required bits as complementary: the spec lets the
+> outgoing kernel avoid features the next kernel doesn't support and fail
+> before kexec, and required bits let the next kernel fail safely if that
+> check was skipped or wrong.
+
+I see a marginal benefit in setting the optional bits by adding a tiny
+bit more safety. But even then, it only hides the real problem. The
+previous kernel should not be skipping its checks in the first place. If
+you're lucky, it might only end up using an optional feature and you
+might be able to ignore it. But if the checks don't happen or are
+broken, you'd be just as likely to be unlucky and the previous kernel
+might use a required feature if it skips the spec checks.
+
+I don't think it buys us any functionality. It just hides the problem in
+some lucky cases.
+
+In fact, we could even add a "strict" mode in the future, where the
+outgoing kernel refuses KHO if the spec to the incoming kernel is not
+provided.
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Regards,
+Pratyush Yadav
