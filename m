@@ -1,62 +1,117 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.113
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795522554;
-	b=2R2ObIip3K9wG/zRW37M3qp0KEH7SZzureAwA7vi7kaFkIgEJytTWXdxwNKC4jPWBkOl
-	 Jqqj5s5b2bTtdrI08rcmnDKKcVtVUqJHIZ/rIx6hb8Z8M+hzTIZXmQby1dqe6FdugCyPL
-	 cAXxpv3tbNB3vQWn0kxHduVj/ZmZ0gxVmxn2IQ5iEakboCQ6klH90rUAqDnwg63CHEDU/
-	 fkxyISOn9YghfxkFRsZ4TqgvIfhiQoONqbqOA6hWGZXv25dJT6WeARy1RML7bzB2wPh/F
-	 8GvUYbRZPSDipcBZmRr66TLnAb+oQUXJbOy8WzjzfqaHU9cHDCQou6TeQY0LbOmTtgw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795522554;
-	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=dPPgdgJv3p61PHC94G8DwdLAu9SwdqBRTFNPG1gejsg=;
-	b=MBL8H6p2iGMqhoDAd7PdBCUIkAzB8Z7VxFaiRfK+lC30SFN+pZfTSIepYYynrVc9fORK
-	 Pq22S4wEmUraEMoZfaEXddQMJzDZJ5fMV8zNMDMgTfs3H6mdsCy4/ROGkkgAm+kbF3nZx
-	 i5ikOO849SaO89USmdrONs9yEe9+bkvAr1rJ9mdQfq8nWA7hf3dPE3UAiblDbTyJ+A+WF
-	 L5nzHdBeB5PCEJDxjqXhHZJI1/GPvhcTCQfQNf6v0reP/gy0XYCUabJcCQw9lrlHwz4sl
-	 K5Mw1gZ03DFWqOEGGBieggMYiNvs6ywfWUBzz4PuOw5r8nHn6SUxbOdIekJ8fowqs1Q==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.alibaba.com;
-	spf=pass smtp.mailfrom=linux.alibaba.com;
-	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=fuH9tYJY;
-	arc=none smtp.remote-ip=115.124.30.113
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.193.13
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795523802;
+	b=vqkbSFd4I1NC2HRAUdX0ht4m3AgdMBpqzp5krsa+U1NtYDDutFX4oCh0KG3w0VGuqzNU
+	 GVzHN2YR6yax6HTT1eDEEi1HV6xbvs29JeSsxOXweP5Uv2V9Y4yH19saIbt2370bh7fDO
+	 DhYzJrlOxAs8vJ8FEncJv0/GJK2+EUu8YojD3DMoLMzz7/Tway7TrDB25pExEnx7C4ll/
+	 lW97rfFEgSfZmWnStgiferfkQ02ezx9aA1+HUrStABbraY5x9Q9V9IpaaRdFHj/YcNqBX
+	 tF14l7JRqcnvl3ZQtEcFHd0Elfwu6fUBTMomP8Iq3QtZPUx1oN+8uRFipneApav3ZEw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795523802;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=wUqGi0asszbN4dhIxO+gZaZle9N/6uln8kH4AIJVyHo=;
+	b=MHDV/mtznjZRqtfDaGhGlBbZX5Fa4c1VKGB7viC488mF+HPhLqZ5sOUAajGXQV8s3Kwb
+	 N2+mp8fpfgHlm6j/Qd4oVzfRDsyxLVZno/oV+w6gpqOcSDp7xWWGq9GxdTczqHPOn/9oY
+	 KBCWG82f2J3dU9VrIlUlcW6fr1AwsUvRF0VUKsz0gRqeoBaKwFY9SCmYx7/9n/bHnPwne
+	 F2hYXxp4eg4W5mE45cQwfdpywYCxfFicaON00kxPTLKq1AXbfefylHyt+QBqvRKdAWka8
+	 biegDpAMF/wL3if9aNsHYMcteSQZLSJUo2puGrb1IVx2TXFb6/wX/D9DAEvFc9ebX1w==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b="19mX/iwC";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.193.13
+Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010013.outbound.protection.outlook.com [52.101.193.13])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8C12606A31E
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 12:15:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E8C12606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61832606A335
+	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 12:36:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 61832606A335
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=fuH9tYJY
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1795522546; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=dPPgdgJv3p61PHC94G8DwdLAu9SwdqBRTFNPG1gejsg=;
-	b=fuH9tYJY0YyALn4G37wU0iVJlC/KEfXTzUlTebmHipPkH3/qQn3x6AZ43ekEjIO9xUFYwzjFLH2w8YusHzX2OVjhIORl23RUkZ2eC4pv4Pipe5B6LkJHnoCjGjqwsDvwRqZp5kETQ7ueDdXblegJfHaubIyumuPrXw1WAAt2W4k=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R721e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0XFOXWnb_1795522518;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XFOXWnb_1795522518 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Tue, 24 Nov 2026 20:15:45 +0800
-From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-To: vasant.hegde@amd.com
-Cc: guanghuifeng@linux.alibaba.com,
-	iommu@lists.linux.dev,
-	joro@8bytes.org,
-	linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com,
-	suravee.suthikulpanit@amd.com,
-	will@kernel.org
-Subject: [PATCH v2] iommu/amd: Reuse device data for IRTE cache invalidation
-Date: Tue, 24 Nov 2026 20:15:18 +0800
-Message-ID: <20261124121518.440906-1-guanghuifeng@linux.alibaba.com>
-X-Mailer: git-send-email 2.43.7
-In-Reply-To: <721a92c6-fbf3-4f92-9812-3765dbe4af6a@amd.com>
-References: <721a92c6-fbf3-4f92-9812-3765dbe4af6a@amd.com>
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=19mX/iwC
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=JbgVCZGIP6OwjitDGwHiW0cWDhtrRTigZR0Gv5RxkV+SDkZ0EuUf+kfCln99LexzQpLFkprCbBIKbiuugwdb+yaCDvEIyum3tZ8gMw6yI4/rwF+bMVhl9HxJFYZok00mUzv7GKTKK7fHbbNOAsA8Pq6L/JGpJ/IAZtMwB9WTm5EpxrTPIjZEpWubQ1O2FOTK8vQrIQyC8ZjqOW1A5CMfDAXqVf3HBUPgRKys6XVafrpIN/GCE4F4PxD41hmDwg9nxiyXJvHtmK3gn621QQ+eTOldgGHI7ISIE00cICFPviRPLcaA8WGQ+Wy2YqLIJEvqUUXOIYNG+pv4CYr6dM8TaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wUqGi0asszbN4dhIxO+gZaZle9N/6uln8kH4AIJVyHo=;
+ b=J+YUGzAS7fTcyVvuTyR7XOZRair4NM5ARI+PCbDUnkZKKOU9xmbHOEhSMTDAUAMBQTzzeQdia3xmHIrbXh7Crfn5W+dfolT7OskydAPPNkE5HAfM6oQrdF9oRBHM5bcs3RRMg5ZHQ0S1HzAagyRs9I4w2zk5lgI/Z/OKL80v2OMIVEyXy0RG3e5M/2EY/332F8x9yzBcf/EHGg0pOxK41Oa+nsPXODd5EhswNALcTgXjCjdhwNaj2h4YctvOvrMAOefTpp0/FHZQlDhAz8b3TxL4Y8d56wtad6AZH52fDsihhynOqB5u7W1kNqOHGA7ngpjefvyO3mvmLx5adjekIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wUqGi0asszbN4dhIxO+gZaZle9N/6uln8kH4AIJVyHo=;
+ b=19mX/iwClCI4bNSJyXNkfMdHOEijCNpn7pVx6AkrxxDyBRbaESQPO81OlnpDkQohQqcJ8XNqMO8I0/wpzzgIShUt9DRlzPBYR+m5jS1FYiVQf/MAEKkZOx4sE1ryI5R4nboI1FDBm0Dvf/zKEnmXMIdK31wlTceGS61a843n1/0=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+ by DM6PR12MB4370.namprd12.prod.outlook.com (2603:10b6:5:2aa::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.4; Tue, 24 Nov
+ 2026 12:36:37 +0000
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0639.012; Tue, 24 Nov 2026
+ 12:36:37 +0000
+Message-ID: <63eb7b6e-e0a8-4443-a434-0301ed59beae@amd.com>
+Date: Tue, 24 Nov 2026 13:36:21 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 03/24] dma-buf: Add the SGT DMA mapping type
+To: Alistair Popple <apopple@nvidia.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Sumit Semwal <sumit.semwal@linaro.org>,
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ Simona Vetter <simona.vetter@ffwll.ch>,
+ Matthew Brost <matthew.brost@intel.com>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>,
+ Dongwon Kim <dongwon.kim@intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Xu Yilun <yilun.xu@linux.intel.com>,
+ Karl Mehltretter <kmehltretter@gmail.com>,
+ Baolu Lu <baolu.lu@linux.intel.com>, Felix Kuehling
+ <felix.kuehling@amd.com>, Alex Deucher <alexander.deucher@amd.com>,
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ intel-xe@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+ linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+ linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+ Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+ Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
+ linux-nvme@lists.infradead.org, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
+ Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
+ Alexey Kardashevskiy <aik@amd.com>, zhipingz@meta.com, treding@nvidia.com,
+ jhubbard@nvidia.com, chaitanyak@nvidia.com, Leon Romanovsky <leon@kernel.org>
+References: <20261120-dma_mapping_type_v4-v3-0-c0183a409bdf@nvidia.com>
+ <20261120-dma_mapping_type_v4-v3-3-c0183a409bdf@nvidia.com>
+ <ad46d60a-189d-4dd5-9ad8-ecfd3c90f9d9@amd.com>
+ <20261123165716.GM179082@ziepe.ca>
+ <7ac7edd0-5c38-440a-b26a-21bcbb6f4702@amd.com>
+ <awT8prWsj11TBdmP@nvdebian.thelocal>
+Content-Language: en-US
+From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <awT8prWsj11TBdmP@nvdebian.thelocal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR4P281CA0274.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:e6::18) To PH7PR12MB5685.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::22)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -66,337 +121,194 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|DM6PR12MB4370:EE_
+X-MS-Office365-Filtering-Correlation-Id: da56025a-4a2f-4a47-7c3d-08df4a2794cd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|366016|23010399003|1800799024|10067099003|5023799004|11063799006|4143699003|56012099006|261022075727099003|261022105027099003|261022115727099003|261021121427099003|261026121527099003|261026140227099003|261028144727099003|261102130727099003|261102123227099003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	feCmSxzinazgK+ddzPvYJCrymh3A+htw6xwY9TOAvxpZo3FHL0t2REvOe0ILoVSrqD4pLy4vabNaTnFa3aquueicYxaj/0mNAsbxX8BXHUUvqgAMuWWALKHogVyS+jBs62ANsjhrwL8SFKeH8XA9A6UsoVoCC4rQ5otVNRE2N6PxmT8a50dmxoO27/yPUNlmcFP6yzpui2I//bKJHsuF1K/dP+v48jWVimNjV7Xq96gl5xI3wpmHEEa+xsBDf4sUmvm1P9pFnLjjd3kHWmgfkV6siyCqGxAKfx3UHJNQ0ieBc0kjw87rOxlKrku7EKdWSuUTrVntrYomhlCbiXW/SgMvCvSiQRNLrJdLvAXK6wWhMtAy2YRgke9GP7CDtnAs4Xe5rO8710sc6FaFnAHG835KuaRImPcGBPY3oIxbUP4zvPfcRHsUJnGjI6vaEkpmddp1pocJiUv9++dGUnl4qoFOnMcaQRo0R2IRChKWElulZqUtoY5JqZjCxYU+eKhZ5SCbrYGp6SblrPGT1Ha8itYECePcYWq3zH10sUv7y1y2cTdfLypLaQRBbDGtKpc7FZQ7g0MwFwnGFW5LZTlCVJv3N4hw8R7Xh7dGdh4tCRA/jhdyQkewFw+maHL8ek4Kbni7vg/M5fIj0Dd4BBDRxjZRgRxxuIiCdsy40kj91ks=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(23010399003)(1800799024)(10067099003)(5023799004)(11063799006)(4143699003)(56012099006)(261022075727099003)(261022105027099003)(261022115727099003)(261021121427099003)(261026121527099003)(261026140227099003)(261028144727099003)(261102130727099003)(261102123227099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?dUoxNTZ2dEN5Ym1NWEdHSExORXBCRklSc1lhc29pdExFNkhpeGNyNzNhY3Ba?=
+ =?utf-8?B?VmRETFRqYlN5b3ZyazRJUVh4enIvaE56YzljT0tPYWZiRTdsV1o3Z1V0ZUVp?=
+ =?utf-8?B?alF1UHpKcGlKcjdyMXZZbmtXMGZBbG15TCt0a1R0UXJUeXR6VG1sNmVzNFlu?=
+ =?utf-8?B?VW1zTEMvRUZRTkE2QW9sb05MenlCdTQwYmVKWmUvdDlyeW43ZVpCRXI4TWhz?=
+ =?utf-8?B?TDdJVEJNQzE2NGRvREw5bzZQdWp1TzllL0Z3T2xoL3EwaDBzZWtaVi95dnhN?=
+ =?utf-8?B?Z21lUDRhbUtjVGdWY040ckVUbDdtOGR0R2xDckpCQTZ1RUNOOTk0ZFJoMGdJ?=
+ =?utf-8?B?cjYvNHFqQWFhUythRGFGUHNQZmo5bWE5dWk4cnI5OVFNNThQZE1VSWZjczVN?=
+ =?utf-8?B?dGpWMWpxWUx1Nk1TRWs0a3g5U0htUUpjZWJ1YUVUM21ZVnBwTTlZN3hVcjE3?=
+ =?utf-8?B?VEM1Ym1UclRDV09uTXRDdEY1SSs3dVhuOENld1VnSHMwbXVvNUc1NW15QVpU?=
+ =?utf-8?B?M1BDekxqdXJMNm9tMnlBUVBCTFBXYWh4c3A1VXQzS0h4ZEc0ZmdWVnZ0Y1By?=
+ =?utf-8?B?bElVQjM0RmltRlNISkE1UVRmVVBackJJZERBbnY0WTBwd0tDYUxoMWxXTmQz?=
+ =?utf-8?B?WlJxcDVrQXc0Qkhmb0EyMlI1K0UrSkxyTWpnYUFFWWVCMERYZjM3UjdLKzZk?=
+ =?utf-8?B?Q05FUFJnOElzaTJyV2V6MzJmbFFqdUdwMURDdHZacjF1SU0xMjFqRS9waXds?=
+ =?utf-8?B?REVzUHl5SG50VUtPTmtvcU5jbk5VWmh5eEdKaWNyWEszdm9lS2NPMGxCNnlx?=
+ =?utf-8?B?L2pEMUtCcnc0NFgvd2VaTEF5L0tnMlJxNVBSRFcxWE1ISjBpYS9hYk5pYXMx?=
+ =?utf-8?B?eDZyODZWL0J3alZsckE3OUtDRlM5Mll5ekhhOFUvdU8zaXdsZzRENC9tY2Zh?=
+ =?utf-8?B?Qm41K3Z6WFYxVFVJTFV4QmRUR3JpYUIzQ0dkMFNROGNUU0VCVTljVWtlaGpT?=
+ =?utf-8?B?aWRtM1g1cHYzNGcvaTl4UGY5R0MweHRBYlRnWXowWjgvL25QNjY0NXVuMTEv?=
+ =?utf-8?B?ekE4eUk2KzFPbnZ2SzV1MFRBVXVjK0xvMWxPYzhRVFpDWGVYTldPdDJpcE1j?=
+ =?utf-8?B?YWlhWFlSVGgrQ3RWU3M4VmQzbVpyTVkzY0xqaE5jSTk5VFJYL1NnZXM5RW01?=
+ =?utf-8?B?T0Zya3JvYTZMd1dxYkdBNHRGS1BCMU5JYm9MWG9xa2xFYmM5SFRFUEY4amE0?=
+ =?utf-8?B?Z1Yzb2tNOUJ6S3BZN1Brd0pCb1UvUEtPeUJBcjlFZXdPUkZnZ3RuV0pMd1Nr?=
+ =?utf-8?B?blhMUDBhY1JFaWJNcEo0MVgyd3VlUjBJQ253NHJjZzl6MUJ3MGJhNDBoRjFa?=
+ =?utf-8?B?aktRT08vWkN5bXhYamhYcm1tMDY2S0wwc1dOR3phN2htZUg0ejI2T3JYZnFB?=
+ =?utf-8?B?VGRndGNNMDhYQzRhS0xwWGlYazBqSmkwSUJuU0wySE1vbkxzTC9nZlZpRWw3?=
+ =?utf-8?B?aXRTTGRRdGRmL0xoZVB2NkpyM1lzOVVUWUgyV3ZjYVIvTmZFaVMvUXMvM2tl?=
+ =?utf-8?B?a1dxbkRDN0JXUzdOWTgzTEJIdElLUGZDYXc4cWJ3VVhETzBWS0VsbDlEa3FU?=
+ =?utf-8?B?LzBpRFNwMG9URzJwVTl5WG9NTW1oR3FrQWVCd1pEa2FpTDJaWFhHRno1MVBm?=
+ =?utf-8?B?eGJZK0dnYW9WRUpqTmlpYzdsak5KNEJYa1Q3cEM0MTFSdm9BTkJ4WHZ0VFQ0?=
+ =?utf-8?B?WUdTVzVHVXhzN0hqdHp3KzdRRHhQNnlkamJhUGhsZElJK2FuRDJxWWRHbktH?=
+ =?utf-8?B?aGNIZVBMdzVqNndvTkVpRnRHSWVGK28rQkVZRFpJUTBYS1R3TkNmREZRbjNt?=
+ =?utf-8?B?by9mRzhTMXVXZnk0TjZWclVhR20vYW5VbWZrZXU3aTBMWFJERytmTEV1Z2E3?=
+ =?utf-8?B?L2gva0VvSXJOdzNRNjZNV0g0bkx1Z2w0QVdIZmFJSjcrakIyNk85VTJjWHp3?=
+ =?utf-8?B?RCtxeFkxQWZ6ZGxOZ3ZmMWNWc3BWZzNJNXlTcjd1c3R1RXQ0SkhUU04wRTRX?=
+ =?utf-8?B?bE0vVm1YRERhdG1BL0ZPb3NYdS8wNmt0dUk0OEt1MERlTDZNU1Vzb0kyelZ0?=
+ =?utf-8?B?U29EUEphWWxMNE5UMXBQd2cxbnY1RjhtRnlnRk0yODREVjFpVnVTRmt1Z0dG?=
+ =?utf-8?B?RWpkMmVxTldJRTljT0VBRXFTcko4ZDIrZENwK293UVFNNFoxbjYyUFB6cjBM?=
+ =?utf-8?B?L1RSbEk0eGFxanRVbityb3NWcXlTaE1SYXZkQlBmWks4LzUvczVzdmhjcjF5?=
+ =?utf-8?Q?I2A/JK5/bILZRRiFMj?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: da56025a-4a2f-4a47-7c3d-08df4a2794cd
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2026 12:36:37.2768
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 27sY3Rr2a0wztZlzHvLMGZIzFiy4Uq0kBGeO/HSHqWgvc9ki3obIq/Yx0pH+fYxx
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4370
 
-The DMA alias invalidation path in iommu_flush_irt_and_complete()
-performs a linear search_dev_data() walk on every IRTE update.  Nested
-VM entry and exit can switch multiple interrupt routes between guest
-and remapping modes, repeating this lookup for each posted interrupt.
-A reported workload with 4334 device entries shows median lookup
-latencies of 22-33 us per invocation, even when IRT caching is
-disabled and the lookup result is unused.
+On 11/24/26 07:23, Alistair Popple wrote:
+> On 2026-11-24 at 05:37 +1100, Christian König <christian.koenig@amd.com> wrote...
+>> On 11/23/26 17:57, Jason Gunthorpe wrote:
+>>> On Mon, Nov 23, 2026 at 02:36:46PM +0100, Christian König wrote:
+>>>> On 11/20/26 06:55, Alistair Popple wrote:
+>>>>> From: Jason Gunthorpe <jgg@nvidia.com>
+>>>>>
+>>>>> The SGT (Scatter Gather Table) DMA mapping type represents the existing
+>>>>> sg_table/scatterlist based DMA mapping. For now it continues to use a
+>>>>> sg_table for map/unmap, but this will allow a future patch series to
+>>>>> convert to using a different data structure for importers without having
+>>>>> to convert all at once.
+>>>>
+>>>> I strongly think we shouldn't have an SGT mapping type in the new DMA-buf mapping API.
+>>>>
+>>>> Instead we should have something like either an array or an xarray
+>>>> of DMA addresses.
+>>>
+>>> My plan was always to get there, but I don't think it is reasonable to
+>>> start there? There are too many places all over the place that are
+>>> just hardwired to do SGT right now.
+> 
+> Right. There are around 70 drivers upstream that make use of the sg_table handed
+> down via a dma-buf import, so I don't think it's tractable to convert them all
+> in one go. So obviously we will need some way of phasing this in to give time
+> for each driver change to be implemented, reviewed, etc.
 
-Save the allocation-time device data in struct amd_ir_data and thread
-it through all IRTE update paths:
+My suggestion is not to convert all drivers in one go, but rather to come up with some sane representation of the DMA addresses instead of using an SGT in the new interface.
 
- - iommu_flush_irt_and_complete() accepts a dev_data parameter.  When
-   IRT caching is disabled it returns immediately without any lookup.
-   When dev_data is NULL (IOAPIC/HPET allocated before PCI enumeration)
-   it falls back to search_dev_data() so DMA-alias invalidation still
-   works if the device is later probed.
+> Obviously some of those will share a common structure/helper and conversions
+> will be similar, so that is an over-estimate. But based on an initial poke
+> around there are plenty of drivers that bake the sg_table more deeply into their
+> data structures.
+> 
+>>> Part of the design of this series was to allow the conversion away
+>>> from SGT to be done incrementally without breaking compatibility.
+>>
+>> Do you know the joke from the hitchhikers guide to the galaxy where the dolphins are happy for exactly the same reasons?
+>>
+>> I'm pushing against this plan for exactly the same reason because I think it will make the conversation away from SGT even more problematic than it already is.
+>>
+>>> So it is effectively this:
+>>>
+>>>> The framework should then either connect the SGT directly if both
+>>>> importer and export are using the "classic" interface 
+>>
+>> Yeah but that should not be a separate mapping type, it's rather that we just convert back and forth from DMA addresses to SGT for compatibility reasons.
+> 
+> Right, I think this is actually fairly close to my plan, which is to provide a type
+> for each address class an exporter can produce - either a CPU physical address
+> or some device context + P2P/MMIO address but in future could be some other
+> interconnect type.
+> 
+> The core then negotiates compatible types and adds converters between them,
 
- - modify_irte_ga(), modify_irte() and free_irte() accept and forward
-   dev_data.
+I have strong objections to that plan and would potentially NAK it.
 
- - The amd_irte_ops callbacks (activate, deactivate, set_affinity) are
-   extended to carry dev_data so that amd_ir_update_irte() and the
-   irq_remapping activate/deactivate domain callbacks pass the cached
-   pointer.
+DMA-buf should *NEVER* accept CPU physical addresses nor provide conversion between different address types.
 
- - amd_iommu_activate_guest_mode() and deactivate_guest_mode() pass
-   ir_data->dev_data directly.
+Keep in mind that DMA-buf is solely a container for DMA addresses, nothing else and it should not provide any mapping functionality whatsoever.
 
- - amd_ir_set_vcpu_affinity() reuses ir_data->dev_data for the vCPU
-   affinity capability check.  This path is only reachable through
-   irq_bypass producers (VFIO-PCI, vhost-vDPA), where device probe
-   always precedes IRQ allocation, so dev_data is guaranteed non-NULL.
+> and having SGT as a type is what allows that. It only exists for unconverted
+> exporters and importers and eventually goes away once everything is converted.
+> The idea being we don't have to convert everything all at once, whilst also being
+> able to add support for different interconnect types. Are you ok with the SGT
+> type if it is just transitional?
 
-Device data is retained in the segment list across unplug and reused on
-reprobe, so the cached pointer remains valid throughout the IRQ
-lifetime.  The PCI device is still resolved through dev_data->dev at
-flush time so that later device association is observed.
+Not really, it just complicate things.
 
-DMA-alias invalidation, command ordering, locking and completion waits
-are preserved when IRT caching is enabled.
+What we should do with the mapping interface is to add the information in which domain the DMA addresses are to be used.
 
-Fixes: 5aac28784dca ("iommu/amd: Invalidate IRT cache for DMA aliases")
-Reported-by: Yifei Ge <geyifei@linux.alibaba.com>
-Co-developed-by: hr567 <hr567@linux.alibaba.com>
-Signed-off-by: hr567 <hr567@linux.alibaba.com>
-Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
----
- drivers/iommu/amd/amd_iommu_types.h | 10 ++--
- drivers/iommu/amd/iommu.c           | 76 +++++++++++++++++------------
- 2 files changed, 51 insertions(+), 35 deletions(-)
+The conversion between SGT and DMA address array is an exception we can make to aid transition between the old and the new interface, but that is basically a 1 to 1 copy between different data structures.
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index f98770db0090..da6d90f3a574 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -1029,6 +1029,7 @@ struct irq_2_irte {
- 
- struct amd_ir_data {
- 	struct amd_iommu *iommu;
-+	struct iommu_dev_data *dev_data;
- 	struct irq_2_irte irq_2_irte;
- 	struct msi_msg msi_entry;
- 	void *entry;    /* Pointer to union irte or struct irte_ga */
-@@ -1045,9 +1046,12 @@ struct amd_ir_data {
- 
- struct amd_irte_ops {
- 	void (*prepare)(void *, u32, bool, u8, u32, int);
--	void (*activate)(struct amd_iommu *iommu, void *, u16, u16);
--	void (*deactivate)(struct amd_iommu *iommu, void *, u16, u16);
--	void (*set_affinity)(struct amd_iommu *iommu, void *, u16, u16, u8, u32);
-+	void (*activate)(struct amd_iommu *iommu, void *, u16, u16,
-+			 struct iommu_dev_data *dev_data);
-+	void (*deactivate)(struct amd_iommu *iommu, void *, u16, u16,
-+			   struct iommu_dev_data *dev_data);
-+	void (*set_affinity)(struct amd_iommu *iommu, void *, u16, u16, u8,
-+			     u32, struct iommu_dev_data *dev_data);
- 	void *(*get)(struct irq_remap_table *, int);
- 	void (*set_allocated)(struct irq_remap_table *, int);
- 	bool (*is_allocated)(struct irq_remap_table *, int);
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 41ee4ad1dcf8..d171ccf2eee0 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3291,18 +3291,21 @@ static int iommu_flush_dev_irt(struct pci_dev *unused, u16 devid, void *data)
- 	return ret;
- }
- 
--static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
-+static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid,
-+					 struct iommu_dev_data *dev_data)
- {
- 	int ret;
- 	u64 data;
- 	unsigned long flags;
- 	struct iommu_cmd cmd;
- 	struct pci_dev *pdev = NULL;
--	struct iommu_dev_data *dev_data = search_dev_data(iommu, devid);
- 
- 	if (iommu->irtcachedis_enabled)
- 		return;
- 
-+	if (!dev_data)
-+		dev_data = search_dev_data(iommu, devid);
-+
- 	if (dev_data && dev_data->dev && dev_is_pci(dev_data->dev))
- 		pdev = to_pci_dev(dev_data->dev);
- 
-@@ -3578,7 +3581,7 @@ static int __modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
- }
- 
- static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
--			  struct irte_ga *irte)
-+			  struct irte_ga *irte, struct iommu_dev_data *dev_data)
- {
- 	int ret;
- 
-@@ -3586,13 +3589,13 @@ static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
- 	if (ret)
- 		return ret;
- 
--	iommu_flush_irt_and_complete(iommu, devid);
-+	iommu_flush_irt_and_complete(iommu, devid, dev_data);
- 
- 	return 0;
- }
- 
--static int modify_irte(struct amd_iommu *iommu,
--		       u16 devid, int index, union irte *irte)
-+static int modify_irte(struct amd_iommu *iommu, u16 devid, int index,
-+		       union irte *irte, struct iommu_dev_data *dev_data)
- {
- 	struct irq_remap_table *table;
- 	unsigned long flags;
-@@ -3605,12 +3608,13 @@ static int modify_irte(struct amd_iommu *iommu,
- 	table->table[index] = irte->val;
- 	raw_spin_unlock_irqrestore(&table->lock, flags);
- 
--	iommu_flush_irt_and_complete(iommu, devid);
-+	iommu_flush_irt_and_complete(iommu, devid, dev_data);
- 
- 	return 0;
- }
- 
--static void free_irte(struct amd_iommu *iommu, u16 devid, int index)
-+static void free_irte(struct amd_iommu *iommu, u16 devid, int index,
-+		      struct iommu_dev_data *dev_data)
- {
- 	struct irq_remap_table *table;
- 	unsigned long flags;
-@@ -3623,7 +3627,7 @@ static void free_irte(struct amd_iommu *iommu, u16 devid, int index)
- 	iommu->irte_ops->clear_allocated(table, index);
- 	raw_spin_unlock_irqrestore(&table->lock, flags);
- 
--	iommu_flush_irt_and_complete(iommu, devid);
-+	iommu_flush_irt_and_complete(iommu, devid, dev_data);
- }
- 
- static void irte_prepare(void *entry,
-@@ -3656,50 +3660,57 @@ static void irte_ga_prepare(void *entry,
- 	irte->lo.fields_remap.valid       = 1;
- }
- 
--static void irte_activate(struct amd_iommu *iommu, void *entry, u16 devid, u16 index)
-+static void irte_activate(struct amd_iommu *iommu, void *entry, u16 devid,
-+			  u16 index, struct iommu_dev_data *dev_data)
- {
- 	union irte *irte = (union irte *) entry;
- 
- 	irte->fields.valid = 1;
--	modify_irte(iommu, devid, index, irte);
-+	modify_irte(iommu, devid, index, irte, dev_data);
- }
- 
--static void irte_ga_activate(struct amd_iommu *iommu, void *entry, u16 devid, u16 index)
-+static void irte_ga_activate(struct amd_iommu *iommu, void *entry, u16 devid,
-+			     u16 index, struct iommu_dev_data *dev_data)
- {
- 	struct irte_ga *irte = (struct irte_ga *) entry;
- 
- 	irte->lo.fields_remap.valid = 1;
--	modify_irte_ga(iommu, devid, index, irte);
-+	modify_irte_ga(iommu, devid, index, irte, dev_data);
- }
- 
--static void irte_deactivate(struct amd_iommu *iommu, void *entry, u16 devid, u16 index)
-+static void irte_deactivate(struct amd_iommu *iommu, void *entry, u16 devid,
-+			    u16 index, struct iommu_dev_data *dev_data)
- {
- 	union irte *irte = (union irte *) entry;
- 
- 	irte->fields.valid = 0;
--	modify_irte(iommu, devid, index, irte);
-+	modify_irte(iommu, devid, index, irte, dev_data);
- }
- 
--static void irte_ga_deactivate(struct amd_iommu *iommu, void *entry, u16 devid, u16 index)
-+static void irte_ga_deactivate(struct amd_iommu *iommu, void *entry, u16 devid,
-+			       u16 index, struct iommu_dev_data *dev_data)
- {
- 	struct irte_ga *irte = (struct irte_ga *) entry;
- 
- 	irte->lo.fields_remap.valid = 0;
--	modify_irte_ga(iommu, devid, index, irte);
-+	modify_irte_ga(iommu, devid, index, irte, dev_data);
- }
- 
--static void irte_set_affinity(struct amd_iommu *iommu, void *entry, u16 devid, u16 index,
--			      u8 vector, u32 dest_apicid)
-+static void irte_set_affinity(struct amd_iommu *iommu, void *entry, u16 devid,
-+			      u16 index, u8 vector, u32 dest_apicid,
-+			      struct iommu_dev_data *dev_data)
- {
- 	union irte *irte = (union irte *) entry;
- 
- 	irte->fields.vector = vector;
- 	irte->fields.destination = dest_apicid;
--	modify_irte(iommu, devid, index, irte);
-+	modify_irte(iommu, devid, index, irte, dev_data);
- }
- 
--static void irte_ga_set_affinity(struct amd_iommu *iommu, void *entry, u16 devid, u16 index,
--				 u8 vector, u32 dest_apicid)
-+static void irte_ga_set_affinity(struct amd_iommu *iommu, void *entry,
-+				 u16 devid, u16 index, u8 vector,
-+				 u32 dest_apicid,
-+				 struct iommu_dev_data *dev_data)
- {
- 	struct irte_ga *irte = (struct irte_ga *) entry;
- 
-@@ -3709,7 +3720,7 @@ static void irte_ga_set_affinity(struct amd_iommu *iommu, void *entry, u16 devid
- 					APICID_TO_IRTE_DEST_LO(dest_apicid);
- 		irte->hi.fields.destination =
- 					APICID_TO_IRTE_DEST_HI(dest_apicid);
--		modify_irte_ga(iommu, devid, index, irte);
-+		modify_irte_ga(iommu, devid, index, irte, dev_data);
- 	}
- }
- 
-@@ -3945,6 +3956,7 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- 		}
- 
- 		data->iommu = iommu;
-+		data->dev_data = dev_data;
- 		irq_data->hwirq = (devid << 16) + i;
- 		irq_data->chip_data = data;
- 		irq_data->chip = &amd_ir_chip;
-@@ -3963,7 +3975,7 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- 		}
- 	}
- 	for (i = 0; i < nr_irqs; i++)
--		free_irte(iommu, devid, index + i);
-+		free_irte(iommu, devid, index + i, dev_data);
- out_free_parent:
- 	irq_domain_free_irqs_common(domain, virq, nr_irqs);
- 	return ret;
-@@ -3982,7 +3994,8 @@ static void irq_remapping_free(struct irq_domain *domain, unsigned int virq,
- 		if (irq_data && irq_data->chip_data) {
- 			data = irq_data->chip_data;
- 			irte_info = &data->irq_2_irte;
--			free_irte(data->iommu, irte_info->devid, irte_info->index);
-+			free_irte(data->iommu, irte_info->devid,
-+				  irte_info->index, data->dev_data);
- 			kfree(data->entry);
- 			kfree(data);
- 		}
-@@ -4007,7 +4020,7 @@ static int irq_remapping_activate(struct irq_domain *domain,
- 		return 0;
- 
- 	iommu->irte_ops->activate(iommu, data->entry, irte_info->devid,
--				  irte_info->index);
-+				  irte_info->index, data->dev_data);
- 	amd_ir_update_irte(irq_data, iommu, data, irte_info, cfg);
- 	return 0;
- }
-@@ -4021,7 +4034,7 @@ static void irq_remapping_deactivate(struct irq_domain *domain,
- 
- 	if (iommu)
- 		iommu->irte_ops->deactivate(iommu, data->entry, irte_info->devid,
--					    irte_info->index);
-+					    irte_info->index, data->dev_data);
- }
- 
- static int irq_remapping_select(struct irq_domain *d, struct irq_fwspec *fwspec,
-@@ -4133,7 +4146,7 @@ int amd_iommu_activate_guest_mode(void *data, int cpu, bool ga_log_intr)
- 	__amd_iommu_update_ga(entry, cpu, ga_log_intr);
- 
- 	return modify_irte_ga(ir_data->iommu, ir_data->irq_2_irte.devid,
--			      ir_data->irq_2_irte.index, entry);
-+			      ir_data->irq_2_irte.index, entry, ir_data->dev_data);
- }
- EXPORT_SYMBOL(amd_iommu_activate_guest_mode);
- 
-@@ -4165,7 +4178,7 @@ int amd_iommu_deactivate_guest_mode(void *data)
- 				APICID_TO_IRTE_DEST_HI(cfg->dest_apicid);
- 
- 	return modify_irte_ga(ir_data->iommu, ir_data->irq_2_irte.devid,
--			      ir_data->irq_2_irte.index, entry);
-+			      ir_data->irq_2_irte.index, entry, ir_data->dev_data);
- }
- EXPORT_SYMBOL(amd_iommu_deactivate_guest_mode);
- 
-@@ -4174,7 +4187,6 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *info)
- 	int ret;
- 	struct amd_iommu_pi_data *pi_data = info;
- 	struct amd_ir_data *ir_data = data->chip_data;
--	struct irq_2_irte *irte_info = &ir_data->irq_2_irte;
- 	struct iommu_dev_data *dev_data;
- 
- 	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
-@@ -4183,7 +4195,7 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *info)
- 	if (ir_data->iommu == NULL)
- 		return -EINVAL;
- 
--	dev_data = search_dev_data(ir_data->iommu, irte_info->devid);
-+	dev_data = ir_data->dev_data;
- 
- 	/* Note:
- 	 * This device has never been set up for guest mode.
-@@ -4225,7 +4237,7 @@ static void amd_ir_update_irte(struct irq_data *irqd, struct amd_iommu *iommu,
- 	 */
- 	iommu->irte_ops->set_affinity(iommu, ir_data->entry, irte_info->devid,
- 				      irte_info->index, cfg->vector,
--				      cfg->dest_apicid);
-+				      cfg->dest_apicid, ir_data->dev_data);
- }
- 
- static int amd_ir_set_affinity(struct irq_data *data,
+> As discussed a bit previously types also add enforcement of the rules around when
+> the exporter type/location can change.
+> 
+> I do have most of this coded up, so can post a mega series of all patches if
+> it's helpful to see the overall direction in code form. I didn't do that because
+> this conversion of exporters to not return sg_tables makes it quite a large
+> patch series, so I was going to post them as separate RFCs building on top of
+> this. Not sure if you have a preference there?
 
-base-commit: b6a9fa34ce4187cb69d3c588a4bbffc31ce5db8f
--- 
-2.43.7
+I think we should have the core interface plus some test cases and at least one driver converted over as example of how the new interface would be used.
+
+>>> And this:
+>>>
+>>>> or convert
+>>>> from DMA-addr array to SGT and back if either of them are using this
+>>>> new interface.
+>>>look like 
+>>> Is something I imagined as a followup series.
+>>>
+>>> As this is actually quite complicated and needs discussion exactly
+>>> what it will look like.
+>>
+>> Actually that is the easy step I think because quite a lot of drivers already convert the SGT to a DMA addr array outside of the DMA-buf framework anyway.
+>>
+>> The more complicated one is then starting to come up with more bus types and doing optimization work.
+> 
+> Individually the actual data structure conversion isn't that hard, but there's
+> a lot of them and the mapping types allow you to do them incrementally without
+> breaking some unconverted importer importing from a converted exporter.
+
+Breaking classic users is actually completely intentional because we most likely still have people abusing the struct page inside the SGT.
+
+And those will need to be converted over to be using pure DMA addresses similar to how MSM has switched over recently.
+
+So the whole idea is when you have classic to classic interface pass along the SGT between exporter and importer. Then move as much as possible drivers over to the new interface and start identifying where and why some drivers have problems.
+
+Regards,
+Christian.
+
+> 
+> That is also why I think adding the types now rather than later is reasonable.
+> The rules for when an exporter may change type or placement are what most of the
+> previous review discussion has been about, and I didn't want to drop them.
+> 
+> Thanks for looking.
+> 
+>  - Alistair
+> 
+>> Christian.
+>>
+>>>
+>>> Jason
+>>
 
