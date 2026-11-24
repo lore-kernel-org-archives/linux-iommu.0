@@ -1,95 +1,113 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795546151;
-	b=InCcS1pSYbq0VqDpKWikEkoKvFfUrZ9uGijt8fWtIJT3iB1GuFabZ1W5QWFBmSp8eoUa
-	 oJZ4y/5Qx8/ttd0S6ULz2nnH9gmD8IM08j+rNezVU/x6jFZMQHPD5x+535gt57mp54R/P
-	 6Hwpuxtl8q7JkXbSwXyZgRDLPQyTa0WiXvowlLpOwA+2Yw7qIZ4Xys31cAkn3+V0duxX6
-	 mlLyycSFxps8cNH0sEEhaI/CrqcIK6X2Lhh6xhxFXDbZSoObEO5V36mbplrrWTF9CAmK0
-	 xtiqYokPlwJzVN2jAnI2h3ImOyPF5GMCWCEcl0rXNwl/Y9Q88uVxrhqczXpLVUvg3dg==
+	t=1795546719;
+	b=f1cT2B8Ve4dOgiBTYA1aFwNsT+tZG2GnmKHrAy9iAlBg/czABCHEBeV6NFcuz2yQyYbs
+	 38n+kjzhpEqlA2XWXLsIme+Oa6e91g+Yoy2yEtIaA9uwS/7J5YcPu2gYgzMDJ82z+hx4L
+	 Zm8DVVazsqT0mc3ygW2ElBaPxZOyq4glrqdZmU4tJfWah4dI4R1BaZbf79UC7N7/6CywU
+	 w2Ri6Gn7zZzKqVzr7Tx6xq/vvaZ5rpuKWM4sxpeVSMvD/QZBCMXgai/ONK/0sh9XwUHdS
+	 v7PyjWKluEmZef585vETatTXcQBMrQ5PoNp6WRWYbXAvRfFGn903o2ntn5FgGQMy+DQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795546151;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795546719;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To;
-	bh=4yLPI/bzfD8pEXes+IoGrcyl3dKDKR1GnvriWiKOLpo=;
-	b=uPYB212wcaGa42vZ1P0VC887IyeRpA71qyVb2aH4bd14aokYVRnpZioZ9kQEIZc+SHQI
-	 TcgJ1kD/Emit5wHgbDqB1NkG8gYbgJYQO+748D7NMSPRt2+YdOhHr0btwlzTH+Ufo2GrX
-	 qu1WOv5KijoEAJM8nsCIN30bey6SZi7QpeyBUYahkUo26GP5lV/UfPwoISjmETbM0NKec
-	 HASH38PlJa9YDmK+2Qk4iwVQzZcIE33IgJHCALv0BDwvAQtoYnMz+gFSuz02aCYg82WjQ
-	 Jn0/E3YBmZ5fRCBehkJgWq5ny0if8lM5TePo4gfyJkPZ9fIH539VXzcpGg4b4yQWvRw==
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=rKVd0WB9GKER5oLiGhqXKhoz1U/fSQCfKOepi4KUjiM=;
+	b=Txbd1xF7okKDt65hkLcKRTenKQ37hvMXfxzVqoLcRSxxomtVwCUV1rtTKpYO+MotSg5r
+	 hzEOmxSjdbXJ+nEvbFcehb7wIXwEtVgZ0uTcoFoeEGx8xeexZd9sc69wizRV2JniMJIlt
+	 OaRNQXYJ7eznc7yj7R54dTsTSCn1TPoK0utUq2sovfELM+TgfxGXeBgijliZrwOlTlzAJ
+	 fQ1O39b+4iwAPR+aOwC+oSnnprgjxGPTwp5XTC24Xtwa6OjDSWd9hS895hLrpiWnEBS04
+	 5eU+owo/4cdyVe3NZoeZ8eA/u5t1OkF6j/39KJFafSq/mDzjRZ5Myvu5AMQAmDsBnpA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=chromium.org;
 	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=a02s+X5I;
-	arc=none smtp.remote-ip=209.85.128.45
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=fHg+aG4X;
+	arc=none smtp.remote-ip=209.85.128.48
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2D4A606A323
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 18:49:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B2D4A606A323
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18A0B606A682
+	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 18:58:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 18A0B606A682
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=a02s+X5I
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4bb55cda775so31522965e9.0
-        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 10:49:10 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=fHg+aG4X
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4bb77a462c6so44014905e9.1
+        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 10:58:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1795546149; x=1796150949; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=4yLPI/bzfD8pEXes+IoGrcyl3dKDKR1GnvriWiKOLpo=;
-        b=a02s+X5IQDc2LtTdc5mlpmDsDRIGayQsHx7e628j72QWO0XmqlmrnYlhRv/wV64wOO
-         mnLWxGop44+Rq2+YqTs82CuvDjKbGuHTcYngU+SMonG/xOSJwF26kSo1j2IpXwMyByBJ
-         AdIRNUDRj0Kp+ZyKGxLrn2pvRDTEWN1KtXpy0=
+        d=chromium.org; s=google; t=1795546716; x=1796151516; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=rKVd0WB9GKER5oLiGhqXKhoz1U/fSQCfKOepi4KUjiM=;
+        b=fHg+aG4X2P1ATKa/cPZRAMvwj8sfd2vGn/69eGznevPqBP98ydgqfydgjAWn+YvD+Z
+         +STpRBFGyGiXgv0tQr0+QrZmFfbzpow8CP4EEhgv452HYBoNycFdBK69IzwOYlznIHL1
+         lVz6vgu55/1XmNMRaxBRrHifqpWvqzTwE2muk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795546149; x=1796150949;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=4yLPI/bzfD8pEXes+IoGrcyl3dKDKR1GnvriWiKOLpo=;
-        b=XVT7TpRM10zTz8UEzn4fjX+K3pAYMhnMtqzuT/WQXlEA6GW2ZLoiTq/1wvtw4GU/05
-         StN/3mCUzJKZVkwUmQv9UtgHPUAzo7LNsXe/23PNW3gPk1Ir4IxsN5ikkFOLZaKEs2cY
-         sPi4xukU9IAv7vQr104UPrQabKbzyBiGDFTpxOkd81flz2Qf8KLPWIilW6JxXyVKMtKM
-         9MIfAtaD68rZU1bMLD7UoFkCcKmmp/A88W/9DXlMKLhU8A5mXAhgavM21b5zfU54Pl+e
-         lIqDlOZHoy6aRip9Mu8h/qrMGJ4LeV3lW/TJhhtTBsi/Hud/4U6ry83p8aMyAPMBJXD4
-         o1oQ==
-X-Forwarded-Encrypted: i=1; AL+hErFxfQZCVdIqd+/efNy4B8zeYZtWK8nr82rB19j2tNigzTsOic6pglG3dBEDvRxT7Mcz6//N1g==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8/XcAINalgLHh8SX40awwtYv7rHXE19y3uQMiXXaPObJBa4fvP
-	b9HCQU7H5ilbzXL6UFlcPlLbRm6MQOtHBBlaIxm7vP1cy57QuZG2fuE3dUEz952W7w==
-X-Gm-Gg: AZFdTZfU8HCkpnhc4wLiLKNb8McNpTQP40Qicr+w419C5BMvN1CMwiH0DxPQVlJrL1h
-	sAX4uXN/ykwzpfaSe7OzaJQI7FPzHfCWb3s9RVjb7VFf307QV7X08fcNRdwD+7bFDmsLnWPuOvq
-	K/4fL/yFgrNrBaPxfVdxNpOzSdk4AUv7gaIMGiVplT8zrvwb7BiVEtUjAugXy3EgqCQnXbyFUvP
-	I06TI3r1hAD3VXUpGAWRySth306iZ2eKg2DZbeoDd+ECwftUXy+PmVpdpcf9ZOkXov/mUFsCfWR
-	pktEQiJvF99iMsYFRKptMgod4Ki6d2nzXdn8sL678GZSP/SXt0tWvRjvkhUGxCFlKCbdqcf3App
-	pjJ1zWwmgHYhJWtX0XFGHxezEMLm5oA9aM2QyrBsYLPaxMY6FfYgt7B71ehihZ2ocJjhiNeiywS
-	HsXmByUt91/bS2IxxMjddIDo69FbFqJ5F84AGhmU3rKNHn0Mb44b1PMngb0DBZF2ldcv08Ni3PE
-	IHsL67J1WjU2KJbbFU9vh3+rcgOVt+rtQBozGYzgiwv0PAo3kI3gZ0UDJ+2V+mmvtyvaIKZygV/
-	dFfMyNR+ScpYc9AwluX/rwxxlTeGpKJF7Br6a1uZep3VGoXs5c64tH00wEjuwEzc
-X-Received: by 2002:a05:600c:1d09:b0:4bb:66fd:ad68 with SMTP id 5b1f17b1804b1-4bb888160cdmr336029925e9.14.1795546148684;
-        Tue, 24 Nov 2026 10:49:08 -0800 (PST)
+        d=1e100.net; s=20260707; t=1795546716; x=1796151516;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=rKVd0WB9GKER5oLiGhqXKhoz1U/fSQCfKOepi4KUjiM=;
+        b=SzGLY6tM3EhPOAjQImyyY0kBYUT7cNdTzffNC1lodQUSZyMUsaogTiiNiC0eAWX0h+
+         x5MBoksssk/QYbWjheE7/PETDfXigoLtKga2vr1SxbedGmiB5kGJEM+j2wZTntqGyn5g
+         06x+s1Un/eplqSIuruQKlXcj00OmzEcnavt9PgsfZDJolC82gmC5i0mGc2GhRIecMc3W
+         122ZUQY50bb5B9cfrtSxsghUEqLmtP7yUM6ca2Scftkze+y0eCvwVUbf9Zoa3hXwUE02
+         7MAUh9gapQTpi+0+NneSDX6XD5BYpdqgSPF0XevuJuuF7fraDia1+B3ROTE6U6vxmTlT
+         s6Pw==
+X-Forwarded-Encrypted: i=1; AL+hErEXtHsJlUhczd6Fy7nbmSt3NYMbRwypiI7qWTiYmO/phRtz5i5G4hzS7C0p7VCinXp1Rz0OPw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9nVe87tBT/MQK3euSE6yX6r0luea6oMzpO/jpScNPEVRkYh8Ah
+	dgrt/IhzRga/oc3QbcNQZZbxwCPjDmqnz3DQ0irTrgk7rNS4NWFSRF0rL57ii98hOg==
+X-Gm-Gg: AZFdTZcEYuhTZYL1k6I5s0kFH+1cAGgBs+adC/ke8d5ZnulqJSkvYFidIp2i3C2DKKg
+	LInwW/HTzuxue5Tup6PR4zZjZuOSNsJbYOmsp1J+YNWaA8UMAWEc6miUCYrIoCdCZoIcDi/vv2f
+	DunINs0i3W6x6L33jSHPEGr39dv/3iS/qeLifioEhut4J+LJ0QGd3GBvAz81xaJHi3H0gYlJ7Ek
+	Fi6dxKU44jBoJKxnBPEKfytjGqABHJVOhHFSEQCNe037wnXRSxzS8peSVT4ZHM4cfdIB+edOxCQ
+	Ue2tf2V8iMYEL5vCiR3UM7DoO9yXxPdQIIYfLfN4US/MQC06EXIFCUzhlfJ8koo4FFE8Kk8NMwC
+	I/JMDVAVuLdv2Ej4vAM7K2z+JKeKN+GbgmTUjJ8vKiR3krFX7Wy0W9UKxSKBy8x82vho0kjqNZ3
+	MlXsfGNQSohDCXV5tucnNsleo2cZccZ/GacQyJYrcKAKO05DjuleW6ClQEyJKJTmzKtvto4Lvtc
+	dh4rjQtGN8ZZANNkrH2FMYnsjdCy63oD/UgHtIbyHXHa4wO3UXuFzl5sUfMnOuZUs+TpdvFrx2F
+	9dmDfc+RatL1ydb1cuATWhm09LlJPsedCY8xqkRL2aflOHiPOInDqKzxQglp8sv7
+X-Received: by 2002:a05:600c:4585:b0:4a1:c6f5:2450 with SMTP id 5b1f17b1804b1-4bb8881b8e4mr321879025e9.17.1795546716413;
+        Tue, 24 Nov 2026 10:58:36 -0800 (PST)
 Received: from google.com ([2a00:79e0:285b:8:af0c:c5f1:ee8a:b81f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb88402ce9sm367300855e9.0.2026.11.24.10.49.07
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb853ca452sm445870355e9.15.2026.11.24.10.58.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Nov 2026 10:49:08 -0800 (PST)
-Date: Tue, 24 Nov 2026 19:49:04 +0100
+        Tue, 24 Nov 2026 10:58:35 -0800 (PST)
+Date: Tue, 24 Nov 2026 19:58:31 +0100
 From: Dmytro Maluka <dmaluka@chromium.org>
-To: Esther Shimanovich <eshimanovich@chromium.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Rajat Jain <rajatja@google.com>,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Mario Limonciello <mario.limonciello@amd.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	iommu@lists.linux.dev, Lukas Wunner <lukas@wunner.de>,
+To: sashiko-reviews@lists.linux.dev
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Dmitry Torokhov <dtor@google.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Bjorn Helgaas <helgaas@kernel.org>, iommu@lists.linux.dev,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Joshua Peraza <jperaza@google.com>,
+	Jesse Barnes <jsbarnes@google.com>, Len Brown <lenb@kernel.org>,
+	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-pci@vger.kernel.org,
 	Mika Westerberg <mika.westerberg@linux.intel.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5] PCI: Detect and trust built-in Thunderbolt chips
-Message-ID: <awXXSfrhLHK7TNbp@google.com>
-References: <20240910-trust-tbt-fix-v5-1-7a7a42a5f496@chromium.org>
+	Oliver O'Halloran <oohall@gmail.com>,
+	Pavel Machek <pavel@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Rajat Jain <rajatja@google.com>, Rajat Jain <rajatxjain@gmail.com>,
+	Will Deacon <will@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Vineeth Pillai <vineeth@bitbyteword.org>,
+	Aashish Sharma <aashish@aashishsharma.net>,
+	Grzegorz Jaszczyk <jaszczyk@chromium.org>,
+	Tomasz Nowicki <tnowicki@google.com>,
+	Dmytro Maluka <dmaluka@chromium.org>
+Subject: Re: [PATCH v11 1/2] PCI/ACPI: Support Microsoft's "DmaProperty"
+Message-ID: <awXeV5Jo4WTjLc8c@google.com>
+References: <20261123235845.564027-1-dmaluka@chromium.org>
+ <20261123235845.564027-2-dmaluka@chromium.org>
+ <sashiko-outbox-230247@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -99,332 +117,119 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240910-trust-tbt-fix-v5-1-7a7a42a5f496@chromium.org>
+In-Reply-To: <sashiko-outbox-230247@kernel.org>
 
-On Tue, Sep 10, 2024 at 05:57:45PM +0000, Esther Shimanovich wrote:
-> Some computers with CPUs that lack Thunderbolt features use discrete
-> Thunderbolt chips to add Thunderbolt functionality. These Thunderbolt
-> chips are located within the chassis; between the root port labeled
-> ExternalFacingPort and the USB-C port.
+On Tue, Nov 24, 2026 at 12:15:46AM +0000, sashiko-bot@kernel.org wrote:
+> Thank you for your contribution! Sashiko AI review found 2 potential
+> issues to consider:
+> - [Medium] PCI/ACPI: platform_optin_force_iommu() ignores DmaProperty
+>   devices
+> - [Medium] PCI: SR-IOV VFs do not inherit untrusted flag from
+>   DmaProperty PF
+> --
 > 
-> These Thunderbolt PCIe devices should be labeled as fixed and trusted,
-> as they are built into the computer. Otherwise, security policies that
-> rely on those flags may have unintended results, such as preventing
-> USB-C ports from enumerating.
+> commit 534ec8c0dc4ebcebaa88d905d9760f867ca5b38f
+> Author: Rajat Jain <rajatja@google.com>
 > 
-> Detect the above scenario through the process of elimination.
+> PCI/ACPI: Support Microsoft's "DmaProperty"
 > 
-> 1) Integrated Thunderbolt host controllers already have Thunderbolt
->    implemented, so anything outside their external facing root port is
->    removable and untrusted.
+> This commit adds support for the Microsoft ACPI _DSD "DmaProperty" to mark
+> PCI devices as untrusted when the property is set to 1.
 > 
->    Detect them using the following properties:
+> Link: [1] https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-internal-pcie-ports-accessible-to-users-and-requiring-dma-protection
+> Link: [2] https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
 > 
->      - Most integrated host controllers have the usb4-host-interface
->        ACPI property, as described here:
-> Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#mapping-native-protocols-pcie-displayport-tunneled-through-usb4-to-usb4-host-routers
+> > diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+> > index 1150f2fbabf41..5971ffc2a375a 100644
+> > --- a/drivers/pci/pci-acpi.c
+> > +++ b/drivers/pci/pci-acpi.c
+> > @@ -1427,12 +1427,34 @@ static void pci_acpi_set_external_facing(struct pci_dev *dev)
+> >  		dev->external_facing = 1;
+> >  }
+> >  
+> > +static int pci_dev_has_dma_property(struct pci_dev *dev)
+> > +{
+> > +	struct acpi_device *adev;
+> > +	const union acpi_object *obj;
+> > +
+> > +	adev = ACPI_COMPANION(&dev->dev);
+> > +	if (!adev)
+> > +		return 0;
+> > +
+> > +	/*
+> > +	 * Property used by Microsoft Windows to enforce IOMMU DMA
+> > +	 * protection from any device, that the system may not fully trust;
+> > +	 * we'll honour it the same way.
+> > +	 */
+> > +	if (!acpi_dev_get_property(adev, "DmaProperty", ACPI_TYPE_INTEGER,
+> > +				   &obj) && obj->integer.value == 1)
+> > +		return 1;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
+> >  {
+> >  	struct pci_dev *pci_dev = to_pci_dev(dev);
+> >  
+> >  	pci_acpi_optimize_delay(pci_dev, adev->handle);
+> >  	pci_acpi_set_external_facing(pci_dev);
+> > +	pci_dev->untrusted |= pci_dev_has_dma_property(pci_dev);
 > 
->      - Integrated Thunderbolt PCIe root ports before Alder Lake do not
->        have the usb4-host-interface ACPI property. Identify those with
->        their PCI IDs instead.
+> [Severity: Medium]
+> Should platform_optin_force_iommu() also check for devices marked via
+> DmaProperty?
 > 
-> 2) If a root port does not have integrated Thunderbolt capabilities, but
->    has the ExternalFacingPort ACPI property, that means the manufacturer
->    has opted to use a discrete Thunderbolt host controller that is
->    built into the computer.
+> In drivers/iommu/intel/iommu.c, platform_optin_force_iommu() only checks
+> has_external_pci(), which tests pdev->external_facing:
 > 
->    This host controller can be identified by virtue of being located
->    directly below an external-facing root port that lacks integrated
->    Thunderbolt. Label it as trusted and fixed.
+> drivers/iommu/intel/iommu.c:has_external_pci() {
+> 	...
+> 	for_each_pci_dev(pdev)
+> 		if (pdev->external_facing) {
+> 			pci_dev_put(pdev);
+> 			return true;
+> 		}
+> 	return false;
+> }
 > 
->    Everything downstream from it is untrusted and removable.
-> 
-> The ExternalFacingPort ACPI property is described here:
-> Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-externally-exposed-pcie-root-ports
-> 
-> Suggested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> Signed-off-by: Esther Shimanovich <eshimanovich@chromium.org>
-> Tested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> Tested-by: Mario Limonciello <mario.limonciello@amd.com>
-> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
-> ---
-> While working with devices that have discrete Thunderbolt chips, I
-> noticed that their internal TBT chips are inaccurately labeled as
-> untrusted and removable.
-> 
-> I've observed that this issue impacts all computers with internal,
-> discrete Intel JHL Thunderbolt chips, such as JHL6240, JHL6340, JHL6540,
-> and JHL7540, across multiple device manufacturers such as Lenovo, Dell,
-> and HP.
-> 
-> This affects the execution of any downstream security policy that
-> relies on the "untrusted" or "removable" flags.
-> 
-> I initially submitted a quirk to resolve this, which was too small in
-> scope, and after some discussion, Mika proposed a more thorough fix:
-> https://lore.kernel.org/lkml/20240510052616.GC4162345@black.fi.intel.com
-> I refactored it and am submitting as a new patch.
-> ---
-> Changes in v5:
-> - Applied the following edits suggested by Lukas Wunner:
->   - Applied ifdefs edits to ensure code is only compiled on x86 systems
->   with ACPI
->   - Added returns to avoid unecessary checks
->   - Renamed pcie_is_tunneled to arch_pci_dev_is_removable
-> - Link to v4: https://lore.kernel.org/r/20240823-trust-tbt-fix-v4-1-c6f1e3bdd9be@chromium.org
-> 
-> Changes in v4:
-> - Applied edits on logic-flow clarity and formatting suggested by Ilpo
->   Järvinen
-> - Mario Limonciello tested patch and confirmed works as intended.
-> - Link to v3: https://lore.kernel.org/r/20240815-trust-tbt-fix-v3-1-6ba01865d54c@chromium.org
-> 
-> Changes in v3:
-> - Incorporated minor edits suggested by Mika Westerberg.
-> - Mika Westerberg tested patch (more details in v2 link)
-> - Added "reviewed-by" and "tested-by" lines
-> - Link to v2: https://lore.kernel.org/r/20240808-trust-tbt-fix-v2-1-2e34a05a9186@chromium.org
-> 
-> Changes in v2:
-> - I clarified some comments, and made minor fixins
-> - I also added a more detailed description of implementation into the
->   commit message
-> - Added Cc recipients Mike recommended
-> - Link to v1: https://lore.kernel.org/r/20240806-trust-tbt-fix-v1-1-73ae5f446d5a@chromium.org
-> ---
->  arch/x86/pci/acpi.c | 119 ++++++++++++++++++++++++++++++++++++++++++++++++++++
->  drivers/pci/probe.c |  30 +++++++++----
->  include/linux/pci.h |   6 +++
->  3 files changed, 148 insertions(+), 7 deletions(-)
-> 
-> diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
-> index 55c4b07ec1f6..62271668c3b1 100644
-> --- a/arch/x86/pci/acpi.c
-> +++ b/arch/x86/pci/acpi.c
-> @@ -250,6 +250,125 @@ void __init pci_acpi_crs_quirks(void)
->  		pr_info("Please notify linux-pci@vger.kernel.org so future kernels can do this automatically\n");
->  }
->  
-> +/*
-> + * Checks if pdev is part of a PCIe switch that is directly below the
-> + * specified bridge.
-> + */
-> +static bool pcie_switch_directly_under(struct pci_dev *bridge,
-> +				       struct pci_dev *pdev)
-> +{
-> +	struct pci_dev *parent = pci_upstream_bridge(pdev);
-> +
-> +	/* If the device doesn't have a parent, it's not under anything. */
-> +	if (!parent)
-> +		return false;
-> +
-> +	/*
-> +	 * If the device has a PCIe type, check if it is below the
-> +	 * corresponding PCIe switch components (if applicable). Then check
-> +	 * if its upstream port is directly beneath the specified bridge.
-> +	 */
-> +	switch (pci_pcie_type(pdev)) {
-> +	case PCI_EXP_TYPE_UPSTREAM:
-> +		return parent == bridge;
-> +
-> +	case PCI_EXP_TYPE_DOWNSTREAM:
-> +		if (pci_pcie_type(parent) != PCI_EXP_TYPE_UPSTREAM)
-> +			return false;
-> +		parent = pci_upstream_bridge(parent);
-> +		return parent == bridge;
-> +
-> +	case PCI_EXP_TYPE_ENDPOINT:
-> +		if (pci_pcie_type(parent) != PCI_EXP_TYPE_DOWNSTREAM)
-> +			return false;
-> +		parent = pci_upstream_bridge(parent);
-> +		if (!parent || pci_pcie_type(parent) != PCI_EXP_TYPE_UPSTREAM)
-> +			return false;
-> +		parent = pci_upstream_bridge(parent);
-> +		return parent == bridge;
-> +	}
-> +
-> +	return false;
-> +}
-> +
-> +static bool pcie_has_usb4_host_interface(struct pci_dev *pdev)
-> +{
-> +	struct fwnode_handle *fwnode;
-> +
-> +	/*
-> +	 * For USB4, the tunneled PCIe root or downstream ports are marked
-> +	 * with the "usb4-host-interface" ACPI property, so we look for
-> +	 * that first. This should cover most cases.
-> +	 */
-> +	fwnode = fwnode_find_reference(dev_fwnode(&pdev->dev),
-> +				       "usb4-host-interface", 0);
-> +	if (!IS_ERR(fwnode)) {
-> +		fwnode_handle_put(fwnode);
-> +		return true;
-> +	}
-> +
-> +	/*
-> +	 * Any integrated Thunderbolt 3/4 PCIe root ports from Intel
-> +	 * before Alder Lake do not have the "usb4-host-interface"
-> +	 * property so we use their PCI IDs instead. All these are
-> +	 * tunneled. This list is not expected to grow.
-> +	 */
-> +	if (pdev->vendor == PCI_VENDOR_ID_INTEL) {
-> +		switch (pdev->device) {
-> +		/* Ice Lake Thunderbolt 3 PCIe Root Ports */
-> +		case 0x8a1d:
-> +		case 0x8a1f:
-> +		case 0x8a21:
-> +		case 0x8a23:
-> +		/* Tiger Lake-LP Thunderbolt 4 PCIe Root Ports */
-> +		case 0x9a23:
-> +		case 0x9a25:
-> +		case 0x9a27:
-> +		case 0x9a29:
-> +		/* Tiger Lake-H Thunderbolt 4 PCIe Root Ports */
-> +		case 0x9a2b:
-> +		case 0x9a2d:
-> +		case 0x9a2f:
-> +		case 0x9a31:
-> +			return true;
-> +		}
-> +	}
-> +
-> +	return false;
-> +}
-> +
-> +bool arch_pci_dev_is_removable(struct pci_dev *pdev)
-> +{
-> +	struct pci_dev *parent, *root;
-> +
-> +	/* pdev without a parent or Root Port is never tunneled. */
-> +	parent = pci_upstream_bridge(pdev);
-> +	if (!parent)
-> +		return false;
-> +	root = pcie_find_root_port(pdev);
-> +	if (!root)
-> +		return false;
-> +
-> +	/* Internal PCIe devices are not tunneled. */
-> +	if (!root->external_facing)
-> +		return false;
-> +
-> +	/* Anything directly behind a "usb4-host-interface" is tunneled. */
-> +	if (pcie_has_usb4_host_interface(parent))
-> +		return true;
-> +
-> +	/*
-> +	 * Check if this is a discrete Thunderbolt/USB4 controller that is
-> +	 * directly behind the non-USB4 PCIe Root Port marked as
-> +	 * "ExternalFacingPort". Those are not behind a PCIe tunnel.
-> +	 */
-> +	if (pcie_switch_directly_under(root, pdev))
-> +		return false;
-> +
-> +	/* PCIe devices after the discrete chip are tunneled. */
-> +	return true;
-> +}
-> +
->  #ifdef	CONFIG_PCI_MMCONFIG
->  static int check_segment(u16 seg, struct device *dev, char *estr)
->  {
-> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> index b14b9876c030..7e0d6a1e151b 100644
-> --- a/drivers/pci/probe.c
-> +++ b/drivers/pci/probe.c
-> @@ -1631,23 +1631,33 @@ static void set_pcie_thunderbolt(struct pci_dev *dev)
->  
->  static void set_pcie_untrusted(struct pci_dev *dev)
->  {
-> -	struct pci_dev *parent;
-> +	struct pci_dev *parent = pci_upstream_bridge(dev);
->  
-> +	if (!parent)
-> +		return;
->  	/*
-> -	 * If the upstream bridge is untrusted we treat this device
-> +	 * If the upstream bridge is untrusted we treat this device as
->  	 * untrusted as well.
->  	 */
-> -	parent = pci_upstream_bridge(dev);
-> -	if (parent && (parent->untrusted || parent->external_facing))
-> +	if (parent->untrusted) {
-> +		dev->untrusted = true;
-> +		return;
-> +	}
-> +
-> +	if (arch_pci_dev_is_removable(dev)) {
+> On systems with CONFIG_INTEL_IOMMU_DEFAULT_ON=n where firmware sets the
+> DMAR platform opt-in flag and marks internal ports or devices with
+> DmaProperty instead of ExternalFacingPort, has_external_pci() returns
+> false.  platform_optin_force_iommu() then returns early without enabling
+> DMAR_FORCE_ON, and intel_iommu_init() disables the IOMMU, leaving those
+> devices without DMA remapping protection.
 
-Looks like this caused a regression: on non-x86, dev->untrusted is never
-set to true for any device (so we *never* enforce DMA protection from
-externally plugged devices), since set_pcie_untrusted() solely relies on
-arch_pci_dev_is_removable() which is implemented on x86 only (on other
-archs it is a stub returning false), without checking
-parent->external_facing on other archs like it did before this patch.
+Makes sense to me. As I understand, prior to this patch,
+platform_optin_force_iommu() was technically not buggy, since
+pdev->untrusted was only set for devices downstream of external-facing
+ports; whereas with this patch, internal (e.g. SoC-integrated) devices
+may also be marked as untrusted i.e. requiring DMA protection, thus
+platform_optin_force_iommu() should check pdev->untrusted along with
+checking pdev->external_facing.
 
-(I found this by looking at the code, not by testing.)
+Baolu, do you agree?
 
-> +		pci_dbg(dev, "marking as untrusted\n");
->  		dev->untrusted = true;
-> +	}
->  }
->  
->  static void pci_set_removable(struct pci_dev *dev)
->  {
->  	struct pci_dev *parent = pci_upstream_bridge(dev);
->  
-> +	if (!parent)
-> +		return;
->  	/*
-> -	 * We (only) consider everything downstream from an external_facing
-> +	 * We (only) consider everything tunneled below an external_facing
->  	 * device to be removable by the user. We're mainly concerned with
->  	 * consumer platforms with user accessible thunderbolt ports that are
->  	 * vulnerable to DMA attacks, and we expect those ports to be marked by
-> @@ -1657,9 +1667,15 @@ static void pci_set_removable(struct pci_dev *dev)
->  	 * accessible to user / may not be removed by end user, and thus not
->  	 * exposed as "removable" to userspace.
->  	 */
-> -	if (parent &&
-> -	    (parent->external_facing || dev_is_removable(&parent->dev)))
-> +	if (dev_is_removable(&parent->dev)) {
-> +		dev_set_removable(&dev->dev, DEVICE_REMOVABLE);
-> +		return;
-> +	}
-> +
-> +	if (arch_pci_dev_is_removable(dev)) {
-> +		pci_dbg(dev, "marking as removable\n");
->  		dev_set_removable(&dev->dev, DEVICE_REMOVABLE);
-> +	}
->  }
->  
->  /**
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 9e36b6c1810e..dca19203bc7c 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -2604,6 +2604,12 @@ pci_host_bridge_acpi_msi_domain(struct pci_bus *bus) { return NULL; }
->  static inline bool pci_pr3_present(struct pci_dev *pdev) { return false; }
->  #endif
->  
-> +#if defined(CONFIG_X86) && defined(CONFIG_ACPI)
-> +bool arch_pci_dev_is_removable(struct pci_dev *pdev);
-> +#else
-> +static inline bool arch_pci_dev_is_removable(struct pci_dev *pdev) { return false; }
-> +#endif
-> +
->  #ifdef CONFIG_EEH
->  static inline struct eeh_dev *pci_dev_to_eeh_dev(struct pci_dev *pdev)
->  {
+> [Severity: Medium]
+> Do SR-IOV Virtual Functions inherit pci_dev->untrusted when DmaProperty is
+> placed directly on an endpoint Physical Function?
 > 
-> ---
-> base-commit: 3f386cb8ee9f04ff4be164ca7a1d0ef3f81f7374
-> change-id: 20240806-trust-tbt-fix-5f337fd9ec8a
-> 
-> Best regards,
-> -- 
-> Esther Shimanovich <eshimanovich@chromium.org>
-> 
+> When VFs are created via pci_iov_add_virtfn() -> pci_iov_scan_device() ->
+> pci_setup_device(), set_pcie_untrusted() checks pci_upstream_bridge(dev).
+> Because pci_upstream_bridge() resolves pci_physfn(dev) first and returns
+> the bridge upstream of the PF (or NULL on a root bus) rather than the PF
+> itself, and VFs do not share the PF's ACPI companion, virtfn->untrusted
+> remains 0.  IOMMU and DMA paths then treat the VFs of an untrusted PF as
+> trusted.
+
+Yeah, similarly agree. Looks like pci_iov_add_virtfn() is implicitly
+relying on an assumption that pdev->untrusted is *only* true for PFs
+downstream of external-facing ports, which happens to be the case
+without this patch, but is no longer the case with this patch.
+
+...Although, independently of this series, looks like
+set_pcie_untrusted() is completely buggy on non-x86 since v6.13, since
+it solely relies on arch_pci_dev_is_removable(). I've just reported that
+at https://lore.kernel.org/all/awXXSfrhLHK7TNbp@google.com/
