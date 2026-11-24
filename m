@@ -1,129 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.70.43.167
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795530037;
-	b=XwRW6/QxW92sMLqUamlcnnDiOArDlYQowNdnR7PS7C7ZWvMPQDGXs5F0NP0PA8hy8APh
-	 CaVPGQeNbOQjqg+IsLjVUehistVWGwMFqMt7M+AGho+EiReimHuc2j9c6t05Nx3SpmLTB
-	 97Z3XUKNtdDS5fThl1qJyOleLETSN59NBh8uVWeMnb7t5ftOltqMqbG9W/tyIuK1r4vF/
-	 vQ1B9jH4znj7gWr2gYbbDI3DjJgheq6d3nrT5VV7mN0DOaXWvtXLaUL9j3zp+E7EAHocz
-	 NcRwMkzFMcFmfMvUQzK8Bi9rdb2X9syeEwl17FQ9PTPMSD+XvJPF5qaLZVJZRa699LA==
+	t=1795531737;
+	b=qjcfhOtxBYF7KcvD32tRWCZXTD9Ik0TZ1tVV4fYE2etqeux3rJteFSuhfe1orhkFPquV
+	 uJdOceUwLjotfNOUR1tZCDwVDKCCGXEx6PsN7imtQfhstE9bgRBd5Up8I/8vYD6dE7Ko3
+	 EJhWd4IBM9teQOwe4II1XMjwb4+0Rz1ChuCzIdGNEEn4WVC58umhF52QlmUJSaJm+uerI
+	 gVdiDIu2XvEEEQkZO28OsEvLFKB+cy1Z0OUtKCDdIb3Y5Z8emdze8uNqNCju+4/ijuAQP
+	 4us8f3ShfZD3RrfiUhKypZiAxNyl0QrSiQqREONvI7YszWVEekqiLhxipkeQpj1YqUA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795530037;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To;
-	bh=Hoa2uDGRiz+jXLxbcD4HBQF2SzMfWsHt0csEQeOTfAo=;
-	b=RfAG7akuS2SFAgl2IR5qWVdMa9hvClnpqyoI//3XOIoL8L8Xp0h4Pfz1saHcBwXCla9d
-	 Kn4CzXUvXIFOfgCcD3LjuhtSnMHLzVsJwEew1wRux9xaV5rIkVgNuzknECFmfI/5UkwpC
-	 vKaJjGZw4iHTRUqF1br4FaJ93AVBnk/8LuTNzvAY9i98AvAWH0cqbFv4DovAJBtV+HnEO
-	 /6WEW4fECEugPS2d8nf9NkIT3AsVlENLgYHtk425WLjxm5U0/i7veMH9exaX9scNDyBez
-	 gJ9dJIyKIepysWbqaYBaq4f/ROP8fSAHzCGcqbZFte8ref+id+NP/wyVGiUxQ1NheBQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795531737;
+	h=DMARC-Filter:DKIM-Signature:Date:To:From:Subject:Message-ID:
+	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=v4XTDh7yGuOV+1Omye4+wgEj7R56IUboJQT1Dq56D90=;
+	b=1SG4yJ7rUnQI/bvb/gHGGwlhF829x6n8PpNx37OEu0FUCHilDVP4m407MFbx6fwlD0Q3
+	 zAuY6I5F7IhaCvMYBrjHzeqnyDSx6LaZoVpuJSN6OhErzXwcD2+dSDxEy3gPkjW0mOpPP
+	 0hyLiMx2kuYodLP2wEkU8KReOBaSVogUH3hkaacF6NOYlsjSLUBNohDlUMS4O458/7ump
+	 Fo9ATLfPW4kZNBZAY4rt/Ov5zl/7n4AYjd1fYqFhy92LtfkdfF5EGNRiLEmgt0i8LAEWm
+	 YCifVO75auTkj7jb2xrG5tQpnuPA+NLnd8wldU/UI62N2bAKOHlKwO8jWe40Pxl6ekQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=S6SRJ8gs;
-	arc=none smtp.remote-ip=209.85.218.53
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=protonmail.com;
+	spf=pass smtp.mailfrom=protonmail.com;
+	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=QC6LhSui;
+	arc=none smtp.remote-ip=185.70.43.167
+Received: from mail-43167.protonmail.ch (mail-43167.protonmail.ch [185.70.43.167])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89960606A31E
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 14:20:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 89960606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA0EF606A31E;
+	Tue, 24 Nov 2026 14:48:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CA0EF606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=S6SRJ8gs
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-c5127c7abd5so718494066b.3
-        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 06:20:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1795530035; x=1796134835; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Hoa2uDGRiz+jXLxbcD4HBQF2SzMfWsHt0csEQeOTfAo=;
-        b=S6SRJ8gsP3P/VN619z2am4YZ5bgvKbAoQ71CzYHVWXFhWYEqpxRc44yOC3vsxFJRF0
-         sdOZVqOPWlV0U2GtHU4ouqDUtZAlEdq4H5AekAuS5PrlDEs52Zhk+hFL6U6w5DH7qoIW
-         1TuL7BmFDjFwAKUtxLyM8MRsQfzaKfo8FvS2kg/9T5OAPbku9dxtYAMSsf0MCPOZodSb
-         HUm0zqEjzP21hpTFaBQpptWBwEoi6ReZFsEt/RmD8M6V8C5x7yqVDW8pZGL9Kmmcz74V
-         vxSstAKWVmYqeGyT9VzQ9oLBaHdqCa+SKXpKbyAPTBAilYQlAwHjpJWSu19wlUe0y0ve
-         dIIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795530035; x=1796134835;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=Hoa2uDGRiz+jXLxbcD4HBQF2SzMfWsHt0csEQeOTfAo=;
-        b=XW6c9Co/7ws5TY5+vMi8z2blVkfa4Vui8V83H5M/D4qTYIhpSOWjOPpu0hmvzwv4Gj
-         mPnvia5aaNp2V43iQTTWL7QKu6/ssOkIIr+aMCSifQfM/ZTV4Cg/MLbswuZJpFI/nEh0
-         yKd5gzhSWIbUs3syueejdTUgHSlcaBwJXE2NTJuDXZyEfaRKs9J97J+iP+qGG9hGTijE
-         eqjBu5wJY/DsrpoLaq0357MtpCy7z2aXfUFqtWCuWmwmvuxlfVr+RNGl+BtrLISAPMxG
-         I/7lpUgzb3h472+tOQ0tmMDpMEo8eykZNiHlnVu2M297beN9w1TpQG52kJXknakvWqzK
-         Umwg==
-X-Forwarded-Encrypted: i=1; AL+hErHAHmsrl37gIhFnIunmNHFV35fMPe/Sm2lz2HLG5s0nyDe8kIHtSW53VRjQF76YlNhKRLNWjQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8DsNspu9IoOawufkWJBi9oaPwsOHSQms8kIbAvAJLdEsHjGe9Y
-	98MIRdKCBcgmsE9slbp67cioyXLYZc22TYMbm3yGO/2kpQRi0YlQgC9FgklKoJCbdsk=
-X-Gm-Gg: AZFdTZfagCgql+k4v4VC/z9ZRgVM/8WNipwfVdWfZEbdqW0oZc/iqoQajw9Yn4wkthq
-	hC2MMPxuw4d/W5HQNybpQW0O7yDl0p8d86k1UQGxiGU4qIyC2GcjRoEqVkAGFO7QHkg10VoFr9+
-	CTE6qdZBvpHxoFdUJ50qMvjGpS9b724Scz8T5JEAckqy8Jnv9MwydTLPdlRBEKVX+g1Ttn7pHYe
-	sKnVFeyMcJZarACfdsMXiKJRdOYeeO//0EURSLjhIgyJl2fSQsSpQJi7NK07T+lfw496Lz5FgaX
-	DXAtccP99iVw7rXc4qb2sTji/fwn0AWBPBTQvk0z2ZBk4pMUJ6SDLsKcoqDFqso9C9NnfgjVacC
-	JBwSKmlXn+1AViynxYpNlxrWzUfSJOeCVKOQD9ElV6shNDuMa68BmNAzYHOaxnNSvLRrttrOdNT
-	GTDEHQkJ7r9ZveHpv33/+UFLDpdtweclKCwI6htkAmhItyi7aBC3ebJumAPUqSfeZP3FytgCvBM
-	ivlNQsZj8r4Jsz3PSROFfn+JGsEPc/NsmBLLNt2kFk04/QMUe7DuDkt1MXBLF9ZMS/h2rxUsP9x
-	uc5IYwDHG+hTJ0VZ/Az91NNE3sg=
-X-Received: by 2002:a17:906:eec9:b0:c51:5589:35a1 with SMTP id a640c23a62f3a-c515589d211mr891019366b.5.1795530034479;
-        Tue, 24 Nov 2026 06:20:34 -0800 (PST)
-Received: from ziepe.ca ([142.177.118.84])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c513ae8dc60sm518286266b.34.2026.11.24.06.20.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Nov 2026 06:20:33 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xVrNo-00000000RS3-1UVp;
-	Tue, 24 Nov 2026 10:20:32 -0400
-Date: Tue, 24 Nov 2026 10:20:32 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc: Alistair Popple <apopple@nvidia.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Simona Vetter <simona.vetter@ffwll.ch>,
-	Matthew Brost <matthew.brost@intel.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Dongwon Kim <dongwon.kim@intel.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Karl Mehltretter <kmehltretter@gmail.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>,
-	Felix Kuehling <felix.kuehling@amd.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	intel-xe@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
-	linux-nvme@lists.infradead.org,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Simon Horman <horms@kernel.org>,
-	Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
-	Alexey Kardashevskiy <aik@amd.com>, zhipingz@meta.com,
-	treding@nvidia.com, jhubbard@nvidia.com, chaitanyak@nvidia.com,
-	Leon Romanovsky <leon@kernel.org>
-Subject: Re: [PATCH v3 03/24] dma-buf: Add the SGT DMA mapping type
-Message-ID: <20261124142032.GN9566@ziepe.ca>
-References: <20261120-dma_mapping_type_v4-v3-0-c0183a409bdf@nvidia.com>
- <20261120-dma_mapping_type_v4-v3-3-c0183a409bdf@nvidia.com>
- <ad46d60a-189d-4dd5-9ad8-ecfd3c90f9d9@amd.com>
- <20261123165716.GM179082@ziepe.ca>
- <7ac7edd0-5c38-440a-b26a-21bcbb6f4702@amd.com>
- <awT8prWsj11TBdmP@nvdebian.thelocal>
- <63eb7b6e-e0a8-4443-a434-0301ed59beae@amd.com>
+	dkim=pass (2048-bit key, unprotected) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=QC6LhSui
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+	s=protonmail3; t=1795531734; x=1795790934;
+	bh=v4XTDh7yGuOV+1Omye4+wgEj7R56IUboJQT1Dq56D90=;
+	h=Date:To:From:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=QC6LhSuij9JsD0p4k7g4vtDJMuupzflicUPjgue2+D31VNMDj2hMoYHFLQPBdrI71
+	 eG/yYhxPN/zs/0HVWHwq/as1Bt5JOgkduEosOTMGFmumN2Qm1Zw/ocbgG0ECbtkoUd
+	 pcoPbWGNoroiU33F4f7kOIGFlz09OL/Xrbm8bqhUIwpPcOMDmoKpNq1CpyR3oJagA3
+	 cwpf+5ukC5V2YHI8OnyUEtaPCG4IX1M1ItOyOrdV6ltUFW88s75wfPPobKxIorXhfE
+	 Xaq8JCwfz5H6QjGi2iw7JTqp11O2U0gqM5HpKwOP1o8D+/AxqGmAzuI/5j8Z6BXGHf
+	 rQxlTrhcTj0Qw==
+Date: Tue, 24 Nov 2026 14:48:48 +0000
+To: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "regressions@lists.linux.dev" <regressions@lists.linux.dev>, Baolu Lu <baolu.lu@linux.intel.com>, Thorsten Leemhuis <regressions@leemhuis.info>, "info@aigeus.net" <info@aigeus.net>
+From: 70sp <70sp@protonmail.com>
+Subject: Re: [REGRESSION] GPU passes into VM improperly after c376a3456d8b or a98db518dde2
+Message-ID: <QISmXFlpPMgvFUKmdIBDwqn4JHHXt2NZeJzerMLHF_5icLo0lPKVlN0Ig9v8Vb52NmCeSFdyrao4x8KoN1DCXtDlnZS7eRIClC6vZyu-hPU=@protonmail.com>
+In-Reply-To: <275dbe0d-0b2d-4ec4-9c8c-9bd7ddf06070@linux.intel.com>
+References: <z7Rkts0EsooZcnCjNfJaK6ursftFU8ubOkH0hcNjzxugEAwGsHLMblOdfoAx-gJzBZ-TMmeUtD7iWBngbFY5UCJCwdSmYqmCVMy-yhbirUk=@protonmail.com> <56ce85d5-e0b9-407c-9a86-708111a8a509@linux.intel.com> <C4BK-Bp_FII0EkxSHQxBS2wO-Age-UxFrp_KfmYzb8cnQ8ZndzBBIPD8S9T86wOifBP0tysQGCFtGQsBsBvG2IzIMw3jb3NF5HGbS3tsawA=@protonmail.com> <d6a7f70c-5a8a-4be6-abdd-5b3decbb602a@linux.intel.com> <7ec374cb-9a0a-4e30-8410-3a028e46cacd@linux.intel.com> <5bVscg7a2_H1PPW3HmVtrYv_Xwtti2hzjD065W4OdwsD9rC2gw7sGVEg-2U596VZn8O2LAEfhWeZklRk63ymqNW9220R6R_jjif7BaWol9o=@protonmail.com> <82662a17-f9e2-46dd-9881-792412c1dc50@linux.intel.com> <X7nc9tQqVxmuR76GYNJnMRkqUTwNVlXTWpH0wGvJeiAHlcLaibPZHRN037p0359GpdmopB_wI2tF2x6EqZF4oY9J697tcTGYwfYMK96FcUs=@protonmail.com> <275dbe0d-0b2d-4ec4-9c8c-9bd7ddf06070@linux.intel.com>
+Feedback-ID: 144929603:user:proton
+X-Pm-Message-ID: d520ef07ea37302ab1e531094c992b0d5f8b3ff1
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -134,53 +64,181 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <63eb7b6e-e0a8-4443-a434-0301ed59beae@amd.com>
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 24, 2026 at 01:36:21PM +0100, Christian König wrote:
-> > The core then negotiates compatible types and adds converters between them,
-> 
-> I have strong objections to that plan and would potentially NAK it.
-> 
-> DMA-buf should *NEVER* accept CPU physical addresses nor provide
-> conversion between different address types.
-> 
-> Keep in mind that DMA-buf is solely a container for DMA addresses,
-> nothing else and it should not provide any mapping functionality
-> whatsoever.
+Hello,
 
-dmabuf needs to provide support for drivers to help them use the
-interface, and going from physical to dma_addr_t is absolutely a
-common task every driver must do. I don't care how you call it, but it
-is a service that must be provided by *something* and matched to the
-needs of dmabuf.
+I (alongside ChatGPT) found the solution and the root cause of this issue.
 
-I will definitely NAK any direction to open code dma mapping in every
-driver again. If we are going away from SGT then we are fixing all the
-DRM mistakes, including the wrong open coded DMA mapping, sketchy use
-of SGT, and abuse of P2P that seems to be endemic in drm.
+The regression is caused by the code improperly assuming that the CPU suppo=
+rts IOMMU superpages, which it does, but only when the integrated GPU is di=
+sabled (speciality of Intel Haswell).
 
-Meaing the exporter constructs a phys_addr list, gets a P2P provider,
-and some common code constructs what is passed to the importer. I
-don't care if this is in "dmabuf" or some "dmabuf library" or
-*whatever* but it must exist as common shared code.
+The regression can either be fixed with a single kernel parameter "intel_io=
+mmu=3Don,sp_off" or by modifying the code.
 
-dma_buf_phys_vec_to_sgt() is the template how to implement this
-transformation.
+The LLM also generated me a patch that worked, but it was just about hardco=
+ding specific CPUs to not use superpages. Doesn't seem like a great solutio=
+n for this very delicate code. A much better solution would likely be makin=
+g a patch which checks for superpage compatibility universally.
 
-> > and having SGT as a type is what allows that. It only exists for unconverted
-> > exporters and importers and eventually goes away once everything is converted.
-> > The idea being we don't have to convert everything all at once, whilst also being
-> > able to add support for different interconnect types. Are you ok with the SGT
-> > type if it is just transitional?
-> 
-> Not really, it just complicate things.
-> 
-> What we should do with the mapping interface is to add the
-> information in which domain the DMA addresses are to be used.
+I am sending a working patch from a month ago edited by me and the reasonin=
+g from ChatGPT (if somebody would find it useful) below.
 
-You need to negotiate the actual C data types too, especially if you
-want to do that nasty idea where dmabuf populates an iommu domain.
+the patch:
+---
+ drivers/iommu/intel/iommu.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-Jason
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 5a2e705a2f2e..dd49a4e37653 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -23,6 +23,7 @@
+ #include <linux/syscore_ops.h>
+ #include <linux/tboot.h>
+ #include <uapi/linux/iommufd.h>
++#include <asm/cpu_device_id.h>
+=20
+ #include "iommu.h"
+ #include "../dma-iommu.h"
+@@ -1876,6 +1877,13 @@ static int __init init_dmars(void)
+ =09return ret;
+ }
+=20
++static const struct x86_cpu_id haswell_cpu_ids[] __initconst =3D {
++=09X86_MATCH_VFM(INTEL_HASWELL, NULL),
++=09X86_MATCH_VFM(INTEL_HASWELL_L, NULL),
++=09X86_MATCH_VFM(INTEL_HASWELL_G, NULL),
++=09{}
++};
++
+ static void __init init_no_remapping_devices(void)
+ {
+ =09struct dmar_drhd_unit *drhd;
+@@ -1907,6 +1915,14 @@ static void __init init_no_remapping_devices(void)
+ =09=09/* This IOMMU has *only* gfx devices. Either bypass it or
+ =09=09   set the gfx_mapped flag, as appropriate */
+ =09=09drhd->gfx_dedicated =3D 1;
++
++        /* Haswell requires superpages to be disabled in the default
++=09=09   remapping unit too when integrated graphics is enabled. */
++=09=09if (intel_iommu_superpage && x86_match_cpu(haswell_cpu_ids)) {
++=09=09=09intel_iommu_superpage =3D 0;
++=09=09=09pr_info("Disabling superpages on Haswell with integrated graphics=
+\n");
++=09=09}
++
+ =09=09if (disable_igfx_iommu)
+ =09=09=09drhd->ignored =3D 1;
+ =09}
+--=20
+
+the reasoning from ChatGPT:
+Haswell GPU passthrough has been reported to fail since the v6.13 VT-d
+domain capability changes. The reported fault is a legacy-mode reserved
+PTE field fault, and the dump ends at a level-3 entry with the large-page
+bit set (0x00000003c0000883), i.e. a 1 GiB mapping.
+
+Before commit c376a3456d8b ("iommu/vt-d: Remove domain_update_iommu_cap()")=
+,
+domain_update_iommu_superpage() intersected the superpage capabilities of
+all active remapping units. An active IGD unit without superpage support
+therefore prevented superpages in the default remapping unit as well.
+Removing the capability update exposed the default unit's own superpage
+capability to domains allocated for devices behind it.
+
+The Desktop 4th Generation Intel Core Processor Family Datasheet,
+Volume 1, document 328897-010, section 3.1.2, page 43, requires disabling
+superpages in the default VT-d engine when integrated graphics is enabled.
+The mobile M/H and U/Y datasheets (328901-006 and 329001-007) describe the
+same restriction. This provides a possible explanation for the regression
+even when the default unit advertises superpage support.
+
+Disable superpages on Haswell client CPUs when discovering a populated
+graphics-only remapping unit. Do this before domain allocation, using the
+existing superpage-disable policy, so both allocation and attachment keep
+their existing page-size rules. The check precedes the igfx_off handling:
+bypassing graphics translation does not disable the integrated graphics.
+Systems without a graphics-only remapping unit and other CPU families keep
+their existing behavior.
+
+This is a candidate fix; the reported hardware failure has not yet been
+retested with this change.
+
+Fixes: c376a3456d8b ("iommu/vt-d: Remove domain_update_iommu_cap()")
+Reported-by: 70sp <70sp@protonmail.com>
+Link: https://lore.kernel.org/regressions/275dbe0d-0b2d-4ec4-9c8c-9bd7ddf06=
+070@linux.intel.com/
+Assisted-by: OpenAI ChatGPT
+
+---
+RFC: hardware confirmation and a full kernel build are still required.
+The Fixes tag identifies the suspected loss of the global capability
+intersection, not a hardware-verified diagnosis.
+
+Prepared against the inspected source at Torvalds' mainline commit
+cbbddb6b08cc9900a87cccaa9b22bbe06aa4f50a (2026-10-31).
+Only web-rendered source excerpts were accessible in this environment;
+their indentation was reconstructed. Patch application was checked against
+those excerpts, not a complete, byte-identical kernel checkout.
+
+Validation performed:
+  - All hunk context matched the inspected mainline text after ignoring
+    leading whitespace; no upstream source text was invented for a hunk.
+  - git apply --check --whitespace=3Derror-all, forward application and
+    reverse application checks passed on a source-fragment fixture.
+  - Added lines passed trailing-whitespace and 100-column checks.
+  - The extracted init_no_remapping_devices() function compiled in a
+    userspace harness with GCC, -Wall -Wextra -Werror and UBSan. The
+    unpatched excerpt failed the modeled Haswell/IGD policy requirement;
+    the patched excerpt passed 896 modeled platform/page-size cases.
+    Kernel APIs were stubbed: this is not a kernel or VT-d hardware test.
+  - The model covered all three matched CPU variants, unaffected CPUs,
+    missing and sparse device scopes, mixed-device remapping units,
+    include-all units, duplicate graphics units, sp_off, and igfx_off.
+
+Not performed: a full-tree apply check, kernel build, boot, GPU passthrough
+test, checkpatch.pl run, or get_maintainer.pl run. These require a complete
+kernel checkout and, for runtime verification, the affected machine.
+
+Suggested confirmation on the affected Haswell / GTX 970 machine:
+  1. On the failing kernel, append sp_off to the existing intel_iommu=3D
+     options for a test boot (for example intel_iommu=3Don,sp_off). Keep
+     the other boot, firmware and VM settings unchanged. Retry the VM.
+     A successful test would support the superpage hypothesis; failure
+     would mean this candidate needs further investigation.
+  2. In a full mainline tree at the base commit, run:
+       git apply --check 0001-iommu-vt-d-disable-haswell-igfx-superpages.pa=
+tch
+       git apply 0001-iommu-vt-d-disable-haswell-igfx-superpages.patch
+     Then build with the reporter's configuration. Also build the affected
+     driver with x86_64 defconfig plus CONFIG_INTEL_IOMMU=3Dy and W=3D1, an=
+d run
+     scripts/checkpatch.pl and scripts/get_maintainer.pl on the patch.
+  3. Boot the patched kernel without sp_off and repeat the same VM test.
+     Expect "DMAR: Disabling superpages on Haswell with integrated
+     graphics" in dmesg. Confirm the VM starts, the NVIDIA driver loads,
+     and the previously reported DMA fault does not recur. Exercise VM
+     restarts and a GPU workload. Keep a known-working kernel available.
+  4. If possible, confirm that a Haswell machine with IGD disabled in
+     firmware, and a non-Haswell system, retain their page-size behavior.
+
+Tradeoff: affected hosts use 4 KiB IOMMU mappings, increasing page-table
+memory and potentially IOTLB pressure. Performance has not been measured.
+The change does not bypass DMA translation or relax mapping permissions.
+The supplied report establishes a functional regression; it does not
+demonstrate a security boundary violation.
+
+Source references:
+  https://lists.openwall.net/linux-kernel/2024/11/04/29
+  https://intel.manymanuals.com/processors/cm8064601618605/datasheet-16448/=
+43
+  https://device.report/m/be82c9d9f78a11870a802bca7e42a85048a57a958523fed45=
+96058d76f0c9e30.pdf
+  https://manuals.plus/m/45f81faae3cbf90473b6edc6d16f7451659a1afeea58999fe3=
+19dfe1fc07c5b5
+
+
+Best Regards,
+=C5=A0imon Posp=C3=ADchal
