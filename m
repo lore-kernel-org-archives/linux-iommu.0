@@ -1,101 +1,146 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.43.38
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795524706;
-	b=hGOC+p+zGJe/BTXuZ/BKaChoVMuBaSglNq75GtS8UCcRgTdEHLeYvJwvN4HNo4zaAIh3
-	 dySPeM/x3X0CionLGzbAKFQ4voUtgGCamgP4Z8xAn+E67KGKArN2bHkaORd0tjS9mlfLF
-	 2ekA2GqvytKr7mnZnjIuoTTjaxdzX+ZLPQYm/68k0o/Wq/KjUm7Itn1RAptEkGN6uLLQO
-	 UGkJQD92lB+tc6pMN3dWnD9PwNEPs2AnCK70XTvJHUAjXM8ovj21bmKyqt0/TawKDJibq
-	 4u0PlnLz5105hiY1otJ3Ho4mAUdex/eRvEx43bMYd0CLHb5oEmchF5ED/GocU2ApkKg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795524706;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:Content-Type:Content-Disposition:
-	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=jxJdmpwM8fFgrlawPDdUPktgIXAgQYM4wj2Al7xcyeI=;
-	b=Azzg1ETO6Svd4TOmOo2RHH+qMIxgGBECULzYqRCh3Mz3XQBtEnji26dJjChkszbyJmZB
-	 MCAsAefcDKxGyjq8TuN56enIF5n3OiZ/RKZJnSc1tGEd9neJtCeAw6Af8/SKxAvf4H58j
-	 pyHCwGNHkZ1wV64DRFx7vD5g07UsB/4d93KIGnRbs3xYkFwqmsC4xD1Vb803gGWbnFO+w
-	 sAr5ahhWqeoUJxmNOIJOAV9+gHS1j+wyOlKXYnIfyh+CPOBgM86FRiDH0cJMzH28CX3Im
-	 u2rvHYDU8vi8o2yb2g84u99AHPkkQ/duyVwidnR2WGZASfFdf33afupOYmuaxy8+lJQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=OxPy3eYQ;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.43.38
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012038.outbound.protection.outlook.com [52.101.43.38])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.171
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795525676;
+	b=MTY4AX18Zw6U9+Q80ELlzYAtn6DhZxMhYj9jzwsUgEuW3sP6NyR0hc1MzpOv7zk1jzM2
+	 769pM2d6SBEelKqQSwjkNVlvhE+S0hCg1R2DSWXbsd2jLeNbTeYuHGBs5QEODkVb8TM6r
+	 B+PSF78vaCzLugQJhv+f84qW3iq2gxy0iFpT4ctfhK8kLUE4qX9w19fbkrPYFu5/cy5bI
+	 Y3avmPLqyRP8c5d129YoabFwgXahzZn/5yG6vTynYvU7yzUw/PrADrMnHBQXjqLlvLnLQ
+	 G972xBhie0mVLfut+MfY8xbGAUcpyl3cJF/TAlZ+SrXLtw1o05mv0urK4Dovfnq7cGg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795525676;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To;
+	bh=2Jqv6h2U/zwufJIWy6q7C5BzrR7eGEBWyzupif8ezko=;
+	b=O00qePG/8eDIibHAeHYV+fhEOrQHh5KhNAWfinj+MZHKa8iz1N5uU8tXeH5RXLC9YOal
+	 5TjMCpL40jtzd+tOR+pgDmOc6vQ48tEcn0LO7wD2glB59EDY/BHQEomWMRmlHjK1J7Xxo
+	 OFoZACYA4dw6YfJqJHfCY2i3C0kHct8R+5L8ncIIOcLePYABHjZm2koeW6PtvTxKG38pa
+	 IGKgP0ElXpcyN+iJdKv6trKa/gtfl4a7RbwW8IjKlT/l57MhfuZvtstyW6GLoOIR+K84H
+	 Qq2ahHddLMOeEK84xNlvn7HFUqgcEaaY4ZgVh/yYHUDTP7DJyJ1SNHc65b7XcBZMk3g==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=CJZp6cV7;
+	arc=none smtp.remote-ip=209.85.222.171
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D7C8606A321
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 12:51:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2D7C8606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46FC4606A326
+	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 13:07:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 46FC4606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=OxPy3eYQ
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=VdbcIrogRGxoG9og4rXbCQehLx2O/fPsl4IVSB07KZI7QSvOS29QhYKGDKggVVBCyiOmXvlzPNjVJjHrHGK1ze9Si5DdmvCZ6gAXv223897XqoJ99tlACaFKZO4l9H55GQX/GVzvINq+4d0bI8EcYVAsNTIRUAizUg0wgBhqlw+MK5mjPtuOqLcunyo5A4fX1nJubRsa2Wqf33OLZuWVMVVW11WC/db8AfPlXSU6uWM6GRhfmItUU1YZFu4t7WfQZEy9hW+BT+bWOwPRzgYV+b0B1LUXEpdZQJRUOJPWNhrgfk7CmVKdKX+yse716ybAhaBnC/6rvHIoiQDyERFDUw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jxJdmpwM8fFgrlawPDdUPktgIXAgQYM4wj2Al7xcyeI=;
- b=aLVnkzGG+HmzBtFgnxtMHruievdyC8n/aKhe/QjXY7Op7qhd9Z6vCgh+UJg4MeDG+4j567nM0hvcqWW3SLJEx8A4OH+EFO846Jh/bjoGnj1O08WpYn2bXqXzI6W5GBRp6/DIR2klssdcf3M9YDCnTQ0lQh8ZNQBCQUhOa8ax/RlvFLBGc5alMt8X0MtAEEFRjEyMGCDbwUjgUUe2XQP38+C/ar+Jd8iOAglMSUo+qM6dPkIVbGUkTVNAIl8SWiS1/NWlaHLRFMN9NPKwMacaSQJ2z2J0XhslaQ9CJQ5Q+gMxcdAQuQuopS2N/MtFtyuTr0J4fJjCYho1avpXn/nuVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jxJdmpwM8fFgrlawPDdUPktgIXAgQYM4wj2Al7xcyeI=;
- b=OxPy3eYQSHboTlaFwv7zLZZviADaVV5pBHmx8txKFFNJoAnPQqLjkG298170Ozb2csKeCTUmjoZpExQCOYcffhObf6zD/ZtHKhbh+KPSWQ1iSWX8Okz/F64gNJgN0UMWqKvXdThomqaU59voCHtCwjiGG9FnE/tbOtvf02fFOUFgq/niXeBwfwGNWxp+jn4IeLl+k0wHXqRRZmTjYYi1gO3kZATjI2Q4Fup/OkQH5hXtYAFPY277jlFTx/8Gwv9zW9tFZA3jNibn93rvUzmmDEgLBCrwvtDCTOIdsgqOeZ4WOVPnH2KlAWIqkwRZpE4kROklQ4+BgDXYnkPPhHtZwA==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12) by CH3PR12MB7764.namprd12.prod.outlook.com
- (2603:10b6:610:14e::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Tue, 24 Nov
- 2026 12:49:34 +0000
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0639.012; Tue, 24 Nov 2026
- 12:49:34 +0000
-Date: Tue, 24 Nov 2026 08:49:33 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Peter Chen <peter.chen@oss.qualcomm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=CJZp6cV7
+Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-9497a167a6aso659105485a.1
+        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 05:07:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1795525675; x=1796130475; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=2Jqv6h2U/zwufJIWy6q7C5BzrR7eGEBWyzupif8ezko=;
+        b=CJZp6cV77fzkUCXvgeGyc7n9vOvZov1aNWjYfoQB8lqfjpe7VVz2pKyasHC0M9bSo3
+         qvoro/45R0bYQRTdO2OhOwP8IqZDTveCj+W0rKGqVuCBz/BgVUCJlNyD58G1GcYb3njP
+         MhERoQBSZF9WEeWN1BrNcXyxnT9a2V9qA6Tztu/pOhGSXK2qaxtPyM7+o3gi7IQ5m8Vl
+         zl9+/Rui9jQl3P++qkZI/CGbAH51e/eughhaB/kN3C/3tgk7TbjbUX+50M64WuaFgcYP
+         wX9YibH8TLZgk0DjcQxRjLhIWJBK9Dfla9PQfVx96fqCzu0PbTcLTtuv2r94I2lv8Uf7
+         UBLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795525675; x=1796130475;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=2Jqv6h2U/zwufJIWy6q7C5BzrR7eGEBWyzupif8ezko=;
+        b=cs8ghl0NOnHzlR41IeQWCrMqZzLZ1NU8jFnSWBGO+OWINzRY721V3f3XHj0hPuEj3Q
+         OzbGie4hB8YuaTlFDgAYijAeKbv7mLEJvAny4ge1/GFq+W38tYMRezxMGbnqXxcCvXpX
+         xYqz66dJ96jt6T/pe85kSZ3I+leBChyavzalhL2xAdy713bS2cqOqP+8V521xLUgpwtY
+         sPHWbtEnjZ0//g0b9CtN2epeyVuUalXQIu4Uc75vxtZJFWka6wWyCu9DEtBwFShH8KMI
+         hSeLuD6lcfBnHL1N+EoOPzhb3zLVExDoCGmYwOshogEDAkAo2ReZBTG2gXwbGEj4/YDX
+         pb8g==
+X-Forwarded-Encrypted: i=1; AL+hErFaT36Ix0iw/7bKhhkTHQ/58l0oZ+u0eBp+Ws9lxXHSh2gSdszIIUVrgF0xhxLi6/clN+ntVw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+4p6uqLNtedFPvLJjGY2eZuDK3xHF2zOlBqmRaON2TGcoQ/3Tp
+	PHXJVNjJU1Xcb3q8qyJ+1rYuRRWdUGukVEV3lavetUEiDRM19N71EvcMu++SLlQFX2E=
+X-Gm-Gg: AZFdTZeWR0VOI3ycAoKev7+RcbGZKjBUssAahJg77LQfpM6oF0gYyENcJSTWT4ETOey
+	MK8TIOblK2uR8nfqksE8r4iuBRWh1MW2Yp6GbcxqsALLAzJ2Ydfk0K7B+fJoIPNhPn/Cubb5Hzr
+	IHxcrk+Ku/IO0Ed4M8rE3TLrLudkrR/csp75H00quTQLenwZplEEoLRyWbrIGzsjP71z+jhz0Q+
+	ZINs7UxS246/XPArRUU0xNHr3p5yFKsNRzdONEW0AMUwiBFyzJYBYM7/1AXdnCl4VM6ocuQbAUk
+	winZfctuBbsnOis3bskp5egh+WhrhTRnyB0tj5i6k8+169aJtjyZfOgtIT/qQl1yUdHRThb6+bK
+	mCOGdhOo7ryu2M51N41Onpntqa0rnuOMofrVnxpCOCs7HTOhK3ujkHuSE4AeJmAaW3Hvv9G6Dmy
+	2EVAENHjQGm6DSf2s/4AQeMcYFG1pr1jGgRJGQKyf0sRoJp6m+4ncKcIAl629IZUGrK2tp2ZObN
+	rFVnfLGckDxY8Ta5EMjj06gii9yT3yL+Y6eJxm+rtnoewlYyuG8mBR5uZNVEcMVFRwIGhdkEX7T
+	ldriog==
+X-Received: by 2002:a05:620a:2705:b0:949:8ee5:6faa with SMTP id af79cd13be357-949ba818db4mr2224332285a.4.1795525675010;
+        Tue, 24 Nov 2026 05:07:55 -0800 (PST)
+Received: from ziepe.ca ([142.177.118.84])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-949bb4219c4sm1034879485a.41.2026.11.24.05.07.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Nov 2026 05:07:54 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xVqFV-00000000OKe-3ac5;
+	Tue, 24 Nov 2026 09:07:53 -0400
+Date: Tue, 24 Nov 2026 09:07:53 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	linux-coco@lists.linux.dev,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Baoquan He <baoquan.he@linux.dev>, Mike Rapoport <rppt@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	Joerg Roedel <joro@8bytes.org>, Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Fenglin Wu <fenglin.wu@oss.qualcomm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	Jack Pham <jack.pham@oss.qualcomm.com>,
-	Wesley Cheng <wesley.cheng@oss.qualcomm.com>
-Subject: Re: [PATCH v2] iommu: Hold group references across bus_iommu_probe()
-Message-ID: <20261124124933.GA8680@nvidia.com>
-References: <20261112110747.1903321-1-peter.chen@oss.qualcomm.com>
- <179520803625.1164516.5819106673711321760.b4-review@b4>
- <awU4DyS7irT1a-nu@hu-petche-lv.qualcomm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <awU4DyS7irT1a-nu@hu-petche-lv.qualcomm.com>
-X-ClientProxiedBy: YT4PR01CA0185.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:110::29) To CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12)
+	Steven Price <steven.price@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>,
+	Mark Rutland <mark.rutland@arm.com>, Radu Rendec <radu@rendec.net>,
+	"T.J. Mercier" <tjmercier@google.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Ritesh Harjani <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H . Peter Anvin" <hpa@zytor.com>, Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Vitaly Kuznetsov <vkuznets@redhat.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	linaro-mm-sig@lists.linaro.org,
+	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
+	linux-mm@kvack.org, kvmarm@lists.linux.dev, patches@lists.linux.dev
+Subject: Re: [PATCH v10 04/13] irqchip/gic-v3-its: Allocate shared tables
+ using CoCo shared memory allocator
+Message-ID: <20261124130753.GD9566@ziepe.ca>
+References: <20261116091137.94252-1-aneesh.kumar@kernel.org>
+ <20261116091137.94252-5-aneesh.kumar@kernel.org>
+ <awQd81MwZqi55gf8@arm.com>
+ <20261123150041.GB179082@ziepe.ca>
+ <awSGBdS1AiFhJzZV@arm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -105,111 +150,34 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|CH3PR12MB7764:EE_
-X-MS-Office365-Filtering-Correlation-Id: 660a4832-a222-47b4-a4ca-08df4a29643d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
- BCL:0;ARA:13230040|7416014|376014|366016|1800799024|23010399003|261009223027099003|18002099003|22082099003|261026140227099003|261021123027099003|261022105027099003|261028144727099003|261022075727099003|56012099006|261026121527099003|10067099003|11063799006|4143699003;
-X-Microsoft-Antispam-Message-Info:
- 4wxCmkvLYwsc5L0O62RqF3F9LPCv/0iBP5LsyTOKbrvuUB5ldqlXDco09JfEr2nbpE04z1QkdIRuE91zmA8J/IpNovhZ7I9Nlf9KzMtm3RjUre6LmHavgcNmO7YLpmfbyW8Zddo+EWCfotNUR3U1UU4A6ljuKoJG6ivPmnK4TNmtn7v093JVjEQQiKVuUnX8tgqpVnplS3RvzAgJqSZSpW88iRo8H6tVcfYeIgv3SxrgxZG06sbuhpmFmpw1xQfjbdWCZFTq4K0jOAycfxSxEhH7DemrJVCDEwGZBEiAS9Vcsr328GqUT1tgNN2ZwqAQsv+M0eaIC6K4jHSQNarcsheNbEftf4jirBTufU2hElYgS+NE5qh5/b/nsDHY1sXgvMFqiQ7hUbhND17tZYXC3gd+1uN4bJ0VYPkn4mCqAcHKk4ZWYD0Z7c4Fv9/rgENFzDbBQ041hkGDF3Ofz4zlH9svCNOOw4TQTYS+atoRBhRf4d5MN09v0RPXO8+bzOcHfoFhZq0V/04MIgaZLS4MDNNAZr8RBAxJJ5LKctl3KV5sinnbc9MCqTVy/OoYxWjpkhiCXVc3QlV2aUGak1VcNz8B04P1KLaxquXuWZ0MGxerXbOphuU6RqWtnecovSedNwc7DhUxeXFsei6roDIA3jKNHGdZJLAyAMSBarIGm9w=
-X-Forefront-Antispam-Report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024)(23010399003)(261009223027099003)(18002099003)(22082099003)(261026140227099003)(261021123027099003)(261022105027099003)(261028144727099003)(261022075727099003)(56012099006)(261026121527099003)(10067099003)(11063799006)(4143699003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
- =?us-ascii?Q?A9N+KFqGkrUotajwMlEebkxPOIYWDPlXiAC16GQZzcsDp4RASdm2K0UT2VEp?=
- =?us-ascii?Q?TlYB1y+Zibaq2IV3NpMJURYnXqV9QdRb0mI35/KpCc9u/6bAOcaEmX4ZZuJB?=
- =?us-ascii?Q?zKQiyqDT84eC+MQBe2VIHbsbCPaFY4salv/YCXdZzwtq5r/L9rTff7cYH1BG?=
- =?us-ascii?Q?xm9mNowAH1qiLDaRG/vdeIngg2DtMONIsIjtsoQmyefl1K8HoMjZXqjIZ/UN?=
- =?us-ascii?Q?Y3iQ3/3LNUwaVQTDfdEgJ6DqI0A1GU5fC6eLkjQSkp6XjCu0dhc0FVRaJdGf?=
- =?us-ascii?Q?NCvsIvQVNQkXLcRZWUIyG1lk7AnvDT5orOHPKljDvRmMR4iviqYFUN61sLBs?=
- =?us-ascii?Q?yPicQBl0bw7xvyn7YZ0NQPqivl7EaT7ZS/f7IAwiVnRfX3cacyPp8w+vtmzK?=
- =?us-ascii?Q?xC/6542ChPUG5ANoQI8usPHFNfWCK6j7jJhmPvCc9NFgL8n0p6Mvw0F+y8ma?=
- =?us-ascii?Q?Fer8zvKbBpu4F/gJTLHH5lmYTS6ouXIgEZ1McDwM7Pgqz1jECAO23h4hYI2B?=
- =?us-ascii?Q?c+Oz57m8B2R43bSsSvUPqCQvO8b0yBmk5os0wyk1L0Phig+460nFuFiS2cBU?=
- =?us-ascii?Q?bPki1VwIExZNu5/qymhOnEzuufrMuj7L1+bg3S66ViYu/FVaaq/ChxhDxMfL?=
- =?us-ascii?Q?gL/bORO909a2JB2INaSOMCG/hdjvx88YUTvaplfHaGK3V+0sHGgVC8QzaimL?=
- =?us-ascii?Q?UleierUrAanERYjrRqBD3uX/ZeblHHlIyH0hJ2+rG43v7tTy5czNvFwOpBNl?=
- =?us-ascii?Q?7qKhteM8kUKsvdca0r/ImOJt4oQlgq5m9StA6FO2JCISMu9bLsDlMthoG61I?=
- =?us-ascii?Q?cp7KXFuS1/v4rPnGdW93Zh2MKuMKKCddrB25f07L3KXfbmUzl2nA5D9pFODC?=
- =?us-ascii?Q?alnfIeAOKEp15LQ/5AOGEWs4H/rFdXjyKlisH0h4b2fQNHcKEJTUJlSieLtd?=
- =?us-ascii?Q?DZ/3uxnEqtGAw17qkGf3YMwA7O2HvJ4Why/zVkj01OSbnmCMby2DaF3smU7t?=
- =?us-ascii?Q?KcQzHjfFlsF1Pxdsngu49IKXTvL3yk1FgpOLbqlI8nYu3I6jDPx86B7e4TVM?=
- =?us-ascii?Q?n0MKqzzCzF6APbQKov7DlzxPB05q1z634eIftI6E+9eurcxjFXTsk/fdbALN?=
- =?us-ascii?Q?ki16I5nml00scg3r5f8/rqjgJ/ZYMegp4KePXwr8ZFiNWieUNS+AFRet1bWA?=
- =?us-ascii?Q?XLttio2iBHm06thm2Gic+RNoJiDDJs7urtxL6fOSR/T87nV+NJnUZcPhwWD6?=
- =?us-ascii?Q?DVi2D6LMgtykk1lSlIFMz/d1wzeJOg/3rJ3SrX5r7xw/rv8Lg3uVC+ywZI3s?=
- =?us-ascii?Q?UTYk/sOGcGKaNZkFDFot1lyLVvDulzsAmMRnoquE2G0DSP5ZB+eK3TmbcEb+?=
- =?us-ascii?Q?JaGqoQyGGHlWhPH3M03JLXh0hsfWPFSdYtjid/6xpy++SSNmPHPg/gUlgwJJ?=
- =?us-ascii?Q?i0bLgQSp2X7FNb4YYkCdJB5InegooHMZqG715h8YRQPDIGPegiMiMEmqFSTK?=
- =?us-ascii?Q?2xe6kBumvrvT+E2QvAzMrBEt0CadHNl9pPIMO5mYBmAcrJBCCxZ57J7lxWql?=
- =?us-ascii?Q?6vyNZWEjrrQjodQNIQKEvMrXo/9v9ItbBBsGssBjsyLdPGPJtLFd1z57Cisj?=
- =?us-ascii?Q?mxP6WbXq2qeLpmSgZgl9MEBIlVwOQFD5QEqW2BusMaZsoVTc7SPBSIkDlj+h?=
- =?us-ascii?Q?Um4UexlC8DxwJ9tRWdy8ASz9gdn/VkC+aomdkQzNTO8CX3a7?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 660a4832-a222-47b4-a4ca-08df4a29643d
-X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2026 12:49:34.6811
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: di5XVpsk3RiKE6oaDC6IuElgIeKnjbFg2cFvL01re3OXgG6ga9896uLvgVyWfsEZ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7764
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <awSGBdS1AiFhJzZV@arm.com>
 
-On Mon, Nov 23, 2026 at 11:09:03PM -0800, Peter Chen wrote:
-> The glue driver does what upstream dwc3-imx8mp.c does in
-> dwc3_imx8mp_probe():
+On Mon, Nov 23, 2026 at 06:29:25PM +0000, Catalin Marinas wrote:
+
+> > Exposing struct page to places that just want a kernel addr means they
+> > have to call page_address and we are back to the highmem weirdness.
 > 
-> 	of_platform_populate(node, NULL, NULL, dev);
-> 	pdev = of_find_device_by_node(dwc3_np);
-> 	dwc = platform_get_drvdata(pdev);
-> 	if (!dwc) {
-> 		/* core probe deferred, e.g. its SMMU is not there yet */
-> 		ret = -EPROBE_DEFER;
-> 		goto depopulate;	/* -> platform_device_unregister() */
-> 	}
+> dma-buf system heap needs struct page for scatterlist, so we need the
+> virt_to_page() conversion if we return a VA.
 
-That's not how EPROBE_DEFER is supposed to be handled :(
+Yeah, but if that is a one off I'd give it is own API..
 
-The driver core is already setup to reprobe the child driver later
-inside of_platform_populate()
-
-Your issue is it is quite wrong to try to synchronously reach into a
-probed driver's like this from outside. Then when it fails tearing
-down the device means you defeat the natural EPROBE_DEFER.
-
-This should be asynchronous, then you won't have ordering problems.
-
-But OK, it is clear how you get into this situation.
-
-> > > @@ -1951,6 +1955,18 @@ static void iommu_group_do_probe_finalize(struct device *dev)
-> > >  		ops->probe_finalize(dev);
-> > >  }
-> > >  
-> > > +static void iommu_group_list_put(struct list_head *group_list)
-> > > +{
-> > > +	struct iommu_group *group, *next;
-> > > +
-> > > +	list_for_each_entry_safe(group, next, group_list, entry) {
-> > > +		mutex_lock(&group->mutex);
-> > > +		list_del_init(&group->entry);
-> > > +		mutex_unlock(&group->mutex);
-> > > +		iommu_group_put(group);
+> > > Was there a caller you had in mind that needs the common allocator to
+> > > share less than the whole buddy block?
 > > 
-> > What is the mutex for? The group_list is a stack head so what are we
-> > protecting list del against?
-> > 
+> > If we want this it definitely needs to be a void * based API not
+> > struct page one though..
 > 
-> Yes, the list head is on the stack, but group->entry is in the
-> shared group. "Is group->entry empty" is the de-dup flag that
-> __iommu_probe_device() tests and sets under group->mutex:
-> 
-> 	if (list_empty(&group->entry))
-> 		list_add_tail(&group->entry, group_list);
+> For whole-block sharing, either a VA or a folio works for me. If the
+> allocator takes an order, the requested size and the sharing granule are
+> both powers of two. Rounding up to the granule already gives a valid
+> buddy block size, so there’s no need for a separate shared_size.
 
-A small comment might help. The lock seems necessary
+But you still will need the allocator to use the struct page metadata
+for its own tracking information, so it shouldn't be exposed to the
+caller..
 
 Jason
