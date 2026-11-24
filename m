@@ -1,89 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795520960;
-	b=QmcP5mgDIjDVk5CcSCUrGKgzsaa+ZT4chF8WGxLwVK1KQLwcW0BaDHqdCd1FpnoOBbYd
-	 LnvL+gpi0M41Wj5gtxIHQ/RZ9znSb0d0t7JdTO0blSfjn0hLXHYXDt7CAsZ9yzRTxY4ia
-	 mujI8jhFlAJk3NK3H8PJiJHOiPO1wkwGLtetT9YzxNLZsTD8QngNqdHhk2l91D2Pald7A
-	 QeqXWGEVdvMWMk6B/dLrdCw1YtfNzXYjk9EtcX93S9UOBuMwwnWyUK9nqppSAr9cuqFb+
-	 UiiBBQTmy+w9hS8pn0GkxLXw2ajEu7LxaLcNSijZql4hcMGBLC+F5HYPu2RmWqXz2iA==
+	t=1795521348;
+	b=LpB8DiABUTOZXdX459Pvs14bhZQMfRRvcTMvJkNSqB+djM40VR/q8hGEu7BN0xridbLB
+	 DLTT59FMsscSACGmOpt+1XFHi1SBVQBdqexdbiEpEienK5WBFM5ld/KMQO/+1xgaqGhVQ
+	 ruoCqwLQnSWJ4gL88BLsDQI+uS40XM7Ti0zjzUYSqHwYVYwZPf3glM6yvtlU4tqjV9sIR
+	 8GqR4bUxwnVysZwiYDiPVoB7XPiAYgUgo/u+MBE3XPhB1iUVBy6YmwZJ4uNPyMCHQSG+b
+	 xdmTgmt13HvcGRT+Nx20NzdoFG1Iz8lUT1uBho6M9PdqwbqrBwt7DrB17wMu4jQhH7A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795520960;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795521348;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
 	 Content-Language:From:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=J1NeJEfZebfbcpy8hj3dQLRnIcpIwRmtjjuLE6tESEc=;
-	b=2haBPnAncT7bQnGczrgcM5bJcgYkZocgYK31FN54CmQAoWll2xrx8PGxtYScXYoPperd
-	 zIHMHsv7PAc2LB5VXYgB1cBTZVAHUJg+zPuYI1sunaXppxRvBug9pPlTEfBZRDHwFGpoH
-	 wtJfLy3kkMoKzTgRq96n99GVY8hBh7ySB3npwpUcCkz/84pKyot0KuaR+041wlcxn6MV5
-	 7Qln+eqccZo7w4qQ8v80uo4XLz3aAXbaXlNhjJU6+sCevd51m/F/KMU6WMRGodz5gK77T
-	 ws3ilznoHHxxz3QHYbNb+nkmiwG7eYMsRanCLTcXYS/ZqJ4ahh4hZ9Pm24VZ24Qa9YQ==
+	bh=vnwt3Hg75Jqhq/RX3EnfxRob7Sm62Nv/9HL8t2YUaCw=;
+	b=da6Ystl0P7H1AyMaoDOy3tbXKhWd+NmgchEgFhF3h6e10h8zrXvhg1ExozKLy/9hmgBY
+	 ycoo+iOLUoj9CRBn6OCh2e81+Di4PsOAsPTfRSnZmV519h8xzEzTgNmbqW5Q2i2OMBlZ+
+	 ZZmKxB8aSmfVWMxBaQePZ3WpU1/eWTM3rBmCGYXsvi6Pj9dW4OEh8CI6e49kcq0rOBfwG
+	 YukVashth31Ss/rZR9w+Xy68w6OmvCP4py4E0M/kzOdBVqt33J/Nk2aH76K3tY7IfEjdo
+	 HbkzgXF2ZpvSA+lcDTnrAVAyg2LjQA/huoy4icyZWTPnf1UB+WTH85WQZqcOyCR1nWA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=baylibre.com;
 	spf=pass smtp.mailfrom=baylibre.com;
-	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b="M3nEu/BO";
-	arc=none smtp.remote-ip=209.85.128.52
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=hidw2Lcb;
+	arc=none smtp.remote-ip=209.85.221.53
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F751606A31E
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 11:49:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8F751606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0924606A32C
+	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 11:55:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F0924606A32C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=M3nEu/BO
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4bb666304fdso48120865e9.0
-        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 03:49:19 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=hidw2Lcb
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-48e20ed3b9dso3939956f8f.2
+        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 03:55:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1795520958; x=1796125758; darn=lists.linux.dev;
+        d=baylibre.com; s=google; t=1795521346; x=1796126146; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=J1NeJEfZebfbcpy8hj3dQLRnIcpIwRmtjjuLE6tESEc=;
-        b=M3nEu/BO66cD5VBBYCADR5XVKzldnLj1cQhFdif50NC56fVSjbI1489KRKgJE5a+SG
-         0mWtaGLuKTEVQJMd6bMrR95YrNqEuztei2/s+wgMmGRf4xnpHPKJ3XKbSuv8FRy6EBb4
-         CT04k5n1JcxgyyPcg56jaUnFruMLS6RR6mvsZoQ6IdJtbSAnfGbPwWCFzyIqeZNaGl1M
-         sYQmuYBNcoYh2QDDI1lCSGb/KEPvh58+hWDKojIKhxiJTxQMP7k+2Bi5cqbfUmp/V0hY
-         cVBy8ubhVlgQwg3KQ8K0WrjgSFXCExhTnpsjPKOx0/klQuynlEo61SuWVu4UUK9mxZOg
-         TvWA==
+        bh=vnwt3Hg75Jqhq/RX3EnfxRob7Sm62Nv/9HL8t2YUaCw=;
+        b=hidw2LcbjBOHt0L7xR00edM+4w8IkrZGjI7cUkRHQNiMhLifjMH7Qxgngd0mWfLsNV
+         m506CtLlf9tTwv+jCj4h67YU0nqEyjFRJCG+kuWfet8wdcNltA3bVHwDz6dY5nFjN8fd
+         wdc/OfEZzhF1PMLohg6bW+FlvSnjWHFgnsDksuwEsihyBFyORmFeJYJaFs3ypSiZ8+fg
+         dzjsALybARvrhPMvZDuXfDMuYRE02ViLNiZQbCOJvjncGVTR4aqfohhZ6KdEvCdfUDOj
+         AYtWKmSzO/yQN0uReFgQ4M3Y0Y2W2swxQQ3LKIJdAQkco1Nn5ywG73Uq6lxn2Knpa8eS
+         CBsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795520958; x=1796125758;
+        d=1e100.net; s=20260707; t=1795521346; x=1796126146;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=J1NeJEfZebfbcpy8hj3dQLRnIcpIwRmtjjuLE6tESEc=;
-        b=uNt8+13gwtyCssZelzC/NX2xDsEBe399JumACRkr4ozVa3XwtRqp1B5gl1orC3f2NA
-         3+kAg54B7SyZNJ3MDQ5GhWqzoq2VIgdT5JY13JXxzxOLCWui1X1/Lpn7EW1n2M3gi/su
-         qre3pklAmVXX1f2QYaU7zeQ/Is0lmtzpOjQZx7vWY/xOaiS9h9khb065/gwOGH0yEH30
-         Ixix233SNuCER2p2BLEkopl/aUVXphMbfqmzmaDT16Rb/lHQ/4dt0vRwCy3TUgJhMoiU
-         RnXHMaxB8t+7ikUtRFnsDRUL3sW2L1wV3UmBw5sm4X1jwnRmnpqpOj7TwqME+3V/RWv1
-         LqIA==
-X-Forwarded-Encrypted: i=1; AL+hErFmTgcvmN6l4bJrsYulCAx1DnxazKJb9TKjmRpqnPUZoWANHLGS/cfqbHaINEREuWXPMqtvFg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+ogKKCIsD8M/b0gX5BuiDDv1TkWYHVSC6fwVMtA3UqGUb07p3Q
-	lz3H2MdW4GYEAXGgYAKoUoLDlJmN4MRrTU5lS3ZvPGEOxP7+1/Twsuuub5A/wpPujMY=
-X-Gm-Gg: AZFdTZeqSttAEePYZPkXWZUAA8+wCHyn+PcY5hsyq0rBLVchEgv1qgzFykMFNiBpA2i
-	zUjJrIZf/elNC4H9NXubK7Y0AVkArkCGA712LR0Z8R5gZx0Jl+5fbXsUVIDeDfRhzpENBmSEQ7C
-	VX7R4QQFSOxRbMQcdCUY6x0j0k4ITHlBH0rL6uExpOTuUhIFTLQzUTKRvoYATNQu/x3nG/2aehR
-	GT2LmF+k7pTY1jGFlNnPUpJAvNdsjDJ3y49S3wtBRZ8ARxcvbncLnVldsZzJA75CshwdO77l8Nz
-	B+ppzw9eZvCtfBkPchHsb3AKFVAWaaRTw+COJVHAW1h+sOHAkMqZLVy3kIcgBOIJ77CeIToKq2n
-	aInSA3kJO1RoTX3PxLerNPUdIOIt8U+w1r+fyLpa/8gxW6JFUQwqE4yWND1PuZRLhvsREhxvbfj
-	yU9Rfux7pW11O15dfcKpZRl0oqK3F91vjC7JyNzGQlp63u8wNzks6WDMpOBDb+AetKCqmK4ZPXO
-	Y+gtLGrIK00SoUAY+vw1yBJ8Ks+ZEOuRdFjETcOpf5NFQ8SNEeDLPaEZXnC15j/4wtiCAWvwCrz
-	mazOQsQ8jzmvL1zc1ItRZ+YntLDT/OouI7dyBC3oZZXWBJyyyrhEgWmzGw67QU98H7SqcfCNRh7
-	74SQ99CX9B6lyDn1u/L/uuIY=
-X-Received: by 2002:a05:600c:b8a:b0:4a0:20b4:ba93 with SMTP id 5b1f17b1804b1-4bb88818156mr290637705e9.16.1795520957605;
-        Tue, 24 Nov 2026 03:49:17 -0800 (PST)
+        bh=vnwt3Hg75Jqhq/RX3EnfxRob7Sm62Nv/9HL8t2YUaCw=;
+        b=Ju2WlKrORkajK8DHZDM9OAySWP9lLfodpspjVb5AGiuevDvPiIE6F6uykP4gGlLZAm
+         uhfnDNaQkQygkczrvd+mCjniSzhFVp8q6W2yYpfpteuBGoRbRcgMEaYbRMzbPjzgRDRr
+         3tDvcZwdFlDlJgdL8iYjARTdAN1PskFygAuIGn2yBvtFXiloepmvCOe5kuDIcbTfrEns
+         4Ou6ej5SV1z2wUPME0vFRfy6Pj8XAj46JEQexi+J+l1sJ16Rr5Qwl2t7k3v1CKwvhonI
+         UelAQQzvHalT8/swjuBCCk9n8Jegyv66JUBDrlC3Eh5XMEL1Px9wIF60CY0hFnKNgCWH
+         DGOg==
+X-Forwarded-Encrypted: i=1; AL+hErF6C7+7a/ixBoigtx1letxduEoDQE0a0Jx3xjB7QDLGlDr8kiLNU413zelz/V0Po/ryOYcbYQ==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9VCRxt5Apf7mdwrSYqcu9C8ZSIlq0QhCMSwipOjhpQAdg3ojaN
+	FjyIPJWm6kwiX+kwkYS0eUE30aNeBTnAEjLWiPr5kRUfI2EudlRiaWoCESMU5R+aTXY=
+X-Gm-Gg: AZFdTZfBxF7aHBWPsrcd9VnzLQIfnV+dl2bbxIn9KsEKv0EbdfWnsj9hXPShH6x1c/R
+	SoBSBBGYqwC5o1sr5HVBFfzI1wzNQmNODLdCZ7QBQtB3iKFiMEhXL16xLg6mNNbK9QM14pXQfls
+	EYfcJcH5gRkS6Nr5SZVwrCU0xvVZYyeqCjMKGEaH+oi6oUsyy5/FTA0GAQoZH08haa4pIFQZ1+L
+	Q3kjEf0sI4wUrW99QX0a2v0l50JVVMepWRgYPByKnKUFAxd63pN9G7ttFzScylPF4BFE7D5aeFQ
+	SMPPQD2fKahc1CBKoghXvN2/CN3J9KxiarViSIE4G7UuwF7IemZ3ua/xTu0DQZsRbRYXGeo+S02
+	/EBwV5LUluxzIBq1F7loUA0JPFygT+elY6DfUUoSKNtCtzEhWmLNw8dtw+S9+0z0DFcBgTXDTla
+	kx9aG87pacRas4ZEN8bikF866180gSMi9rpTU0ED/yeuqMyIcbmqolAwp+2Gupe4BMD0iUWbtf1
+	6//y0jM7ZVwgxOPzepdEj1t6KPi70a6MzQuY7rEPl8YQXGnInPyxqSJPMmGSR2zopDEW1LI1vVP
+	4ZLdIUXUeTXfVWxHv1eUf8h/TG0qD7zJffC6OOJcHEhD2D2hP7LatU+lc82HF4xNKl9InmC7zxk
+	tkt7YKK7GkKg+tKFV3bUqKOg=
+X-Received: by 2002:a05:6000:428a:b0:4a9:dcdb:2e11 with SMTP id ffacd0b85a97d-4abb8406ea4mr29382891f8f.41.1795521346404;
+        Tue, 24 Nov 2026 03:55:46 -0800 (PST)
 Received: from ?IPV6:2001:8a0:d6cd:9000:86f4:4e71:9fc8:3183? ([2001:8a0:d6cd:9000:86f4:4e71:9fc8:3183])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb884a3a3dsm416542295e9.10.2026.11.24.03.49.15
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6b110d56sm26566053f8f.40.2026.11.24.03.55.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Nov 2026 03:49:17 -0800 (PST)
-Message-ID: <99f6fa65-33f1-4865-9745-c092fff2e032@baylibre.com>
-Date: Tue, 24 Nov 2026 11:49:14 +0000
+        Tue, 24 Nov 2026 03:55:45 -0800 (PST)
+Message-ID: <bc4234bb-8901-4d0f-bbf9-66f9715c11a9@baylibre.com>
+Date: Tue, 24 Nov 2026 11:55:43 +0000
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -94,8 +94,8 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v18 7/8] arm64: dts: rockchip: add NPU (RKNN) nodes to
- rk3576
+Subject: Re: [PATCH v18 8/8] arm64: dts: rockchip: enable the NPU on
+ rk3576-rock-4d
 To: Jiaxing Hu <gahing@gahingwoo.com>, tomeu@tomeuvizoso.net,
  heiko@sntech.de, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
  joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
@@ -110,36 +110,24 @@ Cc: royalnet026@gmail.com, sidong.yang@furiosa.ai,
  iommu@lists.linux.dev, devicetree@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 References: <cover.1795478392.git.gahing@gahingwoo.com>
- <f1d20ec832e10a80dc813aa10697632e8024a685.1795478392.git.gahing@gahingwoo.com>
+ <0bcd73278a4c7a0cb2e1b8bdb9aba306355384cb.1795478392.git.gahing@gahingwoo.com>
 Content-Language: en-US
 From: Daniel Drake <ddrake@baylibre.com>
-In-Reply-To: <f1d20ec832e10a80dc813aa10697632e8024a685.1795478392.git.gahing@gahingwoo.com>
+In-Reply-To: <0bcd73278a4c7a0cb2e1b8bdb9aba306355384cb.1795478392.git.gahing@gahingwoo.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 24/11/2026 00:01, Jiaxing Hu wrote:
-> Add the two NPU cores and their IOMMUs, disabled by default. Core 0 is
-> in PD_NPU0, core 1 in PD_NPU1. Label PD_NPU so that boards can give it
-> the NPU supply.
-> 
-> Set CLK_RKNN_DSU0 to 594 MHz. Nothing scales the NPU clock or voltage in
-> mainline, and the boot rate of 786 MHz at the boot voltage of 750 mV is
-> outside the vendor OPP table and gives wrong results; that table runs
-> up to 600 MHz at 725 mV.
+> The rail is switched with the domain by commit
+> b1bff9ced657 ("pmdomain: rockchip: manage the RK3576 NPU domain supply")
+> in the pmdomain tree; without it nothing holds the rail and it is turned
+> off as unused.
 
-I still struggled to understand this (particularly the choice of 594
-MHz) even with your notes, but I think I got it now. Suggested rewrite
-that will hopefully make it easier for others:
+You can omit this part of the commit message. The dependency is stated
+in the cover letter, and domain-supply is standard enough that it
+doesn't need specific documentation.
+> npu-supply is set because the binding requires it; no driver uses it.
 
----
-Set the DSU0 clock to 594 MHz for now. Radxa ROCK 4D boots with the DSU0
-clock at 786 MHz with a voltage of 750 mV, however this gives wrong
-results and the vendor OPP table suggests this voltage is only workable
-up to 700 MHz. The rocket driver does not control the voltage yet, so
-594 MHz (GPLL/2) is selected as the highest rate that we can select for
-this operating point. Voltage and frequency scaling could be implemented
-in future to more closely match the vendor driver behaviour.
----
-
-Please tweak something along those lines, you can add my reviewed-by.
+So why does the binding even exist? Is it because it will be needed for
+implementing voltage scaling in future?
 
