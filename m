@@ -1,116 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795517652;
-	b=eKmhLEk5AWPo4575118P6AtO2AA6k4Xg1keokxkimsCAu8S9O+N2+1Pf24v1JrIwHqb7
-	 sVBuSquSZ2Xo4q78hPfUSjszTK5Kvfa8iPAGX7bGiTICg9y8G5x+XVR0tkDycbhzOQnLx
-	 LsKxD6x6S64jfd4JogkmH/vkguWltDHnj7b76klrs+YCPW2P63PntgQ1QaDcO++hAQI9p
-	 5B1zwEbuylzxnnSXBYs4ib103vl/wyIiMq5LiaLLYDnUeZyu4S5fDUQL/J07oTyO32KDg
-	 smsxgPmjG0cYTMejJaLaN3+ZG9tSjosMniIrYWOANjf0V8UY4Sj0sKkMzMNxZJV2FZg==
+	t=1795519981;
+	b=TN2v3Yaum0/qZDO5IiWi0joyNVKIKeqHmj7gHz298joq2AhAK4X4d7raWzpytY0soxOZ
+	 0XhVQd17yjkHVde8UTY8rIvE3gaTwiIwXp/IEKeYfHWX86qv7q+17O/qanQOnZRD1L/sa
+	 ZXbaSeh52xZTPn1EsopeOW9CA2TWxZm255IaC2WmQDxEZJEf1cToQk1mqy8IUupYWsyyn
+	 USAB0niE6o1JvLg6ksnCcAOk4u5WcL0TFm0RNMLy5ts7o1TMstVpBwwtzip/Oa27vCIow
+	 DL3zEfZ0Bms6cw6ajAzPAF3wuR/yviiza/eiR6SPL0c7cU+GaKG64peTIkMLIdGxHqw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795517652;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding:X-Authority-Analysis:X-Proofpoint-GUID:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=xtnMeRk0k0X/YY378KWkQdBLEz1neR4yAcGqKsNa8lo=;
-	b=ktgbBnLS5qQAXXiwz2YcWD39gtIq3Li/klYZPxqF11X1dIxmRW2v66nbOM5BKwzEj2+Z
-	 pjDGO9WaS7KwDHE7XMrzr4XgTjmzAqD3nv0nAP8oAYaO6xts8rFLJs+o7oG8BGuDwlfQv
-	 ixjY19vyGooT2KG4j+AKoClEsU4td1cGTI8yL5jd1QmVEmmq+3GW1sUCCRUoik62a5Ude
-	 QO4SDTMZm2gRFZ/ENYtjNxQPKG3MmGr+cV72zHTJg+HcjMgWDrUaQtzbtiBQWhwt2FsPh
-	 kkmFcnhFStdUNfZ1cj9YXVMsQM2u40+XWtUzZEZW+jQLOC3iR11cFWWR2lmHbj37QOA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795519981;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=s/bSSvf0Im0ruzCTIFpwwFuOavhKohFLurdyvyasMP4=;
+	b=TeAy7kWWopjYDZLfIOILPV5y/EjltDqUiSiEaO6kQHfxaRG4z46a6zkRMvenKYXOAYgF
+	 49hNhcy/rXJZBFw12K9GTFpelcEvgcSJKvFb/Qmiq7VDlVRBbf1+pLrrwayCxPUWIFHda
+	 U+3tajvPNE4MzqxTT88SW3Sngs3889yS+kLyvlClPpG2mDEqeMEmgJPjQze0pWkPjPexF
+	 WgMCZCivBgIbjVSb4Psc9CCpBS/s6O6zBdxLRsbublTekas5IIdNAGATftMxB0Dz/Rsb8
+	 2HOf8lUR/FZhlUjFfEimK7NdwWx0DgAQow9pCv163P3spwZSfjY8BuoTtKQI3Z9x1tQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=U54QDspb;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b="cdWy6e/o";
-	arc=none smtp.remote-ip=205.220.168.131
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=baylibre.com;
+	spf=pass smtp.mailfrom=baylibre.com;
+	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=Z5eT3rdz;
+	arc=none smtp.remote-ip=209.85.221.50
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26B22606A31E
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 10:54:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 26B22606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26FEE606A32C
+	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 11:32:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 26FEE606A32C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=U54QDspb;
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=cdWy6e/o
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AO8USRv3701109
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 10:54:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=qcppdkim1; bh=xtnMeRk0k0X/YY378KWkQdBLEz1neR4yAcG
-	qKsNa8lo=; b=U54QDspbURrXSFvwLCDnst4SWJrgGzcewuAFI+pXYnHplW/6MFC
-	a7u2D6vIyX1jn6NTv02kFtu5ljRnqAXMfnx3A+E/SnK+z6VsYLkFXsbr/wxUFAim
-	WBy5B43P47xCERB6OkVo7WGc85ImIibAjESElACLlJ6iUwT4ARZDVdBPDRDsFQwb
-	gZTrIofwsI2m8jEuGNr4UGIR3htH/sHmIYk85YiwCvuL1w9CXX3F1FadoMqJMxUh
-	iPLdlu9fmu/UZaIQpndXY1mm/+9ypiTFGJ+vkDHvrlDbQ/H0gr40U9e1FLsuy/np
-	ZU2NVlmp/wycRwq4DmFOwMSJO6geEo3i1GA==
-Received: from mail-dl1-f70.google.com (mail-dl1-f70.google.com [74.125.82.70])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4j50ky2673-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 10:54:11 +0000 (GMT)
-Received: by mail-dl1-f70.google.com with SMTP id a92af1059eb24-154e9d2d94fso5523911c88.0
-        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 02:54:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=Z5eT3rdz
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-4a32576da88so2521089f8f.3
+        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 03:32:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1795517651; x=1796122451; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=xtnMeRk0k0X/YY378KWkQdBLEz1neR4yAcGqKsNa8lo=;
-        b=cdWy6e/oTkffRI5LnCH/1PNsSLOY62nx+Eo/0ctOoeRh65ZOJ7kO484IZwv19Be4Xw
-         687orC83eQru0xiyQRk6UPWMmXukZ1NFgeVHNCwvQ1RQUJXamz+oAP5M9M1D2TSPEImp
-         hoa7GUx/qtMKxRD9dE+xTgPgI9TleC+6vt9axvftjrOkfUe5kqs/VHi8HOWIk6VXLLOJ
-         nzIUStF9q40wb7y6WI6snoQ+FlZWs9xL/4nmZQrv809pgoJTka4dPDBjg/CWfFkttPY8
-         FNwiz3OKFI8GmFMS47cIFxkx6oeBIG7OQIJ9zcpWHHDhh1BaF6zsinKDQjZ/UTyCsZOa
-         WcaQ==
+        d=baylibre.com; s=google; t=1795519978; x=1796124778; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=s/bSSvf0Im0ruzCTIFpwwFuOavhKohFLurdyvyasMP4=;
+        b=Z5eT3rdzH+gCPBT9yygxQcdoT64S5VdCzBK1AyrnHU46LzwT6RwQfFtGC6y5iH4fFS
+         EKJRv4rCK2xL899P8ZVmaegg5PJ0NjAEBF8J0IsXE4HlYFts7nJP3EI1JPDUt0wVSvk7
+         0o73YKsf2LldWCAPYgEeI+A8B5sNtH2HPZHI5IhqIyCLzqNSQT1chla+tzYS6Jie/lL5
+         8ZUwCKGIaQFl6fjvNaGtW/SV3Su86tKWalzyUCHc804IOTIaKnb0eTpypj0nV4Mo/yrf
+         kHZ4IQRjsvFdNfzBKH1Q/ude9baG9AlARG8+Kbk92Zd2LKdKDzyfxWOLcYH1Lx1yDhIQ
+         wf2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795517651; x=1796122451;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=xtnMeRk0k0X/YY378KWkQdBLEz1neR4yAcGqKsNa8lo=;
-        b=UyWl7OIFEeCi5x+pqyt5Of2pUC4JySjZEFTQhY96sv0lKViCC89ZtFXgQg6ep32Dg0
-         4CToPN06WGuIlIDOpP8K6MHJghqNHiaB6DZ+yuTinp3y2AsUtBwOW7WvTMrfp7nQpq88
-         dPBDPww84vu61GZnNL4oYYFPl2X/NoufoVi07156FVsyYFvplL+E+aQQRrLmVLe3f6Bx
-         xZykgZbQqlBKpUc/afBXqiOWJKdzK1KYwtpK+xnluf6hNl9uextYIRcB9rwczCNdI9Yy
-         9SfHRVOq8yK/iFDBlZTJe+77pfDzW48BqEm0UfYGcnjz0+7BQwEGzCkY2E6/TwEYIH8r
-         qrzg==
-X-Forwarded-Encrypted: i=1; AL+hErEQpMvxllqPgjDnK72gvzeHuf8lOWJMWFRfDhnYRPQ2H4IQ7r46tk7PseWsuWPie4sNRcYEvA==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/9tjF4kRep3DBXaPi0G+CkEdyhx0ABnAvBmcLDfeEbkr2ngjj1
-	H5v5jR4slkSJUp4rQj1+789pRpbm/JCIExk4OXaFxhWIAPshyvqy3nn2CCLfX4thvCc01TG/xw4
-	NxL4AJlsSIbLxnBuVIAHamw4Df13kGB50o3N9c2frk3oOCR2QA96wfGP0Xg==
-X-Gm-Gg: AZFdTZdrqTS///bbIPIjN5My2+eWJnxz0fZ7zn2WdKHgSx9nBMLZ7NCGfHj8WLLkdgL
-	54K/83OcaEobmq2tftVx/ojv5yx3wenqjMKfhlOQjja5VsZlfV1PvulT0A/LW6XowymPhsfjukp
-	mHwqVuoThzU2FTiIJZmbuGrEMx98Lc48UiW1fFvZ+NthutnE6NA7UHvxyB9nwZXDYxWRN/nImtK
-	rons22mjrjVg5/5MHsaszh5X6Vo4EKDbVGLcY2HgGIJfUgKTaEHr0jL0PbddR8X/MwC/9uwNCe3
-	P78qkfQMEiFmdtyKw+84+K3+Z2ngGXyOHgeXafOHG5ZwxBjlRsF+Jv3Ebg6e7723nBfEWsnm84g
-	NWyY2LzJNfnUVOTcNz9ZdOvHcU52q/6Ow+KbauTTX84BlTsrjA5myLJZJ2aFW2Uo7ZmVtsL6tH+
-	2OGktPK3Xq58KQXKi4eshmAIJjuXrKabj+lwY/lUmN3ylpyiP80JsWi6k=
-X-Received: by 2002:a05:701b:2313:b0:151:5d01:9316 with SMTP id a92af1059eb24-1b5568b0f32mr15389021c88.23.1795517650488;
-        Tue, 24 Nov 2026 02:54:10 -0800 (PST)
-X-Received: by 2002:a05:701b:2313:b0:151:5d01:9316 with SMTP id a92af1059eb24-1b5568b0f32mr15389004c88.23.1795517650083;
-        Tue, 24 Nov 2026 02:54:10 -0800 (PST)
-Received: from hu-ymg-blr.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com. [103.229.18.19])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b556847fdasm39083831c88.13.2026.11.24.02.54.06
+        d=1e100.net; s=20260707; t=1795519978; x=1796124778;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=s/bSSvf0Im0ruzCTIFpwwFuOavhKohFLurdyvyasMP4=;
+        b=2A5PryNx55cz2w8XEigW+mVx0xpKxM24n6E92GtjawO1eJkECa96N10U/24K3Cjx9T
+         a0hUgQnrBwsMA7QYETo08IujyOSw1Prx6tr2YwUYMjxNHwtFi7YNQw7VgaRvuIPo18Tb
+         vlOmiktp4kchpF1uz2Cc2T6Rq9r4A9Mw4gKAffZ81t/SLhvr/rWxeyUKloJN0VLRfrey
+         7DV0RWLuAc2iVh1ZBY4CtmLdixjK8q9KvmD+zmPj9a7H7p9bOTSWfrSsSVYD8xkl4BUj
+         qui9aP5prMZ0xPkemiW2JfzccSQ1YTtChegasWJJ2tnPu0k1s+IK6mDkHBkh7PwsIhqJ
+         ULBw==
+X-Forwarded-Encrypted: i=1; AL+hErH+3G0mjiGH75vKXDs7xzfgXFDG6aR0GcHcWn3cVmjZLlMED3SZdUG3BoIByiiIscnqxVKppw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/B3MC8yDzhAY1XfQuiShJ64vCORAl9hL5aaOK0AzRtkdsrBTaf
+	SMkPYrpe7/yXbfQUs9xd6M5ErWKtzHVvvGxkAhp8MOwXIkKsGknrMLa5upMGwyflvlM=
+X-Gm-Gg: AZFdTZf9tqehAQdnXZ0oLRh8MHvtCeulFBZ+GZf06To9fyE8OvSY2/ZZBvvM1TX+gwe
+	oU0CkCpO8rcFlN6wvvAhZaPYYTz2HVak7859cIlhDJq5TB0KuZc8Z3vuVowwHQDuLch1umO85dY
+	A1hvMRCSchbyKdrUiRdUl3QKmNoNfFogOtuu7X3ObTvlcRjtPEbzVCWIsWWey+4HHMsnkftAjJS
+	B/X0VdoVLSn6ABp7SumrVlspiCNyIC5p0VfUKrFbdOCOzfpKKulNNdT+/yLkOMie8rgbNkFlrxY
+	8G81ieXPvcVVJ0dDFNCnkBFGqqgmDdKEXywNOu/8WeGMLNB5wBmpglp4TKfZYD59ntu69QE5t2k
+	qK95em3iag3BpzI7sJqLDPfJ/SPNvxcX+JbsuU8Q1T3GDYpBn+qM97P8kH28E+YGrxvHSPG56Hb
+	ZhES6iZ84VlCoh9iVP32rcB3PSZ9FYUC/3RQ1jQqNAs1PNYjpQLnG7wTgHJwbjhXbjfY7t4WWSA
+	wl4uKawydeVi/1tFtARs5I9N4G8IDyM47N3PVEqKXCUSJxaLoIoSoCgi6AjfPsxFAbYHzfIYo9g
+	pYZJczSyTV7kVIrbXEQKfdXFT4EmmZiGGdpXoxSK3b8n7xlZihMe2SRfDyPJIfJHivDriL9WEC9
+	sqlEXrZUomw9O7/mA
+X-Received: by 2002:a05:6000:40da:b0:4b7:83a0:6c06 with SMTP id ffacd0b85a97d-4b783a06c89mr2288961f8f.15.1795519978076;
+        Tue, 24 Nov 2026 03:32:58 -0800 (PST)
+Received: from localhost (p200300f65f19a9047f1ca7b446868308.dip0.t-ipconnect.de. [2003:f6:5f19:a904:7f1c:a7b4:4686:8308])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-4ab6a67f1b2sm25503606f8f.25.2026.11.24.03.32.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Nov 2026 02:54:09 -0800 (PST)
-From: Yadu M G <yadu.mg@oss.qualcomm.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org
-Subject: [PATCH] dt-bindings: iommu: Add Seca SMMU compatible
-Date: Tue, 24 Nov 2026 16:24:04 +0530
-Message-ID: <27f6e560a71f770078ef26137207905870c6ce58.1795517644.git.yadu.mg@oss.qualcomm.com>
-X-Mailer: git-send-email 2.43.0
+        Tue, 24 Nov 2026 03:32:57 -0800 (PST)
+Date: Tue, 24 Nov 2026 12:32:55 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: richard.henderson@linaro.org, mattst88@gmail.com, 
+	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-next@vger.kernel.org, 
+	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org, 
+	will@kernel.org
+Subject: Re: [PATCH v3 2/2] alpha: enable contiguous memory allocation for
+ coherent DMA
+Message-ID: <awVzJMLVw4wUSqky@monoceros>
+References: <20261115103809.1288167-1-linmag7@gmail.com>
+ <20261115103809.1288167-3-linmag7@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -120,66 +101,172 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authority-Analysis: v=2.4 cv=Y+ptIReN c=1 sm=1 tr=0 ts=6b056cd3 cx=c_pps
- a=SvEPeNj+VMjHSW//kvnxuw==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
- a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22 a=EUspDBNiAAAA:8
- a=lHObh2IfMKzVuqTG74EA:9 a=Kq8ClHjjuc5pcCNDwlU0:22
-X-Proofpoint-GUID: AWw-YtfO4GnldsMeaD_PvRlUM1vuuG8v
-X-Proofpoint-ORIG-GUID: AWw-YtfO4GnldsMeaD_PvRlUM1vuuG8v
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI0MDA0MiBTYWx0ZWRfX+km2RFl6jy1e
- xyePSrBP5oUkiq3azUxadQlidZd3cvltL+LfydLgosgpK9yLJO2Pk8dQ61ReeTWWadVucat3x0e
- rgUPcFvMI5p8e0g4FaXRo5Zr/hlzOnQ=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI0MDA0MiBTYWx0ZWRfX3CzLiDMqp/Vy
- Xd15CGCH49OR5O6t/jeJYmCIail8QVkrOSB9V47DWgPO7SQWdsvuotYSrhTd9B+/IIJa7V9y1j1
- AD2mRLoO/Ni2pS1L/225H5dLC6CSZCT8Th1UlToKxTY50UXR8z0wMlEqDM5EfLymoRKuSt4aQFx
- 0hvlGUNxuUXkUXrcFuFSvKTMIG6Ks25pQiasa5viWmy3BTzq9NPtJK8vgXPyELRw7TwfK8Nvw2i
- 2oTAfW7n/oOtNUeNfp6nwZiH/chCe4F6ZogEehcSqhTYbPMT2xx1GCzIdfb4sZ4I7C+WVW6a0j+
- +RiK7DaugDrYrE5ALJUe9/89jZRtBHGuJTGvnItlcQMdl0drxs9jcNxWuWGK131FurwGJGejOjO
- 0Kge6fGyo3EokBDmwC5Cr2K/RP6WSd/sk42x9Ho6PODMoltpVhbWrYgazq35kMjAQh+n9Uwlk3O
- WcNLN/7BU2nroECZjDQ==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-24_01,2026-11-23_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 clxscore=1011 malwarescore=0 adultscore=0 spamscore=0
- lowpriorityscore=0 bulkscore=0 suspectscore=0 impostorscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611240042
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="zz6vlopso3otapss"
+Content-Disposition: inline
+In-Reply-To: <20261115103809.1288167-3-linmag7@gmail.com>
 
-Add qcom,seca-smmu-500 compatible string for the SMMU instances
-in Qualcomm Seca SoC.
 
-Signed-off-by: Yadu M G <yadu.mg@oss.qualcomm.com>
----
-The Seca SoC device tree using this compatible will be posted as a
-separate series.
+--zz6vlopso3otapss
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v3 2/2] alpha: enable contiguous memory allocation for
+ coherent DMA
+MIME-Version: 1.0
 
-This series was prepared with help from an AI coding assistant
-(Claude). It assisted with review on the device tree, bindings and
-driver (formatting and alignment fixes), rewording commit messages,
-and running the validation steps (checkpatch, dt_binding_check,
-dtbs_check and W=1 builds). All changes were reviewed and tested on the
-Seca Ride board.
----
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Hello,
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index 6748351c7812..6700d3151783 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -59,6 +59,7 @@ properties:
-               - qcom,sdx55-smmu-500
-               - qcom,sdx65-smmu-500
-               - qcom,sdx75-smmu-500
-+              - qcom,seca-smmu-500
-               - qcom,shikra-smmu-500
-               - qcom,sm6115-smmu-500
-               - qcom,sm6125-smmu-500
+On Sun, Nov 15, 2026 at 11:37:43AM +0100, Magnus Lindholm wrote:
+> Select HAVE_DMA_CONTIGUOUS and reserve a default CMA area after the
+> machine has initialized its DMA windows. Prefer top-down placement
+> below the direct-map and usable RAM limits. Skip the default reservation
+> when no direct-map window exists. Explicit cma=3D ranges retain their
+> generic override semantics; top-down placement is a preference, not a
+> hard lower bound excluding the first 16 MiB.
+>=20
+> Use dma_alloc_contiguous(), which rejects non-blocking callers, before
+> falling back to alloc_pages_exact(). Pair both paths with
+> dma_free_contiguous(), whose buddy fallback uses free_pages_exact().
+> Skip CMA on the GFP_DMA retry after a mapping failure so it cannot
+> return the same unsuitable CMA pages. Retain zeroing for CMA memory.
+>=20
+> Round the size up to a page boundary in both allocation and free. CMA
+> allocates size >> PAGE_SHIFT pages, so an unaligned size could otherwise
+> allocate too few pages and overrun the allocation during zeroing. Keep
+> the mapping and unmapping lengths consistent with the aligned size.
+>=20
+> With CONFIG_DMA_CMA=3Dy, the default CMA_SIZE_MBYTES setting reserves
+> 16 MiB without a cma=3D argument. cma=3D0 disables the default area.
+>=20
+> Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
+> ---
+>  .../io/dma-contiguous/arch-support.txt        |  2 +-
+>  arch/alpha/Kconfig                            |  1 +
+>  arch/alpha/kernel/pci_iommu.c                 | 19 +++++++++++++------
+>  arch/alpha/kernel/setup.c                     | 15 +++++++++++++++
+>  4 files changed, 30 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/Documentation/features/io/dma-contiguous/arch-support.txt b/=
+Documentation/features/io/dma-contiguous/arch-support.txt
+> index 3c6ce35d704f..6cd205a991f6 100644
+> --- a/Documentation/features/io/dma-contiguous/arch-support.txt
+> +++ b/Documentation/features/io/dma-contiguous/arch-support.txt
+> @@ -6,7 +6,7 @@
+>      -----------------------
+>      |         arch |status|
+>      -----------------------
+> -    |       alpha: | TODO |
+> +    |       alpha: |  ok  |
+>      |         arc: | TODO |
+>      |         arm: |  ok  |
+>      |       arm64: |  ok  |
+> diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+> index 6ccb2d230326..cddc1f3af209 100644
+> --- a/arch/alpha/Kconfig
+> +++ b/arch/alpha/Kconfig
+> @@ -30,6 +30,7 @@ config ALPHA
+>  	select HAVE_ARCH_COMPILER_H
+>  	select HAVE_ASM_MODVERSIONS
+>  	select HAVE_DEBUG_KMEMLEAK
+> +	select HAVE_DMA_CONTIGUOUS
+>  	select HAVE_GUP_FAST
+>  	select HAVE_KERNEL_BZIP2
+>  	select HAVE_KERNEL_GZIP
+> diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
+> index 955b6ca61627..19aa5c05de2b 100644
+> --- a/arch/alpha/kernel/pci_iommu.c
+> +++ b/arch/alpha/kernel/pci_iommu.c
+> @@ -408,15 +408,20 @@ static void *alpha_pci_alloc_coherent(struct device=
+ *dev, size_t size,
+>  {
+>  	struct pci_dev *pdev =3D alpha_gendev_to_pci(dev);
+>  	void *cpu_addr;
+> -	long order =3D get_order(size);
+> +	struct page *page;
+> =20
+> +	size =3D PAGE_ALIGN(size);
+>  	gfp &=3D ~GFP_DMA;
+> =20
+>  try_again:
+> -	cpu_addr =3D (void *)__get_free_pages(gfp | __GFP_ZERO, order);
+> +	/* A low-memory retry must not return the same unsuitable CMA pages. */
+> +	page =3D (gfp & GFP_DMA) ? NULL : dma_alloc_contiguous(dev, size, gfp);
+> +	if (page)
+> +		cpu_addr =3D page_address(page);
+> +	else
+> +		cpu_addr =3D alloc_pages_exact(size, gfp | __GFP_ZERO);
+>  	if (! cpu_addr) {
+> -		printk(KERN_INFO "pci_alloc_consistent: "
+> -		       "get_free_pages failed from %ps\n",
+> +		pr_info("pci_alloc_consistent: allocation failed from %ps\n",
+>  			__builtin_return_address(0));
+>  		/* ??? Really atomic allocation?  Otherwise we could play
+>  		   with vmalloc and sg if we can't find contiguous memory.  */
+> @@ -426,7 +431,7 @@ static void *alpha_pci_alloc_coherent(struct device *=
+dev, size_t size,
+> =20
+>  	*dma_addrp =3D pci_map_single_1(pdev, virt_to_phys(cpu_addr), size, 0);
+>  	if (*dma_addrp =3D=3D DMA_MAPPING_ERROR) {
+> -		free_pages((unsigned long)cpu_addr, order);
+> +		dma_free_contiguous(dev, virt_to_page(cpu_addr), size);
 
-base-commit: 3191063649dbf7c0d0b768e1f3655e4c5fc6edb5
--- 
-2.43.0
+On next-20261123 I get a build error on an ARCH=3Dalpha allmodconfig build
 
+arch/alpha/kernel/pci_iommu.c: In function =E2=80=98alpha_pci_alloc_coheren=
+t=E2=80=99:
+arch/alpha/kernel/pci_iommu.c:418:41: error: too few arguments to function =
+=E2=80=98dma_alloc_contiguous=E2=80=99; expected 4, have 3
+  418 |         page =3D (gfp & GFP_DMA) ? NULL : dma_alloc_contiguous(dev,=
+ size, gfp);
+      |                                         ^~~~~~~~~~~~~~~~~~~~
+In file included from arch/alpha/kernel/pci_iommu.c:14:
+include/linux/dma-map-ops.h:105:14: note: declared here
+  105 | struct page *dma_alloc_contiguous(struct device *dev, size_t size, =
+gfp_t gfp,
+      |              ^~~~~~~~~~~~~~~~~~~~
+
+which seems to be a conflict between
+
+	next-20261123~159^2 =3D f03df6019b56 ("alpha: enable contiguous memory all=
+ocation for coherent DMA")
+
+=66rom
+https://git.kernel.org/pub/scm/linux/kernel/git/lindholm/alpha.git for-next
+
+and
+
+	next-20261123~104^2~23^2~7 =3D 31f7e12d621b ("dma-contiguous: pass the NUM=
+A node to dma_alloc_contiguous()")
+
+=66rom
+https://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git dma_alloc_co=
+herent_node
+
+I guess the right thing to do is to pull
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git dma_alloc_c=
+oherent_node
+
+into the alpha tree and fix the offending function call in the merge
+commit.
+
+Best regards
+Uwe
+
+--zz6vlopso3otapss
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsFdeMACgkQj4D7WH0S
+/k5++gf8Def1hTBgcrh/KoII3KUQugHVpyoXdwJDAayGMHuOUnodDFoEcOG7dRch
+ODRC7w2t0rKG/XIYwabEtNnXK6BanW5b3foBoafZTtB+E9v7swJK3Z2TpNYsfIDh
+eba7AQFbffHbCTwNlzdCMTEmyqqz0qhL5Mc8YONsN9lq4no+UNOzN9123YxSnsaH
+MaVWVYaV/ZLWle1TLI3vUfb+L+fQzX96kFbT6FeX1FGO8Cubq37kGONVgLybBvC+
+y5GTwQ0VbUIoYQ74Bt+7Jo7qbU8NSyhEiosy5G7TDUQ05NX1Eikj5eiYv+XvHR2u
+zBKgWDi9C98biJIon1f+BFbkWqNA2g==
+=1TSm
+-----END PGP SIGNATURE-----
+
+--zz6vlopso3otapss--
