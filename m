@@ -1,54 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.197
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.49
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795602213;
-	b=Jv046jBwhgZ/GN5TyXOKpAYY2PMD5kx+TZViOaOumYsLHefmdmhRPVawfOneud7HvpxC
-	 p/xKNvblFPsNhkPR6UO/7GZWb/EW7rElI4AoJXgVm12FZoQwAAMgPOllX0pa+FitP6j2V
-	 2OdxI1O+LxJcW9JjZx/rbVqird2pYXkiiGpKHN81T7nEJDkevawXkGHOLTJZC1Y4kA0ek
-	 k/km5KqIlVFnaU1Kqq4pFZZ4N4mDiRp59QjaOXWPqC61QHhmZx7r2W0QRl+qIs4kJKU88
-	 LO/rMJ6/3op+1qurTjSFoeOlpGwp25/Rsem7mZx+smmSR/2MRUHK5oksn0VBtjbOacw==
+	t=1795603985;
+	b=Ft5HIwYkZvIAfzZfNwP+XUh2G/jpPsKJ2TTF6AAsLh00fTWl1yiSF+dPXw1TIsb/XopI
+	 3yRjeziCN8/RNtc98IkHl6jFDIz6/i9v/yP/dPZqmusNjnhJoGG1ourxN1URpcptXVHs1
+	 5J69sT4iwtt+qb9TqFe9ednyUFQ2taMvwuX9jS6keVQ7ASczAmzU4S7w5EF01bumMdgt1
+	 WqedyyfKLN7u++AfQlZHNP49ho/9bD/hEQc+mB0yEzt/f9rrMlJzoFKoFLAcVYfYCjPZz
+	 zcWtFMN9ZlPa7BA64LGSskudW9uABaWB3OAl3R+9r7QJYxVArIFIFZjl4D8ahfMcEWg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795602213;
-	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:MIME-Version:X-Received:Date:In-Reply-To:
-	 X-Google-Appengine-App-Id:X-Google-Appengine-App-Id-Alias:Message-ID:
-	 Subject:From:To:Cc:Content-Type;
-	bh=nAwEpdk8W5zOz8dRUea8wq0PG12t8rrSsYABB8slUxU=;
-	b=yi4VSIeXcdKcVSiQL6alPMFVi4r5QhjAdKoj91xjTbTKEUUb2TVPrCprWfMxTFr/qim1
-	 mW4zWkyNlYE+FOiJYipQKqhKxgtxTdmMSIOw9BLu44ZGurUfWZlwxaR1mmU4vlTSHFzH4
-	 ak6ZEq3Y26FZuSkE8t1nQBlYLjEM6M4tz5JJ63WDhFCIVZ42fV1tvxzDCRPvlOaqsWpc0
-	 oSUhRe6ve05blba5ajAgK37cATi2AU/Pq3efSYpyGj6R0sMoPbN3KXUv1IiCN60DfvHmY
-	 YzU66OmCGDMt0QzYA6PiWQT6B1nwyF7YG8czydIDIlwGbEzDWQnGz8ocj9cH5weNFsQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795603985;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=GtyqZEMexnqUKbDqv2TlW/7VEDcPuxK4TtntSukqHfg=;
+	b=dwtUOEi0tyXJLVyXjxyOkxZRIuKgVco5MnvKJdWQ461i+GKT7cYk4MnLWeKci2vcMKEI
+	 MZATWW/1lB2m3dkjGMSIONgMKKaH0ed5svMcDfgH3Ugq4iBO35P8S/CFcbMG4PiTu+WEt
+	 6PwQ88wZxVJ/HwPa6stIgE1WNg8Gtgh97FuosGo95nqFPVHKuJNQnoqd5+auY2JW/VS8H
+	 VXADke9PXLkQdWCOlRi20TqLz0F7+BwrGEUzVY676Yd8oLVPwymVwZUsuAVzbU9e4t2Ef
+	 lo8TUi2yI6a/QGeTtibLtFDOhfMikurgdU2wJBWB3jK9IyuKfTTX19tOJjhFJatvl5g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=fail header.from=syzkaller.appspotmail.com;
-	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.167.197
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+	dmarc=pass header.from=baylibre.com;
+	spf=pass smtp.mailfrom=baylibre.com;
+	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=ZNXIZbyN;
+	arc=none smtp.remote-ip=209.85.128.49
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 798EF606A321
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 10:23:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 798EF606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4e937c5bd4fso4789654b6e.2
-        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 02:23:32 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 824E8606A32A
+	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 10:53:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 824E8606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=ZNXIZbyN
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4bb85e07aadso69445025e9.1
+        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 02:53:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1795603983; x=1796208783; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=GtyqZEMexnqUKbDqv2TlW/7VEDcPuxK4TtntSukqHfg=;
+        b=ZNXIZbyNjbI20j8cE6WFBhFIyO4oc5NzfHT5v6sNO83fV1MVaZUEkZGJCRIBqrgqMp
+         Mao/j9QAccAS3nHrKLLN/Q6Nom75QQbwKol3Ee8IUtVOoj0mWnC37gshn1WP7bZA6/jX
+         k17Fa3nmHYj2LIH2lL7HPIQqdWyEor4AlXyiKrfTuwP5KSYwLYG1kwVoD6v3UYlu0KKx
+         AqriTPVgYDueZqgAtxxhLfqi7dwXqfvZzFyJt5WZSbrmAmjdOa9h4oi94QErofmSi3a/
+         CR/ZjBOujps3wfL06iW0byXnQIcF+ux2qXe5hO397qsDRT8LtaLX7+l0lHFq2j9xCoLy
+         dVSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795602211; x=1796207011;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=nAwEpdk8W5zOz8dRUea8wq0PG12t8rrSsYABB8slUxU=;
-        b=hZl/1we0YpX6TAvzZH6yu8hOpUtKftdiNRmsS5CTcA1qJl6QxJCfn9+9P6vIXpcT3y
-         1a47zLDAI0fVOTq5PSsbGiLBpYAqUzOAskZAhqhC3BnPj0g+jGXrD0VDqYoblgEKzW5s
-         mwuVXpmRTmtJVowfFtmqCqVm2nA4tOcbGcZOgpLAjwwdtu2rFrszlltp6k+OepLeilON
-         /Av9jXhwhaEWRZozwsCVsudxdHOE5GtL/jFi4q+QNskYtOKV/8fVSR1Gn+HZy05OYMAo
-         bt58SLoj1kKcEcK5oeXJuXUHamCn9YiaB/2LBkWw1FZ25AoidZlc3lkeST75Mpi2DmdD
-         gbdQ==
-X-Forwarded-Encrypted: i=1; AL+hErEtrSVx2sxH6khlPa0aalypEAc8L+jrbNXDPFCY63j16vDxyy3XkP58zWnV/FXRl+fAP7Slxg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/rHqxtWOC7XyIi2b9ww89K4DQi/gCqRTGK+R1oANKy3821e/2f
-	XwXhLgUj/HD644TjwsLb+fiUrph56x8N0UZueOKubEAQnTu8EPY/Mn3XvRIcezeFDhWd2rmPPuq
-	JGAGtE6/WbtHs2V8BpVQr/1wqBVIwz/7lTUSNiMOwOwLuZV3WsnOnbc+lvXg=
+        d=1e100.net; s=20260707; t=1795603983; x=1796208783;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=GtyqZEMexnqUKbDqv2TlW/7VEDcPuxK4TtntSukqHfg=;
+        b=0jWrdrO2hVWY+DTXdjhzoY5ZvIC8SxiXCJQ5B2y6pQpSJqTwiMXusS6bh52RUrMefH
+         ucxW5/dx8dG43UlMBVnzD6QHKMrZAS3mFIEuGx6nGWjqEjgzT5iMygPkxvveNLo8Csf0
+         J62VdyeMM3ZcTORo9KybOsw/8ollotQFjHcJl1qMZh9B3hmWLkj084kZW9bTfjhj7by5
+         XdLpXtRsODAqoN+1zKHETYMKR4kDtoDeMXkQH7U1AWzJ0ypu5ahts/eKzRy0H0OGlMp+
+         bAtH1iPTqd4LLezUbOXwELbUvu/XXNdEFeNDahn6EJMXUgEd/xyM2PLyinQEgRs7QGSZ
+         peTw==
+X-Forwarded-Encrypted: i=1; AL+hErGBbiUTHWCJdkaThOy/8JywCZADTrninYWyA40sdT8pfOYIMUIKQQ5wtpJPb7Gzz+Yzp2xTag==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+rD9sPyx+R7DxQIiR7oMVHB/+uLBkvt/5OkyQRH7Eog/ug5CsQ
+	TGsxOcOd3Wru3USKBSi7/Qnlurdphq4d0mmHA811ZvuuXXrPZcCnaO0k/cBYL3HThyw=
+X-Gm-Gg: AZFdTZdeA4iGn3Vh8I6nD18LKEF2h8W59FJ2szcm9DXtohARYqTgwxYMURRDXlsGRwd
+	cGrKfAzCwwYU2GaNuBREO9oNrGtgbwuQZhpPsI2tujlaicn8uF60gd7uCaoFYzt+jerrEM4Gh29
+	wc9oFolFM9VpexnjmCGVymaKpoIU3iuRj9y3oL1X/B6Sp+MWSxG6R5Ix8tdDnWr1T9tN04gyroC
+	7IlmUQo2FXKzK9BoF0Q3yAxbRuDAlhr8L9jHnO7D3S/LjyUKLTqrnhRKo0ptwTVYZRPc9a4HEFI
+	g1rR+Tcop1pnOpQSFzWaz3m8t4ym4sF7yYPDm0CNo0DxxHvZ/anIwcL8M6/RLXhxkTc0jelSdc+
+	vgusN0HA7Grfy9S5M93t/oTJAVNvH+TE+8SZKkhEv6gB5LuzZo0vC325+WH4WPBDbaHd3m+0WkT
+	M/r1hKjWKoC+Nv/IHXCNo/o9gKPTlQFttn0ci7MOdHwTdhD0LK1tNnynH8vm1wZXcCkvYLjmQC6
+	8aRvJ3S9NL8/l8aljf11QSf6ARJb5H8CJR9BZdogJ8A8mKnvYec7op8prcnq6HJ8qJyffxwDrqq
+	Lv4qnbayP5R5wT+Tff2XDqLHwPf3Y4QDgYnJqH2kkSCZAwR5kUAy5YoqxlAej89y6n3DD0tzfKt
+	Fvb398xASEws69ggP
+X-Received: by 2002:a05:600c:638f:b0:4aa:2339:a375 with SMTP id 5b1f17b1804b1-4bb8880607cmr329616615e9.13.1795603982845;
+        Wed, 25 Nov 2026 02:53:02 -0800 (PST)
+Received: from localhost (p200300f65f19a9043ef7230869dfba63.dip0.t-ipconnect.de. [2003:f6:5f19:a904:3ef7:2308:69df:ba63])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4bb853a12acsm539176075e9.8.2026.11.25.02.53.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Nov 2026 02:53:02 -0800 (PST)
+Date: Wed, 25 Nov 2026 11:53:00 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Magnus Lindholm <linmag7@gmail.com>, Jakub Kicinski <kuba@kernel.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: richard.henderson@linaro.org, mattst88@gmail.com, 
+	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-next@vger.kernel.org, 
+	netdev@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org, 
+	Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v3 2/2] alpha: enable contiguous memory allocation for
+ coherent DMA
+Message-ID: <awa6Owm3eDW3EitJ@monoceros>
+References: <20261115103809.1288167-1-linmag7@gmail.com>
+ <20261115103809.1288167-3-linmag7@gmail.com>
+ <awVzJMLVw4wUSqky@monoceros>
+ <CGME20261124232303eucas1p10f2da7a94c8aa19fa4e406d089c1367e@eucas1p1.samsung.com>
+ <CA+=Fv5QJxoxEoKxRpm5Hisdf=y+VpmM-s_VBC1tDQ2FTCfb08w@mail.gmail.com>
+ <3467269e-9929-4c9f-bc19-847976f49527@samsung.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -58,153 +106,74 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:c2be:b0:4d6:90f3:74b1 with SMTP id
- 5614622812f47-57a0ba5a8e4mr18256405b6e.49.1795602211468; Wed, 25 Nov 2026
- 02:23:31 -0800 (PST)
-Date: Wed, 25 Nov 2026 02:23:31 -0800
-In-Reply-To: <20261120010655.467825-1-lrizzo@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6b06b723.588a1920.b1e98.0003.GAE@google.com>
-Subject: [syzbot ci] Re: PISA: Pre-mapped IOVA Superpage Allocator for DMA and CoCo
-From: syzbot ci <syzbot+ci910cdb42d3006024@syzkaller.appspotmail.com>
-To: akpm@linux-foundation.org, aleksander.lobakin@intel.com, axboe@kernel.dk, 
-	brendan.jackman@linux.dev, catalin.marinas@arm.com, cl@gentwo.org, 
-	corbet@lwn.net, dakr@kernel.org, davem@davemloft.net, david@kernel.org, 
-	driver-core@lists.linux.dev, dtatulea@nvidia.com, edumazet@kernel.org, 
-	gregkh@linuxfoundation.org, hannes@cmpxchg.org, hao.li@linux.dev, 
-	harry@kernel.org, hawk@kernel.org, hch@lst.de, horms@kernel.org, 
-	hramamurthy@google.com, ilias.apalodimas@linaro.org, iommu@lists.linux.dev, 
-	jack@suse.cz, jannh@google.com, jgg@ziepe.ca, joro@8bytes.org, 
-	joshwash@google.com, kuba@kernel.org, kuniyu@google.com, liam@infradead.org, 
-	linux-api@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-block@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, ljs@kernel.org, lrizzo@google.com, 
-	m.szyprowski@samsung.com, mhocko@suse.com, namangulati@google.com, 
-	netdev@vger.kernel.org, pabeni@redhat.com, praan@google.com, 
-	rafael@kernel.org, rdunlap@infradead.org, rientjes@google.com, 
-	rizzo.unipi@gmail.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-
-syzbot ci has tested the following series
-
-[v3] PISA: Pre-mapped IOVA Superpage Allocator for DMA and CoCo
-https://lore.kernel.org/all/20261120010655.467825-1-lrizzo@google.com
-* [RFC PATCH v3 01/25] mm: Introduce CONFIG_PISA and metadata table
-* [RFC PATCH v3 02/25] mm: Add PISA allocator lifecycle and page recycle hook
-* [RFC PATCH v3 03/25] mm: Add per-NUMA-node PISA page reservoir
-* [RFC PATCH v3 04/25] mm/page_alloc: Extend alloc_pages() to __GFP_PISA and PISA block allocation
-* [RFC PATCH v3 05/25] mm: Add global cap and shrinker for PISA pages
-* [RFC PATCH v3 06/25] iommu/dma: Map PISA memory in a per-domain IOVA window
-* [RFC PATCH v3 07/25] driver core: Add per-device pisa_* sysfs attributes for PISA optin
-* [RFC PATCH v3 08/25] iommu/dma: Use PISA for coherent DMA allocations
-* [RFC PATCH v3 09/25] mm: Add per-CPU block caches to PISA allocators
-* [RFC PATCH v3 10/25] mm: Add background page scrubber for PISA allocators
-* [RFC PATCH v3 11/25] mm: Migrate user pages into PISA
-* [RFC PATCH v3 12/25] block, mm: Support PISA for disk I/O and scrub migration
-* [RFC PATCH v3 13/25] net: Cache leaf PISA TX flags on struct net_device
-* [RFC PATCH v3 14/25] net: Use per-node PISA allocators for skb_page_frag_refill()
-* [RFC PATCH v3 15/25] net: Use PISA for page_pool memory
-* [RFC PATCH v3 16/25] mm/slub: Add SLAB_CACHE_PISA_RO for PISA-backed slab caches
-* [RFC PATCH v3 17/25] net: Allocate small skb heads from PISA
-* [RFC PATCH v3 18/25] net: Migrate user pages into PISA for MSG_ZEROCOPY
-* [RFC PATCH v3 19/25] mm, iommu/dma: Support decrypted PISA pages
-* [RFC PATCH v3 20/25] arm64/mm, mm: Support decrypted PISA pages in Realms
-* [RFC PATCH v3 21/25] mm: Add PISA statistics and debugfs
-* [RFC PATCH v3 22/25] net/libeth: Use GFP_KERNEL when pre-filling RX rings
-* [RFC PATCH v3 23/25] net/gve: Use GFP_KERNEL when pre-filling RX rings
-* [RFC PATCH v3 24/25] net/gve: Use PISA memory for RX buffers
-* [RFC PATCH v3 25/25] Documentation: Add PISA architecture documentation
-
-and found the following issue:
-WARNING in __alloc_workqueue
-
-Full report is available here:
-https://ci.syzbot.org/series/80fa818b-452d-4361-bfc6-33c65f928f71
-
-***
-
-WARNING in __alloc_workqueue
-
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
-base:      20eef29b7c8465ac98d7dd6d6f2ac07a8d8056ca
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/1b1679cb-3959-4df9-8546-bc04ba6e5cd3/config
-
-smpboot: CPU0: Intel QEMU Virtual CPU version 2.5+ (family: 0xf, model: 0x6b, stepping: 0x1)
-Performance Events: unsupported Netburst CPU model 107 no PMU driver, software events only.
-signal: max sigframe size: 1440
-rcu: Hierarchical SRCU implementation.
-rcu: 	Max phase no-delay instances is 1000.
-Timer migration: 1 hierarchy levels; 8 children per group; 0 crossnode level
-NMI watchdog: Perf NMI watchdog permanently disabled
-smp: Bringing up secondary CPUs ...
-smpboot: x86: Booting SMP configuration:
-.... node  #1, CPUs:      #1
-smp: Brought up 2 nodes, 2 CPUs
-smpboot: Total of 2 processors activated (11200.80 BogoMIPS)
-Memory: 5553400K/7339508K available (181131K kernel code, 30788K rwdata, 59468K rodata, 27564K init, 120564K bss, 1621204K reserved, 0K cma-reserved)
-devtmpfs: initialized
-x86/mm: Memory block size: 128MB
-Running RCU synchronous self tests
-Running RCU synchronous self tests
-Running RCU Tasks wait API self tests
-Running RCU Tasks Trace wait API self tests
-posixtimers hash table entries: 1024 (order: 5, 73728 bytes, vmalloc)
-futex hash table entries: 256 (32768 bytes on 2 NUMA nodes, total 64 KiB, linear).
-PM: RTC time: 20:32:46, date: 2026-11-24
-NET: Registered PF_NETLINK/PF_ROUTE protocol family
-audit: initializing netlink subsys (disabled)
-thermal_sys: Registered thermal governor 'step_wise'
-cpuidle: using governor menu
-NET: Registered PF_QIPCRTR protocol family
-dca service started, version 1.12.1
-PCI: ECAM [mem 0xb0000000-0xbfffffff] (base 0xb0000000) for domain 0000 [bus 00-ff]
-PCI: ECAM [mem 0xb0000000-0xbfffffff] reserved as E820 entry
-PCI: Using configuration type 1 for base access
-HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
-HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
-------------[ cut here ]------------
-workqueue: pisa is using neither WQ_PERCPU or WQ_UNBOUND. Setting WQ_PERCPU.
-WARNING: kernel/workqueue.c:6151 at __alloc_workqueue+0x1e4b/0x21d0, CPU#1: swapper/0/1
-Modules linked in:
-CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-RIP: 0010:__alloc_workqueue+0x1e4e/0x21d0
-Code: 18 89 39 00 90 0f 0b 90 e9 87 fd ff ff e8 0a 89 39 00 90 0f 0b 90 e9 79 fd ff ff e8 fc 88 39 00 48 8d 3d 65 52 32 10 4c 89 f6 <67> 48 0f b9 3a 8b 5c 24 20 81 cb 00 01 00 00 e9 99 e4 ff ff e8 d9
-RSP: 0000:ffffc90000067750 EFLAGS: 00010293
-RAX: ffffffff818fa174 RBX: 0000000000000000 RCX: ffff888102aa5ac0
-RDX: 0000000000000000 RSI: ffff888162ab5d78 RDI: ffffffff91c1f3e0
-RBP: ffffc900000678a0 R08: ffff888102aa5ac0 R09: 0000000000000002
-R10: 0000000000000102 R11: 0000000000000000 R12: dffffc0000000000
-R13: ffff888162ab5c00 R14: ffff888162ab5d78 R15: ffff888162ab5d18
-FS:  0000000000000000(0000) GS:ffff8882a77e4000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 000000000ff48000 CR4: 00000000000006f0
-Call Trace:
- <TASK>
- alloc_workqueue_noprof+0xe3/0x210
- pisa_init+0x127/0x260
- do_one_initcall+0x250/0x870
- do_initcall_level+0x10a/0x1a0
- do_initcalls+0x59/0xa0
- kernel_init_freeable+0x29d/0x3e0
- kernel_init+0x22/0x1d0
- ret_from_fork+0x514/0xb70
- ret_from_fork_asm+0x1a/0x30
- </TASK>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="6sn276mtbb7rvtiq"
+Content-Disposition: inline
+In-Reply-To: <3467269e-9929-4c9f-bc19-847976f49527@samsung.com>
 
 
-***
+--6sn276mtbb7rvtiq
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v3 2/2] alpha: enable contiguous memory allocation for
+ coherent DMA
+MIME-Version: 1.0
 
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
+Hello,
 
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
+On Wed, Nov 25, 2026 at 09:54:08AM +0100, Marek Szyprowski wrote:
+> Hi Magnus,
+>=20
+> On 25.11.2026 00:22, Magnus Lindholm wrote:
+> > Thanks for catching this and identifying the interacting commits.
+> >
+> > I reproduced the error on next-20261123. In
+> > arch/alpha/kernel/pci_iommu.c, I changed:
+> >
+> > page =3D (gfp & GFP_DMA) ? NULL : dma_alloc_contiguous(dev, size, gfp);
+> >
+> > to:
+> >
+> > page =3D (gfp & GFP_DMA) ? NULL :
+> > dma_alloc_contiguous(dev, size, gfp, dev_to_node(dev));
+> >
+> > This fixes the allmodconfig pci_iommu.o build. A full DP264 UP build
+> > with CMA enabled also passed, as did an object build with CMA disabled.
+> > The full allmodconfig build hit an unrelated cgroup sample error
+> > involving PATH_MAX and LINE_MAX.
+> >
+> > I'd prefer to keep the Alpha tree independent of the DMA series.
+
+That's up to you, but in my eyes merging in the immutable branch
+provided by Jakub into your tree (or rebasing on top of it as suggested
+by Marek) is really the easiest option. That way you don't have to wait
+for the change to hit Linus' tree and there is no further need for
+coordination or others paying attention to not create non-bisectable
+commit graphs.
+
+However looking at the immutable branch I see it contains both the dma
+API change and then separately various adaptions to ethernet drivers.
+IMHO the immutable branch should only contain the API changes (that is
+the commits up to 31f7e12d621b) to reduce the amount of possible
+conflict.
+
+Best regards
+Uwe
+
+--6sn276mtbb7rvtiq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsGvgoACgkQj4D7WH0S
+/k7oNAgAknak/QZHg7BqHZFzHCe4qtzYco0MHY20TLpuveFkHfRuLa9UVG2bG0Ww
+LQZfbq0hnFip66k6fjmWJ+mGt0QyF7sJj/DpkCtXlI6aQtnnm3D3slJhpH/bWjue
+fk1SdxjYh64pzlg1UF9rEJri73sW9fln2Gz2EK1iHllG2Z1XRGwb4bBzh6WpzAxc
+AuLAWN7R4PJvFLQ+kNkR4YocW5+EV0RnYb7/i7Fb9ABP1MxCxi+4OM8+uD8MGuGZ
+OFggCxgES6vXm2Ostds9EY3vRvG+zs6/ZpyofM5BxVfPInkgG1teIzoXDpivIgkA
+C+dJzsR+ixI93VaJu1B++KrDBjHhlw==
+=UmCO
+-----END PGP SIGNATURE-----
+
+--6sn276mtbb7rvtiq--
