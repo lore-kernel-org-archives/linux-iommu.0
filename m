@@ -1,132 +1,142 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.178
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795622162;
-	b=dwl8XU3QvZp2HByYv8mt7s4ZXW6c+dqEsRBnP3FqoyzukuGJkPwOZ/yeM9QSnwbKHABh
-	 jgiA/3E6UKAGfBw0qx5TkA1J5K9QmZeMLU+Evy/AneE4lZrij3INOsI3j7/o1Xdsf0mm9
-	 JUg1DDD9k3YESae7YF9xJsEJXZYstZ9xiiD0DCxyRbBLutNGtbLjulzB4VoR7Z14cF2cO
-	 Y3zBqcsgYLX1TsfWPJCHCUSLGRvGa4F7wwqo2HfC97NYJdki7Atu6iypWcZOIbZfAFiEk
-	 /3Emgi+bTh+FW/u+3tUsnSrWPVkxwPRRjVFx8b+t+om7OAKVhj8rZjbXK6MKdIdJ/0g==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795622162;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To;
-	bh=EFVYxWaHZcfOFQ3BpTu3S3Fo2WDIpYYjIvIe38jWEXE=;
-	b=RI7wIlY9pUSkj+SuhzB4/Bt7lHynotEq8sQESyrKGJXQFd1VblZLRm9cx1WmV/GX/rfy
-	 Mky8lTjjYOjSdvS1W/DZeVC+KTExU5fZg6iX1/T2WJWcIMYVWqNoHpTeGp1xNfr9mGoB3
-	 Pk0fSsS6U7eVKqC1v3YcaOzb54zCeHX/FT3zpQrspkelGnikmAQAIj7dNYphRZ5Ny3gZS
-	 76JSOVUQFK//8P/InkxvEaRHU+k1Qr0wrNeYBmJrj9X9t6pbZWgP6WE2OMJXEGQJeIT82
-	 WCICWHsAXdZDQgMR+jM8HYVV7bLwnUFvMZFE5h/lg4kUXXrp88XzNIhq0997z7zy6RQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=M39yf3LX;
-	arc=none smtp.remote-ip=209.85.160.178
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.58
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795622463;
+	b=lnv1W5vOfTMsr63MrPr6q95Cav7W2ia7/gavgKvdSCHPnU+wC8bProiS1+PXLgG5zgM2
+	 MUsEF9QNUUalRWkhewn2KxCkhkqn5BtzmU89hBNo1Nn9lYQWmOwkABM/K4dnfWhV4onkn
+	 aObqm+pi0HOwKKokiI2uAnSEh6bUuUbuqAd3GUJkSRt8BdBkLKc46qzfXT/aIrXvZTPSW
+	 9V4WHztrpYas8DCP5bty+s5U+PZGP3g0tOd5vV3bRTPzFizGZSLHPZcYWILCHW2WSVIDv
+	 Ciw6T90aZtDt2Uo+y4FMMAtdEoYWTyVs+ohAuWu2zRPowgcL9r5+vSq7WU9Ph7kAqrQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795622463;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=ktvN5VccKKw5i08DfYGBrc6a93lAsKwOjSIw93pxbgM=;
+	b=yZJ58JN1MGJOwSZ1IH+c0mo7s9/4BX+K5I/6MTmLkNPoxRRRYKEpf+joo4FHehiUFgBR
+	 LOJ6CiofPIF5nN9gmv4afA6Tsv+NDtVOwxgfPGkT+/css/SqqaN8paR5Py03KxHy2p/oe
+	 iwPELHA2us8K7+tAhAig1dVMptVrXh05o3eI7+Vpv32scZMLTUNcurPI0BQMV5wCoUYIx
+	 Pnl5bXJ1sv2uMmWwPdC9uWBJiPGlzL+OBaLarm2iFL0YgN/x01a3Ts5EDySmetbXJbyN+
+	 pbdNWENL5XVQU3x/B18Z3XJw6nXjKSOStZRhHIGF6rIleDsc+sM2XruW4XYxzZ7YKQQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=oss.nxp.com;
+	spf=pass smtp.mailfrom=oss.nxp.com;
+	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b="h/azBYeY";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.58
+Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011058.outbound.protection.outlook.com [52.101.65.58])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB72F606A339
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 15:56:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AB72F606A339
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E019606A334;
+	Wed, 25 Nov 2026 16:01:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4E019606A334
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=M39yf3LX
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-537548b811aso49245061cf.3
-        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 07:56:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1795622160; x=1796226960; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=EFVYxWaHZcfOFQ3BpTu3S3Fo2WDIpYYjIvIe38jWEXE=;
-        b=M39yf3LXB7qlYpAaSNBEZqk1BTQUyqdsY4AE5/vVhmZCySoFF3/YogmN6O2f3RzEn1
-         MecSIxgeHgXis4YJ6irRkHHBznVF0W6JjMjikxtkdJr9b0aw/PEWkhGsCsPaeVNVlXie
-         TiCI5kjpr1R5DgSOJOgxR/SCxXu5RvyptayVWKMiXPM/lnPXnjKxVpZLPqCMDGnppeLp
-         AnvRWP9bgP7lf4Ai7UqIYfiXvbCGYw5Bpf7QiHazxk/+nsDiqgopC3TD/5IjgQ4TfSLZ
-         QiknM67DLiCIyuW1b5uxHu9xbji4+3TrQnd0iK8Fgj5uJsRyx1gfttWUMQ2ZIPgTA52s
-         nIKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795622160; x=1796226960;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=EFVYxWaHZcfOFQ3BpTu3S3Fo2WDIpYYjIvIe38jWEXE=;
-        b=YEYByNF8DsdmU6/5JyY10tMfFoIThB4s+P63QKw2Z/3kzlT6GJcOwV34ECN3kYHuTU
-         X2FZXdqlOubSJZjizXV79x+alaisViykQvJvalEIVwn2/TEklAHTnHm4EtnE4nKoNuqM
-         w2EyK4AhBVqiLzbs6b4m/Elvof0rn+mJkEt4N+4MerpUk5kYFtxH6X1HTe+H6f/thXVH
-         5F+FmyWiEGhTFFjfAEUu/cMY9nm4HnIaUCHrYbSaqS9LiUfzJ4Z3v4gw1xYZge+zvw5C
-         1sLcyZ2+PWiacu/kFh8hCUuR6uT9fPHYn+SuoG5BxGlxPVJBpFYxyz+slMygf0LBsZsj
-         iMbQ==
-X-Forwarded-Encrypted: i=1; AL+hErHEApEjwi/FfbOKjcD9SJ+qBAbKdQtKkgD+NKD+M52T2moI/jaykyQZL/bQx73oRpF+1twdtQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8MG0uv2OLDj6K6NO6oJm/NSZyb+kPPpmn9fXccmoyx9N+YARNz
-	cuvn5EKMRJoCzR8GHlmXOWMSFkbOPBlRouJOXdo8VqRpSQzEoWAxyC0hs682kWtyeQc=
-X-Gm-Gg: AZFdTZf2f2GD89d+amQ7kFlinNL3GHNBX0EU/6vvSe87huTBF8xYJ/m22IZRYg+m9xc
-	lap5EhNFnMcfoiHr+nyfeYzqZg2ATSiXaXclbplwXIclNKaSZ700d5lC7pFoCRph09BVoR7v9gH
-	SNKObtDhpRW/TLQ6e0dgPMLcET+6Vq+KM1usUmt6rkYQApx+8BP5hVcIfcSt461f3JEkeXQlROI
-	pDme3HY83oAsiqYfQDo/+rZzDBA8IrQYRkzudYpCScYADB5U1ZaRkQoKRwXDUW1C6x2JyMc60l7
-	biGhXAPmM29fvKsJGxSvUIII88sORlbcvKKLA+7c6kciY0cpjhtRQgbg6mtjyn820zJh+NwRiHo
-	5Kzi9bhkJfqamQsNqZP6kUGuWwYuB1UweeXHgGKs7MoMH1UjUD2fWf8AqFkGSN50MSweVs5bBbI
-	+BkAeGN9lMoegWzhrplblWdTioGMhWcVZvkoQu//jC2xcqkO45wKCcCt9DxA7ckiI8KZxwJBDDz
-	znSICu/rSMBUT3pcH0EXaK160GnToMLbJcIW9ppwEdcnd9TFQSO1DAhG2TJHlyT5/biIZiaFBIF
-	W+3Zu8pumC9Aneo5Bz5NUea+CYs=
-X-Received: by 2002:ac8:5d89:0:b0:536:5696:e8c8 with SMTP id d75a77b69052e-55d769e4561mr347501161cf.28.1795622160509;
-        Wed, 25 Nov 2026 07:56:00 -0800 (PST)
-Received: from ziepe.ca ([142.177.118.84])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-55d7882bf70sm160274901cf.11.2026.11.25.07.55.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 07:55:59 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xWFLj-00000001uyg-0aUM;
-	Wed, 25 Nov 2026 11:55:59 -0400
-Date: Wed, 25 Nov 2026 11:55:59 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc: Alistair Popple <apopple@nvidia.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Simona Vetter <simona.vetter@ffwll.ch>,
+	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=h/azBYeY
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=pmIj9F7X+uSbDI69ts8l+L17FdfkPyAkEMqn0dG9KuEgTOpGQR4sLVBesiXE6Zh16s65V/0vIDmqxxaLiyGdKgz+W0OhQn4kuQRt+IFqsFnxeYohPQfgerROvksO3vtG0sHdeEm5t1xzUuxB6o/iFO5GQPb87vWWP0H6aQPJEcJpzoyVMqKqB6qYXuCRNFuMqMwSXL6gK7DSOoWd936Ik+SDp0GCX77J79UQx4r/G2AldQ0uoBouPjE4r81AXTg6MPcWNM7daIP54aTaSsaBWYU/V72Ko9gDtEY0Ls6BQaXkmYV+v8JeUwMM3gqnxEiKWJQ3HP2b+daUVvj3yi+w+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ktvN5VccKKw5i08DfYGBrc6a93lAsKwOjSIw93pxbgM=;
+ b=RmBadnbGD6ubpSeXBZRTHudoe/4pa8ym/tOBPcmnV+pH72LbHyhyJ9h0BM9I7GXOfoyUMawXvh/lOjKK0hggK+E6g6aPNG/IupJ4rsYixX3o2rX1I396V0+wTMueod/0AHefCdgLep5k+f8IHayVanxJoEa0U+xKp/005XHPtZ98zcN5KebVxCaO9wB01CrWFjcEjHQAKNsrk1Zlyhp1O8gpKIIJAjLd6XQ7qCWY/LEapNvDc9k8pO2hTmaMKN5u1UYxCH2tP0df9Kl/bSaCUGU9tg/S6HiEaFGjS2zK9VPgQU8YyQ+B7xdVOeWEWnXoF6QHMGhzUDGJUFQHdeH0Hg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ktvN5VccKKw5i08DfYGBrc6a93lAsKwOjSIw93pxbgM=;
+ b=h/azBYeY457SocdCvH02G8TmyoWt0WoUAjQCniOSPa0qnOj+/OQEhAxTzPSQa2H3QFfNeN74abwxWeS6wrsmgU4ODQlAm11KMozXzO/6WlXGv6IfeNnxTSlrFdU5O6Wt1elgD9OY7Jn4NDIOeqTHP8qbwmZr+T6OEyZPmAnon6W2vrJ0so5yGKXrg1mjmmYFOBFBXF4yzOsFNwwXUsNHYtIgHWO30EgI22008WGYQxjGUvHlkziRW72uFiokrHwASTwUq+jZN6p/F4mw1t8GQHIWZSub0Jc9HJku2XA0AmYdCqZ7LvPySNkMRyLs3YP1YdZpzaHZ64HtGEZyVksyzw==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from MI3PR04MB12438.eurprd04.prod.outlook.com (2603:10a6:290:76::14)
+ by GVXPR04MB9735.eurprd04.prod.outlook.com (2603:10a6:150:118::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.6; Wed, 25 Nov
+ 2026 16:00:55 +0000
+Received: from MI3PR04MB12438.eurprd04.prod.outlook.com
+ ([fe80::c715:c32:8bb1:b70b]) by MI3PR04MB12438.eurprd04.prod.outlook.com
+ ([fe80::c715:c32:8bb1:b70b%4]) with mapi id 15.21.0662.004; Wed, 25 Nov 2026
+ 16:00:55 +0000
+Date: Wed, 25 Nov 2026 10:00:32 -0600
+From: Frank Li <Frank.li@oss.nxp.com>
+To: "Rafael J. Wysocki (Intel)" <rafael@kernel.org>
+Cc: Ulf Hansson <ulf.hansson@oss.qualcomm.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Heiko Stuebner <heiko@sntech.de>, Ulf Hansson <ulfh@kernel.org>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Matthew Auld <matthew.auld@intel.com>,
+	Hans de Goede <hansg@kernel.org>,
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+	Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+	Mark Brown <broonie@kernel.org>,
+	Pierre-Louis Bossart <pierre-louis.bossart@linux.dev>,
+	Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+	Yong Wu <yong.wu@mediatek.com>, Will Deacon <will@kernel.org>,
+	Tomasz Figa <tfiga@chromium.org>, Marek Vasut <marex@denx.de>,
+	Michael Tretter <m.tretter@pengutronix.de>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Hans Verkuil <hverkuil@kernel.org>,
+	"open list:POWER MANAGEMENT CORE" <linux-pm@vger.kernel.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"moderated list:ARM/Mediatek SoC support:Keyword:mediatek" <linux-arm-kernel@lists.infradead.org>,
+	"moderated list:ARM/Mediatek SoC support:Keyword:mediatek" <linux-mediatek@lists.infradead.org>,
+	"open list:ARM/Rockchip SoC support:Keyword:b[Rr]ock[Cc]hipb" <linux-rockchip@lists.infradead.org>,
+	imx@lists.linux.dev, Frank Li <Frank.Li@nxp.com>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Tvrtko Ursulin <tursulin@ursulin.net>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
+	Simona Vetter <simona@ffwll.ch>, David Airlie <airlied@gmail.com>,
 	Matthew Brost <matthew.brost@intel.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Dongwon Kim <dongwon.kim@intel.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Karl Mehltretter <kmehltretter@gmail.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>,
-	Felix Kuehling <felix.kuehling@amd.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	intel-xe@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
-	linux-nvme@lists.infradead.org,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Simon Horman <horms@kernel.org>,
-	Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
-	Alexey Kardashevskiy <aik@amd.com>, zhipingz@meta.com,
-	treding@nvidia.com, jhubbard@nvidia.com, chaitanyak@nvidia.com,
-	Leon Romanovsky <leon@kernel.org>
-Subject: Re: [PATCH v3 03/24] dma-buf: Add the SGT DMA mapping type
-Message-ID: <20261125155559.GL246011@ziepe.ca>
-References: <ad46d60a-189d-4dd5-9ad8-ecfd3c90f9d9@amd.com>
- <20261123165716.GM179082@ziepe.ca>
- <7ac7edd0-5c38-440a-b26a-21bcbb6f4702@amd.com>
- <awT8prWsj11TBdmP@nvdebian.thelocal>
- <63eb7b6e-e0a8-4443-a434-0301ed59beae@amd.com>
- <20261124142032.GN9566@ziepe.ca>
- <7a5a2d3a-e42e-4dc0-8d22-8dd1bd249501@amd.com>
- <20261124194618.GC114530@ziepe.ca>
- <awZ_Os1pXelOGaFP@nvdebian.thelocal>
- <fb9a6b12-c134-4e40-86a5-dbcb59c0b91b@amd.com>
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Alessio Belle <alessio.belle@imgtec.com>,
+	Luigi Santivetti <luigi.santivetti@imgtec.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+	Bard Liao <yung-chuan.liao@linux.intel.com>,
+	Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Dafna Hirschfeld <dafna@fastmail.com>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+	Daniel Baluta <daniel.baluta@nxp.com>,
+	Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
+	dri-devel@lists.freedesktop.org, imagination@lists.freedesktop.org,
+	intel-gfx@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
+	iommu@lists.linux.dev, linux-media@vger.kernel.org,
+	linux-sound@vger.kernel.org, sound-open-firmware@alsa-project.org
+Subject: Re: [PATCH v3 2/2] PM: runtime: fix stub pm_runtime_get_if_in_use()
+ for !CONFIG_PM
+Message-ID: <awcGINOZKcD-cTvy@SMW015318>
+References: <20261117173738.1073856-1-Frank.Li@oss.nxp.com>
+ <20261117173738.1073856-2-Frank.Li@oss.nxp.com>
+ <CAPx+jO9RwkpSKwq6vq00uoXK-mcovJ2LMH7b_ByRnxOUj8nH8w@mail.gmail.com>
+ <CAJZ5v0jsnLjEBxa1R4Q3hZLZKrCUW0xSE9SqLB8bd4tNAhXTAQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJZ5v0jsnLjEBxa1R4Q3hZLZKrCUW0xSE9SqLB8bd4tNAhXTAQ@mail.gmail.com>
+X-ClientProxiedBy: PH8P220CA0050.NAMP220.PROD.OUTLOOK.COM
+ (2603:10b6:510:2d9::24) To MI3PR04MB12438.eurprd04.prod.outlook.com
+ (2603:10a6:290:76::14)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -136,98 +146,229 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <fb9a6b12-c134-4e40-86a5-dbcb59c0b91b@amd.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MI3PR04MB12438:EE_|GVXPR04MB9735:EE_
+X-MS-Office365-Filtering-Correlation-Id: 957e1111-1b15-4336-235b-08df4b0d49b5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|19092799006|23010399003|376014|7416014|366016|6133799003|261009223027099003|18002099003|22082099003|4143699003|11063799006|10067099003|56012099006|261102123227099003|261026121527099003|261021123027099003|261026140227099003|261022105027099003|261022115727099003|261022075727099003|261021121427099003|261028144727099003;
+X-Microsoft-Antispam-Message-Info:
+	NqBWBKjhmOlNIW2l15T7ZmpE7lXkQLhngmyGCozcsWjz/umSbddPpn3j6gNlEvAwg7RZ1x5kK2dp0eC5iS7u84Ok4QDPkpChN3aXXEsJgrWc21iW+W5Tf7R7zhEUWY9CZo1/YCE0iD/1deZokcFFTvF5lSYza1HTCrnQfUa4E5/qFhB6Ux7niCbjkweNs0CM8g5yrJhiO0uSKsL0XAI2HSYikcTfrIYQcMKai60kVy9YpVfK0oB9fnj9Y6IPLx01aZVyWK+XcHGVAI4ihaH4AaYqAxQ1KwP/ps8JliH7XbbNNXUD+QWf/RAjjXJXAb5Aa0zgCZLtugH0Kl1sLJjkmB2J6kZIBAgZ3qv3XPgLUYeWBDiiqsA3VkWKx5+0Sg9V9Ic+nRNJcd6TymwFjYBmBJZju/VpSTF5zkx5o+jL2Lk4N3qtzsjjY9Cg9YGSuTM6AXmPKDhMMe39HG5hLzXQcyrf5I+//tFMHY/7JGtwuwO7y4l6tMsVFOCdcHcxPGPdRPJgqFjNck8CWbgirDVTGIhp22wGPA411n9dIHlBz2K/fzFtj/HrvTDfsb4v+mJufC6xnPpMPOkyWE2Y+QrAFJcoef8v58kZWypy4HjFgfASf6s922FUvBDmulhvHLomkEQFspG6eA1Eyn52Ox8K4A==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MI3PR04MB12438.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(19092799006)(23010399003)(376014)(7416014)(366016)(6133799003)(261009223027099003)(18002099003)(22082099003)(4143699003)(11063799006)(10067099003)(56012099006)(261102123227099003)(261026121527099003)(261021123027099003)(261026140227099003)(261022105027099003)(261022115727099003)(261022075727099003)(261021121427099003)(261028144727099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VXJLWWU4NFJaek5MQWVPRkdYNVZ3Z2ZxdkgzTjkrY0wwbHpaMDk2OXd3ckwy?=
+ =?utf-8?B?Q05JSk9EQ0JNWTYrU2ZXZ3hVV2tDQk96R3pockd5bWdVMjRoTGFvNDMvMEhN?=
+ =?utf-8?B?VHZwN1hZQnUzYjlnb3M5QzFXY2lzZXo5WkdPSFRFREo2MDd2ZEsrZGNoMWtD?=
+ =?utf-8?B?WEdjOGZTZG5NWkgvaXU4Zlg4MHZBVEFrWVJ0bHVXQjU1bGJrSklMSmlYQ3hH?=
+ =?utf-8?B?eUsrTUhxZUN6UWx6VFNKd2w2aVV5N3ptUWdtcThWNVR5MTAvN2cxaEJISEJ4?=
+ =?utf-8?B?N2pNNWpmRG1xVk53RFZUV2Jxbjlnbm54RndXekFIa1R1aDV3VFQ3dnZEbTY1?=
+ =?utf-8?B?NHp2L0dxV3lqWnJQeERrNzc4eWFQaFhZUkxuTXJGSjhYZFNvUGZXMHI2UWtS?=
+ =?utf-8?B?bEg2NXhnTzVFcnpGWE1ZaWlhTDNtMVZRN3VvRGx1aHpQQ2E0VTREbDhLaSt0?=
+ =?utf-8?B?U0sreGFXUWtOVTBMYnVQSHdCdW5PRENrZkJZSEsvdC9QTWl6ZEFzNFRkUTFu?=
+ =?utf-8?B?cnBHbHJoOXhDd1RXVFozdnJFMzNXa0JNQ2JvMEpneC9QdE9vN1o2R3FXYktr?=
+ =?utf-8?B?V1BQdHBhdGxpQUdnZ3hHeUlESGY4UGt0aFJha0Jtc2ZTN2RINHhqYW13czZL?=
+ =?utf-8?B?aXIxektFMnZzdUZrQnk3b3FJVXJwZ0dDTEFsa1kxVytDdS9xZUYvcnl4N3JP?=
+ =?utf-8?B?NmJXRCt0eUtRTFJFcTRWN0FQTUxVcFFESjBkenVGdEJhTVB5R0UvUmJyZ1o1?=
+ =?utf-8?B?Z0NBNlh2aXRCSU85ZzVCOVJScGtUYUFOOFp3ZVk1TE0wbkkzcUhMbHBtWmRO?=
+ =?utf-8?B?VVhlT3pZaUR4dDVhK2Y2RGZwSTk4RTRxSGFhbFlaU2JzVGRodVVGdjgySGow?=
+ =?utf-8?B?dmRzcSs2cWI4NGU2SC9GTlBGbXJscnRNUUR4WWZJSFE2Z0ZpT2hPSUxPNzdi?=
+ =?utf-8?B?RnRBZ0J5bTF1VXhXRnNESEVoZms3bnNFMnlBbzBxc0V0bFI5V05UYisyUzJq?=
+ =?utf-8?B?VzU0WnhBdDF0bDc3Z1VNT2diOTY5VjV6SmcyMnp1TExPYy83eVo1d0FaQVZT?=
+ =?utf-8?B?LzRDb24rbU5Gb1VIc1B5SXVYSTVoa0NIQ25ORWd0d1I2aVZ5eEZrVVVPVEpR?=
+ =?utf-8?B?ZlFicEFoSXVVSGtkcC9pK0p0N3Vac0w3Y3p0TTJGSzZ1Y0s2ZWxkMERQc3B3?=
+ =?utf-8?B?VFFDSjVUd3FzbmpWWkJlN2Yxb3VESDhBaldxM2drWXRJMDYvNW9Nd0R3aHlj?=
+ =?utf-8?B?blh2dXhkUnQ5VVpQN0EwM2piNWREakNEUm1lUzNaVGZZMWVibitoN2Z0N0VV?=
+ =?utf-8?B?b1FIVWtLdDFzTVNXTmdCMnV2SnI5ZW1Xc0lyUUhrY3gxNDlaSkpSMU1UUXN1?=
+ =?utf-8?B?TFl0NUFyM1poN2dPYjhBV290azVRK3d0S3BvRTJpWW90VEtQaUg0OGVtVVFE?=
+ =?utf-8?B?QmhDTE13WVVIV0hpL1RWQVVBRzhSc1ozN1RhZnRXQTVXZzlaZHlja05aRWs2?=
+ =?utf-8?B?aGh1MXh3eEJrRStkWHluY3ZmS2w1bTlCR1hjc1BPcWFEaUJKUmxEa3JXODJH?=
+ =?utf-8?B?M0tEM0s2Mk9YZlZwRHRwVDBCZ29iRUJHbUxUWWZlb2VyL2tvTSsxSHczTHM1?=
+ =?utf-8?B?a2tKUno3eGRSTndPNERRL0MwTVB6d2g5NU5LZTJ4QXZJc2xOTWI4NDhmUVdF?=
+ =?utf-8?B?OENiWkFKUy9adGJ0dnk2bDQySDY4cWgranhoeXlYSno5MGluanpSdUNtU3Uy?=
+ =?utf-8?B?Z1k2UkVCZXR3VUVTTENjdmRmU3BCUXF5OXl5VnJ1a2Urb0ZPNzJVWTRMSW1H?=
+ =?utf-8?B?cWViN2hPQ2lxZTVFKytuZEhoRzVnUWxMbTVhWWhyRFlpYXRzNjYxbDJKTVZQ?=
+ =?utf-8?B?UHllWHJ1Q2huNG53bDNRc3RmQ0t4U01MWENPUFdxSld2K1JTZnVXWFloM2o1?=
+ =?utf-8?B?K2l6Y1BuYVRYQ3lrZUF2WEhBSVdwSndOd2lTRHNkbUtDMUdoQnhvRWdaajZv?=
+ =?utf-8?B?UXZNR0hUMTJQbk1raHVrYlNydU81NE1DczBQMFhPT3Z6aGQwWTV6cE9PMXA5?=
+ =?utf-8?B?NDREK1AwWEJ4T0lmYVBZa09XTnhIZjIvdFV5NnZ4cHN6YWJoZEVrZ3pXSERO?=
+ =?utf-8?B?RWpZdVhzWVE4ellSUEpucEpOazlLOHBMWm9sSzRKQWJnVWVOMUFEVjM5Qzd2?=
+ =?utf-8?B?M1hFVkdEOXlmTXNvMWFyNDNZb3RucDV5Yk5JdXM0ZXhxQms0UUZNV0pUNUJG?=
+ =?utf-8?B?Z1haM2pZWGFvMFVLNE8vYXhKUlpTa0MvczR1NnRCMU55ZzNtd3NGR3pHMWxV?=
+ =?utf-8?B?cFJQNDhJSXJHcndLc0hzWmsxMkhiNkZrR3JTVXJlalptWlVOZ2w4aW9WaHBv?=
+ =?utf-8?Q?YXIYGIKmiKf3QIwT+239zOqXBAYHTZf2JhrA3?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 957e1111-1b15-4336-235b-08df4b0d49b5
+X-MS-Exchange-CrossTenant-AuthSource: MI3PR04MB12438.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2026 16:00:55.5685
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VgMtB6ytRFYj0OYuxVXIxz51RwRfWFTz5mK3PWZkD9as33wlRmsMShOkak5WEW9bVHktNzisSswo0u/bJdDMHFxpaliSDcQy9+T6Ip+EXQXT3yAIR1wZWsV88yf8OVW3
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR04MB9735
 
-On Wed, Nov 25, 2026 at 12:19:08PM +0100, Christian König wrote:
-> The low level API which talks for example to the IOMMU driver for
-> creating the information how to access the buffer is simply not the
-> task at hand for that framework. The stuff we already handle is more
-> than complicated enough.
-
-No matter what name you give it we need something in the middle that
-can see the phys_addr_t and the iommu_domain..
-
-If you don't want DMABUF to be that thing, then I'm not sure what you
-have in mind.
-
-> > If I drop the type/placement negotiation for now and focus on SGT removal I can
-> > simplify things a lot. Plan would be something like:
-> > 
-> > 1) Introduce a new C data type (dma_phys_list?) for exporters to pass physical
-> >    location info and context for mapping.
-> 
-> Something like this maybe?
-> 
-> struct {
-> 	u32	mapping_type;
-> 	u32	num_entries;
-> 	union {
-> 		dma_addr_t	*dma_addr;
-> 		u64		*generic_64bit_addr;
-> 		...
-> 	};
-> }
-> ....
-
-"phsyical location info" means phys_addr_t and related, not
-dma_addr_t. Step #3 has it as the *input* to dma_phys_list_to_sgt().
-
-The flow today has the exporter get a phys_addr_t (ie a struct page),
-build a scatterlist and directly invoke the DMA API.
-
-The primary issue here is the exporter *direct* call to the DMA API!
-
-We cannot disconnect this from the DMA API, ie to use an iommu domain
-or ualink, if exporting drivers are hardwiring calls into it.
-
-Fundamentally the need is for the driver to get the phys_addr list,
-exactly like today, and then pass it to an op which formats that into
-the right data structure for the importer. Be it dma_addr[],
-iommu_domain, or some ualink_addr[] - or whatever.
-
-This is the main issue here, disconnecting the exporters from being
-hardwired to the DMA API.
-
-That's what Alistair is explaining. This sequence:
-
-> > 2) Introduce two new dma_buf_ops - map_dma_phys_list() and unmap_dma_phys_list()
-> >    - which are replacements for {un}map_dma_buf that converted exporters use to
-> >    return a dma_phys_list instead of returning a sg_table.
+On Wed, Nov 25, 2026 at 04:53:35PM +0100, Rafael J. Wysocki (Intel) wrote:
+> On Wed, Nov 25, 2026 at 4:07 PM Ulf Hansson
+> <ulf.hansson@oss.qualcomm.com> wrote:
 > >
-> > 3) Move dma_buf_phys_vec_to_sgt() somewhere other than drivers/dma-buf and
-> >    rename it dma_phys_list_to_sgt().
+> > On Tue, Nov 17, 2026 at 6:38 PM <Frank.Li@oss.nxp.com> wrote:
+> > >
+> > > From: Frank Li <Frank.Li@nxp.com>
+> > >
+> > > The stub for pm_runtime_get_if_in_use() under !CONFIG_PM currently
+> > > returns -EINVAL.  The real implementation returns:
+> > >   1  - device is active and its usage counter is non-zero (bumped)
+> > >   0  - device is not in use or not active (counter not bumped)
+> > >  -EINVAL - runtime PM disabled for this device
+> > >
+> > > When CONFIG_PM is not set every device is permanently "active" and
+> > > always considered "in use", so the stub must return 1, mirroring
+> > > __pm_runtime_resume() which already returns 1 in the same build.
+> > >
+> > > Returning -EINVAL breaks callers that test the return value with
+> > > comparisons other than "!= 0 / == 0":
+> > >
+> > > drivers/gpu/drm/i915/intel_runtime_pm.c:
+> > >   if (intel_runtime_pm_get_if_in_use(rpm))
+> > >   which wraps to: ret = pm_runtime_get_if_in_use(); return ret > 0;
+> > >   With -EINVAL the wrapper returns false, causing an incorrect error
+> > >   path in the GT fence revocation code.
+> > >
+> > > drivers/gpu/drm/xe/xe_pm.c:
+> > >   if (pm_runtime_get_if_in_use(xe->drm.dev) > 0)
+> > >   With -EINVAL the condition is false; xe_pm_runtime_get_if_in_use()
+> > >   returns false, so callers believe the device is not usable.
+> > >
+> > > drivers/gpu/drm/gma500/power.c:
+> > >   return pm_runtime_get_if_in_use(dev) == 1;
+> > >   -EINVAL != 1, so the helper always returns false when !CONFIG_PM.
+> > >
+> > > drivers/gpu/drm/imagination/pvr_power.c:
+> > >   if (pm_runtime_get_if_in_use(...) <= 0)
+> > >   -EINVAL <= 0 is true, so the driver always takes the "requeue" error
+> > >   path instead of proceeding with the active device.
+> > >
+> > > sound/soc/sof/debug.c:
+> > >   if (pm_runtime_get_if_in_use(sdev->dev) == 1)
+> > >   -EINVAL != 1, so d3_prevented is never set, corrupting exception
+> > >   debug accounting.
+> > >
+> > > drivers/iommu/mtk_iommu.c:
+> > >   if (pm_runtime_get_if_in_use(dom->plat_dev->dev) <= 0)
+> > >   -EINVAL <= 0 skips the TLB flush, leaving stale IOMMU mappings.
+> > >
+> > > drivers/iommu/rockchip-iommu.c:
+> > >   Three call sites use WARN_ON_ONCE(err < 0) or similar patterns.
+> > >   -EINVAL < 0 triggers a spurious WARNING on every call.
+> > >
+> > > drivers/media/i2c/isl7998x.c:
+> > >   if (pm_runtime_get_if_in_use(dev) <= 0)  (two call sites)
+> > >   -EINVAL <= 0 causes the driver to always skip register programming
+> > >   when !CONFIG_PM.
+> > >
+> > > drivers/media/platform/rockchip/rkisp1/rkisp1-debug.c:
+> > >   if (pm_runtime_get_if_in_use(dev) <= 0)  (two call sites)
+> > >   -EINVAL <= 0 prevents any debug statistics from being collected.
+> > >
+> > > Fixes: a436b6a19f57 ("PM / runtime: Add new helper for conditional usage count incrementation")
+> > > Fixes: 3b85b7bcccf4 ("drm/xe: Fix display runtime_pm handling")
+> > > Fixes: 672c473576ca ("drm/gma500: Rewrite power management code")
+> > > Fixes: b30289e7fa92 ("ASoC: SOF: Fix runtime pm usage counter balance after fw exception")
+> > > Fixes: c0b57581b73b ("iommu/mediatek: Add power-domain operation")
+> > > Fixes: 51ef2be546e2 ("media: i2c: isl7998x: Add driver for Intersil ISL7998x")
+> > > Signed-off-by: Frank Li <Frank.Li@nxp.com>
+> > > ---
+> > > Change in v3
+> > > - drop tag: cbb819c363c5 ("media: rkisp1: debug: Collect input status by sampling ISP_FLAGS_SHD")
+> > > selected PM at arch config
+> > > - drop tag: 0f181d3cf7d9 ("iommu/rockchip: Add runtime PM support")
+> > > selected PM at arch config
+> > > - drop tag: 9d58aa46291d ("drm/i915: Fix the GT fence revocation runtime PM logic")
+> > > guard by CONFIG_PM
+> > > - drop tag 727538a4bbff ("drm/imagination: Implement power management")
+> > > depend on PM
+> > > `
+> > > Change in v2
+> > > - new patches.
+> > >
+> > > Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> > > Cc: linux-pm@vger.kernel.org
+> > > Cc: Jani Nikula <jani.nikula@linux.intel.com>
+> > > Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+> > > Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+> > > Cc: Tvrtko Ursulin <tursulin@ursulin.net>
+> > > Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+> > > Cc: Maxime Ripard <mripard@kernel.org>
+> > > Cc: "Thomas Hellstrom" <thomas.hellstrom@linux.intel.com>
+> > > Cc: Simona Vetter <simona@ffwll.ch>
+> > > Cc: David Airlie <airlied@gmail.com>
+> > > Cc: Matthew Brost <matthew.brost@intel.com>
+> > > Cc: Thomas Zimmermann <tzimmermann@suse.de>
+> > > Cc: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
+> > > Cc: Alessio Belle <alessio.belle@imgtec.com>
+> > > Cc: Luigi Santivetti <luigi.santivetti@imgtec.com>
+> > > Cc: Liam Girdwood <lgirdwood@gmail.com>
+> > > Cc: Mark Brown <broonie@kernel.org>
+> > > Cc: Jaroslav Kysela <perex@perex.cz>
+> > > Cc: Takashi Iwai <tiwai@suse.com>
+> > > Cc: Bard Liao <yung-chuan.liao@linux.intel.com>
+> > > Cc: Pierre-Louis Bossart <pierre-louis.bossart@linux.dev>
+> > > Cc: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+> > > Cc: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+> > > Cc: Robin Murphy <robin.murphy@arm.com>
+> > > Cc: Yong Wu <yong.wu@mediatek.com>
+> > > Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> > > Cc: Matthias Brugger <matthias.bgg@gmail.com>
+> > > Cc: Heiko Stuebner <heiko@sntech.de>
+> > > Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> > > Cc: Dafna Hirschfeld <dafna@fastmail.com>
+> > > Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> > > Cc: Michael Tretter <m.tretter@pengutronix.de>
+> > > Cc: Daniel Baluta <daniel.baluta@nxp.com>
+> > > Cc: Will Deacon <will@kernel.org>
+> > > Cc: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
+> > > Cc: dri-devel@lists.freedesktop.org
+> > > Cc: imagination@lists.freedesktop.org
+> > > Cc: intel-gfx@lists.freedesktop.org
+> > > Cc: intel-xe@lists.freedesktop.org
+> > > Cc: iommu@lists.linux.dev
+> > > Cc: linux-arm-kernel@lists.infradead.org
+> > > Cc: linux-mediatek@lists.infradead.org
+> > > Cc: linux-media@vger.kernel.org
+> > > Cc: linux-rockchip@lists.infradead.org
+> > > Cc: linux-sound@vger.kernel.org
+> > > Cc: sound-open-firmware@alsa-project.org
+> > > Cc: imx@lists.linux.dev
+> > > ---
+> > >  include/linux/pm_runtime.h | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
+> > > index de9e7518ecef2..1d983fe55a16a 100644
+> > > --- a/include/linux/pm_runtime.h
+> > > +++ b/include/linux/pm_runtime.h
+> > > @@ -276,7 +276,7 @@ static inline int pm_schedule_suspend(struct device *dev, unsigned int delay)
+> > >  }
+> > >  static inline int pm_runtime_get_if_in_use(struct device *dev)
+> > >  {
+> > > -       return -EINVAL;
+> > > +       return 1;
+> >
+> > This should be return 0, as we did not bump the usage count.
+>
+> This is kind of moot because there is no usage counter.
+>
+> However, the caller may always take the opportunistic "in use" path
+> because there are no potential costs related to it.
 
-> > 4) Update dma_buf_{un}map_sgt() to call the new map_dma_phys_list() ops and
-> >    dma_phys_list_to_sgt() to create an sg_table for unconverted importers
-> >    importing from a converted exporter.
+When !CONFIG_PM, all device is active state, which should be equal to bump
+usage count case.
 
-Effectively converts all the exporters to produce a phys_addr_t, and
-then moves the DMA mapping action into one single place in common
-code.
+And it'd better return the same value of pm_runtime_get().
 
-With one single place we can figure out how to replace it with a call
-that does an iommu_domain:
+Frank
 
-> > 5) Add dma_buf_iommu_map() taking a IOMMU domain/iova/offset/size to be called
-> >    from iommufd for mapping an attachment into an IOMMU domain.
-
-But that relies on iommu_map having access to the dma_phys_list *which
-is true physical*
-
-> I think a whole bunch of other drivers would be really happy to use
-> that interface as well, yes.
-
-Right, that is clear now, that it is not just iommufd that wants a
-dma_buf_iommu_map()
-
-But I don't understand at all how you imagine to implement
-dma_buf_iommu_map() if you don't want this in the DMABUF core code.
-
-> That totally sounds like a plan to me.
-
-I'm confused if you agreed to what Alistair said :(
-
-Jason
