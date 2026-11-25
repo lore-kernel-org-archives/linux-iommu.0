@@ -1,54 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.67.36.66
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795595374;
-	b=F8/tHVCVCrkPX1PCS+uYxrQ4xDc5B8utauD+5WgohmAnwJHkd82xyopr+vj55IvjQ62U
-	 g1eKLX9vTiGRIVJDZqZtxc9MsD6QwqmldtRgYq3EL+IVSK/OHs7Eja8SQhgk5YQkM5961
-	 03t8v/EJl5u3/LWho4HYI4DPq5Tjk7F7KeumLZiy2p9MT2H3W6FdJKuoc1rQFkElRr7oN
-	 QdSKtzU6vqlCEZY7UngaMiwFYf7CmvQxm+OoedlNAXu1XVzEYThtCC3lnB26zM8Ds9lur
-	 3EV5ZCWoBulQWhaLymrZGpGFCek1Ds1GYi/JzYew2oZsTCt5S7jB+c27ePAi9k3MScA==
+	t=1795596419;
+	b=qo1V+Ply7BTXYCHPsVa6BKCwIODumlQ2AVKuKVPOYQgLG7oRTyUM8wYIMz+Y7MbWIDWw
+	 43Vr/2oGVMebRGvw2Pd4W3PCL4bUEBPgcyv9QeIa9YSpB3t+8rSr6+73x9nUaVQGCF76x
+	 HnNeVeM1EQ2ZaA0qN572SOSN380voLTALlC3z94tC49jw4S4IV8GSBOiMCAwM2XHAEmX1
+	 +dFMaLRshc0USj87ov3siamkzXH5UTbxqBCNLRTGvuo+qSArM9f5gU+6xaS1acfH7ouVO
+	 uBA7bsOlyFp/qgRyftkPSq+DDIV5yY8FIidX1sPKTshsWxL9lo/WvjlbJ5+J2eaIYXA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795595374;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:MIME-Version:Date:From:
-	 To:Cc:Subject:In-Reply-To:References:Message-ID:Content-Type;
-	bh=S6ViIbz72DmFlSP9JPwMgRiVlDXqmWEKuOKUgxyI9tw=;
-	b=zY1t8rC7/dFV/TtjXqwWudT2483nCExPRVQA01dvcA92EY/gAGI7bcgO3x04zFrUy42a
-	 e6qoWTDmK4eRBj9x+PyAvc5Vk7W6pcOLySvOaZhh9aLh1iQbxLnPkEJct+IIz9M1o84sR
-	 8XF3M7UMoCoFkCPEPcnw7m/to8dKPK0ABJjW29kzebIaemVu8HmalXuPIAQS4yQeQzRtz
-	 j5huappfgWdezTnEe898DOpuvbY5VCtr8LVDvyGEl7zTwaYrPoSjS2OMd+PLUzbFjKtMI
-	 Ass/shDp+MGVBnJujo4fgDYG8rF4C6ZAHWSs0pX9AQFh7oN8QaERX8jV5HV+BT5119A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795596419;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:
+	 Organization:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=46LJk3TZobukCFqYlnEQoPn8+XtFKOEqqL5lCkoAPWQ=;
+	b=t0ZewKyQg6NPhDOuUG9lJu6wLhe3Cez5L4iGv2NCnA8TzhAEnWfbji68AOUzCKxy00/5
+	 A6PCyAM0nD04aAWDIH/JnH0b+11TO2tUOnk9NDKtR1eEo2fHt/ODcTmVu9FT22nGiGzw/
+	 hssnvGSTppUOJLQx49Tb07Kl5DBlRIP30JCBADREpiSDUFm2mb9IIXOECQEgtqSpzZuAy
+	 Qs0XvjmD2c63hjdfBvaGXR8X5kLf4SPMuJLtpyuvaU/DBDbGWHEvS5Xk1JL2OurWUp4xY
+	 kDYDx1ZoRjem/tOHYYA6ZdwkYrcctmcHoonCdh3vSOP/sli6XcZGJW6QgKxSIDzVfJQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=posteo.de;
-	spf=pass smtp.mailfrom=posteo.de;
-	dkim=pass header.d=posteo.de header.i=@posteo.de header.a=rsa-sha256 header.s=1984.8680eb header.b=VeflcpUy;
-	arc=none smtp.remote-ip=185.67.36.66
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NOc9sUet;
+	arc=none smtp.remote-ip=198.175.65.12
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 681AA606A326
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 08:29:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 681AA606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D7D1606A337;
+	Wed, 25 Nov 2026 08:46:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9D7D1606A337
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.a=rsa-sha256 header.s=1984.8680eb header.b=VeflcpUy
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id 100C5240105
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 09:29:26 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1795595366;
-	bh=S6ViIbz72DmFlSP9JPwMgRiVlDXqmWEKuOKUgxyI9tw=;
-	h=MIME-Version:Date:From:To:Cc:Subject:Message-ID:Content-Type:
-	 From;
-	b=VeflcpUyzPhCpjRA+hwGIABsDeXvnG4eFvJ3bXzmjs+kXSDXKtBiCc6WMRVbn1hmP
-	 EYePBgScZo2+dseEopZpPF+EWpUS4RooTMZMMIVpZ+Q6EHlmw+fwZFN04gzOhfoKz/
-	 U8fbKgAp/ZY1Nj6q0zYDV/drokdlPQ/f5102bqwh7TyWKGr0ziFb251T+bWtz+LjMO
-	 NVW9h4G0TcrahhwlOl6XFiXIxIctFN630WDA3YBPDzEKpk9NHI8L83S7FRxugT/Cak
-	 IaeK1pWvppakwIpacEBcHyqyetG6IQwgw6MzQltY8GqP05tVf6mrghnQ7H1iy2wjMh
-	 Th2Q0NZYiUp0A==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4jZCX35YyNz9rxD;
-	Wed, 25 Nov 2026 09:29:23 +0100 (CET)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NOc9sUet
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795596419; x=1827132419;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=H9lc7gaOvAIKawIbRVS6ojxGIJsVi/jj/Se/VsDrnTU=;
+  b=NOc9sUethe16ktmcnd4LVZyXoRF7ccqW25GeXmlKOwYPXsgpr4fARI1U
+   gtyG1FMNWOkbH+byCKMBVc9z22pRLqDyapu5m18od4I4QoJb0lAhKaupY
+   a7Ff5p2+mKq8E6QwSfwOlzivXx0Z/E/2zTeg/BnIsP3G/A7fbCB462un9
+   vca7vTLNyju7/oKfVaF0Mdu7q46Yihef18FLZN/t3gXQ1CDJO+cCc2+dY
+   nfS8yqtoYDham+7CcGeXfFbtKKpfneAk3YDumlzPOiwHbhduR7/cxeT3F
+   477DonUOBk5EAzh1dNQNtOjptoEXCGEyeKkEJJYedoHInkfmcYedeyFb5
+   A==;
+X-CSE-ConnectionGUID: fwAEquF/Qr2n8ZApwQQzkg==
+X-CSE-MsgGUID: HfCv7XHYTDeRGz+ICjriiQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11976"; a="4365839"
+X-IronPort-AV: E=Sophos;i="6.27,232,1787036400"; 
+   d="scan'208";a="4365839"
+Received: from fmviesa011.fm.intel.com ([10.60.135.151])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 00:46:59 -0800
+X-CSE-ConnectionGUID: tJDNE9WfTyGMmWtXvp2Vsw==
+X-CSE-MsgGUID: E2tDNko3SO+ToIriwzOtlQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,232,1787036400"; 
+   d="scan'208";a="13591526"
+Received: from alekseim-mobl.ger.corp.intel.com (HELO kekkonen.fi.intel.com) ([10.245.244.36])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 00:46:56 -0800
+Received: from kekkonen.localdomain (localhost [IPv6:::1])
+	by kekkonen.fi.intel.com (Postfix) with SMTP id A429E121B6D;
+	Wed, 25 Nov 2026 10:46:59 +0200 (EET)
+Date: Wed, 25 Nov 2026 10:46:59 +0200
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6 krs, Bertel Jungin Aukio 5, 02600 Espoo
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Linux PM <linux-pm@vger.kernel.org>,
+	Linux Driver Core Development <driver-core@lists.linux.dev>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, iommu@lists.linux.dev,
+	Brian Norris <briannorris@chromium.org>,
+	Ulf Hansson <ulf.hansson@oss.qualcomm.com>
+Subject: Re: [PATCH v1] PM: runtime: Eliminate __pm_runtime_put_autosuspend()
+Message-ID: <awagg6rPEkkJR6nJ@kekkonen.localdomain>
+References: <13014755.O9o76ZdvQC@rafael.j.wysocki>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -58,156 +86,29 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Date: Wed, 25 Nov 2026 08:29:25 +0000
-From: Tobias Laas <tobias.laas@posteo.de>
-To: Laurence Oberman <loberman@redhat.com>, Thorsten Leemhuis
- <regressions@leemhuis.info>
-Cc: Niklas Cassel <cassel@kernel.org>, Damien Le Moal <dlemoal@kernel.org>,
- Jens Axboe <axboe@kernel.dk>, regressions@lists.linux.dev,
- linux-block@vger.kernel.org, linux-ide@vger.kernel.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, David Woodhouse
- <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
- <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Subject: Re: [REGRESSION] DMAR fault by Intel H97 SATA controller since
- "block: Increase =?UTF-8?Q?BLK=5FDEF=5FMAX=5FSECTORS=5FCAP=22=20=28=36=2E?=
- =?UTF-8?Q?=31=37-rc=31=29?=
-In-Reply-To: <7eb28c6334a655eb5bfbf3035cf1f1ff1041bb3e.camel@redhat.com>
-References: <5ad27a97aafbc08a8702d5b90d09cd59@posteo.de>
- <awSs5Cw3hFkf4O4T@ryzen>
- <7eb28c6334a655eb5bfbf3035cf1f1ff1041bb3e.camel@redhat.com>
-Message-ID: <ea064dc05dbf146814f1495adad4d39e@posteo.de>
-Content-Type: multipart/mixed;
- boundary="=_a0bc4d5717c364c5892ec2d35f20af0c"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <13014755.O9o76ZdvQC@rafael.j.wysocki>
 
---=_a0bc4d5717c364c5892ec2d35f20af0c
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+Hi Rafael,
 
-Am 23.11.2026 22:49 schrieb Laurence Oberman:
-> Hi Niklas, Tobias,
+On Tue, Nov 24, 2026 at 05:36:41PM +0100, Rafael J. Wysocki wrote:
+> From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+> 
+> There are two users of __pm_runtime_put_autosuspend(),
+> pm_runtime_put_autosuspend() and arm_smmu_rpm_put(), but
+> the latter duplicates the code from the former.
+> 
+> Fold __pm_runtime_put_autosuspend() into pm_runtime_put_autosuspend()
+> and make arm_smmu_rpm_put() call the latter.
+> 
+> No intentional functional impact.
+> 
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Hi Torsten, hi Laurence,
+Thanks! This is a nice cleanup.
 
-I am responding to both of your emails in this email, because you both=20
-suggested to check out intel_iommu=3Don,sp_off.
+Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 
->=20
-> I tried to help here but (full transparency) I had some LLM help for
-> further ideas after I coul dnot repriduce this on my platform.
->=20
-> I tried to reproduce this on a Coffee Lake desktop (i7-8700, Cannon
-> Lake PCH AHCI 00:17.0) whose INCLUDE_ALL DRHD reports the same
-> relevant capabilities as Tobias's dmar1:
->=20
->   dmar1: cap d2008c40660462 ecap f050da
->   (SLLPS =3D 2M|1G, ecap.C =3D 0, MGAW 39, SAGAW 4-level only)
->=20
-> with intel_iommu=3Don, DMA-FQ default domain, max_sectors_kb =3D 4096.
->=20
-> - 6.12-based kernel (pre d373449d8e97, i.e. the old VT-d page table
->   code, with the larger BLK_DEF_MAX_SECTORS_CAP): 2M O_DIRECT reads,
->   clean.
-> - 7.4.0-rc1 (generic iommu page table): 2M and 4M O_DIRECT reads and
->   2M writes from hugepage-backed buffers against a SATA SSD, ~15k
->   I/Os, no DMAR or ATA errors. The iommu:map tracepoint shows
->   2 MiB-aligned iova/paddr mappings, and domain_translation_struct
->   shows 2 MiB leaf PDEs (e.g. 0x000000039c200082, PS set), so the
->   superpage path was exercised.
->=20
-> The 4088 vs 4089 threshold matches exactly the point where a request
-> first needs a full 512-page (2 MiB) IOVA, which is where superpage
-> mappings become possible. All three of Tobias's fault addresses fall
-> in the same 2 MiB window at 0xff400000.
->=20
-> So on this hardware neither the old nor the generic page table code
-> shows the problem, which supports Niklas's suspicion of something
-> platform specific. One difference: on Tobias's system dmar0 reports
-> no superpage support (cap c0000020660462) while dmar1 does; on mine
-> both do.
->=20
-> Tobias, a few things that would maybe help narrow it down:
->=20
->   1. Boot with intel_iommu=3Don,sp_off and an unmodified cap. If the
->      faults go away, superpages are involved.
-Very nice. I just tried with a kernel with the cap at 8191, which I had=20
-at hand (the new default cap is 8192 IIRC): with intel_iommu=3Don,sp_off=20
-the faults go away, indeed. More on this below.
-
->   2. The full dmesg from a failing boot, including the DMAR/DRHD
->      lines. The faults are reported as DMA Write while the outstanding
->      commands were WRITE FPDMA QUEUED, and I'd like to see what else
->      was in flight.
-To be honest, I'd like to avoid having to capture a full log when the=20
-error occurs, because I can't think of a good way to save it.=20
-Technically, I hope the logs up to the first fault are identical with=20
-the various caps. As you can see in the log corresponding to the first=20
-screen full of errors in the attachment, there are exactly two WRITE=20
-FPDMA QUEUED commands that fail at a time (with the cap at 4089 IIRC),=20
-so the log looks very repetitive. After the first couple of errors, the=20
-kernel starts reducing the ATA link speed (and later maybe also the UDMA=20
-speeds) and continues to do so until it gives up on mounting the rootfs.=20
-Then I=E2=80=99m greeted by an initramfs shell prompt, and I=E2=80=99m not =
-sure if I can=20
-mount any other filesystem at this point with the slimmed down kernel=20
-config I used to speed up the bisection.
-I=E2=80=99m not sure if I=E2=80=99ve understood you correctly regarding you=
-r second=20
-sentence: I don=E2=80=99t see any contradiction here=E2=80=94for a WRITE FP=
-DMA QUEUED=20
-command, there should be an associated DMA write. The QUEUED just=20
-indicates that the SSD can reorder the commands in the queue (NCQ).
-
-Am 24.11.2026 09:55 schrieb Thorsten Leemhuis:
-> I just a few days privately was told that "intel_iommu=3Don,sp_off"=20
-> solved
-> problems wrt to one unresolved regression related to iommu with a
-> similar generation intel hardware. The user wrote "[kernel] code
-> improperly thinking that the CPU supports something called=20
-> "superpages",
-> which it does, but only when the integrated GPU is disabled (speciality
-> of Intel Haswell)."
->=20
-> Could that maybe related? Do you use the iGPU? Does that parameter
-> prevent the problems? It's a long shot, but quickly tested, so I=20
-> thought
-> it was worth mentioning.
-Yes, it could very well be related. My CPU is a Haswell (Refresh)=20
-Desktop processor, and I do use the iGPU. And sp_off seems to prevent=20
-the problems, see above.
-
-But what I still don't understand is why DMAR faults occur. There are=20
-dmar0 and dmar1, and as Laurence explained, dmar0 does not support=20
-superpages on my board. I guess this is because the iGPU is supposed to=20
-be associated with dmar0 (The BIOS might configure this differently when=20
-I install a PCIe GPU and deactivate the iGPU). Is there any conflict if=20
-dmar1 uses superpages and dmar0 doesn't? Or does the kernel not respect=20
-that dmar0 does not support superpages? Or is the iGPU associated with=20
-dmar1? Who determines this: the kernel or the BIOS?
-
-Best regards,
-Tobias Laas
---=_a0bc4d5717c364c5892ec2d35f20af0c
-Content-Transfer-Encoding: base64
-Content-Type: application/x-compressed;
- name=errors-page1.log.xz
-Content-Disposition: attachment;
- filename=errors-page1.log.xz;
- size=756
-
-/Td6WFoAAAFpIt42AgAhAQEAAABSQCtu4BFRArhdACITRCb6Xl/hSARhz/6EHyB2DO+W+mIEXPW4
-9keuMX/fvz71eXlhu8OOAPIx6Gu0T4ns8pGP1CdRSOhWfUkV55qDAJpJaszN6meosmvP2+XAKE9k
-qNdBaR6OKSeo2pLZmcTw9Qsfvgn3OeLAbzMHYGdPoLbkdVFhikFVFCNY4HYXq+T04hOIMG1LgClT
-ZuqIMUzjActaxKY4VcyvkV6/mz2UakbFow+Cgz7sARw0dGqkSRxvgedSWjZfpKOjP4Ll8buPcjHG
-ebxU5MesHe7ST86Zd3vQ2C4A/oQB3jf47cFP2SoIxpN+Yr3kneTruvCAve8TZuvl7ImLAUen86xd
-JofDp3rx9OR/4nUj7cmdgTq2S17774PF6bB9SOpu0Hxo3CDMx+/3nMQ7OSaAWMXrGbX/qjV7ClVv
-nlDVu4iRpETy7IMUCrU/N1nHBG+HWZmX2jVCL1/8EppHMDvBkTRqFpfDDU+9jHOiZ/2Z1MLeDDSl
-/4huoxVKIiy2kLz/JbHwZtSsMbFgmkus2DZe1MRdC+UJ8fO1vf3ESNzFVqp6fYJ+SOl98Ag65Jnp
-8+CbtwNJYQnbfcUD5aH9/RjURtu606YhYgi5576dUq1/mZxjzCyyObKO0t7l7t9q9zrs5SzRrobQ
-Nx38zFBec8CXCTtQlc09oOrHF+GJX2bqqQY6QlQKWGUExFXMTiTrIGKH3dPpczGV7s39kcoCqXif
-p5MbW+7aQEpJPrXkGsMRRxpMIuIkrZ06XZODo+h+LcFsL5rE3CE6xChToAyEZcW7HmV76pJeX1mc
-vaijG9t+WfLR9Wbe47Rcmkl/JCmn2aa3I71UYO2L9qF11s2x16Mw7lh5PRhBwT6zQJDR8wAknnWf
-VBQOPIbZmSG7qrlIKQXztnXvI+Bvmfl15oYf0gT5NywFrYidUui1loqIkABASj3aAAHQBdIiAAAe
-pB+uPjANiwIAAAAAAVla
---=_a0bc4d5717c364c5892ec2d35f20af0c--
-
+-- 
+Sakari Ailus
