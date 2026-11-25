@@ -1,60 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795592970;
-	b=QaoddyOu8tyP8m+rNuBULNvTmjC50zafwqLnCd3TBUKb2q/683cLSd1R/JBAeB6ljK/f
-	 XZPQbXS/sb/iyqyxTZBEZrWQQEC7jNbC2ntlf61qxAVAzBQH1BB0est2dMxH90V4fShi+
-	 Yr4U3dmREq7EPK/ZDiHRnhkUhNsEeE4c2NNmG93DmGg33M5ZGHoO6N/sS77eFhhFD09qo
-	 VVrg+oO1BzXOZg+buZT2wgWN1zFOOZWP8wcSOz6x7O+Ks4QjN3wY9RcYmZfXrpFE3cEnE
-	 qzla1Dtkn6xXEddznsRwhg74D+3a77nKn/F2R/0cpmWEzex6E/+Zfx1nnS0QtCMkC6g==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795592970;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=moULo+zYqg9swYV2aKHcAmhUVeIT6ck6nZOqYtJcyA0=;
-	b=1dmbMzA2cDeRunm7HT0l/RcDQMr09Pvd3OMrGzrASQGD055vRLkqh+jIZEupevWo6JBN
-	 DcYo1f4lw5Xzhg6WeYE5i9ShI0r0/R++00cWQA13twL/Uev1quFkGXqIym0qiRoP5rFv/
-	 WRvzj1J5gvq+llw1efZFDla7enc/BEdkGzfMK4QUmDKYpN3KvisbhUQVxll1/4P1YjwbV
-	 cLFusXqJRjPocs2BMTC+CYHuQ1ZRcvHA+rkR2phnrvAhhshni3zdc5xtrRxicK1dX1chb
-	 FyNfER1OfnG5SszYBqzoTi7dkUZ5+8ZRZ97DxwLzHUNLMFeXIrc15Xv2bNgQOKoiyMg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b="HzE8z/K7";
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.216.44
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795593817;
+	b=CHHPFj/5Gn6DO7Avp4U8Gp7eHpZP5fHJAbuhImvRkcLjxs1yv3xJ0BhK21YSLVUzC47A
+	 y3bRkmJUy+cghxT9OcDArC36YkmmIkhiuJ+O5rVmAWIy1tSX2+H7lzUZgcJCTfWfm53bz
+	 2OVRsQrnHLgljSlpd6pfag+S3CnLf0m46mayVlnGlLEgDNzap1kyx0irYvdSK8UhEoXas
+	 z9OnDCtMVcX7+sqrncSI0zh7UhUxD90qFEEVKooSQxjcJZqlKFpZDGsMOVbEbuvX7q8B9
+	 q8C0HuStlTpELkTdm5PMgOG69CnR02rcjdVjihpk/NvSFGZXo89TucPYw6Tf/Hrskvg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795593817;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=QNDs9IQfET5nPgzLBLhmWzmWUMfQlNAVK09is5NvctM=;
+	b=OQi5qR/lYwhXLJ33gQ16ey/Im1oASwJQoabVXPO1npjvBcbj7rzHHdOfkuVmqsqKNcrX
+	 L705+EGsQ0yF2/MzxLhO+KjDBMxR6yM6M7HXMeQJKCUm3hMnI6z48Ha3aPNctF9ToDTM8
+	 KfTFiQSqS3jxufrYQIgLqVsvOwE/3QoG53Mn+FlSQEj609G4996IKZmg1dHT5NGYLUuyp
+	 X0T45U53Hy9jw5e8b8V1Y9vqMTNZVf89p4ZZSth2cOwUYsakDE47X8+IHMoU58l0e//XW
+	 UX54M24eojGxF8pUIZ7hdy1O0Y0txKXAtF/EPSJ+8j4psSR64w7XMt9p9/vevZk1Tog==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=o+Y9wQbZ;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.216.44
+Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D61BC606A329
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 07:49:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D61BC606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4811606A321
+	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 08:03:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C4811606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=HzE8z/K7
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261125074926euoutp029765d8f66614f9a5a723a1ad7e004711~rOkoxzrUh0699806998euoutp02Z
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 07:49:26 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261125074926euoutp029765d8f66614f9a5a723a1ad7e004711~rOkoxzrUh0699806998euoutp02Z
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1795592966;
-	bh=moULo+zYqg9swYV2aKHcAmhUVeIT6ck6nZOqYtJcyA0=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=HzE8z/K7YIo7l12YV/WBlCx/dzvLRQck2HKCLMwZ3251NSKWzDT3hQGVaEf1Ty211
-	 30Tx1DzsTky7ZE/NQtIt+isMxW3Mtq4GSt62e00wU2iVvnuCABhCH+70pVHMoP5Xkf
-	 nJv5VJZGMGRVqpZaF9xbfes/3qQpbNCB3qgqREG4=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261125074926eucas1p18d5e57c2c8f3be85a85a007270c860be~rOkok6o3m0116101161eucas1p1f;
-	Wed, 25 Nov 2026 07:49:26 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261125074926eusmtip28e4bfe207a1ea602f1386a1e9d05e2fd~rOkoEOvjx1909919099eusmtip2-;
-	Wed, 25 Nov 2026 07:49:25 +0000 (GMT)
-Message-ID: <bfe80e4a-572b-4362-834d-8c4a26c6d03a@samsung.com>
-Date: Wed, 25 Nov 2026 08:49:25 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=o+Y9wQbZ
+Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-3b3f9cbafecso737770a91.3
+        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 00:03:36 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795593816; cv=none;
+        d=google.com; s=arc-20260327;
+        b=JVRniKY4qgxEpulQOTniBExoxTBIQB/aECHnDLnGvYjdfEX9qb+aMEvLKg/hNlsHdF
+         fa0bBRKwx3+qZsUCTU22EpntiAm7g/gf3of6ZcthL+948zrdW8hG5pKWhCY0cy33epPo
+         7qZfXlk0SCLvoYAqPIBj2RRwIj5PquFHSISNmVs65mdYAjgRkm3G5FN/MP5wZn2lzPxx
+         8LZ2xhuuofBTlue94bqA7jM1H1laonhoFGcOXVQ9OJWz/jriBeWRZosDgEQE2c/A8TXM
+         2uPSwQ3dHuEZ+L6jk6M7UbFy6oEACeDyfS2DdBg5uMm9VqSM6J2QRf4iGb1CaMDtJPZO
+         dyoQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=QNDs9IQfET5nPgzLBLhmWzmWUMfQlNAVK09is5NvctM=;
+        fh=A81aw07oggrBSJ2NrEsOgsqhauq0wAmNtJdGCrWfJek=;
+        b=hGmGW4/1uMV3zzfqgez33SSfNXW6aOR4k1mxv2gxrKNOlKe3xIoN64Al1D2OwrTnNp
+         cD6GheBMBc9GyXeIXNkGeu9uPKQH2piOh8rWDRvKYvP6V47zUcdyBnDPddARNpDZq6X5
+         rInRVBSrmlVxOoZOcLt1rDgm51GaeSNB65boyoASEp+c/sMp0+oLiYnzl9e5wBfx2yx9
+         37A791dQCpHE0aZ3YBz+80HVLnPnKi2YFYqwC4DLcgLmB9aNoEksk4B4j2NEjgYAYgfJ
+         L2n+Isc+OyAWAhpZXgRU9vRGIA5P1GLdkelnEEkmCfrKIqNkswTp+TBj++blSf9iLFdL
+         ZZaQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795593816; x=1796198616; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=QNDs9IQfET5nPgzLBLhmWzmWUMfQlNAVK09is5NvctM=;
+        b=o+Y9wQbZNbtMcq1NsSFYHVCTu4zTguLjUWZjvoWty9L2BfLs03wI15v96Bx9PZJTeT
+         ngyRlCTJb/ZjGbviXakAtV5lvRkfdxdgD+3NVmGZuldRDX2iE/9lmoFz4rKkCvV/cUHM
+         ffPn02UoyNG+UuD/FSxlVMw5SPPTQf40/JQLJ6gDDB+O3TMGWP4CqxWMevhYQ9ZpMt5c
+         gnUd1QJxWt4tgCNgZacTbTJ0zvuQGti3Pk5rCoSzKD9+IzvbiQYWB6KLWa7ELsDd45/p
+         ITiku2Xz6Gt9/fffY+62fHIuA53MQW8V0rWtvQDMO34yGIpMQcfMWpgafmC+lC/zg7nR
+         MyUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795593816; x=1796198616;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=QNDs9IQfET5nPgzLBLhmWzmWUMfQlNAVK09is5NvctM=;
+        b=vm5AGzQ9kcm9uK8sWtSIbq3NQ7LvYjTAAPhV79Gni32rhB9kF5dTtps3qcZqsp8mu6
+         JqosTK0rwmufrAg+9YeHLBxgkmOu9cmykO8+lBk2dqzRgB3Y/xJWGvzpTyFlG1tFaFlb
+         vUb13fvw1sQlo4LPPXGxcf+/JLAfBtwsTOXwA8XLGjBBE9cbEFxZg2Zoh1o8Q98u+/ES
+         KAqurzfIvrm9hh51d+FdfSJGDq8nudYfk7X0IZDlub7UtrSqFCiI/vOt5ZVbvZNuoj8x
+         PzCRz7y+gtGx6hY//TwFcu/IyupzJ+yKr+YTy979LeZW4UQnHUyGv9Vs+04ORZxMkJSQ
+         5QcA==
+X-Forwarded-Encrypted: i=1; AL+hErGMt3yajAxR5Le2WcuWkGxrcEVIbvgla0xoAMNKR8ykACxajb6ttqtMOaBpW9mvcN14wX1jzQ==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9fRwYxgztM7JWeWA53Sgsp2trSqzPHhIAtxLPj82vgxo26ZYVO
+	uvXYUnX5+7MwJk8GTdXnXBasOlmwxK7GkpP99nwgU3IRpmGA+VdrneCmHEkT5N58ByuJFo25Aij
+	VWucJ0qHH75calEdaUkbiDt+5JK1xXYA=
+X-Gm-Gg: AZFdTZektI9EOPnt++r+jLG7U9U+nuViVTGqm4pCysA0Go3xVDNdXGSjBX+rEE//5mX
+	G7Di/uV15yfSaQsFrfW1+l2YMe5CuSKIOlFqIM4Id2kGcSV3yChl13allinSnByrlJBUP/Z1o8Z
+	f4KIMum2fLKMqB7g7aPzfU6y5lIIyzNM1N6kR6tTr6H+dorfFpM4/9EQnmPMSU3mJt5fRbI1aq2
+	pBO5SooQMoIRHOR68rgkzxMaDUdk86eFNNAK+wzkbJL7biZz/kizBLIveNGCyugulHjKyzsP2id
+	QN8OiISGsozcQxAArNa19XELrIPlsrF5NSpxG9k4zXQdtEAnaueg8Wsx0Q7HAbNZxbgIAsAuPpr
+	CgfE/pxJwX8ZLeUorU99o6VvTtORJkahPN4AnevonYl1Cw9SyiXG1D0f9F6OD4KSHQbCqq9gk84
+	1Rh9I5gLwvM2/v
+X-Received: by 2002:a17:90b:442d:b0:3b0:d0be:f02c with SMTP id
+ 98e67ed59e1d1-3b41c98a095mr26505625a91.6.1795593816031; Wed, 25 Nov 2026
+ 00:03:36 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,42 +105,63 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] dma: swiotlb: Use system_percpu_wq for dynamic pool
- freeing
-To: Kohei Enju <enju.kohei@fujitsu.com>, Robin Murphy
-	<robin.murphy@arm.com>, "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Petr Tesarik <ptesarik@suse.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20261125-swiotlb-replace-system_wq-v1-1-83807c6afb75@fujitsu.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20261125074926eucas1p18d5e57c2c8f3be85a85a007270c860be
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261125003956eucas1p215758cc5f1caa01a5389246c60b1d79a
-X-EPHeader: CA
-X-CMS-RootMailID: 20261125003956eucas1p215758cc5f1caa01a5389246c60b1d79a
-References: <CGME20261125003956eucas1p215758cc5f1caa01a5389246c60b1d79a@eucas1p2.samsung.com>
-	<20261125-swiotlb-replace-system_wq-v1-1-83807c6afb75@fujitsu.com>
+References: <20261117015409.25492-1-q.h.hack.winter@gmail.com>
+ <56be2b4e-aefb-413b-8f72-0bea1f9e96db@linux.intel.com> <CAH78GvuUtU=zhe-Qbn9k73D3U5n1Ye1=8wtQqR7vCEpDzgNUJg@mail.gmail.com>
+ <aceb9e9f-7ba3-48e2-8945-95179f22581d@linux.intel.com> <CAH78Gvubo20uU4ntOxzd-+B6GHpUovL_wYQt9yahF-8=x3sEVA@mail.gmail.com>
+ <4420a997-82e9-43e6-8ceb-5ede44594c51@linux.intel.com> <ecc47f2f-d0ff-4aa5-9d46-6a0b9ed8c468@amd.com>
+In-Reply-To: <ecc47f2f-d0ff-4aa5-9d46-6a0b9ed8c468@amd.com>
+From: Qihang <q.h.hack.winter@gmail.com>
+Date: Wed, 25 Nov 2026 16:03:24 +0800
+X-Gm-Features: Aa3M54oVnmxp-GwpSucJqDs0BCYTl-BITaPoTpOvLRhz7vPVh1iZnm8zpKOg-jw
+Message-ID: <CAH78Gvvf92NrPTYU=hMs92FavwX67NpgeHBRqZ6TDziNg45-tA@mail.gmail.com>
+Subject: Re: [PATCH 0/2] iommu/io-pgfault: reject partial faults after device removal
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 25.11.2026 01:39, Kohei Enju wrote:
-> system_wq is deprecated, and queueing dynamic SWIOTLB pool teardown work
-> on it causes the following warning:
+Thanks, Vasant. Patches 11 and 12 cover the teardown paths I was
+missing.
+
+One question on patch 12: when the completion wait in dev_update_dte()
+returns, can a PPR accepted under the old DTE still appear in the log
+after the drain has observed it empty?
+
+Happy to pick this up when you post the follow-up series.
+
+On Tue, Nov 24, 2026 at 4:53=E2=80=AFPM Vasant Hegde <vasant.hegde@amd.com>=
+ wrote:
 >
->   workqueue: work func swiotlb_dyn_free_work enqueued on deprecated workqueue. Use system_{percpu|dfl}_wq instead.
+> On 11/22/2026 1:09 PM, Baolu Lu wrote:
+> > On 11/21/2026 10:13 AM, Qihang wrote:
+> >> Hi Baolu,
+> >>
+> >> Thanks for confirming the VT-d ordering bug. I'll keep this series
+> >> withdrawn and won't resend it.
+> >>
+> >> I still have one question about AMD. detach_device() calls
+> >> iopf_queue_flush_dev() just before amd_iommu_iopf_remove_device().
+> >> That flush only waits on the iopf workqueue, while the PPR IRQ thread
+> >> runs amd_iommu_poll_ppr_log() and reports the fault through
+> >> iommu_report_device_fault() directly. What ensures that the thread has
+> >> finished reporting faults for this device, and cannot report another
+> >> one, before the device is removed from the IOPF queue?
+> >
+> > + Vasant
 >
-> Use system_percpu_wq instead, which preserves the per-CPU workqueue
-> behavior of system_wq.
+> Yes. Its a bug in AMD driver. In fact we have bunch of issues in AMD driv=
+er.
 >
-> Fixes: e13d4d9a4915 ("dma: swiotlb: free dynamic pools from process context")
-> Signed-off-by: Kohei Enju <enju.kohei@fujitsu.com>
-
-Applied to dma-mapping-for-next, thanks!
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+> Below series fixes some of them.
+>
+> https://lore.kernel.org/linux-iommu/20261105044801.399466-1-vasant.hegde@=
+amd.com/
+>
+> I have another series which handles draining. I will post it once above s=
+eries
+> settles.
+>
+> -Vasant
+>
