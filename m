@@ -1,60 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795647267;
-	b=Pfm5v+5IwLn6bZKk2s4/s3ma9diSalJLTJC7w6X416QmQFm/Ek9wLFnOduTE9KqGcNWG
-	 1r72cQpVeForLFpD5eQT+G3Vw28T8y1uyW4TgGOTR4odIot8nr0nEtsPjFt6Kl/yc8iyh
-	 wgXLtAnTuFhjERaAHEgdycWfZqX5kx5pxFV3CVJi/LzB4bc6zOy18Gk2PD8UElS0NqIsK
-	 TISf05Yt4LfzrDwHY7cosJDNayOebLsy7U2CSDKrMBsmUdDernqTpOPegH/LYfvP2juYI
-	 JMUL/KximjUGNWyMJ0t0YKsJ61Kpgh777+ORzeR95ifjgucmcQ2Zs4Jdh4geFYWuJUQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795647267;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=qHMxOYG8BmdhFn1Kc7+4McowXnPiDZM8IuFmw/AsFAU=;
-	b=nJoUpf+7BoWBs77SmPt7wM3scQgSW+Fghl3+ecJBScJJVNZZ5hOZCDl9daD5prwk+OV/
-	 8ElcXYePm3EYZ6lGju1wmlpfhqj0BWsRzMH38E9EDvMZRz0VuvaicFhrDgyuaT/Kv6U5+
-	 MK6x2Te63BBYwaYBxful9n6grgGHOqBvY4gNTvqI4oFtW7yLnU4rV6jzl0CvzVOC/mHLp
-	 FKmcArEx+MOpeYpKKYC4UYPxeEAX9OI29KpFdddvnWLnCBevoJ6hnudDAbvRQZNWz093M
-	 BlPQj6IPc6ja/7CFQ7RTD4KVmTcz+BNtVfKNqsY//n9HtSu8BEqKKq1nxT5l/oTKcsQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=pKAcSK6X;
-	arc=none smtp.remote-ip=210.118.77.11
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.42
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795649244;
+	b=OIF8mrPasqIoq9UcjGItWal+NiscI7hooXK4xwbDdmA2JsLwUW/NuDA+4AiILs0phO0v
+	 zRRABhdS1NuTY2G0lenByhFh89b2zmxjO3gwYganZQJsBZT+QqNjHovVpjbk/EdHBtvba
+	 RfR6IcahGgHEWIKdJhDIx5KRlmZ0ojwAWU9UjKFIfaolQeHwePt9Ck6AlUiJXcCOdBaL+
+	 hf1V3fTARmnI6A6mm4ZCSFy/lE1Jsm8TcTBX2c0gKXFL8vK8COp31ouHD/Wte9BfjZA04
+	 z+BJm+H7Mgm1wE1Qknzmbq4U11qP4tAmgteBSNX0lwzmagKoxASPLMEScFutdBi60Zg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795649244;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=sp9Gu/ag0sWDcDK/oXTqpJzOnSAhjMt/opO5ZXrPuXU=;
+	b=IyvePjREfl69FBE3w4J/LvC5W06qD923j8/LhAn1TqaCjo5duMtAogsw8zYVLXwkpmih
+	 btEHPxhXF8Rxh+TD5EESdJF1Yic2CXlQ1wNvaM2OIkShogw0Ca3jfeSE9aWUrYZeGqLIc
+	 LcYeahwLAwKlDYKFUHKCo0L9MsVQBxbvbOqc8T4QLCfudQhT7ZXvqbVwwxVklm5WsdK1s
+	 KKcf6104U4MJ5Q3zoGakiWL86Vctabo8dH2kyYmMIkzO0rvrwJN4EA5LgJ8T1xx2KF6gW
+	 JA34QU9hsmj7Vg/hoWlBEV7ehJVWwUOMDOpQD0ZR+fQGIYTDXZrDKc8lpGlTyZrxQfw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dSYgXelN;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.42
+Received: from mail-dl1-f42.google.com (mail-dl1-f42.google.com [74.125.82.42])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6C1D606A692
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 22:54:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C6C1D606A692
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 574B7606A323
+	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 23:27:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 574B7606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=pKAcSK6X
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261125225422euoutp0164c592afd696409ea1aa10af6a41609e~ra6vwxS612108621086euoutp01I
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 22:54:22 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261125225422euoutp0164c592afd696409ea1aa10af6a41609e~ra6vwxS612108621086euoutp01I
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1795647262;
-	bh=qHMxOYG8BmdhFn1Kc7+4McowXnPiDZM8IuFmw/AsFAU=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=pKAcSK6X8rTpE54nfC7BUeHA4s/RCnjbJYsBgNASng7ej/LwqRLWp87+ZqVl6Soh1
-	 4D3dWKUyMMnHz1xoeXfyhYvKECVYylI9BGTa0xj8s5pCNlZZDEMBOsgHMviUU28wKE
-	 Rnau9rykDlO5+XSwd5QZRVzWbImL0qHx3Tuwy8zM=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261125225421eucas1p186d9a6f0e441eaf4204fe18c5a702e87~ra6uuG4D40454204542eucas1p1T;
-	Wed, 25 Nov 2026 22:54:21 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20261125225420eusmtip17fe6bd4ec6220fe634303b219bb10f97~ra6tjtwQd1106411064eusmtip1A;
-	Wed, 25 Nov 2026 22:54:20 +0000 (GMT)
-Message-ID: <20d17d3f-eeab-4541-9aa9-877e45fe6fa5@samsung.com>
-Date: Wed, 25 Nov 2026 23:54:19 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dSYgXelN
+Received: by mail-dl1-f42.google.com with SMTP id a92af1059eb24-15ea896ddc8so10606113c88.0
+        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 15:27:24 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795649243; cv=none;
+        d=google.com; s=arc-20260327;
+        b=lHsYm7KGklOG7Dv7nYfdHrwYRhtMxmambxkHbXMc8zxLxKcDuPnriw2IBGu4oUfEo/
+         x9Ag2h7E56VBKpuMviNije24I0Irczmv/DxSytQyi4YkeQJKWolVx8tt5Kt4JccG7PHR
+         b1qEtQXGJ1QGMxiwf8VzozP8yY1gfGOM35KdTfkvZ8xH5Ghx2q8Ef2T/hwvYXDT95YYQ
+         9RWlJMiscHhlOm5+X1R0O1E2KN4ukq+/V/CWUM/6Npb7Gc38k2ZQa08vqRODHl4K0QFr
+         +ms73yN/2UbVOL7N65/3GbonSJvsVuoXtmhI2rJShSzFQXFJTcgpedAn0x8sr4hzPI+f
+         hUDw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=sp9Gu/ag0sWDcDK/oXTqpJzOnSAhjMt/opO5ZXrPuXU=;
+        fh=XNP/Z9vcCCFoPe0rBFNMVqYNfBut7goYYh7gKOTmpTk=;
+        b=E6bwahGvNxOxmFlpRWXbtQjVDeAMlyKWhubNAeLFQhFiYXDl6MSYBJ6loaMXWydXYG
+         DwoJ8f0k8D6f6FrL6jFL0I9fKLmjbaqAk38l5D0nWvDRSStuw4zlqmaCu9ugxcjtWjvO
+         PztOoyE01zgbfYlqNhsnKgY3vTBz/uOgYmWwALlIoy+eTA0uV2ru7jey/x9+JCxY5rG8
+         xmE9eV0amfPjay2MQlsb5bphUrJWSIsv45e1ilZQaURBXyMISrFVfTyDwfU0VKaD00bZ
+         xS8f0+MSHgKE6FjvCiyuVrqAl8h6G0EzRk9KJ8jehH8Obqa5x1EJV4KZAe0X04OnoiAo
+         uR/Q==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795649243; x=1796254043; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=sp9Gu/ag0sWDcDK/oXTqpJzOnSAhjMt/opO5ZXrPuXU=;
+        b=dSYgXelN2FtKtMR8fC4nw75Xr2Lrkb0Dpy+7hS+3+oD2fAghaxPGTO5uUYidBJN1WC
+         OnAbS31hwXSlLm917Wn8x9fsiqlWuBrdBksp8Wr+SmqHfUKwEVU7ItLS0LNhrB8pckv/
+         AY7rxAYLDq7anRPJSejeyoodoAN13yaZ3Oiy+ShjVFi2fV2Rw62me4CbaMdxV1aVFNJ+
+         pugi4f6zkg2+Rs30ClLNiNU2z7ibwZQRJtTBWENJbkjqXbRvqk0Yax/IX+2JxCIV39n2
+         QXHPtMOI3FlsxYSP+czej53lIKdUJ5tqIi3ummvG0utme22t2+SzlX0VuMQrKXKlrWiY
+         QLjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795649243; x=1796254043;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=sp9Gu/ag0sWDcDK/oXTqpJzOnSAhjMt/opO5ZXrPuXU=;
+        b=LEppWLUqYIrqhUv9wzkaxUnMunEd6Ecnha5ytNuFE9Y4Ln9R2/OkVO9qPhlE2VWKFu
+         02S/curEE/2YyXD8/+x/Ua9/17tqIGfhBom0WbdvqV1xVOcXao67A8MEfoiS1kx7B3kQ
+         Az9LPlElX/sUcPo0ETTFk3ntptdoGRUsyc/gqBnrDKn3mCaCiyfmQu4nlliAeK0hARd6
+         Ym9aXSbu69YVAdUkQHD/H3xPJH3BO/B2Q0OHt1IIeiRlQvfMtPxKKBRulGyiUSvAfCgs
+         8ux7KveBOOxHPVUbfGlyzsmJDQh2C3Fd2H1Ex63d54yFJLb6ST6/2cnUAeHiHJqYSCLt
+         tN1Q==
+X-Forwarded-Encrypted: i=1; AL+hErFGdAS2zYE0TJwI20YmqAOE6/5mE87V5GxMomIzs4JWalDF8ohrPljV1EJ6T3aE9Wd/5DsIlQ==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/endHfrhateZZKloQUXYv4QF5CzYHBDzn8vbKQYZLgOqTulgJc
+	jPULyPGoR8SYLeKp+5+ki0iXtB1uZjezmHXaJME/XYH4ZIQINz/NWjGNV/87SrDiN0SHXOW3WYM
+	NX/Qh7CvbW7qzLOqKhmYOJ1DQ12nFf5c=
+X-Gm-Gg: AZFdTZds5yTUw6g6XsORiPeT/9HzG0j5j2tWY1fnxWjCnuDtse2+b8GnJ/tiRIQVmk3
+	2siA6ZmcGIIxvSUJga782LyOO5OfFfIbN4VyMhEGUkyFwA4p7N7wwHOh62lHfXE0spVN2GCN/jG
+	TNvursSaV69sVA8LxtvXCMVK/nXBffwMsUL+4qSaoOLFSQiwU4A0RaOuVO6Ij6/egkU5vFLow9k
+	gqtqlsp3HAuMNcrZKY7RCGC4BBgZ5JtzC+OFxCmkKbzbWYt7CCy+qkwVeHXOy9Lzy5Z6U7X/OnX
+	e2CHfxSP9gxtTSQ8GSosMRUXhtpuiOGLJJcDTEF3tYr3M92D3kwI2MZ6yN+wdXx+hqi6Zq6alXM
+	UQBmlhkgvisE2/WdFshl6jL51mfy9k4yPYyYjE2109LceNRhBLwnOSINM
+X-Received: by 2002:a05:7300:dd46:b0:385:7762:e1a3 with SMTP id
+ 5a478bee46e88-3857762e729mr18890931eec.24.1795649243401; Wed, 25 Nov 2026
+ 15:27:23 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,193 +104,49 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v3 3/7] dma-mapping: Keep DMA memory private for capable
- devices
-To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	joro@8bytes.org, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Catalin Marinas <catalin.marinas@arm.com>,
-	rafael@kernel.org, Danilo Krummrich <dakr@kernel.org>, Johan Hovold
-	<johan@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Pranjal Shrivastava <praan@google.com>,
-	Mostafa Saleh <smostafa@google.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, driver-core@lists.linux.dev, Sonang Patel
-	<sonangp@nvidia.com>, Ankit Agrawal <ankita@nvidia.com>,
-	shameerali.kolothum.thodi@huawei.com
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <6618391e4f7809e25400b414be63a8a35ffc9758.1794343501.git.nicolinc@nvidia.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20261125225421eucas1p186d9a6f0e441eaf4204fe18c5a702e87
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261110205101eucas1p2b3a12b6f1f56e2ae7dea688908dd0231
-X-EPHeader: CA
-X-CMS-RootMailID: 20261110205101eucas1p2b3a12b6f1f56e2ae7dea688908dd0231
-References: <cover.1794343501.git.nicolinc@nvidia.com>
-	<CGME20261110205101eucas1p2b3a12b6f1f56e2ae7dea688908dd0231@eucas1p2.samsung.com>
-	<6618391e4f7809e25400b414be63a8a35ffc9758.1794343501.git.nicolinc@nvidia.com>
+References: <20261125074331.25190-1-zhangyu1@linux.microsoft.com>
+In-Reply-To: <20261125074331.25190-1-zhangyu1@linux.microsoft.com>
+From: Tianyu Lan <ltykernel@gmail.com>
+Date: Thu, 26 Nov 2026 07:27:07 +0800
+X-Gm-Features: Aa3M54r4mxIQgvryDnL-qX8IuFUHHV-JKb0OjIRrToyrlQrT6deJuQHPpw72yiw
+Message-ID: <CAMvTesDUqyoayJwGVRT93cF=mC876n+8fwvpPK9TVTH=8AjkyA@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: Add dedicated entry for Hyper-V IOMMU
+To: Yu Zhang <zhangyu1@linux.microsoft.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>, 
+	Jacob Pan <jacob.pan@linux.microsoft.com>, 
+	Easwar Hariharan <easwar.hariharan@linux.microsoft.com>, 
+	Tianyu Lan <Tianyu.Lan@microsoft.com>, Mukesh R <mrathor@linux.microsoft.com>, 
+	Thara Gopinath <tgopinath@linux.microsoft.com>, Wei Liu <wei.liu@kernel.org>, 
+	Haiyang Zhang <haiyangz@microsoft.com>, Dexuan Cui <decui@microsoft.com>, 
+	Michael Kelley <mhklinux@outlook.com>, iommu@lists.linux.dev, linux-hyperv@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 10.11.2026 21:50, Nicolin Chen wrote:
-> Architecture code can require devices to use unencrypted memory. This makes
-> the DMA API use shared memory for coherent allocations and bounce streaming
-> mappings through SWIOTLB.
+On Wed, Nov 25, 2026 at 3:43=E2=80=AFPM Yu Zhang <zhangyu1@linux.microsoft.=
+com> wrote:
 >
-> A device marked with DEV_FLAG_DMA_CC_PRIVATE is able to reach the private
-> memory directly. Add dma_require_unencrypted() that combines the new flag
-> with force_dma_unencrypted(), and use it in the generic DMA code. Also use
-> "unencrypted" in the local variables that hold its result, to avoid mixing
-> the "unencrypted" and "decrypted" terms.
+> Changes under drivers/iommu/hyperv/ are merged through the IOMMU
+> subsystem tree, while MAINTAINERS currently lists the directory under
+> "Hyper-V/Azure CORE AND DRIVERS" pointing to the Hyper-V tree.
 >
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
-
-
+> Move drivers/iommu/hyperv/ into a dedicated "HYPER-V IOMMU DRIVER"
+> entry pointing to the IOMMU tree, with Yu Zhang as maintainer and Jacob
+> Pan, Easwar Hariharan, and Tianyu Lan as reviewers. Keep
+> linux-hyperv@vger.kernel.org on the mailing list entries so the Hyper-V
+> community stays copied on patches.
+>
+> Suggested-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
 > ---
->  include/linux/dma-direct.h |  7 ++++++-
->  kernel/dma/direct.c        | 21 +++++++++++----------
->  kernel/dma/mapping.c       |  2 +-
->  kernel/dma/swiotlb.c       |  2 +-
->  4 files changed, 19 insertions(+), 13 deletions(-)
->
-> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-> index daa31a1adf7b0..9d548e545f7a6 100644
-> --- a/include/linux/dma-direct.h
-> +++ b/include/linux/dma-direct.h
-> @@ -134,6 +134,11 @@ static inline bool force_dma_unencrypted(struct device *dev)
->  }
->  #endif /* CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED */
->  
-> +static inline bool dma_require_unencrypted(struct device *dev)
-> +{
-> +	return !dev_dma_cc_private(dev) && force_dma_unencrypted(dev);
-> +}
-> +
->  static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
->  		bool is_ram, unsigned long attrs)
->  {
-> @@ -146,7 +151,7 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
->  	 * requires unencrypted DMA addresses. Treat it as not DMA-capable
->  	 * so the caller can fall back to a suitable SWIOTLB pool.
->  	 */
-> -	if (!(attrs & DMA_ATTR_CC_SHARED) && force_dma_unencrypted(dev))
-> +	if (!(attrs & DMA_ATTR_CC_SHARED) && dma_require_unencrypted(dev))
->  		return false;
->  
->  	if (is_ram && !IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT) &&
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 25e9a86835fd3..29ea832b9f0af 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -41,9 +41,9 @@ static inline struct page *dma_direct_to_page(struct device *dev,
->  
->  u64 dma_direct_get_required_mask(struct device *dev)
->  {
-> -	bool require_decrypted = force_dma_unencrypted(dev);
-> +	bool require_unencrypted = dma_require_unencrypted(dev);
->  	phys_addr_t phys = ((phys_addr_t)max_pfn << PAGE_SHIFT) - 1;
-> -	u64 max_dma = phys_to_dma_direct(dev, phys, require_decrypted);
-> +	u64 max_dma = phys_to_dma_direct(dev, phys, require_unencrypted);
->  
->  	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
->  }
-> @@ -72,8 +72,9 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
->  
->  bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
->  {
-> -	bool require_decrypted = force_dma_unencrypted(dev);
-> -	dma_addr_t dma_addr = phys_to_dma_direct(dev, phys, require_decrypted);
-> +	bool require_unencrypted = dma_require_unencrypted(dev);
-> +	dma_addr_t dma_addr = phys_to_dma_direct(dev, phys,
-> +						 require_unencrypted);
->  
->  	if (dma_addr == DMA_MAPPING_ERROR)
->  		return false;
-> @@ -226,7 +227,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
->  	struct page *page;
->  	void *cpu_addr;
->  
-> -	if (force_dma_unencrypted(dev))
-> +	if (dma_require_unencrypted(dev))
->  		attrs |= __DMA_ATTR_ALLOC_CC_SHARED;
->  
->  	if (attrs & __DMA_ATTR_ALLOC_CC_SHARED) {
-> @@ -385,7 +386,7 @@ void dma_direct_free(struct device *dev, size_t size,
->  	 * If the allocation used decrypted/shared backing pages, restore
->  	 * the encryption state on free.
->  	 */
-> -	if (force_dma_unencrypted(dev))
-> +	if (dma_require_unencrypted(dev))
->  		attrs |= __DMA_ATTR_ALLOC_CC_SHARED;
->  
->  	if (attrs & __DMA_ATTR_ALLOC_CC_SHARED)
-> @@ -452,7 +453,7 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
->  	struct page *page;
->  	void *cpu_addr;
->  
-> -	if (force_dma_unencrypted(dev))
-> +	if (dma_require_unencrypted(dev))
->  		attrs |= __DMA_ATTR_ALLOC_CC_SHARED;
->  
->  	if ((attrs & __DMA_ATTR_ALLOC_CC_SHARED) && dma_direct_use_pool(dev, gfp))
-> @@ -496,7 +497,7 @@ void dma_direct_free_pages(struct device *dev, size_t size,
->  	 * if the device had requested for an unencrypted buffer,
->  	 * convert it to encrypted on free
->  	 */
-> -	bool mark_mem_encrypted = force_dma_unencrypted(dev);
-> +	bool mark_mem_encrypted = dma_require_unencrypted(dev);
->  
->  	/* If page is not from an atomic pool, dma_free_from_pool_page() fails */
->  	if (IS_ENABLED(CONFIG_DMA_COHERENT_POOL) &&
-> @@ -665,7 +666,7 @@ int dma_direct_mmap(struct device *dev, struct vm_area_struct *vma,
->  	const pgoff_t pgoff_end = vma_end_pgoff(vma);
->  	int ret = -ENXIO;
->  
-> -	if (force_dma_unencrypted(dev))
-> +	if (dma_require_unencrypted(dev))
->  		attrs |= DMA_ATTR_CC_SHARED;
->  
->  	vma->vm_page_prot = dma_pgprot(dev, vma->vm_page_prot, attrs);
-> @@ -814,7 +815,7 @@ size_t dma_direct_max_mapping_size(struct device *dev)
->  	/* If SWIOTLB is active, use its maximum mapping size */
->  	if (is_swiotlb_active(dev) &&
->  	    (dma_addressing_limited(dev) || is_swiotlb_force_bounce(dev) ||
-> -	     force_dma_unencrypted(dev)))
-> +	     dma_require_unencrypted(dev)))
->  		return swiotlb_max_mapping_size(dev);
->  
->  	return SIZE_MAX;
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index ded585b39fb92..cd405309358e7 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -673,7 +673,7 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
->  		return NULL;
->  	}
->  
-> -	if (force_dma_unencrypted(dev))
-> +	if (dma_require_unencrypted(dev))
->  		attrs |= __DMA_ATTR_ALLOC_CC_SHARED;
->  
->  	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr)) {
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 2c57b49ac7c06..29ecfdab22957 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -1550,7 +1550,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
->  	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
->  
->  		/* swiotlb pool is incorrect for this device */
-> -		if (unlikely(mem->cc_shared != force_dma_unencrypted(dev)))
-> +		if (unlikely(mem->cc_shared != dma_require_unencrypted(dev)))
->  			return (phys_addr_t)DMA_MAPPING_ERROR;
->  
->  	} else if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {
+> Easwar, Tianyu: please let me know if you have any other thoughts or
+> suggestions.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Please keep Hyper-V maintainers also in the Hyper-V
+IOMMU driver maintainer list. The Hyper-V IOMMU driver
+patch also needs their review and approval.
 
+--
+Thanks
+Tianyu Lan
