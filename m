@@ -1,122 +1,113 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.85.22
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.16
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795630691;
-	b=QcNh+mvOJ1xMOA0NED3C9husvyO69mplb/6B89PU6TtenWPT1vGqab0TnwFOh0mGzWGZ
-	 3pFJBDmEXCUK4jEPMLxMXwkOffhgWvsvaS5ujU+/amcIaar3CPmqt/OuFB0/gm9M8g4nr
-	 H9Y4q+ggn6iNOkeCZZIknVSIJy/iQHVIW8lD0lvjk/cDVyAAjBGPYSAIvOZKHbH2BnMps
-	 QLb7XF4xKeJOFm5BNNmsf5f9Ieoz5N3iWviDkm3D2nH0HpQK4AiAlLM2dxuipCv7ZGkNm
-	 PP1Q/7hfrpHawLJ73jAm7MGMfa8TAmRZ6aIEp6VOXVMvHxjgHxUD5gBkgIdQaCoiudA==
+	t=1795630849;
+	b=ApSXpe4XsHADIEuavfDlkncOWYajqwAn/bB5r2aAaM61lIAXZEeAjNFQo8nPM5MNWIW2
+	 aZA80qafjFP2s3mP6uxddMyMhc5TM9Bfd4OA6luLjGKQbmo7Br8VLuGxdipuRkM+4fpSc
+	 3VNK9T8Um8X9iZcB2h4KOChsBHmPH+Os3iRXyu7s2il+9AK3O2ca2e1xy7G+ekbI/Xwgf
+	 rbzCs4Y+YKe3n2mqk1YOBlNwGJlH1CjymyAzyjmuxTS1eisht26eDvg8AcXDyfrDBQLzP
+	 WvJJLMmLDP9Npu9kB1dD8xE6KNFnEzM5M2WmHEo5ORyPB0nvB3atedsaKvIeLrjmWYQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795630691;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	a=rsa-sha256; c=relaxed/relaxed; t=1795630849;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Received:Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To:X-Originating-IP:
+	 X-ClientProxiedBy:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
 	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
 	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=fVZN/fdJ6gAxdrH6s93CyLZ1X49Wg0BRNkGXljCGlbc=;
-	b=gtJGUyFful/IxRxs96Iz0/dFw6g8aD82yoe+Ug3/3vbj2Ap6sZTUcleNDLu14+C/ySkW
-	 +DBTUbV7FaiJUmLTjyFOCeffQlDYt9WoNnC1YEqhUA8ijiSrgaIo2TNwLPMf9XU8OcPdE
-	 2B0LIp0a6dSJQs5HOBfEgAzvD/dwPsmoZFKlkkZkbIRLWRNphJShL0L187QYMKIG+bhQG
-	 agIRxPTb7rvi213iKl54DvOCDY1gSscbeknImqvNI7WdZPHuvrEolWwiIBST2jWwKVPgF
-	 fNJTvemPz7BjykoNtrsynEdnSSlJbe61cbaJh/al+3Gsdgf6SP46b022u7bYi6Z1izw==
+	bh=7VscjMghDCeYXcEHLfTwJ3EFWx9w0392wl7vVUzTwmM=;
+	b=XY/oH/w4BdDi25Yb/TLYyeruSiCstytATUksAF4Q56ja3RGdJom+2MHE8n/q8G+qQvy1
+	 gwbqVN8MY7ZdAayKmScDtg5GD/Sq0P6W49WzPCN1MvUGDDFzSZTqBN9nlftmI3s9Nzo3t
+	 +HV7bEkz56syDo0kL11gdqdXCIPg3YEo/ud9TA7BKbbpTdpG2im1gaR7mqPFYqkhQNGL/
+	 tGUUhUG1wasPGcHJlQT+MCGeHs8BZ1V4ONGWm4B1ZTJN+3G/tL2DXypfRp9rNTQFYJ1rZ
+	 bv02mNwRLhDCxM1bM/Ww8TkTg7aGMp3ZcHpsP7V1FyoqFY+P+t6ehBO327GPTX5wIWQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=gDzgqeMf;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.85.22
-Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010022.outbound.protection.outlook.com [52.101.85.22])
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=HGsaveO4;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.16
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013016.outbound.protection.outlook.com [40.93.201.16])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 106AE606A329
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 18:18:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 106AE606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF6E4606A323
+	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 18:20:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BF6E4606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=gDzgqeMf
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=HGsaveO4
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hVk4CyMeRsQNU0aopVQKwDICODcQx0rdiw2Zq/6LJmDL+NXvTBv9zq395HTWNo4LIp4l2DHNpFV5jZ3lERRYObECUhp8rkq2vaSrtuhlSvbaA7fY558uXp7Iz4Ek8JaIm7NtOqJFRkV15LHAFuXkAiym6pZxp1elT5ksc0nfsRvXhfvndCIcLURgYlhm93RubwJ8drZiG5+rxteOdTjUIHvbLYdJFVuaPLWU7D7jO6Uo+UkWjtV/p/X3Ws36srKTc46EmWleFYsl9p3wFAmLOVhxa8DqQph8fAQSd2FChw4rD2azm7H0h6sOZWxOc5ayFKsWcWoO5CkHFWeAtBWgGg==
+ b=YJIYzQCgBx6YxdFMghPpi+/FUw7xzD++bBUPJROz3t5iiaH3k2jbUW7q+bvHEVZu+xnqamWDknXkauM0KwGUxvUFRoGkVakAYKxBJINzN98YHrDEXv4g2nb3QiiL1CnbkIG1ex6dyQFa79aqD/clKSwLdfCu1Ph09SFLI6BtjdN3yrjM5b5VmbrZ0tplgLblNzyjumF+l1grW8dDp5n3UGF1Xq1js6r+/HMcbIFf3vC3vQUeYu5emWeOQgUCc0mWwY+w2wKWrufZ0f6sx5W38bOvRlm7K9WejG6z2ZtZMXpfCxaLdKnda6rMDFYEvtU++1XT0Dky1hfCFli4jMQFTQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fVZN/fdJ6gAxdrH6s93CyLZ1X49Wg0BRNkGXljCGlbc=;
- b=xFVxjq87z8xot6B93yD2a4rw3h05RkEiLqp25f3efN2S25MUQsUwZiu7NPTPiJ2/wN6NMlNR8QOJWbYZksQ0x2pj5Y287kKDEwKaxQ/DRKm8PfsuAMO+xmqemOf6LkCBltDy0d5JiNEqBFh/j8WuOmpVRGD84ZsvA+n/GaEN3iAQSzseXH0MeIUmt0nkEtoiKGLMffNsYbJC7Yk3PoRhlAK6xRo9+Nm6x174iatexqIlwnAgT9kJyDcPOFSXfCsmqn4XmhEQoIwrVKjir+Fsrdi25m6+3cB3sXl7OUzgKb14PJP+kUYYg2+ACfgX5U6FEZlEM3fsWzm9TAf3yHFYUw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=7VscjMghDCeYXcEHLfTwJ3EFWx9w0392wl7vVUzTwmM=;
+ b=ftkYFR2mW1omy5sCBdDk+suUxe819ZPhcTF1svT0jT6UvSCFKpk3ozYyapOpIc/+m2+sYeBzdinpytK68d6zT/SZ4MdksF5VHUmcTdPsZHetfhipMGwqgdxj0EX/aKKvA1UpWqBYSbn0Wmxgpm3FcEKmaHzZ8oTxF3RoZf2j/BF13SpTuZkybVhkhfq9moRsqDwhjsLuowUlAo+Gk+eCGmZW2XhRzqKIPGCUGqIIlYPOHCob0UZlbk7P/CPs9KMdhC6nnnqtVNO7r6z79uvDjWJ4xfVO188j4rpvKkA45e7s3gkWPdFMhwG1/PPNck4pxHe4VsbvGUWoBoruDxL61Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=ziepe.ca smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fVZN/fdJ6gAxdrH6s93CyLZ1X49Wg0BRNkGXljCGlbc=;
- b=gDzgqeMfN05HN3SBG0+uk2+/sRprdsXEntGRAvmzAFqzyOeFMTu5aJ6cpn8XEzGTjBESydLptGlwXPWKYRlnBClZ+EXhOYdREjDNpODcXUJW5nIOiE6qSnji3wgDJG5egT9K4o0tHWb91IOf4HIsLGBrpP38NXXyAyF/M0iDi5U=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from SJ0PR12MB5673.namprd12.prod.outlook.com (2603:10b6:a03:42b::13)
- by PH7PR12MB6609.namprd12.prod.outlook.com (2603:10b6:510:213::20) with
+ bh=7VscjMghDCeYXcEHLfTwJ3EFWx9w0392wl7vVUzTwmM=;
+ b=HGsaveO4OOda15eSSVp8FtGG0urkCa9rHI52hyA0/iHJaLaKioIGN/iOnBsC7jgDGLa3VaOl+bOBwhvzW/NLCvAexAcPS4WWqGOOPfjx2A8foOf6CrsDiVVLc2C3dGB7gftZJU5V7NoxDY9U5Le88NKlyaGw7IVaAkbozPTl4iM9pMJMBOgKNVGNliTyncoyhyM73h1d6Mkcfg9PtbnYdr2Rigc5t4DpaaQ+FSPrh2pZ1fKuSW9Iz6zSi+8TUM5kuWnmQG7tmjbHMasij8BHyIc90eFz/T94pK3XyrIAhhdilg9Wv6PnLq8kkiP6Coc1tCWGYHldst68s3eNiK/qXQ==
+Received: from PH8P220CA0009.NAMP220.PROD.OUTLOOK.COM (2603:10b6:510:345::15)
+ by DM4PR12MB7768.namprd12.prod.outlook.com (2603:10b6:8:102::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.12; Wed, 25 Nov
- 2026 18:18:05 +0000
-Received: from SJ0PR12MB5673.namprd12.prod.outlook.com
- ([fe80::c3e5:48f8:beb6:ea68]) by SJ0PR12MB5673.namprd12.prod.outlook.com
- ([fe80::c3e5:48f8:beb6:ea68%4]) with mapi id 15.21.0662.001; Wed, 25 Nov 2026
- 18:18:05 +0000
-Message-ID: <5fb8bb60-7d9f-49b1-899c-40a890fdc14b@amd.com>
-Date: Wed, 25 Nov 2026 19:17:51 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 03/24] dma-buf: Add the SGT DMA mapping type
+ 2026 18:20:43 +0000
+Received: from SJ1PEPF000026C5.namprd04.prod.outlook.com
+ (2603:10b6:510:345:cafe::91) by PH8P220CA0009.outlook.office365.com
+ (2603:10b6:510:345::15) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.662.7 via Frontend Transport; Wed, 25
+ Nov 2026 18:20:42 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.117.160) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ SJ1PEPF000026C5.mail.protection.outlook.com (10.167.244.102) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.662.3 via Frontend Transport; Wed, 25 Nov 2026 18:20:42 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Wed, 25 Nov
+ 2026 10:20:21 -0800
+Received: from localhost (10.126.231.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Wed, 25 Nov
+ 2026 10:20:20 -0800
+Date: Wed, 25 Nov 2026 20:20:12 +0200
+From: Leon Romanovsky <leonro@nvidia.com>
 To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Alistair Popple <apopple@nvidia.com>,
- Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- Simona Vetter <simona.vetter@ffwll.ch>,
- Matthew Brost <matthew.brost@intel.com>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>,
- Dongwon Kim <dongwon.kim@intel.com>, Kevin Tian <kevin.tian@intel.com>,
- Xu Yilun <yilun.xu@linux.intel.com>,
- Karl Mehltretter <kmehltretter@gmail.com>,
- Baolu Lu <baolu.lu@linux.intel.com>, Felix Kuehling
- <felix.kuehling@amd.com>, Alex Deucher <alexander.deucher@amd.com>,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
- linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
- linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
- Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
- Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
- linux-nvme@lists.infradead.org, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
- Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
- Alexey Kardashevskiy <aik@amd.com>, zhipingz@meta.com, treding@nvidia.com,
- jhubbard@nvidia.com, chaitanyak@nvidia.com, Leon Romanovsky <leon@kernel.org>
-References: <ad46d60a-189d-4dd5-9ad8-ecfd3c90f9d9@amd.com>
- <20261123165716.GM179082@ziepe.ca>
- <7ac7edd0-5c38-440a-b26a-21bcbb6f4702@amd.com>
- <awT8prWsj11TBdmP@nvdebian.thelocal>
- <63eb7b6e-e0a8-4443-a434-0301ed59beae@amd.com>
- <20261124142032.GN9566@ziepe.ca>
- <7a5a2d3a-e42e-4dc0-8d22-8dd1bd249501@amd.com>
- <20261124194618.GC114530@ziepe.ca> <awZ_Os1pXelOGaFP@nvdebian.thelocal>
- <fb9a6b12-c134-4e40-86a5-dbcb59c0b91b@amd.com>
- <20261125155559.GL246011@ziepe.ca>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20261125155559.GL246011@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0170.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:b7::11) To SJ0PR12MB5673.namprd12.prod.outlook.com
- (2603:10b6:a03:42b::13)
+CC: Marek Szyprowski <m.szyprowski@samsung.com>, Sibi Sankar
+	<sibi.sankar@oss.qualcomm.com>, <will@kernel.org>, <robin.murphy@arm.com>,
+	<honghuan@amd.com>, <joro@8bytes.org>, <prakash.gupta@oss.qualcomm.com>,
+	<iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+	<stable@vger.kernel.org>
+Subject: Re: [PATCH] Revert "iommu/dma: simplify dma_iova_destroy() and drop
+ the free_iova helper"
+Message-ID: <20261125182012.GA774860@unreal>
+References: <CGME20261125135138eucas1p141ba6b5e09623562e2033e290fba811c@eucas1p1.samsung.com>
+ <20261125135120.1126571-1-sibi.sankar@oss.qualcomm.com>
+ <a3722347-4b88-41ad-926b-455530020c6b@samsung.com>
+ <20261125175547.GM246011@ziepe.ca>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -126,183 +117,112 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20261125175547.GM246011@ziepe.ca>
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ0PR12MB5673:EE_|PH7PR12MB6609:EE_
-X-MS-Office365-Filtering-Correlation-Id: f6663ed0-833a-4f71-8223-08df4b2072e0
+X-MS-TrafficTypeDiagnostic: SJ1PEPF000026C5:EE_|DM4PR12MB7768:EE_
+X-MS-Office365-Filtering-Correlation-Id: a0483a18-dea7-4e42-e7a7-08df4b20d0dd
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|7416014|23010399003|366016|261022115727099003|261028144727099003|261026121527099003|261022075727099003|261022105027099003|261026140227099003|4143699003|5023799004|56012099006|10067099003|261102130727099003|11063799006|261021123027099003|261102123227099003|261021121427099003|6133799003|22082099003|18002099003;
+	BCL:0;ARA:13230040|23010399003|36860700016|376014|7416014|1800799024|82310400026|4143699003|261022105027099003|261026140227099003|11063799006|56012099006|261021121427099003|261102123227099003|10067099003|261009223027099003|261026121527099003|261028144727099003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	JmSPTPyL4snGzAzwmSyNoAQA3FggNief9Q+beqh+vxcQw5/BcmdjG3K36jgaWBEyXWQKY1HepbV/uB4FTF7CSfDB8hYbyXtv6blTUiwTjFCh7HuBcOUYuB/LzeDvu0oEcwX7f0VNK5GWXImi7mVN614M0ro153zLlYJGN2znBFATQ+tx9S2+1Socz2x5vnurRlnw4hzj+OAI3Bx1iKwoz8E8WtUUcvpnN6zkZXgGHe5YWfjmuKUZcFWOKXkp7ZoA6Mcf6EoTgpKmYRUxrwvu5SIWXYyaw37QQLW9RUMbqOgiGZYtGNhxF5w0Iu3MCJrrmFQWhWC8A9QFjbnct3dNf4fZPotcRgol94VTiGsv8mrvxdJR5egt77iRaq5gS5xChcCfFc5AQ65xIPOglCsNzTwbXWk8lLTrE1w2dJiFrbk0dkm3MfT2qxHBSHXC4xqf2357CVukSexs8fR4RKbNZNyen1OE1LIPKlRAVPRKZ+/bbIF6rDg51S/3NhwKKDjOnIi0KeRk+235pjnxV78u/hCEY6BWPkC4Lxt/Pr5bixEtsf0fRRbx7pvcviJnVZOQkCQgDw1JFBAGU+fPTEdwcIh/FNHzxdaVymlXLTvtshfOAXVOcjbmkrhhguEvbSWggBhhL74S+DpZXGUfXdX4rPM7DdSGDWjmpVpNUCVGJqY=
+	I5M053D/bKxVqpXSAIGe0+TvJ1koYz/YgXXtfVvNaJlz+sOVF+zpj3Xc4gpZP5yad7B20P3Hi8HE5Zs8ihIPseMTPSX0cCagfEvB6DfGrE6p4dhfYnTgBUvF09BBuFTqU09O/0ZIIg++lZICa/FgBOVjulPhWu4f8UAl3mmISd32mdvXlJUPSopXSkfn+unDKh1Nws+7y7y4rsFIa8Jlop4giIVsvxevdJqZlMELZpO1EB/RcC0NlSw/QioYRxB2JEwzVp2hHdfSHaL9/oXD2nKmSJrveMvYtxndsh6Gr3B0WI/0KBM/d732m6lWHHstwNQr+b3SFCwadDsFbBIB1HSFaszzwB7/CIO/+Vg4/GSX1eTu65Ym5MxoOyfiHKdyxaOiW9tOOaUlL8a68TgcCqLLFM5kBkNZYPiG/F2M1Swm7H8TxpJh2eX//A77y/yG4gQvi7maJmXUzSDC/3x81SBXIcJ8fR1CRGXM/5vaEakjNjN40RxV1eNaf1Ub95zH8uUV6UqvgFhHSHz3Y99aytjxCJGx1SNzUyclLqTkC1gQX/UB+eQIIZ9EM0QFLImOM6qzHIKFJhsjFzOckjl9kiGXXdh5deUUyGXAuGyzqe5YEM/mZSVb8W1Lw/2nllKZhiMDeCpV/W1OoaIXarusCPlKnkyEbpn3Xm/kKsR1bEp/u2x/FF3+A8R0Ro7nFbeQETrYZM2GxBuJAjPafNsJug==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR12MB5673.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(7416014)(23010399003)(366016)(261022115727099003)(261028144727099003)(261026121527099003)(261022075727099003)(261022105027099003)(261026140227099003)(4143699003)(5023799004)(56012099006)(10067099003)(261102130727099003)(11063799006)(261021123027099003)(261102123227099003)(261021121427099003)(6133799003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(36860700016)(376014)(7416014)(1800799024)(82310400026)(4143699003)(261022105027099003)(261026140227099003)(11063799006)(56012099006)(261021121427099003)(261102123227099003)(10067099003)(261009223027099003)(261026121527099003)(261028144727099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?di9uYUEvMzM1ZUUvWG11cXo4L0dGN3hTQ1lVU21EWG5GOEhzUGZZUkJ5ZzVN?=
- =?utf-8?B?aWRJaGxnSmd4R3FBSGNNOGZrM1MxMnl0anJKTXFqcWt4U1pxNUQzOWZTc1dG?=
- =?utf-8?B?MTgwdFBuNmVYOTU0TGV0VUNFMFJJNWJlVEtrZU1oZ3h5em5mZUF5NXdJbnNi?=
- =?utf-8?B?OVJUTlF3SmRweWQxaFEySEVlcWFPMGRnbE1Lam1LamZTMUJaUS9DUENFR2NZ?=
- =?utf-8?B?cng2SXV1Qm5iQ240WC8yNjRRRkNLdStRVktoeHNuVUppM0phUHRQT1ZoTzBJ?=
- =?utf-8?B?bm5ka1U4TXVMQURtUmtPNElCQzZDMi9VRjNta1UwTkVqTGVKNG9tdnF2c1d6?=
- =?utf-8?B?UzJpcWRuTVplSTdkMnhMSVROZ0xveFlpR3kzWWhlbXZJNkIzclZORFNYaG1n?=
- =?utf-8?B?R2pHWlRvREpBT3VTbWR2OEpPdDJER01uKzc5QjBNcXJ3R21MZTdiOTFtRWlw?=
- =?utf-8?B?d0JnbUJUbWFCU01QT2ROakVKSHlJOE9xbEJNQncySVVEaERkTGsxKy9hVzJp?=
- =?utf-8?B?UXZlSUdUdlA3Q0ZRa0s5YUJUNzFXeGZSelNGcjJEb1lrWk8zOWppUUV3ekRq?=
- =?utf-8?B?bnJCVXJ0N1BITTQzbjVzT0VNQ1BGaGl1VnBaK0dVZXA2MW01d1BwV3g3WVRW?=
- =?utf-8?B?bmoyT1oxMjJHQU90dUFYeUkyZVBLZUxGZDJ3bWFUMHBmcUdmckJ0VkxCSEJY?=
- =?utf-8?B?MnJrVllsVWpkbjNJN2hFRWF5ZExKTTJ3dC9BQ3ZjWll3VExyR2IwR2Nub2lu?=
- =?utf-8?B?L2RoMGVCRUN5cTgvN21Ya1ZUcFczeVFFRVI2U3ZmMElpWi9rTDVtN293NzhC?=
- =?utf-8?B?REI2UTRydlhINVVRTWorYXoxeVZud1JBcUhWUHVpbGczUjNpMXB0aG96d05p?=
- =?utf-8?B?VGpCWmE1NlRySExpNjRRY1hDVDVVOU1yUXJXeVpoK0dnUWovdUt3ZE1nZERS?=
- =?utf-8?B?V2daaXRnc1A2Z0tzWG13YnM2bEVNaTFjTXZhdWNWTmlPYnExYWYrdTFnMFpR?=
- =?utf-8?B?Q25sa29aYWFBUUU3WnFUR0ZLMzdZZm5lQlBOc2hTSDM0UjJqekF6NmdVU24v?=
- =?utf-8?B?aXVOY2g3YmNKeExVdVVjaDRqdDNmN2pIcllEMEdtZkNlV2hLd3dpODZibXJx?=
- =?utf-8?B?TjNMcU8rVnVCVHBWeXhmZ01vbnFjSnZzYjR0ZVZVWTNTSFNPUm9EaktCdnhz?=
- =?utf-8?B?SzVlazVIRzZ1TFRXQWR6bDFlUU9lS2ZJUWVIbUZvdWd1MmhsSSs2S3QrYzdQ?=
- =?utf-8?B?NmdiRFJLRkdQek53bDl5bW4vekk3MHFMQVorR2lUbjJvK0hDQ016S3J1UHJv?=
- =?utf-8?B?cWpKSmRSa1V3bGdkYUxCNitwQTlDQnk3aU1GQW9hMnRvV3A1N1hQem9LMG5J?=
- =?utf-8?B?c2NDbkNiZ0w0MUNYS0hkU21WUVNub0RROGRlbFVQbFhzcTU1U1RRcEJhZ3N2?=
- =?utf-8?B?ZEs5Q0pJWFFtdmpldHdzaHphaGFOTERjMkxUQjN6Sm81V3RaSWN1eXVQOG9k?=
- =?utf-8?B?cU1LUjZtTmgzZVZBR3pBVnZIbCttRGJtNENDRHdBRWUwYmo0VW9oTHpQb2dW?=
- =?utf-8?B?TmZaOXJuMVdMRVhudXNieXBScFNiYXVOK2pCNXVhMU9qRDd6RHZPYU8wa3NK?=
- =?utf-8?B?dEJBcmp0NldTYzdNZXZ0T29TKzQ4dENBZTh0bWxUbVpZU1NLWEpIcWhzK29J?=
- =?utf-8?B?Z1ZKbk1iQ1BtbkVDcitBWlM3WTlkN3l5TjhTMXcyYTY0UC9UNUplNUlnRU93?=
- =?utf-8?B?amRvcmp2ZnNPYU5CNTZFc1hIWUJFMmdoV05zTnVLZU9TdVVoYmFYM0daRGFK?=
- =?utf-8?B?OXd0Q1NTVFVQVjlSWDZocExMMFZWU0JsR3lSZ0hwY2Jzb2taUG1aMlppdUxS?=
- =?utf-8?B?M0dYdlVQdGVhZFZxcmtsYjJZVWRSVWRyZmh4NHEyU3VTVXR6ZlkxY2JJVmdY?=
- =?utf-8?B?TWZHblhIck41TWVIRVFzamsyUjFQWHFEZDIvQU55ZVVibE1yUWt1WHBpME1q?=
- =?utf-8?B?QSs2a1JPcGtwYmhJT1RMcUMwNkdnaEVMUlZJNDl4OXdIZ3NhTElja0hHRVRH?=
- =?utf-8?B?U29KOFJWdzJRVUZudmVPNFVMRmlDNzJuamxyd3BXRmlIaUpjNy9rMmcvcnNn?=
- =?utf-8?B?QS83U1N1TXNWMzJ5NzR3Wk9TY2E3a1d1NG4xTndZVlEvR3RDOGNhRDZ0eUVL?=
- =?utf-8?B?N2pJaDNBbnczK2Y1QWRyVWdkU3BtUE9TeDdBZmdQWDhkcGNPMHE4Q1c3UEJh?=
- =?utf-8?B?L2FDSHZUK1luVXpkU004UlNtdFNYNHBhMVFtZEJkTGk0cVpEUlNrUUZOR2FY?=
- =?utf-8?Q?lyJSRbwRoDqA4NuSt4?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f6663ed0-833a-4f71-8223-08df4b2072e0
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR12MB5673.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2026 18:18:05.1243
+	F01kC6OwuE7P9jZL36B58UAz+kOGIgRBj6Fkipwgc35pSPWqUlHz3cRXn9egRan1Cm6QtOgUA81xbeVcFlunyfiDjVt6IEYkRUrZP48GKuPftcBk8A9IuDGicPCLziJMjDds8UuKI46puv10EixhWlw2s1w4enSNUxewrSEejJAFVYWnGdrWzBTwTRFgn4DBO+W3TRcQdz6L79XRhzIpA7ECMgYLfe0F+t++cd/bVVexs5kHxV3iiwkqWBO8LIwrGGuNVApJXysUiSBD9hqrqC4KLhBjQHuQqC3NAtMA3hZky3o2pKHpU4QXWjbynEMzTEGLOLulZiJ5Pk9Mt9s7ae3Sso+g8woJiGgEzFTGN2vacs60s+PLjAWEcr/9/arYTEdtfx2s31QiV90EHrggy4L9yQqmUh0SmuPqfOqAdHLFVUOJyV+1cwik4vyCh+ex
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2026 18:20:42.4742
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LRPOz1HssV9UudqDQuPsXwYtJPdHkmaQeFq9nqYmRUjTPnFAhYVNN+DG69ejg/pd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6609
+X-MS-Exchange-CrossTenant-Network-Message-Id: a0483a18-dea7-4e42-e7a7-08df4b20d0dd
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF000026C5.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7768
 
-On 11/25/26 16:55, Jason Gunthorpe wrote:
-> On Wed, Nov 25, 2026 at 12:19:08PM +0100, Christian König wrote:
->> The low level API which talks for example to the IOMMU driver for
->> creating the information how to access the buffer is simply not the
->> task at hand for that framework. The stuff we already handle is more
->> than complicated enough.
+On Wed, Nov 25, 2026 at 01:55:47PM -0400, Jason Gunthorpe wrote:
+> On Wed, Nov 25, 2026 at 06:21:06PM +0100, Marek Szyprowski wrote:
+> > On 25.11.2026 14:51, Sibi Sankar wrote:
+> > > This reverts commit 1acce29926d93f3eba427696fe3da6451504dae2.
+> > >
+> > > Before this commit, dma_iova_destroy() unmapped through
+> > > __iommu_dma_iova_unlink(..., free_iova=true), which set
+> > > iotlb_gather.queued from cookie->fq_domain, skipped iommu_iotlb_sync()
+> > > and freed the IOVA with the queued gather, exactly like
+> > > __iommu_dma_unmap(). After it, dma_iova_destroy() calls
+> > > dma_iova_unlink() and then dma_iova_free():
+> > >
+> > >   - dma_iova_unlink() never marks its gather as queued and always calls
+> > >     iommu_iotlb_sync() after iommu_unmap_fast().
+> > >   - dma_iova_free() passes a NULL gather to iommu_dma_free_iova(), so
+> > >     the IOVA goes straight back to the allocator through
+> > >     free_iova_fast() and never through queue_iova().
+> > >
+> > > DMA-FQ domains therefore get strict invalidation on this path. That
+> > > includes the block layer's blk_rq_dma_map() path, which NVMe uses for
+> > > all data transfers, so iommu.strict=0 has no effect on NVMe I/O.
+> > >
+> > > hw/sw details: Qualcomm Glymur CRD: SMMUv3 with no RANGE_INV,
+> > > 	       4K pages; NVMe SSD on PCIe Gen5 x4
+> > >
+> > > Fio sequential read/write numbers:
+> > >   Domain                          seq write    seq read
+> > >   DMA (strict)                    2694 MiB/s   2693 MiB/s
+> > >   DMA-FQ (lazy), flush queue      2707 MiB/s   2803 MiB/s
+> > >     bypassed (this regression)
+> > >   DMA-FQ (lazy), flush queue      10.6 GiB/s   11.9 GiB/s
+> > >     used by dma_iova_destroy()
+> > >
+> > > Fixes: 1acce29926d9 ("iommu/dma: simplify dma_iova_destroy() and drop the free_iova helper")
+> > > Cc: stable@vger.kernel.org # v7.3+
+> > > Signed-off-by: Sibi Sankar <sibi.sankar@oss.qualcomm.com>
+> > 
+> > 
+> > The performance data clearly shows that the flush queue was there for
+> > the reason. Together with this revert it would probably make sense to
+> > apply the v1 of the reverted patch:
+> > 
+> > https://lore.kernel.org/all/20260701092033.422867-1-honghuan@amd.com/
+> > 
+> > Leon, do You see any other option?
 > 
-> No matter what name you give it we need something in the middle that
-> can see the phys_addr_t and the iommu_domain..
-
-No, absolutely not. That should be given to the exporter so that the exporter can call the DMA API to create the DMA addresses for the importer.
-
-The idea here is that the importer give all the information to the exporter so that the exporter can do the mapping on behalves of the importer.
-
-> If you don't want DMABUF to be that thing, then I'm not sure what you
-> have in mind.
-
-A P2P DMA API the exporter can use to create the addresses for the importer.
-
->>> If I drop the type/placement negotiation for now and focus on SGT removal I can
->>> simplify things a lot. Plan would be something like:
->>>
->>> 1) Introduce a new C data type (dma_phys_list?) for exporters to pass physical
->>>    location info and context for mapping.
->>
->> Something like this maybe?
->>
->> struct {
->> 	u32	mapping_type;
->> 	u32	num_entries;
->> 	union {
->> 		dma_addr_t	*dma_addr;
->> 		u64		*generic_64bit_addr;
->> 		...
->> 	};
->> }
->> ....
+> Oh, there are a couple of issues here too, and reverting isn't fixing
+> the main problem with this..
 > 
-> "phsyical location info" means phys_addr_t and related, not
-> dma_addr_t. Step #3 has it as the *input* to dma_phys_list_to_sgt().
+> The issue is the assumption we can separate the sync from the free:
 > 
-> The flow today has the exporter get a phys_addr_t (ie a struct page),
-> build a scatterlist and directly invoke the DMA API.
-
-Yeah and that is completely correct and should stay that way.
-
-> The primary issue here is the exporter *direct* call to the DMA API!
-
-Why?
-
-> We cannot disconnect this from the DMA API, ie to use an iommu domain
-> or ualink, if exporting drivers are hardwiring calls into it.
-
-Well the plan is to not disconnect it at all. The exporting drivers just says to the underlying API here is my buffer please map that for this importer and that result is then given back to the importer through the DMA API again.
-
-> Fundamentally the need is for the driver to get the phys_addr list,
-> exactly like today, and then pass it to an op which formats that into
-> the right data structure for the importer. Be it dma_addr[],
-> iommu_domain, or some ualink_addr[] - or whatever.
-
-No, the phys_addr type should only ever been seen by the DMA API and not by DMA-buf.
-
-Otherwise DMA-buf becomes the middle layer for creating the DMA mapping and that was I want to avoid.
-
-> This is the main issue here, disconnecting the exporters from being
-> hardwired to the DMA API.
+>        if (!iotlb_gather.queued)
+>                iommu_iotlb_sync(domain, &iotlb_gather);
+>        if (free_iova)
+>                 iommu_dma_free_iova(domain, addr, size, &iotlb_gather);
 > 
-> That's what Alistair is explaining. This sequence:
+> We cannot. The gather must always be retired, either be calling
+> iommu_iotlb_sync() or by calling iommu_dma_free_iova(). It can never
+> just be left dangling.
 > 
->>> 2) Introduce two new dma_buf_ops - map_dma_phys_list() and unmap_dma_phys_list()
->>>    - which are replacements for {un}map_dma_buf that converted exporters use to
->>>    return a dma_phys_list instead of returning a sg_table.
->>>
->>> 3) Move dma_buf_phys_vec_to_sgt() somewhere other than drivers/dma-buf and
->>>    rename it dma_phys_list_to_sgt().
+> Further you can't call iommu_dma_free_iova() with a NULL gather once
+> unlink has been called. That risks things out of order where the
+> rbtree can show the freed iova before the associated queued flush has
+> happened. That is a correctness issue.
 > 
->>> 4) Update dma_buf_{un}map_sgt() to call the new map_dma_phys_list() ops and
->>>    dma_phys_list_to_sgt() to create an sg_table for unconverted importers
->>>    importing from a converted exporter.
-> 
-> Effectively converts all the exporters to produce a phys_addr_t, and
-> then moves the DMA mapping action into one single place in common
-> code.
+> I suppose the resolution here is to feed the gather up the call chain
+> and allow it to be retired correctly instead of trying to short
+> circuit it inside the API.
 
-Ok in that case I have misunderstood that and that is still a clear NO-GO from my side.
+I recall trying to cache the gather operation in an earlier revisions
+of link/unlink series, but that approach was not well received.
 
-The exporter should talk to the DMA API and create the mapping on behalves of the importer.
+Thanks
 
-Regards,
-Christian.
-
-> 
-> With one single place we can figure out how to replace it with a call
-> that does an iommu_domain:
-> 
->>> 5) Add dma_buf_iommu_map() taking a IOMMU domain/iova/offset/size to be called
->>>    from iommufd for mapping an attachment into an IOMMU domain.
-> 
-> But that relies on iommu_map having access to the dma_phys_list *which
-> is true physical*
-> 
->> I think a whole bunch of other drivers would be really happy to use
->> that interface as well, yes.
-> 
-> Right, that is clear now, that it is not just iommufd that wants a
-> dma_buf_iommu_map()
-> 
-> But I don't understand at all how you imagine to implement
-> dma_buf_iommu_map() if you don't want this in the DMABUF core code.
-> 
->> That totally sounds like a plan to me.
-> 
-> I'm confused if you agreed to what Alistair said :(
 > 
 > Jason
-
+> 
