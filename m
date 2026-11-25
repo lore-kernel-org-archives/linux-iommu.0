@@ -1,142 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.58
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795622463;
-	b=lnv1W5vOfTMsr63MrPr6q95Cav7W2ia7/gavgKvdSCHPnU+wC8bProiS1+PXLgG5zgM2
-	 MUsEF9QNUUalRWkhewn2KxCkhkqn5BtzmU89hBNo1Nn9lYQWmOwkABM/K4dnfWhV4onkn
-	 aObqm+pi0HOwKKokiI2uAnSEh6bUuUbuqAd3GUJkSRt8BdBkLKc46qzfXT/aIrXvZTPSW
-	 9V4WHztrpYas8DCP5bty+s5U+PZGP3g0tOd5vV3bRTPzFizGZSLHPZcYWILCHW2WSVIDv
-	 Ciw6T90aZtDt2Uo+y4FMMAtdEoYWTyVs+ohAuWu2zRPowgcL9r5+vSq7WU9Ph7kAqrQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795622463;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=ktvN5VccKKw5i08DfYGBrc6a93lAsKwOjSIw93pxbgM=;
-	b=yZJ58JN1MGJOwSZ1IH+c0mo7s9/4BX+K5I/6MTmLkNPoxRRRYKEpf+joo4FHehiUFgBR
-	 LOJ6CiofPIF5nN9gmv4afA6Tsv+NDtVOwxgfPGkT+/css/SqqaN8paR5Py03KxHy2p/oe
-	 iwPELHA2us8K7+tAhAig1dVMptVrXh05o3eI7+Vpv32scZMLTUNcurPI0BQMV5wCoUYIx
-	 Pnl5bXJ1sv2uMmWwPdC9uWBJiPGlzL+OBaLarm2iFL0YgN/x01a3Ts5EDySmetbXJbyN+
-	 pbdNWENL5XVQU3x/B18Z3XJw6nXjKSOStZRhHIGF6rIleDsc+sM2XruW4XYxzZ7YKQQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.nxp.com;
-	spf=pass smtp.mailfrom=oss.nxp.com;
-	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b="h/azBYeY";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.58
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011058.outbound.protection.outlook.com [52.101.65.58])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E019606A334;
-	Wed, 25 Nov 2026 16:01:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4E019606A334
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795623315;
+	b=L9E/lfrsQVr2RqXkS06Z1/mn4e4NAfqgiKk3V7AcmnB5eOdVzbDJ4I/DkWK77VVLyVnr
+	 4crbNxXJ3J3ayhGQV4OVv1kSXMqmtZ58nspVSdlFg/ff0Fa4an8sCjdefnILqEKr5Zq3x
+	 s5Qdz3+i6WfNp5JTq/g8UsgozkB3jMa+0laCAV2ES6LwOerC7SJQyMdw54HX97ExzeZeu
+	 miFRu5vaisCyrnZdN2lJLcy0M8Ovw6JCbKwtKIGtJff0fHgfI6I0iK8F06LO9gLEW8w6Y
+	 8u3ZlZj0ZWUVl5y6n85RoKtqilwA+coAneESOm/tXMU5ZkXADZwb2z4KYvkOKEGsZZQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795623315;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=p95Hk+rcp6xhzC/W/iDDWgBxcMkWhCfXl3jnrC2DBaU=;
+	b=kJozvBQsuuO/tTn7wyPpp+KYuzIhX0gjuS2BRBdHiMVn7z2Ed6wcuU4gu9dXSUDhKoy5
+	 i103I0mLiRiituuGhFMLrZ80h02w+AkmAnR2GYkAL3y6bEiSWefGNbWYXrR/GtHcyJZVw
+	 rZw3qYzbPY/DozQOV6cIyUhLVcUvVf19ErFgKM+4+2IL3p0fabr812JJSC3ENogb/web2
+	 mU8FaO3knj/lOvJjRvxW1VpaDpqjoenkY0wxrf0expnhRQbGM1RlyZpjfDoGZurMfPqfA
+	 keylQY2j9k/Rozw4bS4Di6suj+BgvyeDItXuyA7Hk0CGf8UgdCThvDjUmV6NK8Gzbjg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=cr03LFpM;
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4599F606A334
+	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 16:15:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4599F606A334
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=h/azBYeY
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=pmIj9F7X+uSbDI69ts8l+L17FdfkPyAkEMqn0dG9KuEgTOpGQR4sLVBesiXE6Zh16s65V/0vIDmqxxaLiyGdKgz+W0OhQn4kuQRt+IFqsFnxeYohPQfgerROvksO3vtG0sHdeEm5t1xzUuxB6o/iFO5GQPb87vWWP0H6aQPJEcJpzoyVMqKqB6qYXuCRNFuMqMwSXL6gK7DSOoWd936Ik+SDp0GCX77J79UQx4r/G2AldQ0uoBouPjE4r81AXTg6MPcWNM7daIP54aTaSsaBWYU/V72Ko9gDtEY0Ls6BQaXkmYV+v8JeUwMM3gqnxEiKWJQ3HP2b+daUVvj3yi+w+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ktvN5VccKKw5i08DfYGBrc6a93lAsKwOjSIw93pxbgM=;
- b=RmBadnbGD6ubpSeXBZRTHudoe/4pa8ym/tOBPcmnV+pH72LbHyhyJ9h0BM9I7GXOfoyUMawXvh/lOjKK0hggK+E6g6aPNG/IupJ4rsYixX3o2rX1I396V0+wTMueod/0AHefCdgLep5k+f8IHayVanxJoEa0U+xKp/005XHPtZ98zcN5KebVxCaO9wB01CrWFjcEjHQAKNsrk1Zlyhp1O8gpKIIJAjLd6XQ7qCWY/LEapNvDc9k8pO2hTmaMKN5u1UYxCH2tP0df9Kl/bSaCUGU9tg/S6HiEaFGjS2zK9VPgQU8YyQ+B7xdVOeWEWnXoF6QHMGhzUDGJUFQHdeH0Hg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ktvN5VccKKw5i08DfYGBrc6a93lAsKwOjSIw93pxbgM=;
- b=h/azBYeY457SocdCvH02G8TmyoWt0WoUAjQCniOSPa0qnOj+/OQEhAxTzPSQa2H3QFfNeN74abwxWeS6wrsmgU4ODQlAm11KMozXzO/6WlXGv6IfeNnxTSlrFdU5O6Wt1elgD9OY7Jn4NDIOeqTHP8qbwmZr+T6OEyZPmAnon6W2vrJ0so5yGKXrg1mjmmYFOBFBXF4yzOsFNwwXUsNHYtIgHWO30EgI22008WGYQxjGUvHlkziRW72uFiokrHwASTwUq+jZN6p/F4mw1t8GQHIWZSub0Jc9HJku2XA0AmYdCqZ7LvPySNkMRyLs3YP1YdZpzaHZ64HtGEZyVksyzw==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from MI3PR04MB12438.eurprd04.prod.outlook.com (2603:10a6:290:76::14)
- by GVXPR04MB9735.eurprd04.prod.outlook.com (2603:10a6:150:118::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.6; Wed, 25 Nov
- 2026 16:00:55 +0000
-Received: from MI3PR04MB12438.eurprd04.prod.outlook.com
- ([fe80::c715:c32:8bb1:b70b]) by MI3PR04MB12438.eurprd04.prod.outlook.com
- ([fe80::c715:c32:8bb1:b70b%4]) with mapi id 15.21.0662.004; Wed, 25 Nov 2026
- 16:00:55 +0000
-Date: Wed, 25 Nov 2026 10:00:32 -0600
-From: Frank Li <Frank.li@oss.nxp.com>
-To: "Rafael J. Wysocki (Intel)" <rafael@kernel.org>
-Cc: Ulf Hansson <ulf.hansson@oss.qualcomm.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Heiko Stuebner <heiko@sntech.de>, Ulf Hansson <ulfh@kernel.org>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Matthew Auld <matthew.auld@intel.com>,
-	Hans de Goede <hansg@kernel.org>,
-	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
-	Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-	Mark Brown <broonie@kernel.org>,
-	Pierre-Louis Bossart <pierre-louis.bossart@linux.dev>,
-	Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-	Yong Wu <yong.wu@mediatek.com>, Will Deacon <will@kernel.org>,
-	Tomasz Figa <tfiga@chromium.org>, Marek Vasut <marex@denx.de>,
-	Michael Tretter <m.tretter@pengutronix.de>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Hans Verkuil <hverkuil@kernel.org>,
-	"open list:POWER MANAGEMENT CORE" <linux-pm@vger.kernel.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	"moderated list:ARM/Mediatek SoC support:Keyword:mediatek" <linux-arm-kernel@lists.infradead.org>,
-	"moderated list:ARM/Mediatek SoC support:Keyword:mediatek" <linux-mediatek@lists.infradead.org>,
-	"open list:ARM/Rockchip SoC support:Keyword:b[Rr]ock[Cc]hipb" <linux-rockchip@lists.infradead.org>,
-	imx@lists.linux.dev, Frank Li <Frank.Li@nxp.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Tvrtko Ursulin <tursulin@ursulin.net>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
-	Simona Vetter <simona@ffwll.ch>, David Airlie <airlied@gmail.com>,
-	Matthew Brost <matthew.brost@intel.com>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Alessio Belle <alessio.belle@imgtec.com>,
-	Luigi Santivetti <luigi.santivetti@imgtec.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	Bard Liao <yung-chuan.liao@linux.intel.com>,
-	Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Dafna Hirschfeld <dafna@fastmail.com>,
-	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-	Daniel Baluta <daniel.baluta@nxp.com>,
-	Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
-	dri-devel@lists.freedesktop.org, imagination@lists.freedesktop.org,
-	intel-gfx@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
-	iommu@lists.linux.dev, linux-media@vger.kernel.org,
-	linux-sound@vger.kernel.org, sound-open-firmware@alsa-project.org
-Subject: Re: [PATCH v3 2/2] PM: runtime: fix stub pm_runtime_get_if_in_use()
- for !CONFIG_PM
-Message-ID: <awcGINOZKcD-cTvy@SMW015318>
-References: <20261117173738.1073856-1-Frank.Li@oss.nxp.com>
- <20261117173738.1073856-2-Frank.Li@oss.nxp.com>
- <CAPx+jO9RwkpSKwq6vq00uoXK-mcovJ2LMH7b_ByRnxOUj8nH8w@mail.gmail.com>
- <CAJZ5v0jsnLjEBxa1R4Q3hZLZKrCUW0xSE9SqLB8bd4tNAhXTAQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJZ5v0jsnLjEBxa1R4Q3hZLZKrCUW0xSE9SqLB8bd4tNAhXTAQ@mail.gmail.com>
-X-ClientProxiedBy: PH8P220CA0050.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:510:2d9::24) To MI3PR04MB12438.eurprd04.prod.outlook.com
- (2603:10a6:290:76::14)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=cr03LFpM
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 670872F;
+	Wed, 25 Nov 2026 08:15:11 -0800 (PST)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7F6D33F632;
+	Wed, 25 Nov 2026 08:15:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1795623314; bh=LAwCGt3Lu+4z2+zSmAxPU6gkEEwNgUcLUPqKn1ssCLk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=cr03LFpMqW2sJLMhyKgRtunzyYDYRJ6NYQhC3yk53b8i7LbBl/2+4VnRdMjXIWkbs
+	 EOTUQHSo3NyZb832sZtIpSd1vlESx1X5NTm2PzRH8RyzeqveyEs4SCAGfRIe/pH6MC
+	 fT6pYSs4VDN/D4X90LWs2o5753gLL+9w7vFk+JXc=
+Message-ID: <390ebe97-876e-4fbc-a0ad-955484ce2009@arm.com>
+Date: Wed, 25 Nov 2026 16:15:12 +0000
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -146,229 +53,247 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MI3PR04MB12438:EE_|GVXPR04MB9735:EE_
-X-MS-Office365-Filtering-Correlation-Id: 957e1111-1b15-4336-235b-08df4b0d49b5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|19092799006|23010399003|376014|7416014|366016|6133799003|261009223027099003|18002099003|22082099003|4143699003|11063799006|10067099003|56012099006|261102123227099003|261026121527099003|261021123027099003|261026140227099003|261022105027099003|261022115727099003|261022075727099003|261021121427099003|261028144727099003;
-X-Microsoft-Antispam-Message-Info:
-	NqBWBKjhmOlNIW2l15T7ZmpE7lXkQLhngmyGCozcsWjz/umSbddPpn3j6gNlEvAwg7RZ1x5kK2dp0eC5iS7u84Ok4QDPkpChN3aXXEsJgrWc21iW+W5Tf7R7zhEUWY9CZo1/YCE0iD/1deZokcFFTvF5lSYza1HTCrnQfUa4E5/qFhB6Ux7niCbjkweNs0CM8g5yrJhiO0uSKsL0XAI2HSYikcTfrIYQcMKai60kVy9YpVfK0oB9fnj9Y6IPLx01aZVyWK+XcHGVAI4ihaH4AaYqAxQ1KwP/ps8JliH7XbbNNXUD+QWf/RAjjXJXAb5Aa0zgCZLtugH0Kl1sLJjkmB2J6kZIBAgZ3qv3XPgLUYeWBDiiqsA3VkWKx5+0Sg9V9Ic+nRNJcd6TymwFjYBmBJZju/VpSTF5zkx5o+jL2Lk4N3qtzsjjY9Cg9YGSuTM6AXmPKDhMMe39HG5hLzXQcyrf5I+//tFMHY/7JGtwuwO7y4l6tMsVFOCdcHcxPGPdRPJgqFjNck8CWbgirDVTGIhp22wGPA411n9dIHlBz2K/fzFtj/HrvTDfsb4v+mJufC6xnPpMPOkyWE2Y+QrAFJcoef8v58kZWypy4HjFgfASf6s922FUvBDmulhvHLomkEQFspG6eA1Eyn52Ox8K4A==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MI3PR04MB12438.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(19092799006)(23010399003)(376014)(7416014)(366016)(6133799003)(261009223027099003)(18002099003)(22082099003)(4143699003)(11063799006)(10067099003)(56012099006)(261102123227099003)(261026121527099003)(261021123027099003)(261026140227099003)(261022105027099003)(261022115727099003)(261022075727099003)(261021121427099003)(261028144727099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?VXJLWWU4NFJaek5MQWVPRkdYNVZ3Z2ZxdkgzTjkrY0wwbHpaMDk2OXd3ckwy?=
- =?utf-8?B?Q05JSk9EQ0JNWTYrU2ZXZ3hVV2tDQk96R3pockd5bWdVMjRoTGFvNDMvMEhN?=
- =?utf-8?B?VHZwN1hZQnUzYjlnb3M5QzFXY2lzZXo5WkdPSFRFREo2MDd2ZEsrZGNoMWtD?=
- =?utf-8?B?WEdjOGZTZG5NWkgvaXU4Zlg4MHZBVEFrWVJ0bHVXQjU1bGJrSklMSmlYQ3hH?=
- =?utf-8?B?eUsrTUhxZUN6UWx6VFNKd2w2aVV5N3ptUWdtcThWNVR5MTAvN2cxaEJISEJ4?=
- =?utf-8?B?N2pNNWpmRG1xVk53RFZUV2Jxbjlnbm54RndXekFIa1R1aDV3VFQ3dnZEbTY1?=
- =?utf-8?B?NHp2L0dxV3lqWnJQeERrNzc4eWFQaFhZUkxuTXJGSjhYZFNvUGZXMHI2UWtS?=
- =?utf-8?B?bEg2NXhnTzVFcnpGWE1ZaWlhTDNtMVZRN3VvRGx1aHpQQ2E0VTREbDhLaSt0?=
- =?utf-8?B?U0sreGFXUWtOVTBMYnVQSHdCdW5PRENrZkJZSEsvdC9QTWl6ZEFzNFRkUTFu?=
- =?utf-8?B?cnBHbHJoOXhDd1RXVFozdnJFMzNXa0JNQ2JvMEpneC9QdE9vN1o2R3FXYktr?=
- =?utf-8?B?V1BQdHBhdGxpQUdnZ3hHeUlESGY4UGt0aFJha0Jtc2ZTN2RINHhqYW13czZL?=
- =?utf-8?B?aXIxektFMnZzdUZrQnk3b3FJVXJwZ0dDTEFsa1kxVytDdS9xZUYvcnl4N3JP?=
- =?utf-8?B?NmJXRCt0eUtRTFJFcTRWN0FQTUxVcFFESjBkenVGdEJhTVB5R0UvUmJyZ1o1?=
- =?utf-8?B?Z0NBNlh2aXRCSU85ZzVCOVJScGtUYUFOOFp3ZVk1TE0wbkkzcUhMbHBtWmRO?=
- =?utf-8?B?VVhlT3pZaUR4dDVhK2Y2RGZwSTk4RTRxSGFhbFlaU2JzVGRodVVGdjgySGow?=
- =?utf-8?B?dmRzcSs2cWI4NGU2SC9GTlBGbXJscnRNUUR4WWZJSFE2Z0ZpT2hPSUxPNzdi?=
- =?utf-8?B?RnRBZ0J5bTF1VXhXRnNESEVoZms3bnNFMnlBbzBxc0V0bFI5V05UYisyUzJq?=
- =?utf-8?B?VzU0WnhBdDF0bDc3Z1VNT2diOTY5VjV6SmcyMnp1TExPYy83eVo1d0FaQVZT?=
- =?utf-8?B?LzRDb24rbU5Gb1VIc1B5SXVYSTVoa0NIQ25ORWd0d1I2aVZ5eEZrVVVPVEpR?=
- =?utf-8?B?ZlFicEFoSXVVSGtkcC9pK0p0N3Vac0w3Y3p0TTJGSzZ1Y0s2ZWxkMERQc3B3?=
- =?utf-8?B?VFFDSjVUd3FzbmpWWkJlN2Yxb3VESDhBaldxM2drWXRJMDYvNW9Nd0R3aHlj?=
- =?utf-8?B?blh2dXhkUnQ5VVpQN0EwM2piNWREakNEUm1lUzNaVGZZMWVibitoN2Z0N0VV?=
- =?utf-8?B?b1FIVWtLdDFzTVNXTmdCMnV2SnI5ZW1Xc0lyUUhrY3gxNDlaSkpSMU1UUXN1?=
- =?utf-8?B?TFl0NUFyM1poN2dPYjhBV290azVRK3d0S3BvRTJpWW90VEtQaUg0OGVtVVFE?=
- =?utf-8?B?QmhDTE13WVVIV0hpL1RWQVVBRzhSc1ozN1RhZnRXQTVXZzlaZHlja05aRWs2?=
- =?utf-8?B?aGh1MXh3eEJrRStkWHluY3ZmS2w1bTlCR1hjc1BPcWFEaUJKUmxEa3JXODJH?=
- =?utf-8?B?M0tEM0s2Mk9YZlZwRHRwVDBCZ29iRUJHbUxUWWZlb2VyL2tvTSsxSHczTHM1?=
- =?utf-8?B?a2tKUno3eGRSTndPNERRL0MwTVB6d2g5NU5LZTJ4QXZJc2xOTWI4NDhmUVdF?=
- =?utf-8?B?OENiWkFKUy9adGJ0dnk2bDQySDY4cWgranhoeXlYSno5MGluanpSdUNtU3Uy?=
- =?utf-8?B?Z1k2UkVCZXR3VUVTTENjdmRmU3BCUXF5OXl5VnJ1a2Urb0ZPNzJVWTRMSW1H?=
- =?utf-8?B?cWViN2hPQ2lxZTVFKytuZEhoRzVnUWxMbTVhWWhyRFlpYXRzNjYxbDJKTVZQ?=
- =?utf-8?B?UHllWHJ1Q2huNG53bDNRc3RmQ0t4U01MWENPUFdxSld2K1JTZnVXWFloM2o1?=
- =?utf-8?B?K2l6Y1BuYVRYQ3lrZUF2WEhBSVdwSndOd2lTRHNkbUtDMUdoQnhvRWdaajZv?=
- =?utf-8?B?UXZNR0hUMTJQbk1raHVrYlNydU81NE1DczBQMFhPT3Z6aGQwWTV6cE9PMXA5?=
- =?utf-8?B?NDREK1AwWEJ4T0lmYVBZa09XTnhIZjIvdFV5NnZ4cHN6YWJoZEVrZ3pXSERO?=
- =?utf-8?B?RWpZdVhzWVE4ellSUEpucEpOazlLOHBMWm9sSzRKQWJnVWVOMUFEVjM5Qzd2?=
- =?utf-8?B?M1hFVkdEOXlmTXNvMWFyNDNZb3RucDV5Yk5JdXM0ZXhxQms0UUZNV0pUNUJG?=
- =?utf-8?B?Z1haM2pZWGFvMFVLNE8vYXhKUlpTa0MvczR1NnRCMU55ZzNtd3NGR3pHMWxV?=
- =?utf-8?B?cFJQNDhJSXJHcndLc0hzWmsxMkhiNkZrR3JTVXJlalptWlVOZ2w4aW9WaHBv?=
- =?utf-8?Q?YXIYGIKmiKf3QIwT+239zOqXBAYHTZf2JhrA3?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 957e1111-1b15-4336-235b-08df4b0d49b5
-X-MS-Exchange-CrossTenant-AuthSource: MI3PR04MB12438.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2026 16:00:55.5685
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VgMtB6ytRFYj0OYuxVXIxz51RwRfWFTz5mK3PWZkD9as33wlRmsMShOkak5WEW9bVHktNzisSswo0u/bJdDMHFxpaliSDcQy9+T6Ip+EXQXT3yAIR1wZWsV88yf8OVW3
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR04MB9735
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH] iommu/rockchip: program the MMU even when the device
+ is not in use
+To: Anton Sovetov <anton.sovetov@gmail.com>
+Cc: iommu@lists.linux.dev, heiko@sntech.de, joro@8bytes.org, will@kernel.org,
+ linux-rockchip@lists.infradead.org
+References: <CANLiQWrVGN00Hn8s3X7nyDZxh3x0wJ1YqTVzYsLUPM3s-Pkp1A@mail.gmail.com>
+ <d4f010f9-44b3-4f0e-9f84-f85ad9c82b3e@arm.com>
+ <CANLiQWo5qOUt4CS-nK+nHQk3aZHADb3hy=zfvLKoxi7N_jEmPw@mail.gmail.com_quarantine>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <CANLiQWo5qOUt4CS-nK+nHQk3aZHADb3hy=zfvLKoxi7N_jEmPw@mail.gmail.com_quarantine>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Nov 25, 2026 at 04:53:35PM +0100, Rafael J. Wysocki (Intel) wrote:
-> On Wed, Nov 25, 2026 at 4:07 PM Ulf Hansson
-> <ulf.hansson@oss.qualcomm.com> wrote:
-> >
-> > On Tue, Nov 17, 2026 at 6:38 PM <Frank.Li@oss.nxp.com> wrote:
-> > >
-> > > From: Frank Li <Frank.Li@nxp.com>
-> > >
-> > > The stub for pm_runtime_get_if_in_use() under !CONFIG_PM currently
-> > > returns -EINVAL.  The real implementation returns:
-> > >   1  - device is active and its usage counter is non-zero (bumped)
-> > >   0  - device is not in use or not active (counter not bumped)
-> > >  -EINVAL - runtime PM disabled for this device
-> > >
-> > > When CONFIG_PM is not set every device is permanently "active" and
-> > > always considered "in use", so the stub must return 1, mirroring
-> > > __pm_runtime_resume() which already returns 1 in the same build.
-> > >
-> > > Returning -EINVAL breaks callers that test the return value with
-> > > comparisons other than "!= 0 / == 0":
-> > >
-> > > drivers/gpu/drm/i915/intel_runtime_pm.c:
-> > >   if (intel_runtime_pm_get_if_in_use(rpm))
-> > >   which wraps to: ret = pm_runtime_get_if_in_use(); return ret > 0;
-> > >   With -EINVAL the wrapper returns false, causing an incorrect error
-> > >   path in the GT fence revocation code.
-> > >
-> > > drivers/gpu/drm/xe/xe_pm.c:
-> > >   if (pm_runtime_get_if_in_use(xe->drm.dev) > 0)
-> > >   With -EINVAL the condition is false; xe_pm_runtime_get_if_in_use()
-> > >   returns false, so callers believe the device is not usable.
-> > >
-> > > drivers/gpu/drm/gma500/power.c:
-> > >   return pm_runtime_get_if_in_use(dev) == 1;
-> > >   -EINVAL != 1, so the helper always returns false when !CONFIG_PM.
-> > >
-> > > drivers/gpu/drm/imagination/pvr_power.c:
-> > >   if (pm_runtime_get_if_in_use(...) <= 0)
-> > >   -EINVAL <= 0 is true, so the driver always takes the "requeue" error
-> > >   path instead of proceeding with the active device.
-> > >
-> > > sound/soc/sof/debug.c:
-> > >   if (pm_runtime_get_if_in_use(sdev->dev) == 1)
-> > >   -EINVAL != 1, so d3_prevented is never set, corrupting exception
-> > >   debug accounting.
-> > >
-> > > drivers/iommu/mtk_iommu.c:
-> > >   if (pm_runtime_get_if_in_use(dom->plat_dev->dev) <= 0)
-> > >   -EINVAL <= 0 skips the TLB flush, leaving stale IOMMU mappings.
-> > >
-> > > drivers/iommu/rockchip-iommu.c:
-> > >   Three call sites use WARN_ON_ONCE(err < 0) or similar patterns.
-> > >   -EINVAL < 0 triggers a spurious WARNING on every call.
-> > >
-> > > drivers/media/i2c/isl7998x.c:
-> > >   if (pm_runtime_get_if_in_use(dev) <= 0)  (two call sites)
-> > >   -EINVAL <= 0 causes the driver to always skip register programming
-> > >   when !CONFIG_PM.
-> > >
-> > > drivers/media/platform/rockchip/rkisp1/rkisp1-debug.c:
-> > >   if (pm_runtime_get_if_in_use(dev) <= 0)  (two call sites)
-> > >   -EINVAL <= 0 prevents any debug statistics from being collected.
-> > >
-> > > Fixes: a436b6a19f57 ("PM / runtime: Add new helper for conditional usage count incrementation")
-> > > Fixes: 3b85b7bcccf4 ("drm/xe: Fix display runtime_pm handling")
-> > > Fixes: 672c473576ca ("drm/gma500: Rewrite power management code")
-> > > Fixes: b30289e7fa92 ("ASoC: SOF: Fix runtime pm usage counter balance after fw exception")
-> > > Fixes: c0b57581b73b ("iommu/mediatek: Add power-domain operation")
-> > > Fixes: 51ef2be546e2 ("media: i2c: isl7998x: Add driver for Intersil ISL7998x")
-> > > Signed-off-by: Frank Li <Frank.Li@nxp.com>
-> > > ---
-> > > Change in v3
-> > > - drop tag: cbb819c363c5 ("media: rkisp1: debug: Collect input status by sampling ISP_FLAGS_SHD")
-> > > selected PM at arch config
-> > > - drop tag: 0f181d3cf7d9 ("iommu/rockchip: Add runtime PM support")
-> > > selected PM at arch config
-> > > - drop tag: 9d58aa46291d ("drm/i915: Fix the GT fence revocation runtime PM logic")
-> > > guard by CONFIG_PM
-> > > - drop tag 727538a4bbff ("drm/imagination: Implement power management")
-> > > depend on PM
-> > > `
-> > > Change in v2
-> > > - new patches.
-> > >
-> > > Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> > > Cc: linux-pm@vger.kernel.org
-> > > Cc: Jani Nikula <jani.nikula@linux.intel.com>
-> > > Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-> > > Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-> > > Cc: Tvrtko Ursulin <tursulin@ursulin.net>
-> > > Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-> > > Cc: Maxime Ripard <mripard@kernel.org>
-> > > Cc: "Thomas Hellstrom" <thomas.hellstrom@linux.intel.com>
-> > > Cc: Simona Vetter <simona@ffwll.ch>
-> > > Cc: David Airlie <airlied@gmail.com>
-> > > Cc: Matthew Brost <matthew.brost@intel.com>
-> > > Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> > > Cc: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
-> > > Cc: Alessio Belle <alessio.belle@imgtec.com>
-> > > Cc: Luigi Santivetti <luigi.santivetti@imgtec.com>
-> > > Cc: Liam Girdwood <lgirdwood@gmail.com>
-> > > Cc: Mark Brown <broonie@kernel.org>
-> > > Cc: Jaroslav Kysela <perex@perex.cz>
-> > > Cc: Takashi Iwai <tiwai@suse.com>
-> > > Cc: Bard Liao <yung-chuan.liao@linux.intel.com>
-> > > Cc: Pierre-Louis Bossart <pierre-louis.bossart@linux.dev>
-> > > Cc: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-> > > Cc: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-> > > Cc: Robin Murphy <robin.murphy@arm.com>
-> > > Cc: Yong Wu <yong.wu@mediatek.com>
-> > > Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> > > Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> > > Cc: Heiko Stuebner <heiko@sntech.de>
-> > > Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> > > Cc: Dafna Hirschfeld <dafna@fastmail.com>
-> > > Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-> > > Cc: Michael Tretter <m.tretter@pengutronix.de>
-> > > Cc: Daniel Baluta <daniel.baluta@nxp.com>
-> > > Cc: Will Deacon <will@kernel.org>
-> > > Cc: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
-> > > Cc: dri-devel@lists.freedesktop.org
-> > > Cc: imagination@lists.freedesktop.org
-> > > Cc: intel-gfx@lists.freedesktop.org
-> > > Cc: intel-xe@lists.freedesktop.org
-> > > Cc: iommu@lists.linux.dev
-> > > Cc: linux-arm-kernel@lists.infradead.org
-> > > Cc: linux-mediatek@lists.infradead.org
-> > > Cc: linux-media@vger.kernel.org
-> > > Cc: linux-rockchip@lists.infradead.org
-> > > Cc: linux-sound@vger.kernel.org
-> > > Cc: sound-open-firmware@alsa-project.org
-> > > Cc: imx@lists.linux.dev
-> > > ---
-> > >  include/linux/pm_runtime.h | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-> > > index de9e7518ecef2..1d983fe55a16a 100644
-> > > --- a/include/linux/pm_runtime.h
-> > > +++ b/include/linux/pm_runtime.h
-> > > @@ -276,7 +276,7 @@ static inline int pm_schedule_suspend(struct device *dev, unsigned int delay)
-> > >  }
-> > >  static inline int pm_runtime_get_if_in_use(struct device *dev)
-> > >  {
-> > > -       return -EINVAL;
-> > > +       return 1;
-> >
-> > This should be return 0, as we did not bump the usage count.
->
-> This is kind of moot because there is no usage counter.
->
-> However, the caller may always take the opportunistic "in use" path
-> because there are no potential costs related to it.
+On 25/11/2026 12:23 pm, Anton Sovetov wrote:
+> Hi Robin,
+> 
+> Thanks, that's a fair reading. I'll take 2 and 3 as answered: zapping a
+> disabled MMU is pointless when resume re-enables it with ZAP_CACHE, and an
+> attach that leaves paging off is fine because the client's next runtime
+> resume turns it on anyway.
+> 
+> On 1 I'd like to check one thing before I drop it. pm_runtime_get_if_in_use()
+> returns 0 not only when the device is suspended but also while it is still
+> RPM_ACTIVE with the usage count already at zero, and during the suspending
+> transition, since pm_runtime_put() defers the suspend to the workqueue. In
+> that window the MMU is still paging and can latch a fault the handler then
+> discards, which is how I ended up with dte 0x480000 status 0x2b fault 0xdc80
+> latched and nothing in dmesg. Would pm_runtime_get_if_active() be acceptable
+> there, or is that window too narrow to be worth the change?
 
-When !CONFIG_PM, all device is active state, which should be equal to bump
-usage count case.
+Ah, good point - it is indeed possible for the client to cause a fault 
+but then immediately suspend itself before we've managed to take the 
+interrupt, so technically anything up to the point that we actually 
+disable the IOMMU interrupt sources in rk_iommu_suspend() can still be 
+considered legitimate. So yes, I think I'd agree that RPM_ACTIVE is a 
+more accurate condition than usage_count here (strictly that still 
+leaves a small window for "missed" interrupts during RPM_SUSPENDING 
+itself but oh well).
 
-And it'd better return the same value of pm_runtime_get().
+That now also makes me wonder if autosuspend etc. could ever result in 
+the IOMMU's usage_count going from 0 back to 1 without the full 
+suspend/resume cycle - if so then we probably want the same change in 
+the other 3 instances too.
 
-Frank
+Thanks,
+Robin.
+  > Either way I'm now looking at the client driver's RPM accounting as you
+> suggest, and will report back what I find.
+> 
+> вт, 24 нояб. 2026 г. в 20:57, Robin Murphy <robin.murphy@arm.com>:
+>>
+>> On 23/11/2026 8:07 pm, Anton Sovetov wrote:
+>>> Hi,
+>>>
+>>> I hit three related problems in drivers/iommu/rockchip-iommu.c on an RK3566
+>>> (Radxa Zero 3W) with the out-of-tree NPU driver. All three have the same shape:
+>>> the driver gates work on pm_runtime_get_if_in_use(), which is 0 unless somebody
+>>> already holds a reference, and for a device that keeps its DMA domain for its
+>>> whole lifetime that is the normal state.
+>>>
+>>> 1. rk_iommu_irq(), line 583, gate at 592.
+>>>
+>>>      A page fault raised while the device is running, outside a map or unmap
+>>>      call, finds usage_count 0,
+>>
+>> That sounds wrong - if "the device is running" then its RPM state should
+>> be logically active, which should in turn hold the IOMMU active via the
+>> device link. And if the client device is still doing DMA and able to
+>> cause page faults while logically suspended, that would seem like a bug
+>> in the client driver.
+>>
+>>> so the handler returns IRQ_NONE without touching
+>>>      the registers. The fault stays latched: INT_RAWSTAT bit 0 and INT_STATUS bit
+>>>      0 remain set, PAGE_FAULT_ACTIVE stays set in STATUS, REPLAY_BUFFER_EMPTY
+>>>      clears, and nothing is printed. The device then sits on a stalled
+>>>      transaction and dmesg says nothing at all, which is the worst part for
+>>>      anyone trying to debug it.
+>>>
+>>>      Observed on the NPU: after a job that never completed, the MMU read back
+>>>      dte 0x480000 status 0x2b rawstat 0x1 intstatus 0x1 fault 0xdc80, and the
+>>>      handler had never run. A normal fault report would have printed "Page fault
+>>>      at 0x0000dc80 of type read" plus the page table walk.
+>>>
+>>> 2. rk_iommu_zap_iova(), line 680, gate at 694.
+>>>
+>>>      The comment says "Only zap TLBs of IOMMUs that are powered on", but the test
+>>>      is the usage count, not the power state. An unmap that happens while nothing
+>>>      else is using the IOMMU skips the shootdown. A device that keeps its domain
+>>>      but is idle at that moment, which is the usual case when the process that
+>>>      owned the buffers has exited, keeps stale entries, and the next owner of the
+>>>      same iova can still be translated to the previous physical page.
+>>>
+>>>      I could not prove this one with a bus trace, so I am reporting it as a code
+>>>      observation and not as a measured failure.
+>>
+>> The physical power state shouldn't matter - as long as the IOMMU is
+>> logically suspended then we should have been through rk_iommu_suspend()
+>> -> rk_iommu_disable(), after which we're not going to touch it again
+>> until rk_iommu_resume() -> rk_iommu_enable() which inherently does an
+>> RK_MMU_CMD_ZAP_CACHE. Thus resuming a suspended IOMMU, invalidating all
+>> the TLBs in the process, just to issue a command to re-invalidate
+>> nothing, then disabling it until the client device next resumes it and
+>> invalidates all the TLBs yet again, clearly seems a bit silly.
+>>
+>>> 3. rk_iommu_attach_device(), line 1008, gate at 1040.
+>>>
+>>>      Detach plus attach is how a driver resets its IOMMU domain. On attach, when
+>>>      the usage count is 0, the function returns 0 without calling
+>>>      rk_iommu_enable(), so paging stays off, DTE_ADDR stays 0 and INT_MASK stays
+>>>      0. The caller is told the attach succeeded.
+>>>
+>>>      Observed on the NPU: its soft reset does iommu_detach_device() and then
+>>>      iommu_attach_device() on the same domain. After the first reset the MMU read
+>>>      dte 0x0 status 0x18 intmask 0x0, no translation at all, and every later DMA
+>>>      ran on raw iovas. Before the reset it was dte 0x480000 status 0x19
+>>>      intmask 0x3. Holding the MMU device with pm_runtime_resume_and_get() around
+>>>      the detach/attach makes the same sequence end with dte 0x480000 status 0x19,
+>>>      which is how I convinced myself the gate, and not the reset itself, was
+>>>      responsible.
+>>
+>> Again, that sounds very much like something is wrong with either the
+>> device link or how the out-of-tree client driver is managing its own
+>> RPM. And since the device link support has been upstream and apparently
+>> working fine with the upstream VOP/RGA/etc. client drivers for over 8
+>> years now...
+>>
+>> Thanks,
+>> Robin.
+>>
+>>> The patch below resumes the device around the attach and the zap. Both run in
+>>> process context, so pm_runtime_get_sync() is fine there. For the interrupt
+>>> handler I only added a log line on the drop path, because I do not want to
+>>> touch registers from hard irq context while the device may be suspended.
+>>>
+>>> What it fixes: the MMU now stays programmed across a detach/attach cycle, and a
+>>> fault that arrives while nothing is mapping gets reported instead of vanishing.
+>>>
+>>> What it does not fix: the reason I went looking. Our NPU still stops executing
+>>> jobs in IOMMU mode after a few separate processes, with a healthy MMU and no
+>>> page fault at all. That is a different problem and I am not claiming this patch
+>>> touches it. I am sending these three because each one is a real failure mode on
+>>> its own.
+>>>
+>>> Tested only on rk3566 with the v1 block. I have no rk3588 hardware and would
+>>> rather not guess about the v2 path.
+>>>
+>>> Questions:
+>>>
+>>> - Is the usage count gate deliberate, in the sense that register access is
+>>>     unsafe unless someone holds a reference? If so, is the right fix to keep the
+>>>     MMU programmed for as long as the device is attached to a domain, instead of
+>>>     tying it to the map/unmap window?
+>>> - For the interrupt path, what is the intended behaviour when a fault arrives
+>>>     while the IOMMU device is runtime suspended? Ignoring it leaves the device
+>>>     stalled and the status latched, which is what we see today.
+>>>
+>>> Signed-off-by: Anton Sovetov <anton.sovetov@gmail.com>
+>>>
+>>> ---
+>>>    drivers/iommu/rockchip-iommu.c | 42 ++++++++++++++++++++++------------
+>>>    1 file changed, 28 insertions(+), 14 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+>>> index 07e3517..a3da612 100644
+>>> --- a/drivers/iommu/rockchip-iommu.c
+>>> +++ b/drivers/iommu/rockchip-iommu.c
+>>> @@ -590,8 +590,11 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
+>>>     int i, err;
+>>>
+>>>     err = pm_runtime_get_if_in_use(iommu->dev);
+>>> - if (!err || WARN_ON_ONCE(err < 0))
+>>> + if (!err || WARN_ON_ONCE(err < 0)) {
+>>> + dev_err(iommu->dev,
+>>> + "interrupt while the mmu is not in use, ignored\n");
+>>>     return ret;
+>>> + }
+>>>
+>>>     if (WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks)))
+>>>     goto out;
+>>> @@ -691,17 +694,19 @@ static void rk_iommu_zap_iova(struct
+>>> rk_iommu_domain *rk_domain,
+>>>
+>>>     iommu = list_entry(pos, struct rk_iommu, node);
+>>>
+>>> - /* Only zap TLBs of IOMMUs that are powered on. */
+>>> - ret = pm_runtime_get_if_in_use(iommu->dev);
+>>> + /*
+>>> + * The usage count says nothing about the power state, so an
+>>> + * unmap that runs while the IOMMU is idle skipped the
+>>> + * shootdown and left stale translations for the next owner of
+>>> + * the same iova.
+>>> + */
+>>> + ret = pm_runtime_get_sync(iommu->dev);
+>>>     if (WARN_ON_ONCE(ret < 0))
+>>>     continue;
+>>> - if (ret) {
+>>> - WARN_ON(clk_bulk_enable(iommu->num_clocks,
+>>> - iommu->clocks));
+>>> - rk_iommu_zap_lines(iommu, iova, size);
+>>> - clk_bulk_disable(iommu->num_clocks, iommu->clocks);
+>>> - pm_runtime_put(iommu->dev);
+>>> - }
+>>> + WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks));
+>>> + rk_iommu_zap_lines(iommu, iova, size);
+>>> + clk_bulk_disable(iommu->num_clocks, iommu->clocks);
+>>> + pm_runtime_put(iommu->dev);
+>>>     }
+>>>     spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+>>>    }
+>>> @@ -1037,13 +1042,22 @@ static int rk_iommu_attach_device(struct
+>>> iommu_domain *domain,
+>>>     list_add_tail(&iommu->node, &rk_domain->iommus);
+>>>     spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+>>>
+>>> - ret = pm_runtime_get_if_in_use(iommu->dev);
+>>> - if (!ret || WARN_ON_ONCE(ret < 0))
+>>> - return 0;
+>>> + /*
+>>> + * Detach plus attach is how drivers reset their domain, and the caller
+>>> + * has no way to notice that the MMU was left unprogrammed. Resume the
+>>> + * device and program it.
+>>> + */
+>>> + ret = pm_runtime_get_sync(iommu->dev);
+>>> + if (ret < 0) {
+>>> + dev_err(dev, "cannot resume the mmu, ret: %d\n", ret);
+>>> + return ret;
+>>> + }
+>>>
+>>>     ret = rk_iommu_enable(iommu);
+>>> - if (ret)
+>>> + if (ret) {
+>>> + dev_err(dev, "mmu enable failed, ret: %d\n", ret);
+>>>     WARN_ON(rk_iommu_identity_attach(&rk_identity_domain, dev));
+>>> + }
+>>>
+>>>     pm_runtime_put(iommu->dev);
+>>>
+>>>
+>>
+> 
+> 
 
