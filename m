@@ -1,100 +1,66 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.42
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795649244;
-	b=OIF8mrPasqIoq9UcjGItWal+NiscI7hooXK4xwbDdmA2JsLwUW/NuDA+4AiILs0phO0v
-	 zRRABhdS1NuTY2G0lenByhFh89b2zmxjO3gwYganZQJsBZT+QqNjHovVpjbk/EdHBtvba
-	 RfR6IcahGgHEWIKdJhDIx5KRlmZ0ojwAWU9UjKFIfaolQeHwePt9Ck6AlUiJXcCOdBaL+
-	 hf1V3fTARmnI6A6mm4ZCSFy/lE1Jsm8TcTBX2c0gKXFL8vK8COp31ouHD/Wte9BfjZA04
-	 z+BJm+H7Mgm1wE1Qknzmbq4U11qP4tAmgteBSNX0lwzmagKoxASPLMEScFutdBi60Zg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795649244;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=sp9Gu/ag0sWDcDK/oXTqpJzOnSAhjMt/opO5ZXrPuXU=;
-	b=IyvePjREfl69FBE3w4J/LvC5W06qD923j8/LhAn1TqaCjo5duMtAogsw8zYVLXwkpmih
-	 btEHPxhXF8Rxh+TD5EESdJF1Yic2CXlQ1wNvaM2OIkShogw0Ca3jfeSE9aWUrYZeGqLIc
-	 LcYeahwLAwKlDYKFUHKCo0L9MsVQBxbvbOqc8T4QLCfudQhT7ZXvqbVwwxVklm5WsdK1s
-	 KKcf6104U4MJ5Q3zoGakiWL86Vctabo8dH2kyYmMIkzO0rvrwJN4EA5LgJ8T1xx2KF6gW
-	 JA34QU9hsmj7Vg/hoWlBEV7ehJVWwUOMDOpQD0ZR+fQGIYTDXZrDKc8lpGlTyZrxQfw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dSYgXelN;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.42
-Received: from mail-dl1-f42.google.com (mail-dl1-f42.google.com [74.125.82.42])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=199.89.1.14
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795649265;
+	b=fSEY4Br9ch3sH6a1kQYysYfQuVYp2nuLdvE1BJXlyHWV+Qsvk1B8uUiACWPXZAcmGxSS
+	 KXh01Bi4Dq3UB3T1wrAQ1DD7dS4z4t0gLwyI1LKTEOopYO+eP0vz34KSMNUZNC4blGWhy
+	 WfItq18x8Y72bK7JDyXcgW0rEiSu3J11NS/mYLtbiCD8n0ECEWgfrD/TPDBlIZmxa5QqY
+	 oXojarUloEX5blGgEdOjtfJWoZXJyMT4xD18B2Bd6SzY0MU8F9ZaHCexT6RW0qw+sxcQJ
+	 1gJxIfeIVoZmQOqbVh84nfu/lf6kTk9wc8UThGrewXCV9kQOLU5dl+vOpNZemsO1XWQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795649265;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Virus-Scanned:Received:
+	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 References:Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=pzjyGmZZ2mfKFwIvgz7xu0SROw+6FToALTMc9Gn5dzg=;
+	b=EE7djKqVv5JHDg8zoEGrKpK3kM2atWNmAlHJWRZyTUpvDQAW3YucxZ3bNaJuWY5k502h
+	 ja5yxjdjY/sPg9ZWXT+zWjusG2fv4zkXFDc9Q043fPFVVIwtvKPpICxhnrcogez21JUsl
+	 0ybrGat88iZneRnoAlpn1bPsaB1LUcfIUy+Q28tSMOjYed6ITmmgybYetutUF43I59kID
+	 oJ5EsWAl9Qf8AXvREI2A6vNG20MRnsiOsuorhRQFGWrZpP7hxa2MylaVoxJ3MP+zytj+Z
+	 Jrh8dM/DO8Ho+u0QW3VI34z4IcvoftqS41kNU4Mm1UDxR6eJlPjmAe1KQrnLmbKb0ag==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=acm.org;
+	spf=pass smtp.mailfrom=acm.org;
+	dkim=pass header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=gPnllvaQ;
+	arc=none smtp.remote-ip=199.89.1.14
+Received: from 011.lax.mailroute.net (011.lax.mailroute.net [199.89.1.14])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 574B7606A323
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 23:27:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 574B7606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12A22606A321;
+	Wed, 25 Nov 2026 23:27:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 12A22606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=acm.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dSYgXelN
-Received: by mail-dl1-f42.google.com with SMTP id a92af1059eb24-15ea896ddc8so10606113c88.0
-        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 15:27:24 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1795649243; cv=none;
-        d=google.com; s=arc-20260327;
-        b=lHsYm7KGklOG7Dv7nYfdHrwYRhtMxmambxkHbXMc8zxLxKcDuPnriw2IBGu4oUfEo/
-         x9Ag2h7E56VBKpuMviNije24I0Irczmv/DxSytQyi4YkeQJKWolVx8tt5Kt4JccG7PHR
-         b1qEtQXGJ1QGMxiwf8VzozP8yY1gfGOM35KdTfkvZ8xH5Ghx2q8Ef2T/hwvYXDT95YYQ
-         9RWlJMiscHhlOm5+X1R0O1E2KN4ukq+/V/CWUM/6Npb7Gc38k2ZQa08vqRODHl4K0QFr
-         +ms73yN/2UbVOL7N65/3GbonSJvsVuoXtmhI2rJShSzFQXFJTcgpedAn0x8sr4hzPI+f
-         hUDw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=sp9Gu/ag0sWDcDK/oXTqpJzOnSAhjMt/opO5ZXrPuXU=;
-        fh=XNP/Z9vcCCFoPe0rBFNMVqYNfBut7goYYh7gKOTmpTk=;
-        b=E6bwahGvNxOxmFlpRWXbtQjVDeAMlyKWhubNAeLFQhFiYXDl6MSYBJ6loaMXWydXYG
-         DwoJ8f0k8D6f6FrL6jFL0I9fKLmjbaqAk38l5D0nWvDRSStuw4zlqmaCu9ugxcjtWjvO
-         PztOoyE01zgbfYlqNhsnKgY3vTBz/uOgYmWwALlIoy+eTA0uV2ru7jey/x9+JCxY5rG8
-         xmE9eV0amfPjay2MQlsb5bphUrJWSIsv45e1ilZQaURBXyMISrFVfTyDwfU0VKaD00bZ
-         xS8f0+MSHgKE6FjvCiyuVrqAl8h6G0EzRk9KJ8jehH8Obqa5x1EJV4KZAe0X04OnoiAo
-         uR/Q==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795649243; x=1796254043; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=sp9Gu/ag0sWDcDK/oXTqpJzOnSAhjMt/opO5ZXrPuXU=;
-        b=dSYgXelN2FtKtMR8fC4nw75Xr2Lrkb0Dpy+7hS+3+oD2fAghaxPGTO5uUYidBJN1WC
-         OnAbS31hwXSlLm917Wn8x9fsiqlWuBrdBksp8Wr+SmqHfUKwEVU7ItLS0LNhrB8pckv/
-         AY7rxAYLDq7anRPJSejeyoodoAN13yaZ3Oiy+ShjVFi2fV2Rw62me4CbaMdxV1aVFNJ+
-         pugi4f6zkg2+Rs30ClLNiNU2z7ibwZQRJtTBWENJbkjqXbRvqk0Yax/IX+2JxCIV39n2
-         QXHPtMOI3FlsxYSP+czej53lIKdUJ5tqIi3ummvG0utme22t2+SzlX0VuMQrKXKlrWiY
-         QLjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795649243; x=1796254043;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=sp9Gu/ag0sWDcDK/oXTqpJzOnSAhjMt/opO5ZXrPuXU=;
-        b=LEppWLUqYIrqhUv9wzkaxUnMunEd6Ecnha5ytNuFE9Y4Ln9R2/OkVO9qPhlE2VWKFu
-         02S/curEE/2YyXD8/+x/Ua9/17tqIGfhBom0WbdvqV1xVOcXao67A8MEfoiS1kx7B3kQ
-         Az9LPlElX/sUcPo0ETTFk3ntptdoGRUsyc/gqBnrDKn3mCaCiyfmQu4nlliAeK0hARd6
-         Ym9aXSbu69YVAdUkQHD/H3xPJH3BO/B2Q0OHt1IIeiRlQvfMtPxKKBRulGyiUSvAfCgs
-         8ux7KveBOOxHPVUbfGlyzsmJDQh2C3Fd2H1Ex63d54yFJLb6ST6/2cnUAeHiHJqYSCLt
-         tN1Q==
-X-Forwarded-Encrypted: i=1; AL+hErFGdAS2zYE0TJwI20YmqAOE6/5mE87V5GxMomIzs4JWalDF8ohrPljV1EJ6T3aE9Wd/5DsIlQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/endHfrhateZZKloQUXYv4QF5CzYHBDzn8vbKQYZLgOqTulgJc
-	jPULyPGoR8SYLeKp+5+ki0iXtB1uZjezmHXaJME/XYH4ZIQINz/NWjGNV/87SrDiN0SHXOW3WYM
-	NX/Qh7CvbW7qzLOqKhmYOJ1DQ12nFf5c=
-X-Gm-Gg: AZFdTZds5yTUw6g6XsORiPeT/9HzG0j5j2tWY1fnxWjCnuDtse2+b8GnJ/tiRIQVmk3
-	2siA6ZmcGIIxvSUJga782LyOO5OfFfIbN4VyMhEGUkyFwA4p7N7wwHOh62lHfXE0spVN2GCN/jG
-	TNvursSaV69sVA8LxtvXCMVK/nXBffwMsUL+4qSaoOLFSQiwU4A0RaOuVO6Ij6/egkU5vFLow9k
-	gqtqlsp3HAuMNcrZKY7RCGC4BBgZ5JtzC+OFxCmkKbzbWYt7CCy+qkwVeHXOy9Lzy5Z6U7X/OnX
-	e2CHfxSP9gxtTSQ8GSosMRUXhtpuiOGLJJcDTEF3tYr3M92D3kwI2MZ6yN+wdXx+hqi6Zq6alXM
-	UQBmlhkgvisE2/WdFshl6jL51mfy9k4yPYyYjE2109LceNRhBLwnOSINM
-X-Received: by 2002:a05:7300:dd46:b0:385:7762:e1a3 with SMTP id
- 5a478bee46e88-3857762e729mr18890931eec.24.1795649243401; Wed, 25 Nov 2026
- 15:27:23 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=gPnllvaQ
+Received: from localhost (localhost [127.0.0.1])
+	by 011.lax.mailroute.net (Postfix) with ESMTP id 4jZbSV44Hqz1XM6JG;
+	Wed, 25 Nov 2026 23:27:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acm.org; h=
+	content-transfer-encoding:content-type:content-type:in-reply-to
+	:from:from:content-language:references:subject:subject
+	:user-agent:mime-version:date:date:message-id:received:received;
+	 s=mr01; t=1795649253; x=1798241254; bh=pzjyGmZZ2mfKFwIvgz7xu0SR
+	Ow+6FToALTMc9Gn5dzg=; b=gPnllvaQem7qSZpDqnmOE63QftMGzquLwF+QaY0r
+	salGmSB2zP8C/wjUkmk6DFKVDjz2trunYUOpMkrgsAEMhAfJgLTOZLqW2ZuDidm0
+	uRzqw4+VtN+EYunO+uTw3T84mP9EWsNnlJQNbjyyOQ4fS/kAosySDxGBf87E313b
+	4wx+K/0Xr1llkEqP6a7XixWcSCpyZnHl+qrPRoP+v+9ncgxkkEh4MxIrLUSOECnC
+	HKN36CKV4FVyohOtrhUBO7vmxCo8nL+e8cgLdW3KMWjC8tSOfC7YpiTkSCGrHLD0
+	X0YtJcHbdF7QykvG17dJaBTad7msKVCfhnS9x8RuIBcWHA==
+X-Virus-Scanned: by MailRoute
+Received: from 011.lax.mailroute.net ([127.0.0.1])
+ by localhost (011.lax [127.0.0.1]) (mroute_mailscanner, port 10029) with LMTP
+ id WpI1dKdOLk4G; Wed, 25 Nov 2026 23:27:33 +0000 (UTC)
+Received: from [192.168.0.215] (c-24-6-239-25.hsd1.ca.comcast.net [24.6.239.25])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: bvanassche@acm.org)
+	by 011.lax.mailroute.net (Postfix) with ESMTPSA id 4jZbSN73yTz1XM30h;
+	Wed, 25 Nov 2026 23:27:32 +0000 (UTC)
+Message-ID: <0edb9525-5068-42e6-b6c3-a1dcebcbcea7@acm.org>
+Date: Wed, 25 Nov 2026 15:27:31 -0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -104,49 +70,56 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261125074331.25190-1-zhangyu1@linux.microsoft.com>
-In-Reply-To: <20261125074331.25190-1-zhangyu1@linux.microsoft.com>
-From: Tianyu Lan <ltykernel@gmail.com>
-Date: Thu, 26 Nov 2026 07:27:07 +0800
-X-Gm-Features: Aa3M54r4mxIQgvryDnL-qX8IuFUHHV-JKb0OjIRrToyrlQrT6deJuQHPpw72yiw
-Message-ID: <CAMvTesDUqyoayJwGVRT93cF=mC876n+8fwvpPK9TVTH=8AjkyA@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: Add dedicated entry for Hyper-V IOMMU
-To: Yu Zhang <zhangyu1@linux.microsoft.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>, 
-	Jacob Pan <jacob.pan@linux.microsoft.com>, 
-	Easwar Hariharan <easwar.hariharan@linux.microsoft.com>, 
-	Tianyu Lan <Tianyu.Lan@microsoft.com>, Mukesh R <mrathor@linux.microsoft.com>, 
-	Thara Gopinath <tgopinath@linux.microsoft.com>, Wei Liu <wei.liu@kernel.org>, 
-	Haiyang Zhang <haiyangz@microsoft.com>, Dexuan Cui <decui@microsoft.com>, 
-	Michael Kelley <mhklinux@outlook.com>, iommu@lists.linux.dev, linux-hyperv@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [REGRESSION] DMAR fault by Intel H97 SATA controller since
+ "block: Increase BLK_DEF_MAX_SECTORS_CAP" (6.17-rc1)
+To: Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Joerg Roedel <joro@8bytes.org>
+Cc: 70sp <70sp@protonmail.com>, Laurence Oberman <loberman@redhat.com>,
+ Thorsten Leemhuis <regressions@leemhuis.info>,
+ Tobias Laas <tobias.laas@posteo.de>, Damien Le Moal <dlemoal@kernel.org>,
+ Jens Axboe <axboe@kernel.dk>, regressions@lists.linux.dev,
+ linux-block@vger.kernel.org, linux-ide@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Niklas Cassel <cassel@kernel.org>
+References: <5ad27a97aafbc08a8702d5b90d09cd59@posteo.de>
+ <awSs5Cw3hFkf4O4T@ryzen> <ec36d13e-e4c2-4bfb-8b50-69d4a1628839@leemhuis.info>
+ <87b1bbd8-8113-4890-8623-738b19a9cc7b@leemhuis.info>
+ <a0ff3156-add0-4f7d-8373-09f95bd7036b@acm.org>
+ <2adaf0ef9e1a2fa18590f7d8dbf203c0f7de2be7.camel@redhat.com>
+ <uJluFNYGCCrdvnYT3MatN_4Om8UczTJX_dzxumJxyCAC7F-Ubrekb7LPwlRxhCW0J91UBf-TqeRoJQfgYIYBRvMsPmE-Qs1eAg5zbDP0s58=@protonmail.com>
+Content-Language: en-US
+From: Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <uJluFNYGCCrdvnYT3MatN_4Om8UczTJX_dzxumJxyCAC7F-Ubrekb7LPwlRxhCW0J91UBf-TqeRoJQfgYIYBRvMsPmE-Qs1eAg5zbDP0s58=@protonmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Nov 25, 2026 at 3:43=E2=80=AFPM Yu Zhang <zhangyu1@linux.microsoft.=
-com> wrote:
->
-> Changes under drivers/iommu/hyperv/ are merged through the IOMMU
-> subsystem tree, while MAINTAINERS currently lists the directory under
-> "Hyper-V/Azure CORE AND DRIVERS" pointing to the Hyper-V tree.
->
-> Move drivers/iommu/hyperv/ into a dedicated "HYPER-V IOMMU DRIVER"
-> entry pointing to the IOMMU tree, with Yu Zhang as maintainer and Jacob
-> Pan, Easwar Hariharan, and Tianyu Lan as reviewers. Keep
-> linux-hyperv@vger.kernel.org on the mailing list entries so the Hyper-V
-> community stays copied on patches.
->
-> Suggested-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> ---
-> Easwar, Tianyu: please let me know if you have any other thoughts or
-> suggestions.
+On 11/25/26 2:51 PM, 70sp wrote:
+> as I mentioned in the referenced regression thread I reported, the
+> patch I sent out was basically an example to show that it works for
+> my use case. I wrote that I don't think the patch is ideal (in fact,
+> I think it's an absolutely terrible solution to fix this). This is
+> also the reason, why I just sent it as a snippet of code.
+> 
+> Please take a look at the code before the regression started to
+> occur. It was implemented universally. These vibe coded patches are
+> horrible compared to the original code. We are literally making an
+> exemption for a specific CPU in a place where it shouldn't be. The
+> actual correct solution would be to make a patch which works
+> similarly to the pre-regression state.
+> 
+> If we are going to merge something that is made by a LLM we should
+> at least make it good. Ideally made by an actual human.
+(+Lu, Jason and Joerg, signers/reviewers of the patch mentioned in the
+Fixes: tag)
 
-Please keep Hyper-V maintainers also in the Hyper-V
-IOMMU driver maintainer list. The Hyper-V IOMMU driver
-patch also needs their review and approval.
+Is a better solution possible than the patch "iommu/vt-d: Disable
+superpages on Haswell with integrated graphics" I posted here:
+https://lore.kernel.org/linux-block/uJluFNYGCCrdvnYT3MatN_4Om8UczTJX_dzxumJxyCAC7F-Ubrekb7LPwlRxhCW0J91UBf-TqeRoJQfgYIYBRvMsPmE-Qs1eAg5zbDP0s58=@protonmail.com/T/#mc147f250c5356e3742ab3d30ccf6b4a3a8c4196b 
+?
 
---
-Thanks
-Tianyu Lan
+Thanks,
+
+Bart.
