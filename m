@@ -1,54 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.175
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795565619;
-	b=lB4Xlc8pVuj592/auq5RLnvJYYuThRy9WAbBe8ySRtG5pQ4Y+RuvpwjpKHcpQ7Buv39V
-	 cuO1pxOmQjxiklg0Xq/05yriRGLG4v3dy1ZDzUypGm3JJTEv8PrLRTjtw5aignrYCo51E
-	 FxtG+XdcpT8Gp7quPIjfl36sN9bMnL/tfnWrrKelDGdyTC0Ld+QZiC72xz/dKDdIQa8Q+
-	 29gvfMFe8gLxc5MjLgS9AWSw3kIo79OxTlhegzK0nsxxtR6GB/43II1Kv5zLjW9jN94P8
-	 kTfy966oVo+aLd894RD6QaNUbJBW1GX4Paki6aag02QfENcT7xmRml+52Pb1HerQSaw==
+	t=1795567195;
+	b=qDojbPrD84JPd45lTqyTabF2fl/nx1K4tkWi19/tmx/LAfWlHT8mxB5kt1NvAgSlkuIZ
+	 +HaT7UWlxN5cXH+PkT5LNxCMvgPl21tKi9R9/H0yGxsq1Q3um9DtsfogltCm56whwFJvy
+	 UgM3JejeBQHKUenYz00ixvHMzUmueNFSxd2V5pp8uc24/HcdYJTAIbNVpv+9OxZmSCeKh
+	 1XpX0nDq9HKQZHJljauyJUBepT6tAkcHL6/0Y3chvFUDciV0ySEgpHbWrLpeFHbEu5dSo
+	 M5T3iZ0GtKYvheMyZhE0c9gqny1AcS+fbeCCrPbGi+lj5X09YokNmcZOcVLcYWFsQ0A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795565619;
-	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Date:MIME-Version:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=H5JA1xiHcuO5av/TCwEs6eB3F56+e7cAUCqQUzm2IKE=;
-	b=z/GVWpB5shUbdYeyEc20Nni5BwyrRwGIT+Mf/H31cdKIrVJNjDaHz2tYCCeI6QKyx3Cz
-	 gBgHsPN2DaW0jqbhjZ3Qap00yfNeZUHAaA2J32M4of197qOapudL3Oj0N9rEvucSEOZDO
-	 /pUy73bIEEJq+/GS67Nl/oJfKBOI2yXFObqU3p4WNcxLhhHksW4yUZYBnKX0fWXvBpzgl
-	 cyke5zG3u21kRrgtpAAxP8MMg3Qvcfu77IqKf7GGdowkauBs4dXqPPoY0nvIRLMQvLbQo
-	 T600N55RD04Vc3aNeUU3EFT3IFWN0nyml1DyyAWq0gHvO186h2pVKIEUli+TfeouePA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795567195;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Mime-Version:Content-Transfer-Encoding:Content-Type:Date:Message-Id:
+	 Subject:From:To:Cc:X-Mailer:References:In-Reply-To;
+	bh=YKxHcqUXjQp/1J5J8B8/Kkrmh8UptW8ucEK7buHNuos=;
+	b=D7opYfbgJWtDBZPSCzp02PtFaiYIy6253Gr63rxAtYdIhdahrLFipgnXVqkACBnOmVSC
+	 PrxLvSn8pslhx0YNeuVG7rPflL7husLrKwlGnx0Y6Nkj1VFgscUZnUs4VG91mK+GcTVSI
+	 6m+L326MLPB46y2XsX4PaWdZlABLz6dhMDXjXgNbDB/W9qJ9/oZMRZO1LefYNOOJiBch7
+	 jc6RNV3S0CiDL+TW68hzmfZXtTmxqKVk1waBSQUE4cGX44XTGTdu+uX3uU4INCuNK0Y4I
+	 0Ywgl6Ql7GCXsf1rNFQQfZANS5GlM01q/Ck/dkskGFc4MFsHJWLDf0c+eg7o3/W6pyA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=infradead.org;
-	spf=pass smtp.mailfrom=infradead.org;
-	dkim=pass header.d=infradead.org header.i=@infradead.org header.a=rsa-sha256 header.s=bombadil.20210309 header.b=v9zYfpM3;
-	arc=none smtp.remote-ip=198.137.202.133
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=nCzlJqch;
+	arc=none smtp.remote-ip=209.85.214.175
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5C80606A31E;
-	Wed, 25 Nov 2026 00:13:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E5C80606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91C70606A32D
+	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 00:39:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 91C70606A32D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.a=rsa-sha256 header.s=bombadil.20210309 header.b=v9zYfpM3
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=H5JA1xiHcuO5av/TCwEs6eB3F56+e7cAUCqQUzm2IKE=; b=v9zYfpM32kAvGWDRKN8MU6P6/i
-	THgQ6XYg3TtUofGeL2k7Si7qt22CXocALWePyGThKmz1qAlHdno0YaX4hMbpi9yfZlUtHK6K1eXlL
-	GeQuqTgf4XWzLJy2chYc+tSG2mRITN+XTa5/pQFz7cU8pYCeZvHTNEpGTic0Ra3Bn7X6rG9WSY590
-	c+OuNmPeBIWBhoTdq/4F/GyhXL88V+9v+Cfhpu0nrLW61HOrtf46r6ZIWqNplXFPNIO5S1UpJrbac
-	fYM0SjlPu530GhgWnDw17IOQ2+0z2pmZF19OsGitN/UbkR2o0ojmQxrw6eR3DwYptge1D3Fb5xrr6
-	9A7gm4og==;
-Received: from [50.53.43.113] (helo=[192.168.254.34])
-	by bombadil.infradead.org with esmtpsa (Exim 4.100.1 #2 (Red Hat Linux))
-	id 1xW0dS-000000088Rc-0EKa;
-	Wed, 25 Nov 2026 00:13:18 +0000
-Message-ID: <1bc8f048-4d35-484b-af60-2d13541e683f@infradead.org>
-Date: Tue, 24 Nov 2026 16:13:16 -0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=nCzlJqch
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2f05bc71e01so21445305ad.0
+        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 16:39:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1795567194; x=1796171994; darn=lists.linux.dev;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :content-type:content-transfer-encoding:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=YKxHcqUXjQp/1J5J8B8/Kkrmh8UptW8ucEK7buHNuos=;
+        b=nCzlJqchLm9wVfq1hfTMvrl4CGlTPvgGRlXCFvr67M9+kxomxzBfe6jf6It7yRuFjo
+         Iu88IRlIfVu3mfnlUbhpXfvmbEM7Cfi1YZ+Iwvsiahf3GiPYFQYkhsXUa8ibrlDjodd3
+         riMi5ZQPdNCiQ92rBvgXb+o2SCnWHCE1ypTYilpoRfgmNEJF5Iy89YWdMbsFcDMXltQ6
+         ki38FIId3w9rZeY83JAEXF5pWqOf4PNm491qrzEzchzaOg0S/tePlieMC4xYwuDHXhvb
+         +oLQoknGfG2FoM/vroKP+ep5rNgyko0PHDJblSI5dSIvJtXdr0A3lweNldmb4WVkeaDw
+         v8lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795567194; x=1796171994;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :content-type:content-transfer-encoding:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=YKxHcqUXjQp/1J5J8B8/Kkrmh8UptW8ucEK7buHNuos=;
+        b=d4DCvzy8dI5QJ1+OcE+Iq5jrTPGESVqunWtXOFZZNUmt9BzYvlg0j2IkQVoOhZ44ft
+         p5p60akr1EgQSf+GMBjGMqki+DVc2dwo9qeCJZTFAhSSo/dzIjjAj1V80qPR2x5UKrge
+         V/fHJy9MBYWoFhzr4B7lF5UoLgdb3DAlp4BMswZFlFK4ImjtZt7FAUqRe6NGhqqvqDbR
+         8o14VDxHJfIBlHHTAM7OkMA4Jhnd3ZgrntQ0/LlbECHOigVtynhMNMy4Gh4pulOuTIFY
+         25E6x03TfzIybk1IAo15zvLZ/s1lXUfA4iEsSLkveHA8O3+ujtW8mYiTr9FqRhs7PqoQ
+         jLeQ==
+X-Forwarded-Encrypted: i=1; AL+hErGjKgZeR6bJ/SmMdd3sQlR/qpoKqQrWg7+MCazxc7J1eriKuz/vrXBZL+/hKIERrOT4zEdWpw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+KS6I/6AqI1sTrAk7PKKf7OeoYRK6rFxAx/BFDWMa8+chJZAvV
+	G2uV4ICwzege6H6vzkIlFmH1w22wCt8qLdHS9GtyPyAnlgxEP1JCS77WUtEQLMEHRQ==
+X-Gm-Gg: AZFdTZfUe5Sl2A9egrGhzqeT1zsuk0Ljuf5oI8tboXE1p0irBp/MD5n7chtfiJ0ZVpe
+	rwtTl8N8fIvY8bdR8g/Y+/OuhYiIUMjFNPhOr84vd+GD7SfU8PtQvpJ6ig+XDH60IudXbxQJH/+
+	uSUR4dirDKohzAZ/hS3bDVK8Jz/r5u8Z01HrknSdRMkqnvVysIzPkaM8iBlyPrZYKHW5ekRwaiQ
+	rlT8eVyFesKcikAOvDwV8USkTHUveaWTle3A1tiz4OpwPRMWjy38dgDRImdyBsqlwml7dkttAEd
+	U5AghGPpnb778EboklJPSgxzl45SYjEEqCTGNQoEjAQnmuBmFRkTocNbkeM9ZpPsf4iHnaeUu2H
+	rXEUcWiTo2Tt+dZLs+ShjaoYQwVdDokvXyJzdzT3tfj1QKpl52ALqiunlJvF4Pgq41ZM5W8LwvZ
+	wE9MBhwetLsDWjBotjUti6+jNbnbEn0jybAPbGViHNandDel/uAij8PzUrEnQxSPtVkE8F5c1Mc
+	O7Ri8vC3AIpTucUINSY1lISTL835PuwxgUhtxv4f87ZiEKkxyCr8EVX0yYRNMFOqnO6RlOYbM4S
+	6f7wlSHEsptydQbH7qD4fDLd5LwzUMsnb5BbDF8aFZBGclBtTkwFIbyr1mMzvcXW
+X-Received: by 2002:a17:902:eccf:b0:2f0:25ea:8fa8 with SMTP id d9443c01a7336-2f03f176abamr169618335ad.19.1795567193320;
+        Tue, 24 Nov 2026 16:39:53 -0800 (PST)
+Received: from localhost (33.79.127.34.bc.googleusercontent.com. [34.127.79.33])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2f03ee848c1sm75603595ad.10.2026.11.24.16.39.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 Nov 2026 16:39:52 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -57,87 +87,75 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 21/33] driver core: Introduce a generic device trust
- level
-To: Leon Romanovsky <leon@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
- Heiner Kallweit <hkallweit1@gmail.com>, Russell King
- <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Johannes Berg <johannes@sipsolutions.net>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, Bjorn Helgaas <bhelgaas@google.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Johan Hovold <johan@kernel.org>,
- Eric Dumazet <edumazet@kernel.org>, Marcel Holtmann <marcel@holtmann.org>,
- Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
- Nipun Gupta <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
- Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
- Chris Lu <chris.lu@mediatek.com>, Mans Rullgard <mans@mansr.com>,
- Alan Stern <stern@rowland.harvard.edu>, Jaroslav Kysela <perex@perex.cz>,
- Takashi Iwai <tiwai@suse.com>, Andrew Morton <akpm@linux-foundation.org>,
- Cornelia Huck <cornelia.huck@de.ibm.com>, Andrew Morton <akpm@osdl.org>,
- Jeff Garzik <jeff@garzik.org>, "Rafael J. Wysocki"
- <rafael.j.wysocki@intel.com>, Bart Van Assche <bvanassche@acm.org>,
- Alexander Duyck <alexander.h.duyck@linux.intel.com>,
- Dan Williams <djbw@kernel.org>
-Cc: linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
- linux-input@vger.kernel.org, netdev@vger.kernel.org,
- linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux.dev,
- linux-coco@lists.linux.dev, Alexey Kardashevskiy <aik@amd.com>,
- Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
- Greg Kroah-Hartman <gregkh@suse.de>, linux-sound@vger.kernel.org,
- Jason Gunthorpe <jgg@ziepe.ca>
-References: <20261124-device-trust-core-v4-0-037eb0d17b1f@nvidia.com>
- <20261124-device-trust-core-v4-21-037eb0d17b1f@nvidia.com>
-Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20261124-device-trust-core-v4-21-037eb0d17b1f@nvidia.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Date: Tue, 24 Nov 2026 16:39:52 -0800
+Message-Id: <DN3VG4JCILOO.YN40XHHSWRPH@google.com>
+Subject: Re: [PATCH v4 03/19] kho, memfd_luo: Reference struct kho_vmalloc
+ via serialized pointer
+From: "David Matlack" <dmatlack@google.com>
+To: "Pratyush Yadav" <pratyush@kernel.org>, "Tarun Sahu"
+ <tarunsahu@google.com>
+Cc: "Pasha Tatashin" <pasha.tatashin@soleen.com>, "Mike Rapoport"
+ <rppt@kernel.org>, <robin.murphy@arm.com>, <maz@kernel.org>,
+ <will@kernel.org>, "David Matlack" <dmatlack@google.com>, "Alexander Graf"
+ <graf@amazon.com>, <seanjc@google.com>, <jgg@nvidia.com>,
+ <loganodell@google.com>, <arnd@arndb.de>, <dwmw2@infradead.org>,
+ <baolu.lu@linux.intel.com>, "Bjorn Helgaas" <bhelgaas@google.com>,
+ <oupton@kernel.org>, <alex@shazbot.org>, <gle.com@google.com>,
+ <pbonzini@redhat.com>, "Andrew Morton" <akpm@linux-foundation.org>,
+ <kevin.tian@intel.com>, <joro@8bytes.org>, <kvmarm@lists.linux.dev>,
+ <linux-pci@vger.kernel.org>, <kexec@lists.infradead.org>,
+ <kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
+ <linux-arm-kernel@lists.infradead.org>, <skhawaja@google.com>,
+ <sagis@google.com>, <linux-arch@vger.kernel.org>, <linux-mm@kvack.org>,
+ <linux-kernel@vger.kernel.org>
+X-Mailer: aerc 0.21.0
+References: <20261110050202.529473-1-tarunsahu@google.com>
+ <20261110050202.529473-4-tarunsahu@google.com>
+ <2vxz4idb1i2w.fsf@kernel.org>
+In-Reply-To: <2vxz4idb1i2w.fsf@kernel.org>
 
-Hi Leon,
+On Fri Nov 20, 2026 at 10:19 AM PST, Pratyush Yadav wrote:
+[...]
 
-On 11/24/26 1:43 AM, Leon Romanovsky wrote:
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 0b3c140babd94..8a94482f0b19b 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1259,6 +1259,20 @@ Kernel parameters
->  	dell_smm_hwmon.fan_max=
->  			[HW] Maximum configurable fan speed.
->  
-> +	device_trust	[KNL]
-> +			Enable device trust with blocked as the implicit default.
-> +
-> +	device_trust.default=
-> +			[KNL] Set initial trust policy for all devices, including
-> +			hotplugged devices.
-> +			Format: { default | blocked | adversarial | unrestricted }
-> +			No trust options selects legacy unrestricted mode, preserving
+>> +static size_t memfd_luo_ser_size(void)
+>> +{
+>> +	return sizeof(struct memfd_luo_ser) + sizeof(struct kho_vmalloc);
+>> +}
+>> +
+>> +static struct memfd_luo_ser *memfd_luo_ser_init(void *mem)
+>> +{
+>> +	struct kho_vmalloc *kho_vmalloc =3D mem + sizeof(struct memfd_luo_ser)=
+;
+>> +	struct memfd_luo_ser *ser =3D mem;
+>> +
+>> +	KHOSER_STORE_PTR(ser->folios, kho_vmalloc);
+>> +	return ser;
+>> +}
+>> +
+>
+> Hmm, I am not a huge fan of this. This makes doing such allocations
+> quite annoying, and I reckon we will be seeing a fair bit of them in
+> many places.
+>
+> The key observation here is that most file handlers need to allocate a
+> bunch of preserved memory, but they usually can free it all at once. So
+> we can get away with a very simple allocator that hands out memory
+> linearly.
+>
+> I have sketched out some code for this, take a look at the patch below.
+> Note that it is only compile tested.
+>
+> Perhaps give it a try and see if it does the job better.
 
-By "No trust options," do you mean using
-	"device_trust.default="
-or just
-	"device_trust", which says above means "blocked"?
+I agree the manual packing in memfd_luo_ser_init() isn't great, but I'm
+not sure we need an arena. This seems like something KHO slab support
+will solve properly, and since kho_alloc_preserve() already takes a
+size, KHO slab can be dropped in underneath it later without changing
+any callers.
 
-If I want the status quo (before generic trust levels), do I need to do
-anything? If so, what?
-
-> +			bus policy and existing authorization. Otherwise blocked is the> +			implicit default. An explicit value wins regardless of option
-> +			order. default preserves bus policy; other values replace it.
-> +			unrestricted disables runtime policy changes.
-> +			See Documentation/driver-api/driver-model/device-trust.rst.
-
-thanks.
--- 
-~Randy
-
+Until then, maybe we should just allocate struct kho_vmalloc separately
+with kho_alloc_preserve() and accept wasting a folio per object. For
+memfd that's one extra page per preserved file.
