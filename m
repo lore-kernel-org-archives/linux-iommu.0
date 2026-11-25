@@ -1,113 +1,150 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.158.5
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795634767;
-	b=rhy3OGZySyPBtoAbSUJ0cwDLeFvBniE5aZyWWscDZdSEti+bw9LtVpyR32quW9eJRptY
-	 Bf32n1xTm6nWu6m/zp9xyr9jY6SPgJ0l9/WXUUENaixyYuZI9WkWi5rQJP4YZCj6sXypP
-	 0ga8e5vybkDxtV0OIaWN1VkNRfLNcXgoYefGpBjpVKPIZ0GMwko5w7BGnZNgmoHbt7nuo
-	 ogPlKa7NYKPh5g/5oI92FTMhfLoLvMf+DYNKGnkf8cDcq9/r26Uor8B4ztNHuo3ePzb4G
-	 EmVr2ygqLjpIvmKr7yYxTb/Ao4S4lXTVmQSGlRbVrTV5G8z5z1gNpnrFKxAzZC3jX7A==
+	t=1795637756;
+	b=g4CQs0HtsvtUoXfHtXagQsk9Dkv1biFTU/5OIA3a51iwO8ehv+jBIwtf61wGRtb7VZNi
+	 9RBgQSWrJingoOwq/alig5gBiow6dx4Gu5smshpd59LTFh+H6wAUrOJ327sAtyN5d2u0+
+	 XR5iHRZl6aIWyD0M1vc3b8a8C2RpoNeykUhMqzN3DXkx4c0dhfjvZIfyZAHYBKSYYvJHp
+	 gyOJ5bmY5OlDSUXjyGV1JZecSuUtjrGrq+WhvzjFhQRe01fU9gnvV8SJWEEmZ9PrrTd8z
+	 vBbFfSQzNspR8dlEHQ58yQbfRYvjiGIyGMTWRcM3bCwxvDze5oaNXYhqaZRsnXrYgSw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795634767;
-	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
-	 X-Mimecast-MFC-AGG-ID:Received:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 X-Received:Received:Message-ID:Subject:From:To:Cc:Date:In-Reply-To:
-	 References:User-Agent:MIME-Version:X-Mimecast-Spam-Score:
-	 X-Mimecast-MFC-PROC-ID:X-Mimecast-Originator:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=nVEfa0p4nUhAy9RkM9DjIM3WMQi1x6mlGWa6MjSqXyY=;
-	b=3Hev1MzpvDr3sVcS2LcVJAua9L+EeY7TDhFs+oUGaVD9RDtyZSMgDmftPoP4iK1yvxOt
-	 Ov9ZpNh5xBRgH4szv7hhlpMZxD/Lhf/afw22phal69Nmn7W5Yh2n80HuiL42j8bI/nHsR
-	 z5cx+8MJbrnytj6ZckRgyQPvLEbRqhZFnLSdoZ56Lg/q4qwlJH05AgQvwch3fEM04Gv47
-	 gHFcvdnujEpXnL4I7dKtkfNVaz3cnFh1am2z99ELTmYPtVytzq3rilErayD5Fwo6cQZ51
-	 5Li2RSyY4t3CdB7r8PJIRTsUF6wTjeaO8ZyrPR7ooDx1QMzVTvV0VsUFFPoi+YtDZ3w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795637756;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
+	 Received:Received:Received:Received:Message-ID:Subject:From:To:Cc:
+	 In-Reply-To:References:Autocrypt:Content-Type:
+	 Content-Transfer-Encoding:Date:MIME-Version:User-Agent:X-TM-AS-GCONF:
+	 X-Authority-Analysis:X-Proofpoint-Spam-Info:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-ORIG-GUID:
+	 X-Proofpoint-GUID:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=rb/tXleQG/ksLL66I6VY/gKzssHMexklUooEaxWhqY4=;
+	b=WX7tB1vmzBK2shmjvPtmiQCM+LtcqeFAdUlHg2RHDPAumEwAdLGdgY/LWIyap4CwUXOU
+	 k7b0BRzmRbaNmP/9/NMPrtJHz1qcVeyvc+p+VHGuWVzbCEusbXq6gXHJOviubRKOEdCdp
+	 CN3uic507KiJ4VOnEO8+h6wGa/kNE6EZm7aQN9ARZVHxI/rOVB0XgTpHX/ffPPJxVuxfS
+	 J2nJiZ/QbdL/r3Igfgw0Bj1MehbYCmTs+hmSlLWynXPGfWm/Mt8i4fWcGEnhxaiFFdCZV
+	 gbCPV2m7ETSqM9wmCba6LCkSNk7C3BcFRKF/EhbyjjfvRiNQJT+dEAHcaIfPaPSJm2A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=redhat.com;
-	spf=pass smtp.mailfrom=redhat.com;
-	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=AquARwiF;
-	arc=none smtp.remote-ip=170.10.133.124
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	dmarc=pass header.from=linux.ibm.com;
+	spf=pass smtp.mailfrom=linux.ibm.com;
+	dkim=pass header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=n5h8ZZ9i;
+	arc=none smtp.remote-ip=148.163.158.5
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BDCD606A321
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 19:26:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7BDCD606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5575E606A321;
+	Wed, 25 Nov 2026 20:15:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5575E606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=AquARwiF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1795634765;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=nVEfa0p4nUhAy9RkM9DjIM3WMQi1x6mlGWa6MjSqXyY=;
-	b=AquARwiFl9ZPOjlURSKFDYDLKuJoUL7XlmJeqy0XiR3J3Z+YycWlusXRcwybGYFnzSzoHz
-	CAo7YWWPXvktMkY66sEPPUoKF/mQU4fMM3D6nhsRulUE0+7jXzI7s3kTIhHgbeK9Y8lw/g
-	plNYwvEbx+CKn3L76+wHsccR3UPpmPg=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-38-y0y_UYJfOQql7Zhn0c8tuw-1; Wed, 25 Nov 2026 19:26:03 +0000
-X-MC-Unique: y0y_UYJfOQql7Zhn0c8tuw-1
-X-Mimecast-MFC-AGG-ID: y0y_UYJfOQql7Zhn0c8tuw_1795634763
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-94960bd17b5so990075985a.0
-        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 11:26:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795634763; x=1796239563;
-        h=mime-version:user-agent:content-transfer-encoding:content-type
-         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=v6NmbSBdWpSm2uVrOp8tpZ65xhznrbrVh6qn8OyPhJ8=;
-        b=swZg/+OXoR9lVBN5tqd7oHlQxksM9/62fK8skOwPuSVkZ5tdA1b01uMxwWK2kULUl0
-         JxBswXchlmfv5ywG/pRSwL31P7kB8hmmGENz8tGOmoVMk5OXvses5B3cmzJzk83pyTDK
-         qXs9bcbTlzWlfdjTKEgw4Sr5UMq2FcsUbpjFM8NB2jFhO6zFbhxjyxA1c05RZObNRnk2
-         MBO51c3vJyx2X+v8J7j+V1Oecv95QGgJgWbySpigkN4voLMqI2vcgF7e80TLPMyxP1kr
-         ywr34aBSMlRM8KdpHg6FdRug6ElvJXtIFh57wBvL8Uf4w0Uajy0ffpgrLW3gTaDHN4UA
-         oDMQ==
-X-Forwarded-Encrypted: i=1; AL+hErFwW5B7UNkoVMgXKHyApldVRRu+pGepmaKglINLgw8+w2MSd8Sxxmo6o61SuNv95RVIa8r8ag==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8PYW0KDxL2SOfUbJ6kwCUqmxKTgTokjOyh+kswFPui0AlxGxFp
-	s0E3Y7dgmhyRy6WFE65qK7lfumkuk9NIP00jcr0bdvOwm70w83cCweDJTop1nzN5iECYx398Vnr
-	4UrTeI7NlhGtQkloySgH0DbuVvV9OvbI0+suwHq4ZwHb4ygA3E3idXA2P
-X-Gm-Gg: AZFdTZeH043Ot6pCeHPTRlb3776A4xmm/EGPxMMSRIKP9ViOAtjx1LpAeXRXi2t7nJk
-	8xlkyhO6FJAE4vIuiphBCXn7mI8pD4UOjyc/C1SUGQzPKbaOUpDjSLDQgXRpKvfVxghEZAxUiHW
-	G/SKy5rbQXcnbi6X0BtH+RMcLFYFLa+68kYQ2XoQ+jGq73m86L0xe4KWqNuoNnHrr0UNGs8Gvd5
-	LHIqSPyqbHIKu2mvB6XmmXxo4GcItGvnbp8tEu+BIb7RbZmbUk0LjNuO48SOjZO8IeeFMitm57B
-	TEXoqZQl10lwlAe/DnHlpqnD8KLu9Ro3yuSiJf7LMW0B+bUGNFnteoWJMME16WmQyUl4MvAxw3K
-	VeHZAaFomeRBrcZev4iVQ8UCLPZ2iTrVOpbHya98b7uQuSXXJ4G7FZPuRWU1szzdXVPjD75BKnV
-	bUscF3ToJ8/bS3x1QCevrNucXuMMsoxK+7galmg86zKUAz+fVTDlGQOaKDuSGOG0drUE5mUP8=
-X-Received: by 2002:a05:620a:462a:b0:949:3302:1d9f with SMTP id af79cd13be357-949bab350e3mr3218670585a.78.1795634762623;
-        Wed, 25 Nov 2026 11:26:02 -0800 (PST)
-X-Received: by 2002:a05:620a:462a:b0:949:3302:1d9f with SMTP id af79cd13be357-949bab350e3mr3218663985a.78.1795634761937;
-        Wed, 25 Nov 2026 11:26:01 -0800 (PST)
-Received: from loberman-thinkpadp16gen3.rmtusma.csb ([2600:6c65:2440:d8c:aa2b:ddff:fe88:da74])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-9213515f467sm168088266d6.41.2026.11.25.11.26.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 11:26:01 -0800 (PST)
-Message-ID: <2adaf0ef9e1a2fa18590f7d8dbf203c0f7de2be7.camel@redhat.com>
-Subject: Re: [REGRESSION] DMAR fault by Intel H97 SATA controller since
- "block: Increase BLK_DEF_MAX_SECTORS_CAP" (6.17-rc1)
-From: Laurence Oberman <loberman@redhat.com>
-To: Bart Van Assche <bvanassche@acm.org>, Thorsten Leemhuis
-	 <regressions@leemhuis.info>, Tobias Laas <tobias.laas@posteo.de>
-Cc: Damien Le Moal <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>, 
-	regressions@lists.linux.dev, linux-block@vger.kernel.org, 
-	linux-ide@vger.kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org,  David Woodhouse <dwmw2@infradead.org>, Lu
- Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Niklas Cassel <cassel@kernel.org>, 70sp
- <70sp@protonmail.com>
-Date: Wed, 25 Nov 2026 14:26:00 -0500
-In-Reply-To: <a0ff3156-add0-4f7d-8373-09f95bd7036b@acm.org>
-References: <5ad27a97aafbc08a8702d5b90d09cd59@posteo.de>
-	 <awSs5Cw3hFkf4O4T@ryzen>
-	 <ec36d13e-e4c2-4bfb-8b50-69d4a1628839@leemhuis.info>
-	 <87b1bbd8-8113-4890-8623-738b19a9cc7b@leemhuis.info>
-	 <a0ff3156-add0-4f7d-8373-09f95bd7036b@acm.org>
-User-Agent: Evolution 3.60.2 (3.60.2-3.fc44)
+	dkim=pass (2048-bit key, unprotected) header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=n5h8ZZ9i
+Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6APJZGIw2178407;
+	Wed, 25 Nov 2026 20:15:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=rb/tXl
+	eQG/ksLL66I6VY/gKzssHMexklUooEaxWhqY4=; b=n5h8ZZ9il0nPaBs+OlhFJY
+	XNDWGc7V52AGmj+QtzyOL6g8sYSXcJPGiqf2OldKB4gxq2U6xdrPS+jddr/3SG8G
+	RiihhOA0OG7oON0M1x57CF5DltgMt9mZpdZSXGMkdpb9B1IWcLOHu60TVQJY3TQl
+	ozqw5DtklFHJzwAubIuyKfIQbidrusQ/ft1tVOykvnvRbkZpIAyhKfK63gYf6jcb
+	oSNHIwb64uYWpSHaoODnWIrvL5z/2CWWo/8GX1vzIwncaiwwgF5WcW2C9h+dCyhU
+	BDhF60d1FdH/TJuCasKPLUC4nwOKoKIuZasGWIuAbLfahQMMBNtRPIiahzQKQafQ
+	==
+Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4j34gvdxrj-1
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Wed, 25 Nov 2026 20:15:44 +0000 (GMT)
+Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma21.wdc07v.mail.ibm.com (8.18.1.11/8.18.1.11) with ESMTP id 6APJJFfE2627651;
+	Wed, 25 Nov 2026 20:15:44 GMT
+Received: from smtprelay04.dal12v.mail.ibm.com ([172.16.1.6])
+	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4j5a415jq0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 25 Nov 2026 20:15:44 +0000 (GMT)
+Received: from smtpav05.wdc07v.mail.ibm.com (smtpav05.wdc07v.mail.ibm.com [10.39.53.232])
+	by smtprelay04.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 6APKFgo930671390
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 25 Nov 2026 20:15:43 GMT
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id AEE2458053;
+	Wed, 25 Nov 2026 20:15:42 +0000 (GMT)
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id AD78358059;
+	Wed, 25 Nov 2026 20:15:40 +0000 (GMT)
+Received: from [9.111.87.46] (unknown [9.111.87.46])
+	by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 25 Nov 2026 20:15:40 +0000 (GMT)
+Message-ID: <a993fe95d464abe9526ba71f9775924ff70f8eb6.camel@linux.ibm.com>
+Subject: Re: [RFC linux v1 2/3] iommu/virtio: Prevent driver unbind via
+ sysfs
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Cam Miller <cam@linux.ibm.com>, jpb@kernel.org, joro@8bytes.org,
+        will@kernel.org
+Cc: robin.murphy@arm.com, iommu@lists.linux.dev,
+        virtualization@lists.linux.dev, linux-kernel@vger.kernel.org,
+        mjrosato@linux.ibm.com
+In-Reply-To: <20261124155410.768743-3-cam@linux.ibm.com>
+References: <20261124155410.768743-1-cam@linux.ibm.com>
+	 <20261124155410.768743-3-cam@linux.ibm.com>
+Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
+ keydata=mQINBGHm3M8BEAC+MIQkfoPIAKdjjk84OSQ8erd2OICj98+GdhMQpIjHXn/RJdCZLa58k
+ /ay5x0xIHkWzx1JJOm4Lki7WEzRbYDexQEJP0xUia0U+4Yg7PJL4Dg/W4Ho28dRBROoJjgJSLSHwc
+ 3/1pjpNlSaX/qg3ZM8+/EiSGc7uEPklLYu3gRGxcWV/944HdUyLcnjrZwCn2+gg9ncVJjsimS0ro/
+ 2wU2RPE4ju6NMBn5Go26sAj1owdYQQv9t0d71CmZS9Bh+2+cLjC7HvyTHKFxVGOznUL+j1a45VrVS
+ XQ+nhTVjvgvXR84z10bOvLiwxJZ/00pwNi7uCdSYnZFLQ4S/JGMs4lhOiCGJhJ/9FR7JVw/1t1G9a
+ UlqVp23AXwzbcoV2fxyE/CsVpHcyOWGDahGLcH7QeitN6cjltf9ymw2spBzpRnfFn80nVxgSYVG1d
+ w75ksBAuQ/3e+oTQk4GAa2ShoNVsvR9GYn7rnsDN5pVILDhdPO3J2PGIXa5ipQnvwb3EHvPXyzakY
+ tK50fBUPKk3XnkRwRYEbbPEB7YT+ccF/HioCryqDPWUivXF8qf6Jw5T1mhwukUV1i+QyJzJxGPh19
+ /N2/GK7/yS5wrt0Lwxzevc5g+jX8RyjzywOZGHTVu9KIQiG8Pqx33UxZvykjaqTMjo7kaAdGEkrHZ
+ dVHqoPZwhCsgQARAQABtChOaWtsYXMgU2NobmVsbGUgPHNjaG5lbGxlQGxpbnV4LmlibS5jb20+iQ
+ JXBBMBCABBAhsBBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAhkBFiEEnbAAstJ1IDCl9y3cr+Q/Fej
+ CYJAFAmmAWs8FCQl6sYAACgkQr+Q/FejCYJAn2g//UKzlXOgizdk0wudLooRbGzDo23ktGSPK5Oj9
+ 9o5z6v4Jz5+qOHo5835683cqkMLM9//udA1ZcKV88LVwyfmoHChPW24cWBmOEy7RJOWCR4WeEINaO
+ pZUGF5YOx7oKTkPs511ky2FR0Heg35754pgTuTMEpYzRXr5pNMPS8mHXcXSARFPDPaCF+uBJ9BafO
+ L7XbpSwKRttePsWAlPHbSbloeDApBfHUhcF/pbuM9GNs+c/8V9NK+SwwqNK214t7jaSq9k+19/hfE
+ jvU45nbiYQM4VqGCelxVFRWol93JnwPFp/JaMgxgV1VYFH9Ijtgh+qNVVBqO8bbTjioFKy1bHdprN
+ 9GyPLDxoaI/lBg+5CwKewzazUjFd0xaqZbTXSgNK4ev/IuNI3qZV8tpvZZWwIgZU1K0Bhplt8Sku+
+ O9Yl2H54erq9zuzwXjqBJtoW0+MaKbe+1gZ/v2/AVE2VeQMugPUWDg+2bpJaApRkeA4xQ9XfeW6Bp
+ It7xYrwwbVhQtWRC0sRh+QNlU9HI28wPSnLWn7HFBeWupaIrxSp4IEL3eHUn8xv4aA8lpdNsHXD/X
+ vqOSUwy5jlTPTlemvwaC9mNHagNdVXng8C6+hxiDLhZ6xH2P4qNHTKmjW61NsdF6Y/HfWP+lmbi8/
+ 474UNCltDt/fP01ajqogfWZKFymoH0O0KU5pa2xhcyBTY2huZWxsZSA8bmlrbGFzLnNjaG5lbGxlQ
+ GlibS5jb20+iQJUBBMBCAA+AhsBBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAFiEEnbAAstJ1IDCl9y
+ 3cr+Q/FejCYJAFAmmAWusFCQl6sYAACgkQr+Q/FejCYJAtIw//WmQW/Z+SLdfrlDH5J2bvixzFNnO
+ TOvp8uM8vcNZsxZwPXem4AeCXHayCqipxpa0iXWufEIvdMxkBxWvvM//V+rTUgQnJe6nhDxfLGklx
+ 5Mb2H+K/ndS73ElCuA30MPYq7mHr8i3gEmi2ZFX1W47JecJ8hno/DQxhHRG7bd+GFsiKCbsjLWXNq
+ s/VaAK9uyOTQx7m6/2nR8L+Mvl1BrRXwkj7Qp0qxfQSd4r+IVNBzNFOcrGagBqsyHrN7Is7IICktH
+ 9VFl/G8P+hfviHQLnlxw9ltzpM1Dy6N1+BM3kbqD59gX+L6wqiLJI42eh+SHCiy35FvD3AFlYx4jZ
+ MWE6qIgFnbwcL1kvcA7nnwfr3ZizCYPm8e334xXxslXBoRGsvjXSbAeAyZo2dvJXffNHdcDdUbJSl
+ CfOixNGGKiQvs00X9ekfq9WmmRFvmYHu/m3lg1OXnMjFFIO41O51ZdhbEYJiqZEki7jA8Hd9xuWwQ
+ nFDHhacU3xxivZ4BKQGQc+4XZ3yp/q6+7ux9prepRy/LeRyoaAmE67oxEsAgj+qyA3Tfy5nRTDdRQ
+ E//gpaIt9H1VEx+68dRWHroxBQeozpnFPi25AlX3k4/EtVZjcItPWgE9iru1qT4DH3BBrz7Kd1zUw
+ NnQC77zDJyZD2WUj1E+5bftO0aeE+7HZXj3tM/ea0K05pa2xhcyBTY2huZWxsZSA8bmlrbGFzLnNj
+ aG5lbGxlQGdtYWlsLmNvbT6JAlQEEwEIAD4CGwEFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AWIQSds
+ ACy0nUgMKX3Ldyv5D8V6MJgkAUCaYBa6wUJCXqxgAAKCRCv5D8V6MJgkF/TEACOY2kL4NGFIbWeM5
+ TUhatxqe8c3RT6jvNjq32CkvaK/cSZzBkS0smddyOzxt2WnsvMgkr9cM7P+CevoMwhT3e0lgQbqBD
+ /vXZJjWKddC+iKXeqWkjMVcgCOsWNZ7PWEzRUT5X1AEFq2zzxQAQ/bCWEYNqIbHN4b6G1Wk+2Y598
+ +KypZ3FS0bwiItnPQOWzOOqJCGxDxaEUuXFx4ah8HtVdtIev8jPS/5uzQO9iG2vZQUWeMEYZtfMHW
+ sbFWqo2A3lxB+KPzNIYFhul4Lyx1CwvKUAGSHOx7FZuc2xI5DYt/Wdh2QyKFYr7xVzv3uwJjeS1+3
+ 6gvyB7DJaQuY+PziNPv4GPr5wy0cRkJ6Ps15fgC6y6wNwoNdNXKlwiuclIsBzJKa7A0pZMIfpCpIJ
+ bEHP7oy3drBRAhIrBx7Lx1lyqqodDqc+ok5IQ5WcKG/TOrH732mTmJX6fxYTiCVxcU4WLJSNZbrZ/
+ pjF0AWXs7E+onAkQy6RLg/XU1iiU5QdMvug+fTA6TpPSUMdujWtGWUt3/4nC+69AVc8tXtRQTZ7gP
+ t7uIcQFwPqUuJGS26vl0w/6dIABQAyU9acvE3adCZra+/PBKFZi/yxT1WgV1T2mexKSWwQgLcR57J
+ Yp5oWnQRgi/S6fAoskIWkp9UVcfAQPY0p45NwO5cZR9/g06JZmyrQhTmlrbGFzIFNjaG5lbGxlIDx
+ uaWtzQGtlcm5lbC5vcmc+iQJUBBMBCAA+AhsBBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAFiEEnbAA
+ stJ1IDCl9y3cr+Q/FejCYJAFAmmAWusFCQl6sYAACgkQr+Q/FejCYJAz4A/9F+dMhzu7YonagL4qh
+ WDz5IpRD4vzYKOBZ+qwYp1ugJz1BIUppN9i68HKoS4ARfgP97Sv9GpOy9g7L0lymH2MPF8hRPK0Yn
+ 7DKIkeu/r28YWEoWfoVm5reC+gpxMgmxBz4JScE4f6xfa7+Nw0bbTDl+nxftJD7lf/dTiruNJsXph
+ HQnZ5wPXmxeH6XVJikfpyrGe8iJZALbtHtjlx6Omu7NvRGikenB8trrWS5W0F60ZdbqH1HdmDDcrZ
+ pDq6LtAARHK5tGRm0SK6sZpKe3nULFeeCt7T/edk2FC6KVh4sL1jw1kyceX4DjiMffqYBPrhK5gz5
+ cDIixLBF9C6Wt1ObvuDBrIQf1/3q6EZrUrUuf6qtaXDMuC6cSlShm47qaPEvVYh67O9JZQ7vzvaea
+ UI74DJUb8Pjnz7mTOmMOzsS1gUhCue4n2YSSM6ythioCGb/3bgMGTpuer3JhvZG5s5uKD9yyj8s8x
+ 35qJkCFfjmjVx9s3vSUS48X+cUpYcMispErKzFu7C0YgKoxvJ4XTfXlDBiMFMPYcN67hsb2jeYHVJ
+ wzE+fIZiDx9JLh1oQW2krwjweisE+3glOaKXZKi0fBtkxyH41iemLtLNYZRJopv6ykdl3hiI+Nh+a
+ 3FZJPTo/OpqchMm8XIeDxC4NFFiPMpyLeYzIxO7eZpiGrAjVTE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 25 Nov 2026 21:14:39 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -117,202 +154,74 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: KffDoVDj-qqQgNSqEz94bekFCvMQX3dWXjnhDQM5sCw_1795634763
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.60.2 (3.60.2-3.fc44) 
+X-TM-AS-GCONF: 00
+X-Authority-Analysis: v=2.4 cv=CYCdd7rl c=1 sm=1 tr=0 ts=6b0741f0 cx=c_pps
+ a=GFwsV6G8L6GxiO2Y/PsHdQ==:117 a=GFwsV6G8L6GxiO2Y/PsHdQ==:17
+ a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=Y2IxJ9c9Rs8Kov3niI8_:22 a=VnNF1IyMAAAA:8
+ a=c2y1nhzc0TmZerhBWyQA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI1MDA4MCBTYWx0ZWRfXwPPxdp318sMI
+ sBH1LMdtHO+1vk4fViuv0UBZ7dlJ0QhduOkyH2iYLacL4Tf31YtvN0n9GvaNs4b+KU6/kLeFWzV
+ 4tJz+UT2QS64RwgSySN2K8dU7fDy1S8=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI1MDA4MCBTYWx0ZWRfX/2qCsvLdNomm
+ UN4/EuHX6r5Kmx8cZw/sYgGfa5CkGuoxQWfjPc7Uq5rez31d4fNu+Z3Sx78sDXajsMLNewrZrgk
+ TWmJJ3Xb8iNvICXwoNc3kCRytzT7sVE7IKNzqQc9n6sZefPrXIIvG55qa6qPSHFQAM3wEbtBpXW
+ xXXVsW5cXqnc8bKTPFAkoiAklD4xzJ9mzZMdd8YONvZXbv9W1+d7Y4qE9BMW/gPxpa7bLFnQ92S
+ BnCKw5iiWRs+tOCiVthRuNj5qIXnt1nYIvt9OjegGJW9MANWPmmjT/KPaSs49/OWbNoGBM2sWX0
+ zd6fgUzIYm29aV1ALWHr1adfavrGLBpiUr5TuslXQasud3NOgXXdXjqjZ7CV3/GDaFGNE3vf1Y1
+ +ghV7RoA9oszIhfJJpgzdO1BZJy3giVxDpaIM0GydXZrnpg8ncroOe6EytMGQMzAOuxOgzDkA17
+ fh32XAsSH5hfJdeqLzA==
+X-Proofpoint-ORIG-GUID: VjzfaP0VEtXlGn5MTSQAM8vNfyOEgyxV
+X-Proofpoint-GUID: VjzfaP0VEtXlGn5MTSQAM8vNfyOEgyxV
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-25_05,2026-11-25_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 malwarescore=0 priorityscore=1501 lowpriorityscore=0
+ clxscore=1015 spamscore=0 bulkscore=0 impostorscore=0 adultscore=0
+ suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2611040001
+ definitions=main-2611250080
 
-On Wed, 2026-11-25 at 10:29 -0800, Bart Van Assche wrote:
-> On 11/25/26 12:52 AM, Thorsten Leemhuis wrote:
-> > For completeness, =C5=A0imon Posp=C3=ADchal (now CCed) shared findings =
-and a
-> > WIP
-> > fix (both with the help of a LLM) meanwhile here:
-> >=20
-> > https://lore.kernel.org/all/QISmXFlpPMgvFUKmdIBDwqn4JHHXt2NZeJzerMLHF_5=
-icLo0lPKVlN0Ig9v8Vb52NmCeSFdyrao4x8KoN1DCXtDlnZS7eRIClC6vZyu-hPU%3D@protonm=
-ail.com/
+On Tue, 2026-11-24 at 10:54 -0500, Cam Miller wrote:
+> Set suppress_bind_attrs on the virtio-iommu driver to prevent userspace
+> from triggering driver unbind via sysfs.
 >=20
-> Thanks Thorsten for having shared that link. The LLM I'm using
-> doesn't
-> like that patch and came up with the patch shown below. Untested.
+> Unbinding the IOMMU driver from beneath live endpoint devices would
+> leave those devices with dangling domain pointers. This would not be a
+> recoverable operation.
 >=20
-> Bart.
+> Note that suppress_bind_attrs covers only the driver bind/unbind path,
+> not PCI-level device removal triggered via the sysfs remove file.
 >=20
->=20
-> Subject: [PATCH] iommu/vt-d: Disable superpages on Haswell with=20
-> integrated graphics
->=20
-> Disable Intel VT-d superpages on bare-metal Haswell client systems
-> when
-> integrated graphics (0000:00:02.0) is enabled and an active remapping
-> unit advertises superpage support (CAP.SLLPS).
->=20
-> Per the 4th Generation Intel Core Processor Family datasheets
-> (document
-> 328897, section 3.1.2), the integrated graphics VT-d engine does not
-> support super-pages and BIOS must disable super-pages in the default
-> VT-d engine when integrated graphics is enabled. Several Haswell
-> BIOSes
-> leave CAP.SLLPS set on the default engine (dmar1). Whenever Linux
-> installs
-> a 2 MiB or 1 GiB leaf entry (PS=3D1) on dmar1, hardware aborts DMA with
-> fault reason 0x0c ("non-zero reserved fields in PTE"), breaking VFIO
-> passthrough, discrete GPUs, audio, and AHCI storage (exposed by
-> default
-> once BLK_DEF_MAX_SECTORS_CAP increased to 4 MiB in v6.17).
->=20
-> Prior to commit c376a3456d8b ("iommu/vt-d: Remove
-> domain_update_iommu_cap()"), domain_update_iommu_superpage()
-> intersected
-> superpage support across all active IOMMUs, so the IGD unit (SLLPS=3D0)
-> masked off superpages on dmar1. After that commit, dmar1 domains
-> started
-> honoring dmar1's advertised CAP.SLLPS.
->=20
-> Detect bare-metal Haswell client CPUs (INTEL_HASWELL,
-> INTEL_HASWELL_L,
-> INTEL_HASWELL_G), verify that the Intel integrated graphics device at
-> 0000:00:02.0 is present and not on an untrusted PCI link, and clear
-> intel_iommu_superpage during intel_iommu_init() before allocating any
-> paging domains if an active IOMMU advertises CAP.SLLPS.
->=20
-> Fixes: c376a3456d8b ("iommu/vt-d: Remove domain_update_iommu_cap()")
-> Reported-by: Tobias Laas <tobias.laas@posteo.de>
-> Closes:=20
-> https://lore.kernel.org/linux-block/5ad27a97aafbc08a8702d5b90d09cd59@post=
-eo.de/
-> Reported-by: =C5=A0imon Posp=C3=ADchal <70sp@protonmail.com>
-> Closes:=20
-> https://lore.kernel.org/r/HYhMd0Klo0XE_yiVY7XmsgyKKFDwKHfKRy22KrycLcYd0V_=
-ykA4xdbBMJXkA07YX3os6qK-NhMIVi6ITo-CkNIIF0e-GcI0UwwZmdDhAJ0I=3D@protonmail.=
-com
-> Cc: stable@vger.kernel.org
+> Fixes: edcd69ab9a32 ("iommu: Add virtio-iommu driver")
+> Signed-off-by: Cam Miller <cam@linux.ibm.com>
 > ---
-> =C2=A0 drivers/iommu/intel/iommu.c | 53
-> +++++++++++++++++++++++++++++++++++++
-> =C2=A0 1 file changed, 53 insertions(+)
+>  drivers/iommu/virtio-iommu.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 >=20
-> diff --git a/drivers/iommu/intel/iommu.c
-> b/drivers/iommu/intel/iommu.c
-> index 5a2e705a2f2e..dd37aa25e287 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -24,6 +24,8 @@
-> =C2=A0 #include <linux/tboot.h>
-> =C2=A0 #include <uapi/linux/iommufd.h>
->=20
-> +#include <asm/cpu_device_id.h>
-> +
-> =C2=A0 #include "iommu.h"
-> =C2=A0 #include "../dma-iommu.h"
-> =C2=A0 #include "../irq_remapping.h"
-> @@ -43,6 +45,7 @@
->=20
-> =C2=A0 #define DEFAULT_DOMAIN_ADDRESS_WIDTH 57
->=20
-> +static void __init check_haswell_igfx_superpage(void);
-> =C2=A0 static void __init check_tylersburg_isoch(void);
-> =C2=A0 static int intel_iommu_set_dirty_tracking(struct iommu_domain
-> *domain,
-> =C2=A0=C2=A0=09=09=09=09=09=C2=A0 bool enable);
-> @@ -2762,6 +2765,7 @@ int __init intel_iommu_init(void)
-> =C2=A0=C2=A0=09=09pr_info("No SATC found\n");
->=20
-> =C2=A0=C2=A0=09init_no_remapping_devices();
-> +=09check_haswell_igfx_superpage();
->=20
-> =C2=A0=C2=A0=09ret =3D init_dmars();
-> =C2=A0=C2=A0=09if (ret) {
-> @@ -4266,6 +4270,55 @@ static void __init
-> check_tylersburg_isoch(void)
-> =C2=A0=C2=A0=09=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vtisochctrl);
-> =C2=A0 }
->=20
-> +static const struct x86_cpu_id haswell_cpu_ids[] __initconst =3D {
-> +=09X86_MATCH_VFM(INTEL_HASWELL, NULL),
-> +=09X86_MATCH_VFM(INTEL_HASWELL_L, NULL),
-> +=09X86_MATCH_VFM(INTEL_HASWELL_G, NULL),
-> +=09{}
-> +};
-> +
-> +/*
-> + * Per the 4th Generation Intel Core Processor Family datasheets
-> (e.g.
-> + * document 328897, section 3.1.2), the integrated graphics VT-d
-> engine
-> + * does not support super-pages and BIOS must disable super-pages in
-> the
-> + * default VT-d engine when integrated graphics is enabled. Some
-> Haswell
-> + * BIOSes leave CAP.SLLPS set on the default engine, causing fault
-> reason
-> + * 0x0c (non-zero reserved fields in PTE) when a 2 MiB or 1 GiB
-> superpage
-> + * mapping is used.
-> + */
-> +static void __init check_haswell_igfx_superpage(void)
-> +{
-> +=09struct dmar_drhd_unit *drhd;
-> +=09struct intel_iommu *iommu;
-> +=09struct pci_dev *pdev;
-> +
-> +=09if (!intel_iommu_superpage)
-> +=09=09return;
-> +
-> +=09if (cpu_feature_enabled(X86_FEATURE_HYPERVISOR) ||
-> +=09=C2=A0=C2=A0=C2=A0 !x86_match_cpu(haswell_cpu_ids))
-> +=09=09return;
-> +
-> +=09pdev =3D pci_get_domain_bus_and_slot(0, 0, PCI_DEVFN(2, 0));
-> +=09if (!pdev)
-> +=09=09return;
-> +
-> +=09if (pdev->vendor !=3D PCI_VENDOR_ID_INTEL ||
-> !IS_GFX_DEVICE(pdev) ||
-> +=09=C2=A0=C2=A0=C2=A0 risky_device(pdev)) {
-> +=09=09pci_dev_put(pdev);
-> +=09=09return;
-> +=09}
-> +=09pci_dev_put(pdev);
-> +
-> +=09for_each_active_iommu(iommu, drhd) {
-> +=09=09if (cap_super_page_val(iommu->cap)) {
-> +=09=09=09intel_iommu_superpage =3D 0;
-> +=09=09=09pr_info("Disabling superpages on Haswell
-> with integrated graphics\n");
-> +=09=09=09break;
-> +=09=09}
-> +=09}
-> +}
-> +
-> =C2=A0 /*
-> =C2=A0=C2=A0 * Here we deal with a device TLB defect where device may=20
-> inadvertently issue ATS
-> =C2=A0=C2=A0 * invalidation completion before posted writes initiated wit=
-h=20
-> translated address
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index a08474eeed58..dd10c3e98a3d 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -1285,7 +1285,10 @@ static struct virtio_device_id id_table[] =3D {
+>  MODULE_DEVICE_TABLE(virtio, id_table);
+> =20
+>  static struct virtio_driver virtio_iommu_drv =3D {
+> -	.driver.name		=3D KBUILD_MODNAME,
+> +	.driver		=3D {
+> +		.name		=3D KBUILD_MODNAME,
+> +		.suppress_bind_attrs     =3D true,
+> +	},
+>  	.id_table		=3D id_table,
+>  	.feature_table		=3D features,
+>  	.feature_table_size	=3D ARRAY_SIZE(features),
 
+Makes sense to me and this is also in line with other IOMMU drivers
+like arm-smmu-v3 that use the same attribute.
 
-Hi Bart,
+Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
 
-Tested-by: Laurence Oberman <loberman@redhat.com>
-
-Tested on a non-affected platform to check the quirk does not
-misfire: Coffee Lake i7-8700, Cannon Lake PCH AHCI, both DRHDs report
-SLLPS =3D 2M|1G (dmar0 cap 1c0000c40660462, dmar1 cap d2008c40660462),
-7.4.0-rc1 with intel_iommu=3Don. The quirk does not trigger, superpages
-remain in use (2 MiB leaf PDEs, e.g. 0x000000018f400082, confirmed via
-domain_translation_struct during 2M O_DIRECT reads), and there are no
-DMAR or ATA errors. I don't have Haswell hardware, so Tobias's test is
-the one that confirms the fix itself.
-
-The Fixes: tag looks right to me. c376a3456d8b is the commit that
-stopped intersecting superpage support across IOMMUs at attach time.
-In my earlier mail I pointed at 5bdd86ec5d19, which only removed the
-remaining hotplug user of domain_update_iommu_superpage(); both are in
-v6.13-rc1.
-
-Regards,
-Laurence
+Thanks,
+Niklas
