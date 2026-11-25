@@ -1,102 +1,58 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795603985;
-	b=Ft5HIwYkZvIAfzZfNwP+XUh2G/jpPsKJ2TTF6AAsLh00fTWl1yiSF+dPXw1TIsb/XopI
-	 3yRjeziCN8/RNtc98IkHl6jFDIz6/i9v/yP/dPZqmusNjnhJoGG1ourxN1URpcptXVHs1
-	 5J69sT4iwtt+qb9TqFe9ednyUFQ2taMvwuX9jS6keVQ7ASczAmzU4S7w5EF01bumMdgt1
-	 WqedyyfKLN7u++AfQlZHNP49ho/9bD/hEQc+mB0yEzt/f9rrMlJzoFKoFLAcVYfYCjPZz
-	 zcWtFMN9ZlPa7BA64LGSskudW9uABaWB3OAl3R+9r7QJYxVArIFIFZjl4D8ahfMcEWg==
+	t=1795604431;
+	b=OH8N7yzPfIqmebeNCHawciH4U64ivnjFv5Yci4sU4/pZPRGz6Y9AGyeMZqKSxOednmOi
+	 F8jVf/ptTJp4r6ddD0XdOqTGG58y4UXf9nzXP3nuLCgLbID3P+S0L2CjVbnFstzWfRrPg
+	 iFEPAc4j39WQBcZaA99QTcM9yREF77V8Pv2cO6OzTbtu4RPTtx1UUZMHRO6CIdfu+kkwm
+	 Z/1UFzwgfVnnCq2zLhqu6LzkTQmi4Aa47UiwdYg/Ir4jITN1q5tCIjFmmhu/7Po87PRTG
+	 +xF/u2VIRUhy7648CkaJ8oBL9ga5I9r4v5+/F59NgByG8BGtWMknZatXCYpXn2LIEuA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795603985;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=GtyqZEMexnqUKbDqv2TlW/7VEDcPuxK4TtntSukqHfg=;
-	b=dwtUOEi0tyXJLVyXjxyOkxZRIuKgVco5MnvKJdWQ461i+GKT7cYk4MnLWeKci2vcMKEI
-	 MZATWW/1lB2m3dkjGMSIONgMKKaH0ed5svMcDfgH3Ugq4iBO35P8S/CFcbMG4PiTu+WEt
-	 6PwQ88wZxVJ/HwPa6stIgE1WNg8Gtgh97FuosGo95nqFPVHKuJNQnoqd5+auY2JW/VS8H
-	 VXADke9PXLkQdWCOlRi20TqLz0F7+BwrGEUzVY676Yd8oLVPwymVwZUsuAVzbU9e4t2Ef
-	 lo8TUi2yI6a/QGeTtibLtFDOhfMikurgdU2wJBWB3jK9IyuKfTTX19tOJjhFJatvl5g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795604431;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=2ANnb016hMJh6qTFRYYIrUt6Een3ux4YwmZrDiFyqtQ=;
+	b=F4+oC/lRRtEq8F0aVAo8p9c/r5x9ZCoMxJavSTUZc+Uaw3YjWl/hzixpwVtQ28E3UOvn
+	 myxqpW1FmI93h5spZdcev/i3rhvC4fAMIls0cQRywgMA222+fG/pA7zqFohhzAK8u5lxv
+	 cMRStK3pLvjT/1kuzzD4CX7GNf6qd5pwh+aMQafbPO0DH1xwbENbtyWZ146x6Y8mrmrWJ
+	 TsHEz/wGTXWzA0d65OIDp7fQ/ZsdgbxOOcXE6h6fosKx1V1DPjoQwLkBFAzWMUvtdl4+/
+	 fHXw6DKqk57XcI5BD+r88bCROvNMLidtllJV73S+xHFfT+VRzNcB9+7NDsceCdMDCZw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=baylibre.com;
-	spf=pass smtp.mailfrom=baylibre.com;
-	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=ZNXIZbyN;
-	arc=none smtp.remote-ip=209.85.128.49
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="l9FKE/ar";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 824E8606A32A
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 10:53:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 824E8606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93E67606A335;
+	Wed, 25 Nov 2026 11:00:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=ZNXIZbyN
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4bb85e07aadso69445025e9.1
-        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 02:53:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1795603983; x=1796208783; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=GtyqZEMexnqUKbDqv2TlW/7VEDcPuxK4TtntSukqHfg=;
-        b=ZNXIZbyNjbI20j8cE6WFBhFIyO4oc5NzfHT5v6sNO83fV1MVaZUEkZGJCRIBqrgqMp
-         Mao/j9QAccAS3nHrKLLN/Q6Nom75QQbwKol3Ee8IUtVOoj0mWnC37gshn1WP7bZA6/jX
-         k17Fa3nmHYj2LIH2lL7HPIQqdWyEor4AlXyiKrfTuwP5KSYwLYG1kwVoD6v3UYlu0KKx
-         AqriTPVgYDueZqgAtxxhLfqi7dwXqfvZzFyJt5WZSbrmAmjdOa9h4oi94QErofmSi3a/
-         CR/ZjBOujps3wfL06iW0byXnQIcF+ux2qXe5hO397qsDRT8LtaLX7+l0lHFq2j9xCoLy
-         dVSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795603983; x=1796208783;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=GtyqZEMexnqUKbDqv2TlW/7VEDcPuxK4TtntSukqHfg=;
-        b=0jWrdrO2hVWY+DTXdjhzoY5ZvIC8SxiXCJQ5B2y6pQpSJqTwiMXusS6bh52RUrMefH
-         ucxW5/dx8dG43UlMBVnzD6QHKMrZAS3mFIEuGx6nGWjqEjgzT5iMygPkxvveNLo8Csf0
-         J62VdyeMM3ZcTORo9KybOsw/8ollotQFjHcJl1qMZh9B3hmWLkj084kZW9bTfjhj7by5
-         XdLpXtRsODAqoN+1zKHETYMKR4kDtoDeMXkQH7U1AWzJ0ypu5ahts/eKzRy0H0OGlMp+
-         bAtH1iPTqd4LLezUbOXwELbUvu/XXNdEFeNDahn6EJMXUgEd/xyM2PLyinQEgRs7QGSZ
-         peTw==
-X-Forwarded-Encrypted: i=1; AL+hErGBbiUTHWCJdkaThOy/8JywCZADTrninYWyA40sdT8pfOYIMUIKQQ5wtpJPb7Gzz+Yzp2xTag==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+rD9sPyx+R7DxQIiR7oMVHB/+uLBkvt/5OkyQRH7Eog/ug5CsQ
-	TGsxOcOd3Wru3USKBSi7/Qnlurdphq4d0mmHA811ZvuuXXrPZcCnaO0k/cBYL3HThyw=
-X-Gm-Gg: AZFdTZdeA4iGn3Vh8I6nD18LKEF2h8W59FJ2szcm9DXtohARYqTgwxYMURRDXlsGRwd
-	cGrKfAzCwwYU2GaNuBREO9oNrGtgbwuQZhpPsI2tujlaicn8uF60gd7uCaoFYzt+jerrEM4Gh29
-	wc9oFolFM9VpexnjmCGVymaKpoIU3iuRj9y3oL1X/B6Sp+MWSxG6R5Ix8tdDnWr1T9tN04gyroC
-	7IlmUQo2FXKzK9BoF0Q3yAxbRuDAlhr8L9jHnO7D3S/LjyUKLTqrnhRKo0ptwTVYZRPc9a4HEFI
-	g1rR+Tcop1pnOpQSFzWaz3m8t4ym4sF7yYPDm0CNo0DxxHvZ/anIwcL8M6/RLXhxkTc0jelSdc+
-	vgusN0HA7Grfy9S5M93t/oTJAVNvH+TE+8SZKkhEv6gB5LuzZo0vC325+WH4WPBDbaHd3m+0WkT
-	M/r1hKjWKoC+Nv/IHXCNo/o9gKPTlQFttn0ci7MOdHwTdhD0LK1tNnynH8vm1wZXcCkvYLjmQC6
-	8aRvJ3S9NL8/l8aljf11QSf6ARJb5H8CJR9BZdogJ8A8mKnvYec7op8prcnq6HJ8qJyffxwDrqq
-	Lv4qnbayP5R5wT+Tff2XDqLHwPf3Y4QDgYnJqH2kkSCZAwR5kUAy5YoqxlAej89y6n3DD0tzfKt
-	Fvb398xASEws69ggP
-X-Received: by 2002:a05:600c:638f:b0:4aa:2339:a375 with SMTP id 5b1f17b1804b1-4bb8880607cmr329616615e9.13.1795603982845;
-        Wed, 25 Nov 2026 02:53:02 -0800 (PST)
-Received: from localhost (p200300f65f19a9043ef7230869dfba63.dip0.t-ipconnect.de. [2003:f6:5f19:a904:3ef7:2308:69df:ba63])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4bb853a12acsm539176075e9.8.2026.11.25.02.53.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 02:53:02 -0800 (PST)
-Date: Wed, 25 Nov 2026 11:53:00 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Magnus Lindholm <linmag7@gmail.com>, Jakub Kicinski <kuba@kernel.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: richard.henderson@linaro.org, mattst88@gmail.com, 
-	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-next@vger.kernel.org, 
-	netdev@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org, 
-	Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v3 2/2] alpha: enable contiguous memory allocation for
- coherent DMA
-Message-ID: <awa6Owm3eDW3EitJ@monoceros>
-References: <20261115103809.1288167-1-linmag7@gmail.com>
- <20261115103809.1288167-3-linmag7@gmail.com>
- <awVzJMLVw4wUSqky@monoceros>
- <CGME20261124232303eucas1p10f2da7a94c8aa19fa4e406d089c1367e@eucas1p1.samsung.com>
- <CA+=Fv5QJxoxEoKxRpm5Hisdf=y+VpmM-s_VBC1tDQ2FTCfb08w@mail.gmail.com>
- <3467269e-9929-4c9f-bc19-847976f49527@samsung.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=l9FKE/ar
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EE301F000EF;
+	Wed, 25 Nov 2026 11:00:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795604431;
+	bh=2ANnb016hMJh6qTFRYYIrUt6Een3ux4YwmZrDiFyqtQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=l9FKE/arL63gUupbjkNXJJKo1Js7K7UNY+HIzsDwm/8gBs+h3D655aXU2wmfve6NM
+	 0lEP3OCYgsr6dmFy5uo+C1ONY8FUJCuPUqRdlS9YrmvQTYDtDu/kFwYFfjK+0fNRwO
+	 Myf/sxku9fzNEwb3sSPOUp0DES8XRiwRZxJhwoIlwdptDtLAmZfYeAzifrkApC6xY8
+	 woxzsMgZDBwVn1YkVX0FIj3U1PYmeXeAQRfovYmXUE0EHjAukK8a1caqiDs87z3r8j
+	 v48zaFLzEgwTMQtBUq2ksJvhzwu/f8eWqVpb0lpIY6VNZxyiAICluFJEvNlLzAUsqn
+	 Y3AAklTis7trQ==
+Date: Wed, 25 Nov 2026 12:00:26 +0100
+From: Niklas Cassel <cassel@kernel.org>
+To: Pe3k <pe3cek@gmail.com>
+Cc: iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Damien Le Moal <dlemoal@kernel.org>, linux-ide@vger.kernel.org
+Subject: Re: iommu/vt-d: data corruption, AHCI gets IOVAs inside its RMRR (HP
+ Gen8)
+Message-ID: <awa_ys0XSt9UwAZE@ryzen>
+References: <CAGvcwsDdKSZe0reeuT0eQabaSbM6+KAfwFimxiqhvKrjD2nQeg@mail.gmail.com>
+ <awX_cNOqtTjAP33a@ryzen>
+ <CAGvcwsDwi9vNcCLxdBz-Arx=5i-fFvqxP+QbRKrx7hK4yqmvRg@mail.gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -106,74 +62,42 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="6sn276mtbb7rvtiq"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3467269e-9929-4c9f-bc19-847976f49527@samsung.com>
+In-Reply-To: <CAGvcwsDwi9vNcCLxdBz-Arx=5i-fFvqxP+QbRKrx7hK4yqmvRg@mail.gmail.com>
+
+On Wed, Nov 25, 2026 at 11:01:17AM +0100, Pe3k wrote:
+> bugzilla 221713 looks like the same bug. The ML10 v2 in comment 15 shows
+> "DMA PTE for vPFN 0xf1f81 already set (to f1f81003 ...)", which is inside
+> the same HP RMRR (0xf1f7e000-0xf1f94fff) that I see on 6.12, and its 7.x
+> symptom is the same "Emask 0x40 (internal error)". Their bisect of the 7.x
+> symptom points to d373449d8e97 ("iommu/vt-d: Use the generic iommu page
+> table"), but the RMRR overlap is there long before that (they saw the
+> PTE error back to 6.0, and I see it on 6.12). So my guess is that
+> d373449d8e97 only changed how the overlap shows up.
+> 
+> The H97 thread looks different to me. There the faults are "non-zero
+> reserved fields in PTE" at 0xff4xxxxx, outside any RMRR, and they depend
+> on the request size.
+> 
+> sp_off: on this machine the only DRHD reports no superpage support
+> (cap c9008020660262, SLLPS = 0), so I would not expect it to change
+> anything. I tested it anyway:
+> 
+> 7.3.4 with intel_iommu=on,sp_off: no change. It still has 0 DMAR errors
+> and 221 failed commands with "Emask 0x40 (internal error)" (121 READ
+> FPDMA QUEUED, 100 WRITE FPDMA QUEUED). 3 of 6 copies lost 8 MiB each
+> (zeros), and the iommu:map trace again shows 21 maps with
+> iova=0xf1f7e000 size=0 from iommu_dma_map_sg.
+
+You mentioned that 6.12.118, 7.3.4 and 7.4-rc4 is all bad.
+Is there any kernel version where you did not need iommu=pt for a reliable
+system without corruption?
+
+This seems like either an Intel IOMMU bug or a HP ProLiant MicroServer Gen8
+specific bug to me. Hopefully someone more knowledgeable in those areas will
+chime in.
 
 
---6sn276mtbb7rvtiq
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v3 2/2] alpha: enable contiguous memory allocation for
- coherent DMA
-MIME-Version: 1.0
-
-Hello,
-
-On Wed, Nov 25, 2026 at 09:54:08AM +0100, Marek Szyprowski wrote:
-> Hi Magnus,
->=20
-> On 25.11.2026 00:22, Magnus Lindholm wrote:
-> > Thanks for catching this and identifying the interacting commits.
-> >
-> > I reproduced the error on next-20261123. In
-> > arch/alpha/kernel/pci_iommu.c, I changed:
-> >
-> > page =3D (gfp & GFP_DMA) ? NULL : dma_alloc_contiguous(dev, size, gfp);
-> >
-> > to:
-> >
-> > page =3D (gfp & GFP_DMA) ? NULL :
-> > dma_alloc_contiguous(dev, size, gfp, dev_to_node(dev));
-> >
-> > This fixes the allmodconfig pci_iommu.o build. A full DP264 UP build
-> > with CMA enabled also passed, as did an object build with CMA disabled.
-> > The full allmodconfig build hit an unrelated cgroup sample error
-> > involving PATH_MAX and LINE_MAX.
-> >
-> > I'd prefer to keep the Alpha tree independent of the DMA series.
-
-That's up to you, but in my eyes merging in the immutable branch
-provided by Jakub into your tree (or rebasing on top of it as suggested
-by Marek) is really the easiest option. That way you don't have to wait
-for the change to hit Linus' tree and there is no further need for
-coordination or others paying attention to not create non-bisectable
-commit graphs.
-
-However looking at the immutable branch I see it contains both the dma
-API change and then separately various adaptions to ethernet drivers.
-IMHO the immutable branch should only contain the API changes (that is
-the commits up to 31f7e12d621b) to reduce the amount of possible
-conflict.
-
-Best regards
-Uwe
-
---6sn276mtbb7rvtiq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsGvgoACgkQj4D7WH0S
-/k7oNAgAknak/QZHg7BqHZFzHCe4qtzYco0MHY20TLpuveFkHfRuLa9UVG2bG0Ww
-LQZfbq0hnFip66k6fjmWJ+mGt0QyF7sJj/DpkCtXlI6aQtnnm3D3slJhpH/bWjue
-fk1SdxjYh64pzlg1UF9rEJri73sW9fln2Gz2EK1iHllG2Z1XRGwb4bBzh6WpzAxc
-AuLAWN7R4PJvFLQ+kNkR4YocW5+EV0RnYb7/i7Fb9ABP1MxCxi+4OM8+uD8MGuGZ
-OFggCxgES6vXm2Ostds9EY3vRvG+zs6/ZpyofM5BxVfPInkgG1teIzoXDpivIgkA
-C+dJzsR+ixI93VaJu1B++KrDBjHhlw==
-=UmCO
------END PGP SIGNATURE-----
-
---6sn276mtbb7rvtiq--
+Kind regards,
+Niklas
