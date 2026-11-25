@@ -1,59 +1,132 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795631663;
-	b=scTaPUQrZORJ+8FBxNpvKRsvRCMV2CkBz/iK81wR+Z4ub9yU0zm95lAZAy1ph4dEgWIT
-	 nsOmtALQ8Pae5CnlXq8wf402PSpthg3kTjvTOnSmeGXbj1QKjHooIIVU+9TgHDTtY1KU3
-	 A/d+byw7LyWsF58KwjV6KYkaNJiiJ7x8C2USs0qcQtR8p4O9swL8i+mVZOij35XA4u5NK
-	 gVcCD97hCatJMDaXTxU9HV55mlmHJ3mQtGIy1Ozm13tWKbFrqxS+vyr8T+9Q9SamHcERB
-	 k1z1RhByUzlrxqQFoxPmIUsHdg89q2rtryrQAu+KZPf01zLOyq/FpQFcYI6RTg8BOjA==
+	t=1795633628;
+	b=xPyDNmwPTYdKYSEcL4lw2QFaeNtZ9Iqx+CzBJP5N6ZFJDvrMZ98R5Uwk/km9VOvM8XxN
+	 bR79xZm/6MN2QnIaWuvf9NYXEUmijfvM99k55sOfCM90Gj0+eyMJ8h09GON9yoLL8pg2y
+	 2bUaYpdP62PtPzCcezk26Ld9uUmOgy8hFc1b2anlHxM8TGIPYFGDqT0SfCY4DD8ZkuSc9
+	 U9pKMi//kJzFnZOteh7p5XPH7YI64FxJAgSJ9rwmU0be4JlprtSGMrSw6u5wr+wMXMYc2
+	 6lU6QDXFH4BOX6FOKh2MEtnk/ryLHyJwKdtwKJE2DjdWLxOAJ0opkaBBRGaSyKdJ5Bw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795631663;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=lN6AbTnehn4JFc7e6Trjk6a/kJXaBSLWT91x39OVt+o=;
-	b=kOqakygYKLkwoyDgRGAkYi1IyykoKA9bWdeXa8cj+NbTSbULIi9FZPuAjtFZALZ988aP
-	 /gmPcAZM2xoCZrSnzyyDZk3lVgtJF+7ePhWzlD/LJugby/dI7Qf/M3oAO9reh/OTCffzM
-	 1A63JnzDzXEJbj9+ZCCULyMLVkZBljahuUaPjViOqL2FYZwKtk4P/q68YhQGvTSGHdrxV
-	 xX4S4SrDe7V6JFW+bdx84N5DczmEKuP0Q+ZCaKpc7QRgmNFPxZIO5RiIaobBnTUhPZ+57
-	 hloN7Gwy8sY+tlXDqxhiQSO2KTcVi42itXIJ6VBSyPDZ9dDc4xVgS64ktBlGai4MEtA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795633628;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To;
+	bh=JisVSgs385NGuntA6erRX4QYHX+VR40SrOV715tgnK0=;
+	b=uqnYHQYWwUaKPIdfP5fl0AOB8RuGwp7w7hpMKfUG4523DdgnR4CbwOlGVSMXggWRyQQR
+	 oJRlpfceSnnQouMBZRGUquJlUbp+R//jkjl1wtoSAiIH3+6x890ebvi8oB4S/g/AwJjZ5
+	 ULp5mhAU50p22Av6DFoh6rnBGVkkWQF1CuSqVJ49bDXoUl3sBZQCuOpOd/MKzfGWR/+z+
+	 ESrBuLebwklDgfZMoAXRZu1Up1MN/oVUSTBjqQiVo/yd+6sDqeSCAulw6fXEZVIeUNjOQ
+	 2M/95ORJbFjg9PM9a+0ZCsFKD7R2Pw4120iPY/GKU4XjbFTj4z+MmDF95elw+uisdMA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UupQtPIP;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=hiNSbW4I;
+	arc=none smtp.remote-ip=209.85.222.170
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4E9A606A32C;
-	Wed, 25 Nov 2026 18:34:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41C2C606A31E
+	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 19:07:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 41C2C606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UupQtPIP
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AF001F000D2;
-	Wed, 25 Nov 2026 18:34:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795631663;
-	bh=lN6AbTnehn4JFc7e6Trjk6a/kJXaBSLWT91x39OVt+o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=UupQtPIP7l0f2ccBXBw6ZqF9NGaqeOTV+3R4Qvv2UcGP5x2P0JIFr0quccYJ6su4/
-	 9IITwEmD4Lz0UcD9PpfaVjM/AuNwXK/8heRpbd1/ExhPx6Z566eIawQ8GK4sKsdL5u
-	 20VKOo2rZCVTi2BW9ZgMJ/8edFSORrwXluT6U9BkA3Uxb5r8/kl5IsrJCT1180fF6O
-	 BFHyisArXZ9qX0ejR+1RwNedOjg49nbtMy/0VXtqoIy4PNRc0kLaDvjEjOG9M/Pw7g
-	 dOxVc/syxz7pn1pAzCRRuVradrWQh8GXRzU/GenDnkpcz/UZs3pcQBamNle8uD8kC4
-	 gUdMfHkzkzzxA==
-Date: Wed, 25 Nov 2026 20:34:19 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Sibi Sankar <sibi.sankar@oss.qualcomm.com>, will@kernel.org,
-	robin.murphy@arm.com, honghuan@amd.com,
-	Jason Gunthorpe <jgg@ziepe.ca>, joro@8bytes.org,
-	prakash.gupta@oss.qualcomm.com, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] Revert "iommu/dma: simplify dma_iova_destroy() and drop
- the free_iova helper"
-Message-ID: <20261125183419.GB774860@unreal>
-References: <CGME20261125135138eucas1p141ba6b5e09623562e2033e290fba811c@eucas1p1.samsung.com>
- <20261125135120.1126571-1-sibi.sankar@oss.qualcomm.com>
- <a3722347-4b88-41ad-926b-455530020c6b@samsung.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=hiNSbW4I
+Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-9495c633eb5so343497985a.1
+        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 11:07:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1795633627; x=1796238427; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=JisVSgs385NGuntA6erRX4QYHX+VR40SrOV715tgnK0=;
+        b=hiNSbW4I/wZ9hLBThfJieREeVkTXchrzJ4MoYlw+j+J8itc8u1+FKqJtdjZZIrkQfX
+         xHInGnPDKR6iYe/3lclG28+t77iCvrltI7/OukXojL1tujp1+xpwJUNZPM6AA30hyykI
+         acLwR0Eho+HJCX6xEDL3hhYmuEmWbWQAhWIYTy/W3UbghoEKgMpPKmaxaGs9S8bOTFSZ
+         Z/1GKKzLdv0h+fV5dLW/P/h9G6vLV9bf+xZE7IlIqJLO7jJcx0hdxf1WzunOyrgF2juv
+         C9RXt4Clq2J0i4BGWhe1iq0YaEjkI+qWRMbJiUAHU2+w5mKcA5lrZ3zbalUUPo8x53pO
+         cVvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795633627; x=1796238427;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=JisVSgs385NGuntA6erRX4QYHX+VR40SrOV715tgnK0=;
+        b=uv1BuaTNrPkYS60SMWk/8LtRK3GYD+6r9FaFZ1hTP6kAhux+Zm9ZsmcanbuacDVDst
+         RTT/LSBBHN2efH7Yh7dbSB8hooN2Wy9UX/h1dn2K5RtlZaJyMBB+UiMf0DKev+GHEI4m
+         w8OSrCKWQ0gj5q3KeB8mEX5V3q2/Af2lncpOFw/x8gYWU1bKhGnGfcQXQIIy7FnP3sXg
+         2EzIRqIlOXTJ8BgaNwJIVZ5EgjqiPyS3Lp0nGcIkvJOuRsyFL/bBGeXNwxdtxfpjqHMU
+         ohQjKMVkb8R/z3ko37a4Kt06w71lKZitH245hhj54skZ03y+1a587u8heMkm6vNCWhH2
+         LwkA==
+X-Forwarded-Encrypted: i=1; AL+hErG9J9S5kHs5e03nrTd8bC4VeVTnqRh+hJIsBdt+gmgOmf4jh8q/qUpOBkOwEvOVXMjXh9pZdw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9g6jBe8mG+SOPDqC4KIE75bpxRyvavIxEfDmGli5r5+Sp/SicV
+	Kd2yT8YLPlYyAs0nDQFGH0T1RBhW2hjliSUMr5KMUaTv4//ImCMfyaofyY4xUZ5kHZM=
+X-Gm-Gg: AZFdTZcI4b4clBUsh2n79Dc6VjilbJkJhK9RRioXFcSvWQ82MMcD5sZJ6F+bce/SJgl
+	ZMhKeBm995p1yFzyvd+kdEIQWF1fRqba81urJo8KHvz9t3syj0jlSfZkjnzo4XBvM5/+gRgG7GU
+	1lRNbJILqo1HN7Q0JVMYvTW/zauZD7PVmwkU2gXM8CbEkEETvO32R7xdjx2JbdMKP4GjdpvTeok
+	+7Gwu+Gi11GyzqukJjd9A2AenCetBH161Ioyw/JzjST+UD69QbjL1BcBBfl7NFeuJii/yZ/EA2w
+	dlaZLn9ivTWvXGX+SiExA303dgEiOAbOsJwQkoBzMDMKMfanT9leGEpSmiOnNOmt1F43nQsMffz
+	Kz7mefybK2BS7eCP3n2hbtsnb1uZOoulxh7dqsv5M5vmFxlPMs+j3TEeTFx+27ZSf5WpU3f00mT
+	N9luclEmWtnOzKZYkPGlw9W2WqIDgJHVq15X4318ySJkkODDX8FH35COml5pnmmDhhjlHFyHnLd
+	Lsbia8mj3Ns1O8H07fPZm/OxxLoLcAZVZQoPd94vK0kTdMdORcrTJqi5RCfsmhjCHL69n7eZFqW
+	sk5rveM=
+X-Received: by 2002:a05:620a:4543:b0:949:65fe:b727 with SMTP id af79cd13be357-949ba9b99a7mr3433826285a.26.1795633626929;
+        Wed, 25 Nov 2026 11:07:06 -0800 (PST)
+Received: from ziepe.ca ([142.177.118.84])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-94a017cfb46sm339501085a.28.2026.11.25.11.07.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Nov 2026 11:07:06 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xWIKf-00000002HLZ-3ZQi;
+	Wed, 25 Nov 2026 15:07:05 -0400
+Date: Wed, 25 Nov 2026 15:07:05 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+Cc: Alistair Popple <apopple@nvidia.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Simona Vetter <simona.vetter@ffwll.ch>,
+	Matthew Brost <matthew.brost@intel.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	Dongwon Kim <dongwon.kim@intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Karl Mehltretter <kmehltretter@gmail.com>,
+	Baolu Lu <baolu.lu@linux.intel.com>,
+	Felix Kuehling <felix.kuehling@amd.com>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
+	linux-nvme@lists.infradead.org,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Simon Horman <horms@kernel.org>,
+	Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
+	Alexey Kardashevskiy <aik@amd.com>, zhipingz@meta.com,
+	treding@nvidia.com, jhubbard@nvidia.com, chaitanyak@nvidia.com,
+	Leon Romanovsky <leon@kernel.org>
+Subject: Re: [PATCH v3 03/24] dma-buf: Add the SGT DMA mapping type
+Message-ID: <20261125190705.GN246011@ziepe.ca>
+References: <7ac7edd0-5c38-440a-b26a-21bcbb6f4702@amd.com>
+ <awT8prWsj11TBdmP@nvdebian.thelocal>
+ <63eb7b6e-e0a8-4443-a434-0301ed59beae@amd.com>
+ <20261124142032.GN9566@ziepe.ca>
+ <7a5a2d3a-e42e-4dc0-8d22-8dd1bd249501@amd.com>
+ <20261124194618.GC114530@ziepe.ca>
+ <awZ_Os1pXelOGaFP@nvdebian.thelocal>
+ <fb9a6b12-c134-4e40-86a5-dbcb59c0b91b@amd.com>
+ <20261125155559.GL246011@ziepe.ca>
+ <5fb8bb60-7d9f-49b1-899c-40a890fdc14b@amd.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -63,69 +136,93 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <a3722347-4b88-41ad-926b-455530020c6b@samsung.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5fb8bb60-7d9f-49b1-899c-40a890fdc14b@amd.com>
 
-On Wed, Nov 25, 2026 at 06:21:06PM +0100, Marek Szyprowski wrote:
-> On 25.11.2026 14:51, Sibi Sankar wrote:
-> > This reverts commit 1acce29926d93f3eba427696fe3da6451504dae2.
-> >
-> > Before this commit, dma_iova_destroy() unmapped through
-> > __iommu_dma_iova_unlink(..., free_iova=true), which set
-> > iotlb_gather.queued from cookie->fq_domain, skipped iommu_iotlb_sync()
-> > and freed the IOVA with the queued gather, exactly like
-> > __iommu_dma_unmap(). After it, dma_iova_destroy() calls
-> > dma_iova_unlink() and then dma_iova_free():
-> >
-> >   - dma_iova_unlink() never marks its gather as queued and always calls
-> >     iommu_iotlb_sync() after iommu_unmap_fast().
-> >   - dma_iova_free() passes a NULL gather to iommu_dma_free_iova(), so
-> >     the IOVA goes straight back to the allocator through
-> >     free_iova_fast() and never through queue_iova().
-> >
-> > DMA-FQ domains therefore get strict invalidation on this path. That
-> > includes the block layer's blk_rq_dma_map() path, which NVMe uses for
-> > all data transfers, so iommu.strict=0 has no effect on NVMe I/O.
-> >
-> > hw/sw details: Qualcomm Glymur CRD: SMMUv3 with no RANGE_INV,
-> > 	       4K pages; NVMe SSD on PCIe Gen5 x4
-> >
-> > Fio sequential read/write numbers:
-> >   Domain                          seq write    seq read
-> >   DMA (strict)                    2694 MiB/s   2693 MiB/s
-> >   DMA-FQ (lazy), flush queue      2707 MiB/s   2803 MiB/s
-> >     bypassed (this regression)
-> >   DMA-FQ (lazy), flush queue      10.6 GiB/s   11.9 GiB/s
-> >     used by dma_iova_destroy()
-> >
-> > Fixes: 1acce29926d9 ("iommu/dma: simplify dma_iova_destroy() and drop the free_iova helper")
-> > Cc: stable@vger.kernel.org # v7.3+
-> > Signed-off-by: Sibi Sankar <sibi.sankar@oss.qualcomm.com>
+On Wed, Nov 25, 2026 at 07:17:51PM +0100, Christian König wrote:
+> On 11/25/26 16:55, Jason Gunthorpe wrote:
+> > On Wed, Nov 25, 2026 at 12:19:08PM +0100, Christian König wrote:
+> >> The low level API which talks for example to the IOMMU driver for
+> >> creating the information how to access the buffer is simply not the
+> >> task at hand for that framework. The stuff we already handle is more
+> >> than complicated enough.
+> > 
+> > No matter what name you give it we need something in the middle that
+> > can see the phys_addr_t and the iommu_domain..
 > 
-> 
-> The performance data clearly shows that the flush queue was there for
-> the reason. Together with this revert it would probably make sense to
-> apply the v1 of the reverted patch:
-> 
-> https://lore.kernel.org/all/20260701092033.422867-1-honghuan@amd.com/
-> 
-> Leon, do You see any other option?
+> No, absolutely not. That should be given to the exporter so that the
+> exporter can call the DMA API to create the DMA addresses for the
+> importer.
 
-These numbers shows clearly that we had iotlb_gather.queued != 0
-and never performed iommu_iotlb_sync(domain, &iotlb_gather); while
-destroying mapped IOVA.
+I think I've said it many times, and I thought you agreed: NAK to
+giving GPU exporter drivers an iommu domain.
 
-I agree with you, v1 is the easiest solution, however my preferred one
-is to cache gather when it is created and keep it in dma_iova_state 
-structure for whole life cycle of that struct.
+> The idea here is that the importer give all the information to the
+> exporter so that the exporter can do the mapping on behalves of the
+> importer.
 
-Thanks
+No GPU driver must touch these internal details, they must only use
+standard abstracted APIs that prevent them from abusing things.
 
+My fear of DRM drivers abusing the DMA process is equal and possibly
+greater than your fear of phys_addr_t :P
+
+We are not giving DRM a nightmare API to continue to shoot us in the
+foot with.
+
+> > The primary issue here is the exporter *direct* call to the DMA API!
 > 
-> Best regards
-> -- 
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
+> Why?
+
+Because we need things to be mapped in ways the DMA API will never
+support.
+
+DMA API will never support something like dma_buf_iommu_map(). I have
+no idea at all how you expect to build this if exporters are directly
+calling DMA API. It is not possible.
+
+> > We cannot disconnect this from the DMA API, ie to use an iommu domain
+> > or ualink, if exporting drivers are hardwiring calls into it.
 > 
+> Well the plan is to not disconnect it at all. The exporting drivers
+> just says to the underlying API here is my buffer please map that
+> for this importer and that result is then given back to the importer
+> through the DMA API again.
+
+DMA API will only do basic PCI DMA mappings into dma_addr_t.
+
+It will never handle iommu_domain, it will never handle ualink/etc.
+
+Give us a plan for those if you don't like any of these ideas.
+
+> > Fundamentally the need is for the driver to get the phys_addr list,
+> > exactly like today, and then pass it to an op which formats that into
+> > the right data structure for the importer. Be it dma_addr[],
+> > iommu_domain, or some ualink_addr[] - or whatever.
 > 
+> No, the phys_addr type should only ever been seen by the DMA API and
+> not by DMA-buf.
+
+Again, I don't care how you label things or what "library" they live
+in, I can't tell if we are nitpicking names or what.
+
+But there needs to be some kind of abstraction that takes in
+phys_addr_t and makes sgt, dma_addr_t, or iommu_domain depending on
+what the importer needs.
+
+Exporters must not open code that.
+
+Obviously DMABUF is involved here *somehow* since it is the only thing
+that knows an importer even exists.
+
+Would you be happy if we made a 'dma mapping for dmabuf' library that
+did all of this and DMABUF just passes its type opaquely and drivers
+just call its tightly abstracted functions?
+
+That is the component Alistair is proposing, he just prefixed it with
+dmabuf_* as the namespace because, lets be honest, only dmabuf needs
+this weird looking thing.
+
+Jason
