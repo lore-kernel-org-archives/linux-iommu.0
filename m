@@ -1,82 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795596419;
-	b=qo1V+Ply7BTXYCHPsVa6BKCwIODumlQ2AVKuKVPOYQgLG7oRTyUM8wYIMz+Y7MbWIDWw
-	 43Vr/2oGVMebRGvw2Pd4W3PCL4bUEBPgcyv9QeIa9YSpB3t+8rSr6+73x9nUaVQGCF76x
-	 HnNeVeM1EQ2ZaA0qN572SOSN380voLTALlC3z94tC49jw4S4IV8GSBOiMCAwM2XHAEmX1
-	 +dFMaLRshc0USj87ov3siamkzXH5UTbxqBCNLRTGvuo+qSArM9f5gU+6xaS1acfH7ouVO
-	 uBA7bsOlyFp/qgRyftkPSq+DDIV5yY8FIidX1sPKTshsWxL9lo/WvjlbJ5+J2eaIYXA==
+	t=1795596559;
+	b=2KtqMyO4Iourzk2hYttn5GFPPoCKv6EmG04Z/i/GAKvjqgxT3goXnSgX9KnNTD5uRkFO
+	 My//Vf/oqyd4Wls/f5wpNa3BFWhlwAfhtmHwvVSn1qmiCAqLPxeXRjPxvwAgO57LTwaok
+	 N7ubEMqW+A4mpoCkGQ43IJD1U03rQ80p4MqKITTSbhb4+1/bHX7V3GZY+T09Er25zd8nL
+	 NAchWsVSp/pTkcB0G30HHqZFZTWe+i+5yd5gOvUV7WNvKsSlKllMesBUueYK1udpOYBcM
+	 2RfOIEFgO7tAS+gljD/+l3C/paHWuCgmlWfrTuSx0EboVo4Mo9EpjCr38YycBfv3djw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795596419;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:
-	 Organization:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=46LJk3TZobukCFqYlnEQoPn8+XtFKOEqqL5lCkoAPWQ=;
-	b=t0ZewKyQg6NPhDOuUG9lJu6wLhe3Cez5L4iGv2NCnA8TzhAEnWfbji68AOUzCKxy00/5
-	 A6PCyAM0nD04aAWDIH/JnH0b+11TO2tUOnk9NDKtR1eEo2fHt/ODcTmVu9FT22nGiGzw/
-	 hssnvGSTppUOJLQx49Tb07Kl5DBlRIP30JCBADREpiSDUFm2mb9IIXOECQEgtqSpzZuAy
-	 Qs0XvjmD2c63hjdfBvaGXR8X5kLf4SPMuJLtpyuvaU/DBDbGWHEvS5Xk1JL2OurWUp4xY
-	 kDYDx1ZoRjem/tOHYYA6ZdwkYrcctmcHoonCdh3vSOP/sli6XcZGJW6QgKxSIDzVfJQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795596559;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=TlND/jXIyTOutFCDB5DXoV3ddiKsYWv3HLDMVOOuvUk=;
+	b=LQE0vBSdlPqY7FItSS5Dr/dXeU+XAOTqmx3rdyr7nSCtCBSzyk+CVGhkxIp30kXbnVin
+	 XrupdkSZSCnG5UsKMEq9dDGfzH8XfCSzJGj395bQT9RH8KAQVeB2Plennd22/fmN5wamK
+	 fgztazqQ+NMWDzbq7DqS5QDQ9kEYjq1Cjb7y1ilXLolDSENXAZqF4vHKA4JJGOpbjR/Ga
+	 C39LFiRAWs1dO7X7u/FZbRC2jQtYwlvwJ0GcKUjrPjA0MW8gN8tmdVZJukSr2ZhqY358L
+	 ydb0FZvg20BMPXJIb1mwNGictZEYP2s2E3o3yE3KOdfBvHKEYjuwDJhCqypagD1+ruQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NOc9sUet;
-	arc=none smtp.remote-ip=198.175.65.12
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CbvI696z;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D7D1606A337;
-	Wed, 25 Nov 2026 08:46:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9D7D1606A337
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0287606A68D;
+	Wed, 25 Nov 2026 08:49:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NOc9sUet
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795596419; x=1827132419;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=H9lc7gaOvAIKawIbRVS6ojxGIJsVi/jj/Se/VsDrnTU=;
-  b=NOc9sUethe16ktmcnd4LVZyXoRF7ccqW25GeXmlKOwYPXsgpr4fARI1U
-   gtyG1FMNWOkbH+byCKMBVc9z22pRLqDyapu5m18od4I4QoJb0lAhKaupY
-   a7Ff5p2+mKq8E6QwSfwOlzivXx0Z/E/2zTeg/BnIsP3G/A7fbCB462un9
-   vca7vTLNyju7/oKfVaF0Mdu7q46Yihef18FLZN/t3gXQ1CDJO+cCc2+dY
-   nfS8yqtoYDham+7CcGeXfFbtKKpfneAk3YDumlzPOiwHbhduR7/cxeT3F
-   477DonUOBk5EAzh1dNQNtOjptoEXCGEyeKkEJJYedoHInkfmcYedeyFb5
-   A==;
-X-CSE-ConnectionGUID: fwAEquF/Qr2n8ZApwQQzkg==
-X-CSE-MsgGUID: HfCv7XHYTDeRGz+ICjriiQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11976"; a="4365839"
-X-IronPort-AV: E=Sophos;i="6.27,232,1787036400"; 
-   d="scan'208";a="4365839"
-Received: from fmviesa011.fm.intel.com ([10.60.135.151])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 00:46:59 -0800
-X-CSE-ConnectionGUID: tJDNE9WfTyGMmWtXvp2Vsw==
-X-CSE-MsgGUID: E2tDNko3SO+ToIriwzOtlQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,232,1787036400"; 
-   d="scan'208";a="13591526"
-Received: from alekseim-mobl.ger.corp.intel.com (HELO kekkonen.fi.intel.com) ([10.245.244.36])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 00:46:56 -0800
-Received: from kekkonen.localdomain (localhost [IPv6:::1])
-	by kekkonen.fi.intel.com (Postfix) with SMTP id A429E121B6D;
-	Wed, 25 Nov 2026 10:46:59 +0200 (EET)
-Date: Wed, 25 Nov 2026 10:46:59 +0200
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6 krs, Bertel Jungin Aukio 5, 02600 Espoo
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Linux PM <linux-pm@vger.kernel.org>,
-	Linux Driver Core Development <driver-core@lists.linux.dev>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, iommu@lists.linux.dev,
-	Brian Norris <briannorris@chromium.org>,
-	Ulf Hansson <ulf.hansson@oss.qualcomm.com>
-Subject: Re: [PATCH v1] PM: runtime: Eliminate __pm_runtime_put_autosuspend()
-Message-ID: <awagg6rPEkkJR6nJ@kekkonen.localdomain>
-References: <13014755.O9o76ZdvQC@rafael.j.wysocki>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CbvI696z
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FDEF1F00A00;
+	Wed, 25 Nov 2026 08:49:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795596559;
+	bh=TlND/jXIyTOutFCDB5DXoV3ddiKsYWv3HLDMVOOuvUk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=CbvI696zR6OtVXAPCG7g/iPy03A2oTw21RBe6JaPhJHFPRXi+H17lOBRzJrgNARtn
+	 r+fRoufm0OiktxQGgsxLm9zCVTMRoj9kPsTPBWqqSY5vGYQEAuqD+14yaCOmlKMYgF
+	 j1qfbL6ZNKLE7MMyEMUkcV3l/4FT2ZkmMgDykuG0RcIRla9mWdpv0NQJXIM+9jb3cF
+	 VJt8oZcFXReeREr1uqelf/3atuLgWEoBVmlLglOje+t6FyydCXpPAQKHBjUs9j0ERg
+	 xnHTGpj/TffLtZ2xQ+zgZOe75RLjcDXEPhX2RuZKUdYZKO2pec6w3jDkKOOwtf+v8j
+	 Gmrfe0Cs12QCA==
+Date: Wed, 25 Nov 2026 10:49:05 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Oliver Neukum <oneukum@suse.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
+	Chris Lu <chris.lu@mediatek.com>, Mans Rullgard <mans@mansr.com>,
+	Alan Stern <stern@rowland.harvard.edu>,
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Cornelia Huck <cornelia.huck@de.ibm.com>,
+	Andrew Morton <akpm@osdl.org>, Jeff Garzik <jeff@garzik.org>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Alexander Duyck <alexander.h.duyck@linux.intel.com>,
+	Dan Williams <djbw@kernel.org>, linux-kernel@vger.kernel.org,
+	driver-core@lists.linux.dev, linux-input@vger.kernel.org,
+	netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+	linux-usb@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+	linux-acpi@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+	linux-coco@lists.linux.dev, Alexey Kardashevskiy <aik@amd.com>,
+	Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+	Greg Kroah-Hartman <gregkh@suse.de>, linux-sound@vger.kernel.org,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH v4 02/33] Bluetooth: btusb: Fix MediaTek ISO claim locking
+Message-ID: <20261125084905.GX14811@unreal>
+References: <20261124-device-trust-core-v4-0-037eb0d17b1f@nvidia.com>
+ <20261124-device-trust-core-v4-2-037eb0d17b1f@nvidia.com>
+ <65749362-927a-492d-8bff-573c277fe456@suse.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -88,27 +103,39 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <13014755.O9o76ZdvQC@rafael.j.wysocki>
+In-Reply-To: <65749362-927a-492d-8bff-573c277fe456@suse.com>
 
-Hi Rafael,
-
-On Tue, Nov 24, 2026 at 05:36:41PM +0100, Rafael J. Wysocki wrote:
-> From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+On Tue, Nov 24, 2026 at 11:39:40AM +0100, Oliver Neukum wrote:
 > 
-> There are two users of __pm_runtime_put_autosuspend(),
-> pm_runtime_put_autosuspend() and arm_smmu_rpm_put(), but
-> the latter duplicates the code from the former.
 > 
-> Fold __pm_runtime_put_autosuspend() into pm_runtime_put_autosuspend()
-> and make arm_smmu_rpm_put() call the latter.
+> On 24.11.26 10:43, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > MediaTek ISO claims are performed from HCI setup work outside USB probe.
+> > Locking only the interface does not protect the claim against teardown
+> > of the parent device. Unconditionally waiting for the parent lock can
+> > deadlock with disconnect while it drains the setup work.
+> Hi,
 > 
-> No intentional functional impact.
+> your patch raises a question. Can usb_claim_interface() ever be
+> used safely outside probe() without this kind of locking?
+
+No, it cannot. This is why need_parent_lock is set for every caller of
+usb_driver_claim_interface() running from .probe().
+
+> If the answer to that is negative, should the locking be integrated into
+> usbcore?
+
+Not in the current upstream code. Currently, only two callers of
+usb_driver_claim_interface() do not run through .probe: MediaTek and usbfs.
+usbfs already holds the lock, leaving only MediaTek, which does not.
+
+Therefore, the caller should take the lock, and MediaTek is the only caller
+that needs to be fixed.
+
+Thanks
+
 > 
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-
-Thanks! This is a nice cleanup.
-
-Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-
--- 
-Sakari Ailus
+> 	Regards
+> 		Oliver
+> 
