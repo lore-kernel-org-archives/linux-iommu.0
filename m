@@ -1,84 +1,77 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=139.138.36.225
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795567195;
-	b=qDojbPrD84JPd45lTqyTabF2fl/nx1K4tkWi19/tmx/LAfWlHT8mxB5kt1NvAgSlkuIZ
-	 +HaT7UWlxN5cXH+PkT5LNxCMvgPl21tKi9R9/H0yGxsq1Q3um9DtsfogltCm56whwFJvy
-	 UgM3JejeBQHKUenYz00ixvHMzUmueNFSxd2V5pp8uc24/HcdYJTAIbNVpv+9OxZmSCeKh
-	 1XpX0nDq9HKQZHJljauyJUBepT6tAkcHL6/0Y3chvFUDciV0ySEgpHbWrLpeFHbEu5dSo
-	 M5T3iZ0GtKYvheMyZhE0c9gqny1AcS+fbeCCrPbGi+lj5X09YokNmcZOcVLcYWFsQ0A==
+	t=1795567198;
+	b=hRKDqKaGFo93V1rL+9akc8Jp52MNKJLChVQXa5vGQcI8phqJFSYhelKTXBOkQrUMNAQ/
+	 LkA7wvlVTDCGv4Dl7fNtC3fmy93ev39DpQat9kmjYx/t7aypDBGtVIFvwtFQKTtTVmgn9
+	 m3YIBnHPUqTCwb3uMkiD2JHaDhtYtuQJ6W/DsuexRFRj/ABfVkbZ4pXM4WkcKa7xWSsje
+	 QUaGFYh4K5mrT1piGKfYxz0a0TzYNL7QCQy5v78wvCYXd7x8cEoD4aaRGPQYN53qC4k9t
+	 ShPW2MM2vn7UK2WhfW4tSkW3LLbLx9Uyl0djtFPb2boRF61r6bRZKljFDzgApPigGew==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795567195;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Mime-Version:Content-Transfer-Encoding:Content-Type:Date:Message-Id:
-	 Subject:From:To:Cc:X-Mailer:References:In-Reply-To;
-	bh=YKxHcqUXjQp/1J5J8B8/Kkrmh8UptW8ucEK7buHNuos=;
-	b=D7opYfbgJWtDBZPSCzp02PtFaiYIy6253Gr63rxAtYdIhdahrLFipgnXVqkACBnOmVSC
-	 PrxLvSn8pslhx0YNeuVG7rPflL7husLrKwlGnx0Y6Nkj1VFgscUZnUs4VG91mK+GcTVSI
-	 6m+L326MLPB46y2XsX4PaWdZlABLz6dhMDXjXgNbDB/W9qJ9/oZMRZO1LefYNOOJiBch7
-	 jc6RNV3S0CiDL+TW68hzmfZXtTmxqKVk1waBSQUE4cGX44XTGTdu+uX3uU4INCuNK0Y4I
-	 0Ywgl6Ql7GCXsf1rNFQQfZANS5GlM01q/Ck/dkskGFc4MFsHJWLDf0c+eg7o3/W6pyA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795567198;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:Received:Received:Received:From:
+	 Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer;
+	bh=FIByHlTPNo6yonGSdO2RYDduoUN+XoU6L/TvYdP6w/E=;
+	b=vVg+h7B1KmWBgc9zWyIiHWuZuB/bdIDbqGi8qACoLRkGq9EQTQ+p9OByYorcOHZSIWWM
+	 E89jcUDWQzbhD6hQcal1xWErZvNtCjh6EvEa/N4iOxIALNkyVlz6GEK1Dn9hQs2PR1WSC
+	 wA/IweOUhbPW1ehbQZJDZ4MuebiXr1Qo5EiRKhARvZaEFqlw2jQNrpmoi6W07T6K958kF
+	 FYTPzaVP+KJJvCAe/0kaBhNc0Xt9yL+SPu43Vvqsr0nkSLe3bL9edY1Klyd0//jJuPqF7
+	 aTOxCEXm/9oirzi3pDGQbM6Ocp7xl+jRCs112Uv7ccC6vz2gsnSsUkaykWo2SNny6ug==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=nCzlJqch;
-	arc=none smtp.remote-ip=209.85.214.175
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=fujitsu.com;
+	spf=pass smtp.mailfrom=fujitsu.com;
+	dkim=pass header.d=fujitsu.com header.i=@fujitsu.com header.a=rsa-sha256 header.s=fj2 header.b=DWL6Xj+e;
+	arc=none smtp.remote-ip=139.138.36.225
+Received: from esa10.hc1455-7.c3s2.iphmx.com (esa10.hc1455-7.c3s2.iphmx.com [139.138.36.225])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91C70606A32D
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 00:39:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 91C70606A32D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41CB1606A33F
+	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 00:39:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 41CB1606A33F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fujitsu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fujitsu.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=nCzlJqch
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2f05bc71e01so21445305ad.0
-        for <iommu@lists.linux.dev>; Tue, 24 Nov 2026 16:39:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1795567194; x=1796171994; darn=lists.linux.dev;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-type:content-transfer-encoding:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=YKxHcqUXjQp/1J5J8B8/Kkrmh8UptW8ucEK7buHNuos=;
-        b=nCzlJqchLm9wVfq1hfTMvrl4CGlTPvgGRlXCFvr67M9+kxomxzBfe6jf6It7yRuFjo
-         Iu88IRlIfVu3mfnlUbhpXfvmbEM7Cfi1YZ+Iwvsiahf3GiPYFQYkhsXUa8ibrlDjodd3
-         riMi5ZQPdNCiQ92rBvgXb+o2SCnWHCE1ypTYilpoRfgmNEJF5Iy89YWdMbsFcDMXltQ6
-         ki38FIId3w9rZeY83JAEXF5pWqOf4PNm491qrzEzchzaOg0S/tePlieMC4xYwuDHXhvb
-         +oLQoknGfG2FoM/vroKP+ep5rNgyko0PHDJblSI5dSIvJtXdr0A3lweNldmb4WVkeaDw
-         v8lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795567194; x=1796171994;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-type:content-transfer-encoding:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=YKxHcqUXjQp/1J5J8B8/Kkrmh8UptW8ucEK7buHNuos=;
-        b=d4DCvzy8dI5QJ1+OcE+Iq5jrTPGESVqunWtXOFZZNUmt9BzYvlg0j2IkQVoOhZ44ft
-         p5p60akr1EgQSf+GMBjGMqki+DVc2dwo9qeCJZTFAhSSo/dzIjjAj1V80qPR2x5UKrge
-         V/fHJy9MBYWoFhzr4B7lF5UoLgdb3DAlp4BMswZFlFK4ImjtZt7FAUqRe6NGhqqvqDbR
-         8o14VDxHJfIBlHHTAM7OkMA4Jhnd3ZgrntQ0/LlbECHOigVtynhMNMy4Gh4pulOuTIFY
-         25E6x03TfzIybk1IAo15zvLZ/s1lXUfA4iEsSLkveHA8O3+ujtW8mYiTr9FqRhs7PqoQ
-         jLeQ==
-X-Forwarded-Encrypted: i=1; AL+hErGjKgZeR6bJ/SmMdd3sQlR/qpoKqQrWg7+MCazxc7J1eriKuz/vrXBZL+/hKIERrOT4zEdWpw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+KS6I/6AqI1sTrAk7PKKf7OeoYRK6rFxAx/BFDWMa8+chJZAvV
-	G2uV4ICwzege6H6vzkIlFmH1w22wCt8qLdHS9GtyPyAnlgxEP1JCS77WUtEQLMEHRQ==
-X-Gm-Gg: AZFdTZfUe5Sl2A9egrGhzqeT1zsuk0Ljuf5oI8tboXE1p0irBp/MD5n7chtfiJ0ZVpe
-	rwtTl8N8fIvY8bdR8g/Y+/OuhYiIUMjFNPhOr84vd+GD7SfU8PtQvpJ6ig+XDH60IudXbxQJH/+
-	uSUR4dirDKohzAZ/hS3bDVK8Jz/r5u8Z01HrknSdRMkqnvVysIzPkaM8iBlyPrZYKHW5ekRwaiQ
-	rlT8eVyFesKcikAOvDwV8USkTHUveaWTle3A1tiz4OpwPRMWjy38dgDRImdyBsqlwml7dkttAEd
-	U5AghGPpnb778EboklJPSgxzl45SYjEEqCTGNQoEjAQnmuBmFRkTocNbkeM9ZpPsf4iHnaeUu2H
-	rXEUcWiTo2Tt+dZLs+ShjaoYQwVdDokvXyJzdzT3tfj1QKpl52ALqiunlJvF4Pgq41ZM5W8LwvZ
-	wE9MBhwetLsDWjBotjUti6+jNbnbEn0jybAPbGViHNandDel/uAij8PzUrEnQxSPtVkE8F5c1Mc
-	O7Ri8vC3AIpTucUINSY1lISTL835PuwxgUhtxv4f87ZiEKkxyCr8EVX0yYRNMFOqnO6RlOYbM4S
-	6f7wlSHEsptydQbH7qD4fDLd5LwzUMsnb5BbDF8aFZBGclBtTkwFIbyr1mMzvcXW
-X-Received: by 2002:a17:902:eccf:b0:2f0:25ea:8fa8 with SMTP id d9443c01a7336-2f03f176abamr169618335ad.19.1795567193320;
-        Tue, 24 Nov 2026 16:39:53 -0800 (PST)
-Received: from localhost (33.79.127.34.bc.googleusercontent.com. [34.127.79.33])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2f03ee848c1sm75603595ad.10.2026.11.24.16.39.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Nov 2026 16:39:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.a=rsa-sha256 header.s=fj2 header.b=DWL6Xj+e
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj2;
+  t=1795567205; x=1827103205;
+  h=from:date:subject:mime-version:content-transfer-encoding:
+   message-id:to:cc;
+  bh=9zVoKV2VBSnVaNWOGCXlH1YLrznYJ/CwSJb8o0cmF1o=;
+  b=DWL6Xj+efw4XMqmUfWMGFqDsN7ElZj+WSW7wlNOnewvIc5GwbKqCiOdM
+   BjrbM/nh/5kkZKv3+my9JlSDxeLw14vIV0Lxvoa1saO9EB50HMeBBM1D6
+   5RGRMHrxxpm6pvNSEaxf2rpLEzn1u6p3ZV5SKDKPLWkSurkAcpWmyYzVS
+   rtjhbiNPrq3R9m22KeDXChofgMxRFdzHcMAum6lNGyGvTFqLD0/QuMYiJ
+   1FrMU9cbQGi0mIFx8hbwL93VkhT/ZkpZYDBKzwVjqkdFQm/epQoCPLSLG
+   Zd1QRLvpRrwFrU2hUkGbFBozVyP0QTWrifJdiy1gOOYa1luc5r36nJ5Hr
+   w==;
+X-CSE-ConnectionGUID: YYSawAlfQ8KyiG8TmYOWwQ==
+X-CSE-MsgGUID: ZenlP6McTSO8qj3emXzjdQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11976"; a="249157234"
+X-IronPort-AV: E=Sophos;i="6.27,231,1786978800"; 
+   d="scan'208";a="249157234"
+Received: from gmgwuk01.global.fujitsu.com ([172.187.114.235])
+  by esa10.hc1455-7.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 09:39:58 +0900
+Received: from az2uksmgm3.o.css.fujitsu.com (unknown [10.151.22.200])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by gmgwuk01.global.fujitsu.com (Postfix) with ESMTPS id 58A941002832
+	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 00:39:50 +0000 (UTC)
+Received: from az2uksmom2.o.css.fujitsu.com (unknown [10.151.22.203])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by az2uksmgm3.o.css.fujitsu.com (Postfix) with ESMTPS id 0F644C00897
+	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 00:39:50 +0000 (UTC)
+Received: from [127.0.1.1] (unknown [10.124.178.20])
+	by az2uksmom2.o.css.fujitsu.com (Postfix) with ESMTP id EB5B51400271;
+	Wed, 25 Nov 2026 00:39:46 +0000 (UTC)
+From: Kohei Enju <enju.kohei@fujitsu.com>
+Date: Wed, 25 Nov 2026 09:39:31 +0900
+Subject: [PATCH] dma: swiotlb: Use system_percpu_wq for dynamic pool
+ freeing
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -87,75 +80,55 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 24 Nov 2026 16:39:52 -0800
-Message-Id: <DN3VG4JCILOO.YN40XHHSWRPH@google.com>
-Subject: Re: [PATCH v4 03/19] kho, memfd_luo: Reference struct kho_vmalloc
- via serialized pointer
-From: "David Matlack" <dmatlack@google.com>
-To: "Pratyush Yadav" <pratyush@kernel.org>, "Tarun Sahu"
- <tarunsahu@google.com>
-Cc: "Pasha Tatashin" <pasha.tatashin@soleen.com>, "Mike Rapoport"
- <rppt@kernel.org>, <robin.murphy@arm.com>, <maz@kernel.org>,
- <will@kernel.org>, "David Matlack" <dmatlack@google.com>, "Alexander Graf"
- <graf@amazon.com>, <seanjc@google.com>, <jgg@nvidia.com>,
- <loganodell@google.com>, <arnd@arndb.de>, <dwmw2@infradead.org>,
- <baolu.lu@linux.intel.com>, "Bjorn Helgaas" <bhelgaas@google.com>,
- <oupton@kernel.org>, <alex@shazbot.org>, <gle.com@google.com>,
- <pbonzini@redhat.com>, "Andrew Morton" <akpm@linux-foundation.org>,
- <kevin.tian@intel.com>, <joro@8bytes.org>, <kvmarm@lists.linux.dev>,
- <linux-pci@vger.kernel.org>, <kexec@lists.infradead.org>,
- <kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
- <linux-arm-kernel@lists.infradead.org>, <skhawaja@google.com>,
- <sagis@google.com>, <linux-arch@vger.kernel.org>, <linux-mm@kvack.org>,
- <linux-kernel@vger.kernel.org>
-X-Mailer: aerc 0.21.0
-References: <20261110050202.529473-1-tarunsahu@google.com>
- <20261110050202.529473-4-tarunsahu@google.com>
- <2vxz4idb1i2w.fsf@kernel.org>
-In-Reply-To: <2vxz4idb1i2w.fsf@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261125-swiotlb-replace-system_wq-v1-1-83807c6afb75@fujitsu.com>
+X-B4-Tracking: v=1; b=H4sIAEMuBmsC/yXM0QqCQBCF4VeRuW4gBZPtVSJi3E42YWo7Wyriu
+ 7flufsuzr+QISiMjtlCAR817buEfJeRv0vXgPWaTMW+OORpbKP2sa05YGjFg222iOdlfLE4V4p
+ UVekglP5DwE2nf/t03mzv+gEff0Fa1y9Z/TeefQAAAA==
+X-Change-ID: 20261111-swiotlb-replace-system_wq-a995aa7759ea
+To: Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>, 
+ "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>, 
+ Petr Tesarik <ptesarik@suse.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ Kohei Enju <enju.kohei@fujitsu.com>
+X-Mailer: b4 0.16.0
 
-On Fri Nov 20, 2026 at 10:19 AM PST, Pratyush Yadav wrote:
-[...]
+system_wq is deprecated, and queueing dynamic SWIOTLB pool teardown work
+on it causes the following warning:
 
->> +static size_t memfd_luo_ser_size(void)
->> +{
->> +	return sizeof(struct memfd_luo_ser) + sizeof(struct kho_vmalloc);
->> +}
->> +
->> +static struct memfd_luo_ser *memfd_luo_ser_init(void *mem)
->> +{
->> +	struct kho_vmalloc *kho_vmalloc =3D mem + sizeof(struct memfd_luo_ser)=
-;
->> +	struct memfd_luo_ser *ser =3D mem;
->> +
->> +	KHOSER_STORE_PTR(ser->folios, kho_vmalloc);
->> +	return ser;
->> +}
->> +
->
-> Hmm, I am not a huge fan of this. This makes doing such allocations
-> quite annoying, and I reckon we will be seeing a fair bit of them in
-> many places.
->
-> The key observation here is that most file handlers need to allocate a
-> bunch of preserved memory, but they usually can free it all at once. So
-> we can get away with a very simple allocator that hands out memory
-> linearly.
->
-> I have sketched out some code for this, take a look at the patch below.
-> Note that it is only compile tested.
->
-> Perhaps give it a try and see if it does the job better.
+  workqueue: work func swiotlb_dyn_free_work enqueued on deprecated workqueue. Use system_{percpu|dfl}_wq instead.
 
-I agree the manual packing in memfd_luo_ser_init() isn't great, but I'm
-not sure we need an arena. This seems like something KHO slab support
-will solve properly, and since kho_alloc_preserve() already takes a
-size, KHO slab can be dropped in underneath it later without changing
-any callers.
+Use system_percpu_wq instead, which preserves the per-CPU workqueue
+behavior of system_wq.
 
-Until then, maybe we should just allocate struct kho_vmalloc separately
-with kho_alloc_preserve() and accept wasting a folio per object. For
-memfd that's one extra page per preserved file.
+Fixes: e13d4d9a4915 ("dma: swiotlb: free dynamic pools from process context")
+Signed-off-by: Kohei Enju <enju.kohei@fujitsu.com>
+---
+ kernel/dma/swiotlb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 786954bc5e6a..4060d9ad5b24 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -926,7 +926,7 @@ static void swiotlb_dyn_free_work(struct work_struct *work)
+ static void swiotlb_schedule_dyn_free(struct io_tlb_pool *pool)
+ {
+ 	INIT_RCU_WORK(&pool->dyn_free, swiotlb_dyn_free_work);
+-	queue_rcu_work(system_wq, &pool->dyn_free);
++	queue_rcu_work(system_percpu_wq, &pool->dyn_free);
+ }
+ 
+ /**
+
+---
+base-commit: 8d7fe9885c62fc9a95bf55d9db244d9672a8aadc
+change-id: 20261111-swiotlb-replace-system_wq-a995aa7759ea
+
+Best regards,
+--  
+Kohei Enju <enju.kohei@fujitsu.com>
+
