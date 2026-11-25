@@ -1,99 +1,54 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.169
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795600891;
-	b=vatqZx9AxzygCv5N4FwsU4hE3x+stvgbAuVbLroVo8pmtCuIGytD5CfNvFo2kVRX29Jw
-	 UJOG6vhPHNQz9N2VPRCjXzZD9IMxe79QQ0mMwITMa3cMBDV1kGT/Ewi+/VvbIRSS5oNNN
-	 JfOX8NA/11lOT7LCEkyaTCNmCLvGYRKUm7zcDxtsa0+IxHxkeUht7EiVqSzZinRgSZ0ao
-	 Cs7qyHoCdHwdqSNkiyluAWSuM2bor6+V+IIFAWzxpsihywCJerlvm46KoOlVHiejsFQXS
-	 xZhFgrNzZi27OH8py+PfOX+6OEL/EUVuL7ZHHulVYz1RHFHTAQyRYdqMFHuACxiZ2/w==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795600891;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
-	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=0jNf9LvDeUT8dvX3mev+TB2gDDnK8ObeBjOtFwflXew=;
-	b=Rbykts89okNSxlO3vKE9b8NA+lfcyn/ohtN/vInixbES4JCHWeNyBKy8jp8WX13o4gHX
-	 Ce+NsWQGL2qtfTH2uRj/i7gW5rWlCGcflWuMCnxCeu6/JP4bxU7RCE2hBumT1Vc9i6zJn
-	 oNbURRVkk9I+d1rQSEUZnIDJHMNi4hTKawl9VEMhYUlytQB+8LkWCRFJReBgHPHUor/YR
-	 kPErQwAAiJGaieP4OiadmTXYAuhnCRX2ZAxx3Jm8CYzGReFQDMwlBC5IZ1TCp39txaV7j
-	 gLl0IybLTleXzPQ4xMFK2ppTVVdUUEa+FP+IJDPdXmdWZkfT3Y22LGv4ep4ely64bsQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=yoL3qjDP;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.169
-Received: from mail-dy1-f169.google.com (mail-dy1-f169.google.com [74.125.82.169])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.197
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795602213;
+	b=Jv046jBwhgZ/GN5TyXOKpAYY2PMD5kx+TZViOaOumYsLHefmdmhRPVawfOneud7HvpxC
+	 p/xKNvblFPsNhkPR6UO/7GZWb/EW7rElI4AoJXgVm12FZoQwAAMgPOllX0pa+FitP6j2V
+	 2OdxI1O+LxJcW9JjZx/rbVqird2pYXkiiGpKHN81T7nEJDkevawXkGHOLTJZC1Y4kA0ek
+	 k/km5KqIlVFnaU1Kqq4pFZZ4N4mDiRp59QjaOXWPqC61QHhmZx7r2W0QRl+qIs4kJKU88
+	 LO/rMJ6/3op+1qurTjSFoeOlpGwp25/Rsem7mZx+smmSR/2MRUHK5oksn0VBtjbOacw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795602213;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:MIME-Version:X-Received:Date:In-Reply-To:
+	 X-Google-Appengine-App-Id:X-Google-Appengine-App-Id-Alias:Message-ID:
+	 Subject:From:To:Cc:Content-Type;
+	bh=nAwEpdk8W5zOz8dRUea8wq0PG12t8rrSsYABB8slUxU=;
+	b=yi4VSIeXcdKcVSiQL6alPMFVi4r5QhjAdKoj91xjTbTKEUUb2TVPrCprWfMxTFr/qim1
+	 mW4zWkyNlYE+FOiJYipQKqhKxgtxTdmMSIOw9BLu44ZGurUfWZlwxaR1mmU4vlTSHFzH4
+	 ak6ZEq3Y26FZuSkE8t1nQBlYLjEM6M4tz5JJ63WDhFCIVZ42fV1tvxzDCRPvlOaqsWpc0
+	 oSUhRe6ve05blba5ajAgK37cATi2AU/Pq3efSYpyGj6R0sMoPbN3KXUv1IiCN60DfvHmY
+	 YzU66OmCGDMt0QzYA6PiWQT6B1nwyF7YG8czydIDIlwGbEzDWQnGz8ocj9cH5weNFsQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=fail header.from=syzkaller.appspotmail.com;
+	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
+	arc=none smtp.remote-ip=209.85.167.197
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5923C606A31E
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 10:01:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5923C606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=yoL3qjDP
-Received: by mail-dy1-f169.google.com with SMTP id 5a478bee46e88-38431138772so7176664eec.1
-        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 02:01:31 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1795600890; cv=none;
-        d=google.com; s=arc-20260327;
-        b=YT5C1/LQiNfvFs19UJHo27smsPgl42SNApu9CwL7xvSMiwdjQ9nx5H4hayVwVS43V+
-         dUIQj2lChnIA8eAJUhqIk7jC3Bl8HrAhZJCWKrAcX0djnsPcT9OFiHJAu7Q/T1hSVHs2
-         Skec/ofpUftq8BYdbFufvLYYtghSR85RUh1kgePyjx1Pg2Y/ojVU4KvNj3tJdak0yaWU
-         8h2jtkqtcKFH8uALS92tFXSZPSFrEbZaii4zwyUhR9j7tSCKrMh8/EPQV+niGMuyAxzb
-         nKEQIxWvx0Fs2AImUxmSWoW74HXLu9xYJFCnjwko4yMNPA+sKQYnYNJtUYtSKH0vo6KF
-         t/1w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=0jNf9LvDeUT8dvX3mev+TB2gDDnK8ObeBjOtFwflXew=;
-        fh=STY0UwL4CfinZYcBYSb6efFSIGtJP0pSKb5NtthMHc8=;
-        b=DE+v8UqgUOSYTEL9mgVjjR29JSAeQC/rAFMo2KWFNzyrcuujxu5r/6MEYlymz+HYrK
-         mEyiXh7RD5yMg40bMjiqvR/Drv9QY1GT6vzHKTBxb8zupZbRG8kZ8c3pJHS4bn40Cxf8
-         n1eOj0b2/0q/xiOVNzrD3GdlBpuZTFy7u1moMZNiZS80AeIiKtP8tU0hswC/yQ0xLNu5
-         bLuPo4hOkvO4u4w6juKTiI1GSxFwR9E7924cPZKHYRBeRs3/oqqha6OyYg//zg5eNX3K
-         0IadYPBsLXwfRUgE5k/Qy1tXOdBhNYxU17DWjz/w84p5bwpX42hfKfag9sHBUWYLSRJ1
-         Sbyw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795600890; x=1796205690; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=0jNf9LvDeUT8dvX3mev+TB2gDDnK8ObeBjOtFwflXew=;
-        b=yoL3qjDPHn0fH4za2j/DOJ9SHEYvll89iTvalDDIHO+0B945AZF5iRii2NWHF27L4e
-         s0F2oLlJtP6rZPC8GesZte6/ShRWtIbZJnv+serGrlVUPexXI9q3+37gaQ2N/ZgQ3YVm
-         9x5rPZHv4pDCotGeob8D+kzuH5xRxyd7NQ3DnXGbkEdtNn0J5To6df8MlMH74FZObhL0
-         juRnWonUYrOXnmT3BbKXR7cwAkjzpHUl35ncnYKL/TOECrNwyVVQ4NrjNsozPvkIeplw
-         diPwhBGugORgKwh4IKgdSRk8WcWSUVJnYs3mAsmaK/IQrXlioFu1ix/lG7IaN99/ELp9
-         WNag==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 798EF606A321
+	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 10:23:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 798EF606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4e937c5bd4fso4789654b6e.2
+        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 02:23:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795600890; x=1796205690;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=0jNf9LvDeUT8dvX3mev+TB2gDDnK8ObeBjOtFwflXew=;
-        b=zCZ9ZtOuaQ3O7oqAHX3eYQwqZMAklQv9yZvocdjxthguXvWx4VkJHb8Po9yQhRspIc
-         iEDaZo4hP5S5WDGtCYECqDR+LxtX7M+SYfxqDrY14xpB2+YNPrMi2WSIu8Fpd/MvBlu3
-         HBO8oW6qvCfHz79S+88YrmMkI4OZdSpO7rQ7VrLEtmQqeVjTTsgDq22llcvy5tOthbUB
-         WxBLzSRY7dt88hf0LrtLW7p2lXDRtBy+JgHTOahS03PWvDak12kKXUWH5Nmx/XV3QdV2
-         nKd4N+I8sggO6mw7M4Zva7djYeUc9f/wuwAcq9XX9f1qYM+mU6LHYuFbAvW8RH7LhnuR
-         fLNg==
-X-Gm-Message-State: APuU4Z8cuHThP0ndbD7FPQKRyKFlNFTjOSpo2rjEG1FKM38Llm2L8orE
-	eU39SFb2iRP47rA6To9MXX1Eh/6Lun/gOr7vXvMLBn7Ki6Tur5h5zDX1rXvsoIRtZyoqVIbtDgq
-	8j/qw5JaFtizxIYQVXUnFbjl5xoSeQko=
-X-Gm-Gg: AZFdTZd5kg7pbbCFoGVvZJdiPCx38YDcHUeuygCV7G7cGFEnM2nfivvZSXeGeska7Jj
-	xuadg6v2OD3lamsNQseGGCPq+JY4FjyczzA++PP9Hz9g2DSBWwNCVR1Mb7cZ/ilcObE9TtogqCU
-	2hBecawVGz1Vdr7DCrLBpPWrRIJ/efDoCwPobcFpcRhd6ioJTAvDPjE4XrmkNI/qclZMzHT6kb8
-	dFYwq/tNoSY8DMgLHP62Y/Nx181DTsw2x0osKlpsKlGth0gyqzM/EOcdCGRqEn0wU2G7TEilzXm
-	9rZjm28W4fitnn0lAZVftI9YEIhIeBd/B22Rib8nkpCK5gwL9qwCb6/Z2iOZMR0FTn3vZ2FkqWH
-	Hft48KIyUa16NDShc3gEx30P+fYYq0pvOxFnk
-X-Received: by 2002:a05:7301:dd8b:b0:372:32a1:b384 with SMTP id
- 5a478bee46e88-38571510675mr19622055eec.33.1795600890367; Wed, 25 Nov 2026
- 02:01:30 -0800 (PST)
+        d=1e100.net; s=20260707; t=1795602211; x=1796207011;
+        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=nAwEpdk8W5zOz8dRUea8wq0PG12t8rrSsYABB8slUxU=;
+        b=hZl/1we0YpX6TAvzZH6yu8hOpUtKftdiNRmsS5CTcA1qJl6QxJCfn9+9P6vIXpcT3y
+         1a47zLDAI0fVOTq5PSsbGiLBpYAqUzOAskZAhqhC3BnPj0g+jGXrD0VDqYoblgEKzW5s
+         mwuVXpmRTmtJVowfFtmqCqVm2nA4tOcbGcZOgpLAjwwdtu2rFrszlltp6k+OepLeilON
+         /Av9jXhwhaEWRZozwsCVsudxdHOE5GtL/jFi4q+QNskYtOKV/8fVSR1Gn+HZy05OYMAo
+         bt58SLoj1kKcEcK5oeXJuXUHamCn9YiaB/2LBkWw1FZ25AoidZlc3lkeST75Mpi2DmdD
+         gbdQ==
+X-Forwarded-Encrypted: i=1; AL+hErEtrSVx2sxH6khlPa0aalypEAc8L+jrbNXDPFCY63j16vDxyy3XkP58zWnV/FXRl+fAP7Slxg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/rHqxtWOC7XyIi2b9ww89K4DQi/gCqRTGK+R1oANKy3821e/2f
+	XwXhLgUj/HD644TjwsLb+fiUrph56x8N0UZueOKubEAQnTu8EPY/Mn3XvRIcezeFDhWd2rmPPuq
+	JGAGtE6/WbtHs2V8BpVQr/1wqBVIwz/7lTUSNiMOwOwLuZV3WsnOnbc+lvXg=
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -103,83 +58,153 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <CAGvcwsDdKSZe0reeuT0eQabaSbM6+KAfwFimxiqhvKrjD2nQeg@mail.gmail.com>
- <awX_cNOqtTjAP33a@ryzen>
-In-Reply-To: <awX_cNOqtTjAP33a@ryzen>
-From: Pe3k <pe3cek@gmail.com>
-Date: Wed, 25 Nov 2026 11:01:17 +0100
-X-Gm-Features: Aa3M54ouYqv21AOU9bWmU32JsLWokXrHwGO0cLR9AEzpEGq_IOCrbC6QpcKWpwA
-Message-ID: <CAGvcwsDwi9vNcCLxdBz-Arx=5i-fFvqxP+QbRKrx7hK4yqmvRg@mail.gmail.com>
-Subject: Re: iommu/vt-d: data corruption, AHCI gets IOVAs inside its RMRR (HP Gen8)
-To: Niklas Cassel <cassel@kernel.org>
-Cc: iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>, 
-	David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Damien Le Moal <dlemoal@kernel.org>, linux-ide@vger.kernel.org
+X-Received: by 2002:a05:6808:c2be:b0:4d6:90f3:74b1 with SMTP id
+ 5614622812f47-57a0ba5a8e4mr18256405b6e.49.1795602211468; Wed, 25 Nov 2026
+ 02:23:31 -0800 (PST)
+Date: Wed, 25 Nov 2026 02:23:31 -0800
+In-Reply-To: <20261120010655.467825-1-lrizzo@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6b06b723.588a1920.b1e98.0003.GAE@google.com>
+Subject: [syzbot ci] Re: PISA: Pre-mapped IOVA Superpage Allocator for DMA and CoCo
+From: syzbot ci <syzbot+ci910cdb42d3006024@syzkaller.appspotmail.com>
+To: akpm@linux-foundation.org, aleksander.lobakin@intel.com, axboe@kernel.dk, 
+	brendan.jackman@linux.dev, catalin.marinas@arm.com, cl@gentwo.org, 
+	corbet@lwn.net, dakr@kernel.org, davem@davemloft.net, david@kernel.org, 
+	driver-core@lists.linux.dev, dtatulea@nvidia.com, edumazet@kernel.org, 
+	gregkh@linuxfoundation.org, hannes@cmpxchg.org, hao.li@linux.dev, 
+	harry@kernel.org, hawk@kernel.org, hch@lst.de, horms@kernel.org, 
+	hramamurthy@google.com, ilias.apalodimas@linaro.org, iommu@lists.linux.dev, 
+	jack@suse.cz, jannh@google.com, jgg@ziepe.ca, joro@8bytes.org, 
+	joshwash@google.com, kuba@kernel.org, kuniyu@google.com, liam@infradead.org, 
+	linux-api@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-block@vger.kernel.org, linux-doc@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mm@kvack.org, ljs@kernel.org, lrizzo@google.com, 
+	m.szyprowski@samsung.com, mhocko@suse.com, namangulati@google.com, 
+	netdev@vger.kernel.org, pabeni@redhat.com, praan@google.com, 
+	rafael@kernel.org, rdunlap@infradead.org, rientjes@google.com, 
+	rizzo.unipi@gmail.com
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Hi Niklas,
+syzbot ci has tested the following series
 
-Thanks for the pointers.
+[v3] PISA: Pre-mapped IOVA Superpage Allocator for DMA and CoCo
+https://lore.kernel.org/all/20261120010655.467825-1-lrizzo@google.com
+* [RFC PATCH v3 01/25] mm: Introduce CONFIG_PISA and metadata table
+* [RFC PATCH v3 02/25] mm: Add PISA allocator lifecycle and page recycle hook
+* [RFC PATCH v3 03/25] mm: Add per-NUMA-node PISA page reservoir
+* [RFC PATCH v3 04/25] mm/page_alloc: Extend alloc_pages() to __GFP_PISA and PISA block allocation
+* [RFC PATCH v3 05/25] mm: Add global cap and shrinker for PISA pages
+* [RFC PATCH v3 06/25] iommu/dma: Map PISA memory in a per-domain IOVA window
+* [RFC PATCH v3 07/25] driver core: Add per-device pisa_* sysfs attributes for PISA optin
+* [RFC PATCH v3 08/25] iommu/dma: Use PISA for coherent DMA allocations
+* [RFC PATCH v3 09/25] mm: Add per-CPU block caches to PISA allocators
+* [RFC PATCH v3 10/25] mm: Add background page scrubber for PISA allocators
+* [RFC PATCH v3 11/25] mm: Migrate user pages into PISA
+* [RFC PATCH v3 12/25] block, mm: Support PISA for disk I/O and scrub migration
+* [RFC PATCH v3 13/25] net: Cache leaf PISA TX flags on struct net_device
+* [RFC PATCH v3 14/25] net: Use per-node PISA allocators for skb_page_frag_refill()
+* [RFC PATCH v3 15/25] net: Use PISA for page_pool memory
+* [RFC PATCH v3 16/25] mm/slub: Add SLAB_CACHE_PISA_RO for PISA-backed slab caches
+* [RFC PATCH v3 17/25] net: Allocate small skb heads from PISA
+* [RFC PATCH v3 18/25] net: Migrate user pages into PISA for MSG_ZEROCOPY
+* [RFC PATCH v3 19/25] mm, iommu/dma: Support decrypted PISA pages
+* [RFC PATCH v3 20/25] arm64/mm, mm: Support decrypted PISA pages in Realms
+* [RFC PATCH v3 21/25] mm: Add PISA statistics and debugfs
+* [RFC PATCH v3 22/25] net/libeth: Use GFP_KERNEL when pre-filling RX rings
+* [RFC PATCH v3 23/25] net/gve: Use GFP_KERNEL when pre-filling RX rings
+* [RFC PATCH v3 24/25] net/gve: Use PISA memory for RX buffers
+* [RFC PATCH v3 25/25] Documentation: Add PISA architecture documentation
 
-bugzilla 221713 looks like the same bug. The ML10 v2 in comment 15 shows
-"DMA PTE for vPFN 0xf1f81 already set (to f1f81003 ...)", which is inside
-the same HP RMRR (0xf1f7e000-0xf1f94fff) that I see on 6.12, and its 7.x
-symptom is the same "Emask 0x40 (internal error)". Their bisect of the 7.x
-symptom points to d373449d8e97 ("iommu/vt-d: Use the generic iommu page
-table"), but the RMRR overlap is there long before that (they saw the
-PTE error back to 6.0, and I see it on 6.12). So my guess is that
-d373449d8e97 only changed how the overlap shows up.
+and found the following issue:
+WARNING in __alloc_workqueue
 
-The H97 thread looks different to me. There the faults are "non-zero
-reserved fields in PTE" at 0xff4xxxxx, outside any RMRR, and they depend
-on the request size.
+Full report is available here:
+https://ci.syzbot.org/series/80fa818b-452d-4361-bfc6-33c65f928f71
 
-sp_off: on this machine the only DRHD reports no superpage support
-(cap c9008020660262, SLLPS =3D 0), so I would not expect it to change
-anything. I tested it anyway:
+***
 
-7.3.4 with intel_iommu=3Don,sp_off: no change. It still has 0 DMAR errors
-and 221 failed commands with "Emask 0x40 (internal error)" (121 READ
-FPDMA QUEUED, 100 WRITE FPDMA QUEUED). 3 of 6 copies lost 8 MiB each
-(zeros), and the iommu:map trace again shows 21 maps with
-iova=3D0xf1f7e000 size=3D0 from iommu_dma_map_sg.
+WARNING in __alloc_workqueue
 
-Thanks,
-Peter
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
+base:      20eef29b7c8465ac98d7dd6d6f2ac07a8d8056ca
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (1~deb13u4), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/1b1679cb-3959-4df9-8546-bc04ba6e5cd3/config
 
-On Tue, Nov 24, 2026 at 10:19=E2=80=AFPM Niklas Cassel <cassel@kernel.org> =
-wrote:
->
-> Hello Peter,
->
-> On Tue, Nov 24, 2026 at 07:08:13PM +0100, Pe3k wrote:
-> > Hi,
-> >
-> > On the HP ProLiant MicroServer Gen8 (Xeon E3-1265L V2, C204, BIOS J06
-> > 04/04/2019) the AHCI controller is handed IOVAs inside an RMRR that the
-> > firmware declares for it. With the default translated DMA domain this
-> > corrupts disk data on every boot under write load. iommu=3Dpt avoids it=
-.
-> > Seen on two machines of this model, on 6.12.118, 7.3.4 and 7.4-rc4.
->
-> You are not the only person who is having problems with HP ProLiant
-> MicroServer Gen8, see:
-> https://bugzilla.kernel.org/show_bug.cgi?id=3D221713#c16
->
-> There is also:
-> https://lore.kernel.org/linux-ide/5ad27a97aafbc08a8702d5b90d09cd59@posteo=
-.de/T/#u
-> which I'm not sure if it is the same or a different IOMMU issue.
->
-> Does:
-> intel_iommu=3Don,sp_off
-> on the kernel command line workaround the problem?
->
->
-> Kind regards,
-> Niklas
+smpboot: CPU0: Intel QEMU Virtual CPU version 2.5+ (family: 0xf, model: 0x6b, stepping: 0x1)
+Performance Events: unsupported Netburst CPU model 107 no PMU driver, software events only.
+signal: max sigframe size: 1440
+rcu: Hierarchical SRCU implementation.
+rcu: 	Max phase no-delay instances is 1000.
+Timer migration: 1 hierarchy levels; 8 children per group; 0 crossnode level
+NMI watchdog: Perf NMI watchdog permanently disabled
+smp: Bringing up secondary CPUs ...
+smpboot: x86: Booting SMP configuration:
+.... node  #1, CPUs:      #1
+smp: Brought up 2 nodes, 2 CPUs
+smpboot: Total of 2 processors activated (11200.80 BogoMIPS)
+Memory: 5553400K/7339508K available (181131K kernel code, 30788K rwdata, 59468K rodata, 27564K init, 120564K bss, 1621204K reserved, 0K cma-reserved)
+devtmpfs: initialized
+x86/mm: Memory block size: 128MB
+Running RCU synchronous self tests
+Running RCU synchronous self tests
+Running RCU Tasks wait API self tests
+Running RCU Tasks Trace wait API self tests
+posixtimers hash table entries: 1024 (order: 5, 73728 bytes, vmalloc)
+futex hash table entries: 256 (32768 bytes on 2 NUMA nodes, total 64 KiB, linear).
+PM: RTC time: 20:32:46, date: 2026-11-24
+NET: Registered PF_NETLINK/PF_ROUTE protocol family
+audit: initializing netlink subsys (disabled)
+thermal_sys: Registered thermal governor 'step_wise'
+cpuidle: using governor menu
+NET: Registered PF_QIPCRTR protocol family
+dca service started, version 1.12.1
+PCI: ECAM [mem 0xb0000000-0xbfffffff] (base 0xb0000000) for domain 0000 [bus 00-ff]
+PCI: ECAM [mem 0xb0000000-0xbfffffff] reserved as E820 entry
+PCI: Using configuration type 1 for base access
+HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
+------------[ cut here ]------------
+workqueue: pisa is using neither WQ_PERCPU or WQ_UNBOUND. Setting WQ_PERCPU.
+WARNING: kernel/workqueue.c:6151 at __alloc_workqueue+0x1e4b/0x21d0, CPU#1: swapper/0/1
+Modules linked in:
+CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+RIP: 0010:__alloc_workqueue+0x1e4e/0x21d0
+Code: 18 89 39 00 90 0f 0b 90 e9 87 fd ff ff e8 0a 89 39 00 90 0f 0b 90 e9 79 fd ff ff e8 fc 88 39 00 48 8d 3d 65 52 32 10 4c 89 f6 <67> 48 0f b9 3a 8b 5c 24 20 81 cb 00 01 00 00 e9 99 e4 ff ff e8 d9
+RSP: 0000:ffffc90000067750 EFLAGS: 00010293
+RAX: ffffffff818fa174 RBX: 0000000000000000 RCX: ffff888102aa5ac0
+RDX: 0000000000000000 RSI: ffff888162ab5d78 RDI: ffffffff91c1f3e0
+RBP: ffffc900000678a0 R08: ffff888102aa5ac0 R09: 0000000000000002
+R10: 0000000000000102 R11: 0000000000000000 R12: dffffc0000000000
+R13: ffff888162ab5c00 R14: ffff888162ab5d78 R15: ffff888162ab5d18
+FS:  0000000000000000(0000) GS:ffff8882a77e4000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 000000000ff48000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ alloc_workqueue_noprof+0xe3/0x210
+ pisa_init+0x127/0x260
+ do_one_initcall+0x250/0x870
+ do_initcall_level+0x10a/0x1a0
+ do_initcalls+0x59/0xa0
+ kernel_init_freeable+0x29d/0x3e0
+ kernel_init+0x22/0x1d0
+ ret_from_fork+0x514/0xb70
+ ret_from_fork_asm+0x1a/0x30
+ </TASK>
 
 
+***
 
---
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
+---
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
