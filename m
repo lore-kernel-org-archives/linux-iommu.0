@@ -1,121 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.208.50
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.43
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795605574;
-	b=nNmecpdOojrviaRBqWFPZFEX9R1HdfRfrT/g7HYoBntehd9bjOtm/mPEpr9yalpMY9dU
-	 hqHT+h2qyHcwoueL7CwN/lflzMzHXfwW4/Npo3nx5PtupCX9rSaFIYASxpMprWvFXDX+Q
-	 rUZZZhmQCbvW16BUSdg8SLAta9txxkojK1tnt+Xu9cVOC+J02fCLMAckJ3gzxXZkyhnej
-	 8dq5OYNYbdpsGA2pqMcfoPnDNMgcZYXItZwZXmYC8Y+/EtQyfe6zGSjM9LzZbGAW4MmDh
-	 32LSoo6Bege6m+YaE/tgRovRJ36WJ6y/Sf6xREKsgh5ViHvqC1Tb/iiKr8+6FlkbnJw==
+	t=1795607536;
+	b=RsTQOm+3UibmMxF/k2Ae4LtKfQGsepGbMDu5x/hZSixnAamwpx/jOQ9/IyjKeJutgBru
+	 DzpAT78wBpFgJiUkuKIjBEjXxoFjin50u5aYMvCu3TuyITHWg9f9uXBgU+ScQmMlNlrJA
+	 5UwJ8m9hl15fWpNJeebU9gwqlAwIoQD98belHwJrTn1P3+ELRmzkICAS3c5BfJBabZRqI
+	 Ds/c4GusroXsr09HRj0iaIMCigCTkfauaZgZGcYW2R0AxAPZHbNQdS2diR/mWzbThPVV6
+	 a2X6v7T14XFPQxaa98Yg38PTrhl4PclS5iJjR28704iGI66SMOBeMB44OXaxwY+ghbw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795605574;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=EMYXFK4E9UiDjmRTN056wP6mFQKcBip6wGIq+gc3dZ8=;
-	b=mzLmNs0TLa7Z861Ski2XTH8sOIQo8YwKsFUdr05L/DA5ueETq8cqqFL5DCKLtcPUizZd
-	 6fNXCMocIzjaAGOD0YVclWPeGwEuGy7gU8SzEIffwN0KgApSQX24FDmwUz3eNEIU2ISlM
-	 PdUhenSZd2eMAm8+YpZ7ueYqqw+TstRuHjZ5aKUS+y6sAdCiJIA/QmeDRMN4pLNoCVGFl
-	 oxgaIePi4aNZ/22NdpEHDLrBoUJFRjUctSD1LMyfZpv03Ml8EOiOidfms37qRr/4wC1Oo
-	 OsUDVUFcjaadvefPNunyUI36/9H5Exuom1thTSrX9iaPX1Virnw4fdnGBV4iimx4jMQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795607536;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=JiTLwnT8J6kdyIB5NBxt5frLTB5XA5RQrMtJGgcHBbQ=;
+	b=LI9u7nunVpR4eMps3+u8wo49qwPTRvegNrT02cKWA1DY3IBai0v7ADVztiqXmZaOgN7p
+	 0NBuIhJZ7b+wUP9GVcDzdVw+noOwN31RtmGio516l16t3LN7nU3O/nbrQ1NoNf+LcRrP6
+	 s71zmVe8n5Dm050toeFmpF2c7JpR/Y9JHQNwqXEjgtkE9IASbI5OpDU+SWEYY3dEny0pF
+	 ovnKIzVH4gnAUnhjsD1MKaS3gfo84mMHGE8/+b+x9Nx0DcZOnZN55ha4xV2f8md2dvysO
+	 vQ0VFgAguVCjzU9feeJe9HT+mGJMw2yk89DY2+hDax9HmMMCbcD9LAOj1/CYr/9oTcg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=EveQdXXe;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.208.50
-Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011050.outbound.protection.outlook.com [40.107.208.50])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=wG3m4svQ;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.43
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31273606A334
-	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 11:19:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 31273606A334
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61F05606A329
+	for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 11:52:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 61F05606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=EveQdXXe
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=icdmdKPWDb+4QCKRrGjdU9GWmoldOsSThiw7615IyV1Gv781pc44WOvjVR353OMBJQ05UPjnFS7ah8xKDBl8dWutYNf17selyTXtYpaVFjbxukhRY9HmQGIolJtUKWIiHcq023zkIygDBP83nmtIu328L44/83uUkSir63JiVqZHbmjkHNYyfB/afgqiJj6EJaaNgWzPIKqTN5NSlD0e1Hm3Bp4m/b7DF90fDpPUsmaJQiXLcPEhM2X51bwHx2hrOgbjtBIIk0bpUcBY8rh+61PP2FcC/YosnJ/PjSbJ+PuyKCyxe3/S0HuwqMkOS+xLlSidN6QOXoyUs1jyUb4vyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EMYXFK4E9UiDjmRTN056wP6mFQKcBip6wGIq+gc3dZ8=;
- b=b3F1yqdcV/hMdmeRgmx4ePWKQqsQtcQWzpuKBeQCf81+R+LRlv871nIoUdWflR9W1t3P/+xyfXt77JDL2CNJEG4t8zlie5aofPmIyy4Pe86R5ci1rTor2eL6HdazZmDmLf+Eu3aPpDvaabq9If7Uqv41Jlv2AszoJsIbUjLalGGE86t87mjk4XlMD3CMsdO4dlu/nHL6YDmtptwMaLsgqpMWQs9sVIp5PkeVxh0KVm8cpFwMLjlwadNpgOYu/7/AkmBr3/OYde8WHhonzRFYADzVs0lzEUfjlEGgNysv6tA5Q54wHtvcnpAdSDOoj97U/z+SKqvcjvQ5Qm2VaHryEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EMYXFK4E9UiDjmRTN056wP6mFQKcBip6wGIq+gc3dZ8=;
- b=EveQdXXekTA4HlTNvlqeNdX2RQD3dOhhixP2voO3TWhfb5tUT7W6La770Ut7tcWpmqNOEvs3Yzs5IF6bDzJ+hR0tHHHK2yL4BwfQRi6MejNaquBPW7llzZ+YqEQ4bZHTSaECiKhRLO/5DsdzFcgPbK7mWsmHs0g6C99FDWBfunU=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by LV3PR12MB9166.namprd12.prod.outlook.com (2603:10b6:408:19c::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.6; Wed, 25 Nov
- 2026 11:19:29 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0639.012; Wed, 25 Nov 2026
- 11:19:29 +0000
-Message-ID: <fb9a6b12-c134-4e40-86a5-dbcb59c0b91b@amd.com>
-Date: Wed, 25 Nov 2026 12:19:08 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 03/24] dma-buf: Add the SGT DMA mapping type
-To: Alistair Popple <apopple@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- Simona Vetter <simona.vetter@ffwll.ch>,
- Matthew Brost <matthew.brost@intel.com>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>,
- Dongwon Kim <dongwon.kim@intel.com>, Kevin Tian <kevin.tian@intel.com>,
- Xu Yilun <yilun.xu@linux.intel.com>,
- Karl Mehltretter <kmehltretter@gmail.com>,
- Baolu Lu <baolu.lu@linux.intel.com>, Felix Kuehling
- <felix.kuehling@amd.com>, Alex Deucher <alexander.deucher@amd.com>,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
- linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
- linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
- Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
- Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
- linux-nvme@lists.infradead.org, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
- Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
- Alexey Kardashevskiy <aik@amd.com>, zhipingz@meta.com, treding@nvidia.com,
- jhubbard@nvidia.com, chaitanyak@nvidia.com, Leon Romanovsky <leon@kernel.org>
-References: <20261120-dma_mapping_type_v4-v3-0-c0183a409bdf@nvidia.com>
- <20261120-dma_mapping_type_v4-v3-3-c0183a409bdf@nvidia.com>
- <ad46d60a-189d-4dd5-9ad8-ecfd3c90f9d9@amd.com>
- <20261123165716.GM179082@ziepe.ca>
- <7ac7edd0-5c38-440a-b26a-21bcbb6f4702@amd.com>
- <awT8prWsj11TBdmP@nvdebian.thelocal>
- <63eb7b6e-e0a8-4443-a434-0301ed59beae@amd.com>
- <20261124142032.GN9566@ziepe.ca>
- <7a5a2d3a-e42e-4dc0-8d22-8dd1bd249501@amd.com>
- <20261124194618.GC114530@ziepe.ca> <awZ_Os1pXelOGaFP@nvdebian.thelocal>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <awZ_Os1pXelOGaFP@nvdebian.thelocal>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BLAP220CA0021.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:208:32c::26) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=wG3m4svQ
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-6b86bbce3d1so7646036a12.0
+        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 03:52:16 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795607535; cv=none;
+        d=google.com; s=arc-20260327;
+        b=eg7xc2/iuGF0evyV5xSCLY1B+IuQQS9VaPRZA8AiTx2k7iw92/3IMybFWC7o1v4BgP
+         FH2PQnI2QfAc8idJZZI3uqn7JYhbx9pRTp3hCvsvFKvWSgoVcIqI/0/YP12o0R8HwJmm
+         7//TEY2G+wHsBZc9bI5WxhN9jHg5LdllopLw7xCKiwFtVjdS4Zc0n/jzuaDQOWLuE3fM
+         FOJgNB/mr9x9U5gI0fLgsWt387gU/gQdLVEMA3n0PAmXfia3k609A7ViGxlX6jit3pKY
+         uOS3J+0NsvjHQ0UwVh5mvAh/SnYd8gqF0uSsqHauxfCc2YxaOMPX5vJrI4NV9bLRrrDh
+         I3IA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=JiTLwnT8J6kdyIB5NBxt5frLTB5XA5RQrMtJGgcHBbQ=;
+        fh=j0YtO37gWnPGdA2lehhmB5R8oj5RCPDIAC9lIZD6wZE=;
+        b=mh8+3XSaJ7RyzXj08NPBN4awxqRDzJljxf7riMaQBIhXRtdrXEU4Pws9EnvF22IquW
+         wnApW6G4uLhpjsXSqbTfGAKYYp11KKl9/06z6PcEEajSOJrsY5i7EgqaUKaY/qAtxipx
+         dY+fDoKF6qY4wF1dbuX+WPBxdJlPMqgan+LugtVx9Z3W8Ck8u7gqSQ+2rgJmqV948jqc
+         ijq6Qy/IyE3TjvtC8gSKou/EpF23g+A6vm1bBwC3Un3AcJ70W7GeNRV1MNmmmndklgyn
+         2QhEhatjgv1Hwba0IZrOjGK01MGOSvIGPn9NeenfN4VGlXnh+3dJ+KmIj0K3e1BP983l
+         eETg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795607535; x=1796212335; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=JiTLwnT8J6kdyIB5NBxt5frLTB5XA5RQrMtJGgcHBbQ=;
+        b=wG3m4svQmUgQQFs+PGXPgJr8qcoLBRwBAQXsl6XNfZB2VYix2EiLEX8jcHHsiv6Q/R
+         2EAraNEqahzk2SmdRUE0AO8M6YK84bZmAi85AG2Wbgo2llD+OXU1Dk4rF4fik9S9cGBw
+         xzQV3pk5UoNdNKnLxafZOK7fI9rcW4TmBCiqtBFA6PYMyRn/JK9CUHfxORRQrDOWzRD7
+         Zg47Vu6gqjAbcpG//Aw21e2mmG2EOyCLCzgfMOvEX/ZYy0ttxgLaxLVe5KE0qs9Pyy/c
+         BF+11Sj9McciVWlIBZVUCXAvBCZZ1YzNxybiVsMI9dcoRWiPD9mFWbWbbIULQ7sr14TC
+         zu5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795607535; x=1796212335;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=JiTLwnT8J6kdyIB5NBxt5frLTB5XA5RQrMtJGgcHBbQ=;
+        b=UqANDyG2sApfPmZSVwd7lpt1FsTvHZ1hgi+Et0M/6K/LamDVRK3DbiOVhaIPgrjSM6
+         5j0cnvV+htK3IQJjRLk9DZauPA+AMDr2w2TxqJkfXBedKg3m7yGz3q3pLAvEb/qV4kxZ
+         hhWQMBUD2ypZpLv3z7yBum82gmrcw3KxoUK8gm51vvJWTmL1hUb3CskRoU/IDaOX6jGK
+         7bKejNqlACutYQGAuoThTkOWObdZYV6JiX0+HlcKWQq/kO4E8IqQk1X9YIMikdk6Z0xN
+         KXNFnzOpK1w7sLcon0i1RyC7xBmqY7BnxAvuu9FXXKSIbCydErNkMk+/NcoSIIUBtA4s
+         vDLw==
+X-Forwarded-Encrypted: i=1; AL+hErHYUOYq7HOoGLfxO9az20nW9DC+h9caPDfrpBZBAgwvYcE6iR8k5jUELl3cx4yf3tt/QgGTCw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8KFxvlbbzpBwDOt8FixZzJQlEAE6io5+JStDR5puj93HYuVdXP
+	5JsSFQYsTE4IMJi23xGSozbKGMGTKHIL5ohL0TkWG+NvLfz7hDt/92Uo1ep4ojYC3VvuGOzbtPd
+	TL+eAUN5zBP8VXw8GfIqPOy0Mor8SgFc=
+X-Gm-Gg: AZFdTZeBUWTuEIo+MJI93DgluIF7yDzjHKw0JbyjvTFtrih5Z1oGX2OM+pPCxmSnu9H
+	fmVS8Ced6SY3Zdksi0mjDw9q20Pl44sdL1PKS6kQpMRhdAaWVLcEk/jYgjzpgwFxwXcA731R7ob
+	dzJrJCPKOiZ0KjeeAD1+eo6BtuX80WtOm14nJn34JcYy49ZZpgP2b9B+WfNBLBMGQuPuWmk19dm
+	OTX379T1K+ai6XFGo3+2C2yESxWSe10tZFYlZU9ovnn5d9fNDwozWIYdodbxG9LXv3Xg+x/Fmnb
+	VOdNY6QUT2nZ7MlEwc1OaRe5CV5wu1809IwcIWnF9S9QgUv+yDNNjA8mzHoEDIMT8yywN81hoJm
+	J2VH3MbNR31xk9LLmjILtbgGEtvpietJgO6wMx9BswqQ+B2wO/gu6vIr8DzyYQe7Gq6iVpg==
+X-Received: by 2002:a05:6402:a592:10b0:6b8:8706:8e91 with SMTP id
+ 4fb4d7f45d1cf-6ba37d6526dmr10123892a12.12.1795607534606; Wed, 25 Nov 2026
+ 03:52:14 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -125,166 +104,86 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|LV3PR12MB9166:EE_
-X-MS-Office365-Filtering-Correlation-Id: 943d2c3a-1b56-4791-45b1-08df4ae5f8c8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|23010399003|366016|4143699003|6133799003|22082099003|18002099003|10067099003|56012099006|11063799006|261102123227099003|261102130727099003|261022075727099003|261028144727099003|261026121527099003|261026140227099003|261022105027099003|261021121427099003;
-X-Microsoft-Antispam-Message-Info:
-	EoqLlE5+BzmwXgnLTN7ajf6JsXy5Jo4+6ZHP7w16zOOLjD+VhAZcJ5yHG/4rLbxJdgENQUcRhfBGxpbuD00YRy/PrYdMJIKwLPBu2sYSY+Inmuwn12Hx4oezY1VewJLOvsOdFg1C39UgKly8j4bjiOJDIh2iSKFqfWMZJSRlKL+WmBd0asWq5CVAtzi2FVBXEPRTL352de5sD3SVCXlkzes3zzhyBDlJtzQc8a6YosaJEOWG+6z7AeIOX8d5wtQR1ntxC3xEh4priND0VdreKiBK6n4BhSVL+2aqzj4cEV9YKJz/p8tapelT4gwYWXREJmc3wQ5LSdEj2f6rbUMIvsygyxpwwpEzv5WaX4ul5iREXbM9qgPtEl9YuVEf6qjsPGSLUmMny11m/vnx1Pc5VL01w1AJRB3RkwHqaOaSCHpABC42dyEg1tr6pyo+PjdOS1kgWg5sYjvy4sQfJlZ4Sr8vSfIQgT1+zYE1rRNOooFZzCb+o8HZKDT/PVOGA0oC/giRrGmpQJaq+tPL/VBc1h96hy4lzcOTZS/GOZT1QtiRvt1UPsBjKr2qxPAgeV5wuaoHKMDo06FSEgGPAXZV0t5dSUjlWaZ51iD3KjkSCuurh63Xkxt8q/dhiDmEoRJbKasQ5RX/bp/UuD8k/JRy4vo7f1FEJ4/rtFQYSHRglA4=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(23010399003)(366016)(4143699003)(6133799003)(22082099003)(18002099003)(10067099003)(56012099006)(11063799006)(261102123227099003)(261102130727099003)(261022075727099003)(261028144727099003)(261026121527099003)(261026140227099003)(261022105027099003)(261021121427099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?VGpad0w3MmM4UU9HZjhmV3RvN0Nvejl0Sys5SHhqekEraC9TQnU4L29XSzMz?=
- =?utf-8?B?ZndiQWJadVVTVXh1Sk43bm9BSlBmY0hxbHlmeENyS2xoamJVS1dDRU1oSncz?=
- =?utf-8?B?YnhicjNLUHVFZEZkdWt0Q0lxSWlkUDVaRU9tSExaS2l6YXhuQzYwRys5OW0y?=
- =?utf-8?B?cWE4WUpJM202aFdlRGRsUnM4dDVrTVRXVGZKUFpIZWFleUtRZnozNnFnNWZs?=
- =?utf-8?B?MFR2OEZwRTZaZjlkQjNVT0hNZ3RGRnBQOHFLS2pXTVNWTFVOamZvZk5pWEZt?=
- =?utf-8?B?Zm40bGp5NVVzM3oxMUpyazRwODJKcnJFTHlNVGllMlVBWkp5cjBXOHZFVnlo?=
- =?utf-8?B?RVFXRlA4cENVWW0zS0hrM2RmYTNNM0FLUStxYUVkNkVubU1TdVBZQ3R1ZGJ3?=
- =?utf-8?B?dFo0K0lUYnRnZVpBMkF4dzBkcE1jM0xxNlBoQlZ2bUxOT0N6TzRMRjJRNG41?=
- =?utf-8?B?NVhkTUNsWUtsYTRZdWtvVVpEOUFxcExjVjh2SnNMclBGUXhtdU1hK3ZrbXZK?=
- =?utf-8?B?eWtnTjlpZGp1MHgvNkNCbWRydjRIVmlMRjRVV2dDL1o1MVNzbWFkK0dFOGZv?=
- =?utf-8?B?c0lUVGpWZlZCTzBCRTREMXhNZDZHS1NzZkQ0a0lXdmZpb2FrT2p2cUxHYkF2?=
- =?utf-8?B?UlZubkNLc1Zvdm93bXpjUWU5bWw1Q3hGQzU4V2xTOEM4OVB5MzdOZkhhQkFE?=
- =?utf-8?B?S3VRVzhXN2FZT1luOGh2UWlXZm04d2U1MXhqbFp2cmFBQ2hsczY3TTJoUXNs?=
- =?utf-8?B?YWJmaVJYSkNPRnNZckZDeFlHRkNKWXhkWnYrMXArSDArc3FPb3NrcHJjRGox?=
- =?utf-8?B?NnNJbmNGZGYyM2FnYVJJdlQyWTEwcXo1WkxmeGFlU3dOYnJVTWlDczJldklW?=
- =?utf-8?B?dWFKNWtLTDV0dGMxRkRoVms4cndyY244MU5QWGp3ZUYzcXNwYkRULzZFemRW?=
- =?utf-8?B?RVRFZVFpTEV4eUlmR3FkWklTTjMvbnhmVUlDVW4xaXdObDJLOXlWUTR2akVB?=
- =?utf-8?B?MWo3YUtZa2lBb1JmRmdxd01ySHpDZnVlQktmOGc4QWxiZWlIMHl1V0ZCRjhI?=
- =?utf-8?B?VXFJZXBVRktCRGN4UzFkVnRycW40VWtIV1ZzS09hbjdMNkdYdlRWd1Roanli?=
- =?utf-8?B?STRXbDRMc1VpNDV3aXk1cXE3Tktxd3VLU3hPVzdtS3AzUHNuY1RWanBTakhH?=
- =?utf-8?B?c01CQmM1YngzeW45WGgyNld2d2F5SlAwRzdsKzFIdGlCYnNsdUhRdGMyRjE4?=
- =?utf-8?B?U0VRWGZUZ0ZxY1hyMnJNZ3BDRkQvMlc3Y1ROU24vUUdRYW5FSFJacmZla1hK?=
- =?utf-8?B?Wmw4bVZ0eEtDamMycmplQWs1anYwcmcxVEdiZjFwSGRYNGhZM2czeW9GWWdS?=
- =?utf-8?B?d2NXVnY0VXUvbVFoRmdSSHFjUTZ0RGtpUGdZWVN0S3ozWW9rY1BoM09IR1l6?=
- =?utf-8?B?R3ltd2tOQTM3OVI4QUgyNG5GWTg1S05oSnZIcFZTMmtFRGlLWEhwY1UvUnpG?=
- =?utf-8?B?LzZXSzdWRmkyYjhkKzhMNG0zTTRMUjczeUhwcEI4enFCZE0zUytOZC9CV3ZF?=
- =?utf-8?B?U1VWci9leDc4b3ZURXpYMm0vc01sOVJqL3lYb0V6YlRpMDBWZUZpTGNjY040?=
- =?utf-8?B?dkg4bjlWUzdjNUZQU2pyVUJHSm9wWXh0ai9MTWU4dEM0bXVFd09idnJFWVo3?=
- =?utf-8?B?a0dtRlhtNU0xTWs0Tmk1Qklka3F0c2trSmNjVjVLWU1SM3RpMW9NTjdoR2RP?=
- =?utf-8?B?NkpsdzNHZnlxdUt4cVVvQlI4dkJ5bVNpY0R6Zjk2VFVqLzFabFViek9uemlv?=
- =?utf-8?B?TFY3UkR4K2dGWUZtVkpJTUtsdVlTa3o2LythVGFMVDc2Vi9odDllaWthb0JJ?=
- =?utf-8?B?eVQvOGdvamgrb1ZzSHhUU3ZQd3hvaUxIamZKMkhZM0ZqeWZYNkhpZThuUlZu?=
- =?utf-8?B?OHdpRG80WXRmRWRCMk1uWURCaDJTR2RkVWgxWlRaWWVEOGlnMkJFVXVtbFQ2?=
- =?utf-8?B?NHZSSURpR2sxelFxc2NDeFFGbTlZRXBQRXFTakl1b21zQjNnMzZ3dVZtNDV3?=
- =?utf-8?B?T1p6ZDlmelY4S3NMNVNtTWVwRXBsaFBIazhOS3ZOQk8vV1NpV3YxTFZ5WjVa?=
- =?utf-8?B?RFhOL2I0Sjk3LzF5dkJPZXRob3NmZExJOE9mSEhVUEVXUjd3Q0JTcGE2V09I?=
- =?utf-8?B?VkhDeG5LU2lvRGQ1MzBKL3VFNDljdGZKS2E2RXNPaEJXZmhGanNtRGVsZW05?=
- =?utf-8?B?TGpBUk50YVU3VEp5emg2Mkw1WXVPZzFnVkxJRzNSdXNiUEtNTndtbEgxUmdO?=
- =?utf-8?Q?YlOPwqY3oZZvoEPuG9?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 943d2c3a-1b56-4791-45b1-08df4ae5f8c8
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2026 11:19:29.4073
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PBUPN/GqxGJfSkQzQJO6/EdpN2flA5Lmw2GAtTD4ZWj0J5PudNB6wW/RbvhAcjcC
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9166
+References: <20261115103809.1288167-1-linmag7@gmail.com> <20261115103809.1288167-3-linmag7@gmail.com>
+ <awVzJMLVw4wUSqky@monoceros> <CGME20261124232303eucas1p10f2da7a94c8aa19fa4e406d089c1367e@eucas1p1.samsung.com>
+ <CA+=Fv5QJxoxEoKxRpm5Hisdf=y+VpmM-s_VBC1tDQ2FTCfb08w@mail.gmail.com>
+ <3467269e-9929-4c9f-bc19-847976f49527@samsung.com> <awa6Owm3eDW3EitJ@monoceros>
+In-Reply-To: <awa6Owm3eDW3EitJ@monoceros>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Wed, 25 Nov 2026 12:52:02 +0100
+X-Gm-Features: Aa3M54p8sDF24v9l5vsIDk_y4hlZnLV9zBkxaSf0Tu8Y_d4WDzlfpPV0l4Su2os
+Message-ID: <CA+=Fv5RttOgZp9vftYN2XfmV31TyC_o_eSejruM_bbf6v7zfBQ@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] alpha: enable contiguous memory allocation for
+ coherent DMA
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+Cc: Jakub Kicinski <kuba@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	richard.henderson@linaro.org, mattst88@gmail.com, 
+	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	linux-next@vger.kernel.org, netdev@vger.kernel.org, iommu@lists.linux.dev, 
+	joro@8bytes.org, will@kernel.org, Mark Brown <broonie@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 11/25/26 08:18, Alistair Popple wrote:
-> On 2026-11-25 at 06:46 +1100, Jason Gunthorpe <jgg@ziepe.ca> wrote...
->> On Tue, Nov 24, 2026 at 05:02:31PM +0100, Christian König wrote:
->>> The whole conversion from phys_vec to DMA addresses is something
->>> some API should provide based on the data the exporter/importer have
->>> negotiated (e.g. p2pdma_provider for example).
->>
->> Yeah, probably, and this is exactly why I think it will take some
->> time. Building a new something in lib/ like this is not a
->> straightforward task.
->>
->> But also, this:
->>
->>>> You need to negotiate the actual C data types too, especially if you
->>>> want to do that nasty idea where dmabuf populates an iommu domain.
->>>
->>> Yeah agree as well, but to be honest that task is negligible. We
->>> first need to figure out where to put the code.
->>
->> Means you need to get the phys_addr_t into the dma-buf code so it can
->> do this conversion.
-> 
-> We all agreed that open-coding DMA mapping of buffers in every exporter is
-> something we don't want to do. The disagreement now seems to be where the code
-> converting between physical locations provided by an exporter to DMA addresses
-> usable by an importer lives.
+Hi Uwe, Marek, Jakub,
 
-Yes, exactly that.
+On Wed, Nov 25, 2026 at 11:53=E2=80=AFAM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@baylibre.com> wrote:
+>
+> Hello,
+>
+> On Wed, Nov 25, 2026 at 09:54:08AM +0100, Marek Szyprowski wrote:
+> > Hi Magnus,
+> >
+> > On 25.11.2026 00:22, Magnus Lindholm wrote:
+> > > Thanks for catching this and identifying the interacting commits.
+> > >
+> > > I reproduced the error on next-20261123. In
+> > > arch/alpha/kernel/pci_iommu.c, I changed:
+> > >
+> > > page =3D (gfp & GFP_DMA) ? NULL : dma_alloc_contiguous(dev, size, gfp=
+);
+> > >
+> > > to:
+> > >
+> > > page =3D (gfp & GFP_DMA) ? NULL :
+> > > dma_alloc_contiguous(dev, size, gfp, dev_to_node(dev));
+> > >
+> > > This fixes the allmodconfig pci_iommu.o build. A full DP264 UP build
+> > > with CMA enabled also passed, as did an object build with CMA disable=
+d.
+> > > The full allmodconfig build hit an unrelated cgroup sample error
+> > > involving PATH_MAX and LINE_MAX.
+> > >
+> > > I'd prefer to keep the Alpha tree independent of the DMA series.
+>
+> That's up to you, but in my eyes merging in the immutable branch
+> provided by Jakub into your tree (or rebasing on top of it as suggested
+> by Marek) is really the easiest option. That way you don't have to wait
+> for the change to hit Linus' tree and there is no further need for
+> coordination or others paying attention to not create non-bisectable
+> commit graphs.
+>
+> However looking at the immutable branch I see it contains both the dma
+> API change and then separately various adaptions to ethernet drivers.
+> IMHO the immutable branch should only contain the API changes (that is
+> the commits up to 31f7e12d621b) to reduce the amount of possible
+> conflict.
 
->> I'm still absolutely NAKity against allowing any DRM driver visibility
->> to an importer's iommu_domain if we do this hack.
->>
->> I don't see how to meet all these concerns without making dma-buf into
->> a "converter" framework...
-> 
-> Right, something has to do the conversion and we've agreed that shouldn't be
-> in either the exporters or the importers. The main objection seems to be having
-> dma-buf do that, and instead having some DMA/library code to do it.
+Thanks, that makes sense. I guess best is for me  to rebase the Alpha chang=
+es
+onto the shared DMA API changes and update the caller in my CMA commit.
 
-Right.
+As you point out, using only the four API commits through 31f7e12d621b
+would avoid bringing the Ethernet driver conversions into the Alpha tree.
 
-DMA-buf is the high level API/uAPI importers and exporters talk to interchange information how to access the buffer, handle locking, handle lifetime, handle a generic driver independent uAPI....
+Jakub, Marek, would that commit be a suitable immutable base for this?
+A separate stable tag at that point would be helpful.
 
-The low level API which talks for example to the IOMMU driver for creating the information how to access the buffer is simply not the task at hand for that framework. The stuff we already handle is more than complicated enough.
+I'll then rebase, retest, and notify Mark before updating for-next.
 
-> If I drop the type/placement negotiation for now and focus on SGT removal I can
-> simplify things a lot. Plan would be something like:
-> 
-> 1) Introduce a new C data type (dma_phys_list?) for exporters to pass physical
->    location info and context for mapping.
+Thanks,
+Magnus
 
-Something like this maybe?
-
-struct {
-	u32	mapping_type;
-	u32	num_entries;
-	union {
-		dma_addr_t	*dma_addr;
-		u64		*generic_64bit_addr;
-		...
-	};
-}
-....
-	
-
-> 2) Introduce two new dma_buf_ops - map_dma_phys_list() and unmap_dma_phys_list()
->    - which are replacements for {un}map_dma_buf that converted exporters use to
->    return a dma_phys_list instead of returning a sg_table.
-> 
-> 3) Move dma_buf_phys_vec_to_sgt() somewhere other than drivers/dma-buf and
->    rename it dma_phys_list_to_sgt().
-> 
-> 4) Update dma_buf_{un}map_sgt() to call the new map_dma_phys_list() ops and
->    dma_phys_list_to_sgt() to create an sg_table for unconverted importers
->    importing from a converted exporter.
-> 
-> 5) Add dma_buf_iommu_map() taking a IOMMU domain/iova/offset/size to be called
->    from iommufd for mapping an attachment into an IOMMU domain.
-
-I think a whole bunch of other drivers would be really happy to use that interface as well, yes.
-
-> 
-> 6) Add a new C data type (dma_map_list?) containing DMA address regions
->    an importer should program HW with and new dma-buf functions to replace
->    dma_buf_{un}map_sgt().
-> 
-> Names are really just placeholders, so easily changed if you don't like them.
-> Let me know what you think, thanks.
-
-That totally sounds like a plan to me.
-
-Regards,
-Christian.
-
-> 
-> Regards,
-> 
-> Alistair
-
+>
+> Best regards
+> Uwe
