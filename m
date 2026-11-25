@@ -1,92 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.156.1
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795637756;
-	b=g4CQs0HtsvtUoXfHtXagQsk9Dkv1biFTU/5OIA3a51iwO8ehv+jBIwtf61wGRtb7VZNi
-	 9RBgQSWrJingoOwq/alig5gBiow6dx4Gu5smshpd59LTFh+H6wAUrOJ327sAtyN5d2u0+
-	 XR5iHRZl6aIWyD0M1vc3b8a8C2RpoNeykUhMqzN3DXkx4c0dhfjvZIfyZAHYBKSYYvJHp
-	 gyOJ5bmY5OlDSUXjyGV1JZecSuUtjrGrq+WhvzjFhQRe01fU9gnvV8SJWEEmZ9PrrTd8z
-	 vBbFfSQzNspR8dlEHQ58yQbfRYvjiGIyGMTWRcM3bCwxvDze5oaNXYhqaZRsnXrYgSw==
+	t=1795638789;
+	b=cXP/Z2M1nL8CfAJkcE0wqgzGGfed91Lwo2BvqC3q7vj0fjJx6S3KoW2AuSH+3cVSXeEy
+	 tefsxIb971lXt15UoWz0SSx39qGL9Ydo4/FC+0u6Rw8oKQ7E9XRCQjsnutV1UGukv9Wx9
+	 xL/2NChrfL1G06vLoj2KWqx0WA1TpgpdmHrUJCQJxBRHZjKxLpUwzCHRq8EllIgf/AxS2
+	 2IN+zgr9yDhyGGslgvWCoi/GK1SmUcotBdZawnQZjuL+9Y6/mFhdMja5dtbkCg3nT8JwY
+	 X1y6kts0x7vhP9RCktjV6XIUJ+HlSK9Hv2uiyZH8PflMThojEhqhFi4dnUppgf2NIZQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795637756;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795638789;
 	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
 	 Received:Received:Received:Received:Message-ID:Subject:From:To:Cc:
 	 In-Reply-To:References:Autocrypt:Content-Type:
 	 Content-Transfer-Encoding:Date:MIME-Version:User-Agent:X-TM-AS-GCONF:
-	 X-Authority-Analysis:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-ORIG-GUID:
-	 X-Proofpoint-GUID:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=rb/tXleQG/ksLL66I6VY/gKzssHMexklUooEaxWhqY4=;
-	b=WX7tB1vmzBK2shmjvPtmiQCM+LtcqeFAdUlHg2RHDPAumEwAdLGdgY/LWIyap4CwUXOU
-	 k7b0BRzmRbaNmP/9/NMPrtJHz1qcVeyvc+p+VHGuWVzbCEusbXq6gXHJOviubRKOEdCdp
-	 CN3uic507KiJ4VOnEO8+h6wGa/kNE6EZm7aQN9ARZVHxI/rOVB0XgTpHX/ffPPJxVuxfS
-	 J2nJiZ/QbdL/r3Igfgw0Bj1MehbYCmTs+hmSlLWynXPGfWm/Mt8i4fWcGEnhxaiFFdCZV
-	 gbCPV2m7ETSqM9wmCba6LCkSNk7C3BcFRKF/EhbyjjfvRiNQJT+dEAHcaIfPaPSJm2A==
+	 X-Authority-Analysis:X-Proofpoint-Spam-Info:X-Proofpoint-ORIG-GUID:
+	 X-Proofpoint-GUID:X-Proofpoint-Spam-Details-Enc:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=jEeLCB+aXgOVbuv66IfMGqFTl5oga9w2PPFkHOWOMdM=;
+	b=T351DBWybhGQ6MSoMa5PrdNU+v683bS5FXdrcvNsucLldn9BM2Z21Bbr5QgLlK8ZCOQM
+	 Cnty5Iy6IEhfRFT1wCNKlXIw4nog9wQtyTsH9vwsNsptWJEfQe0nRGtAGcYJBfESRsOjY
+	 eNGh01lj6pzb2zqA2xMSDo9Oj61idl8DTzDgnsSwejirOFssjz7NWuK5B4wpeUXClz2mT
+	 M2pLAcgNlrfBGuiGFHe3jMooRA3RoasTwkCTaOIlaxM86o43m1QmUv43rW2wZadqoQiMt
+	 kWufoVSd4G7XYegANwR9X3Jtw6794JRfRNMDhcNhJsANL+1i+nQw03wWujSa6C/CQaw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.ibm.com;
 	spf=pass smtp.mailfrom=linux.ibm.com;
-	dkim=pass header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=n5h8ZZ9i;
-	arc=none smtp.remote-ip=148.163.158.5
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	dkim=pass header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=M9xSkiRk;
+	arc=none smtp.remote-ip=148.163.156.1
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5575E606A321;
-	Wed, 25 Nov 2026 20:15:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5575E606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B0A2606A31E;
+	Wed, 25 Nov 2026 20:33:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4B0A2606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=n5h8ZZ9i
-Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6APJZGIw2178407;
-	Wed, 25 Nov 2026 20:15:45 GMT
+	dkim=pass (2048-bit key, unprotected) header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=M9xSkiRk
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6APJYlho613499;
+	Wed, 25 Nov 2026 20:32:56 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=rb/tXl
-	eQG/ksLL66I6VY/gKzssHMexklUooEaxWhqY4=; b=n5h8ZZ9il0nPaBs+OlhFJY
-	XNDWGc7V52AGmj+QtzyOL6g8sYSXcJPGiqf2OldKB4gxq2U6xdrPS+jddr/3SG8G
-	RiihhOA0OG7oON0M1x57CF5DltgMt9mZpdZSXGMkdpb9B1IWcLOHu60TVQJY3TQl
-	ozqw5DtklFHJzwAubIuyKfIQbidrusQ/ft1tVOykvnvRbkZpIAyhKfK63gYf6jcb
-	oSNHIwb64uYWpSHaoODnWIrvL5z/2CWWo/8GX1vzIwncaiwwgF5WcW2C9h+dCyhU
-	BDhF60d1FdH/TJuCasKPLUC4nwOKoKIuZasGWIuAbLfahQMMBNtRPIiahzQKQafQ
+	:message-id:mime-version:references:subject:to; s=pp1; bh=jEeLCB
+	+aXgOVbuv66IfMGqFTl5oga9w2PPFkHOWOMdM=; b=M9xSkiRkEO176N8TQ1Ps5c
+	p3TkpgcyRrbbPjl6/XwPrCOwH/khz8SIIdzCwmfzISKZtgr3mkiD3zLQmjV4CQWM
+	hODw385qM1J64HExQUMD3kL2LYs5ciAnsNc9jZNdbTdLM7Qo0Bp9cA+JTqOBkAuT
+	mYmNTPEkoRzSgvw1LuJCHKgFF5UUfXpfTb5ys9fpONk85kfJSGWqPheFc4eWEFIC
+	iOeDdc98amRKKBKH/1lTaLk7PjYNnIeZ1zQIKQCAhKuKkdXaKfvm7C8slvVgfwkP
+	lmA7REQBaOU5yHLQAocWdYVWrQw7xYigFgshev1i5A1h5UuBNKwv/ivfxVPPux1Q
 	==
-Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4j34gvdxrj-1
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4j34g3eg83-1
 	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Wed, 25 Nov 2026 20:15:44 +0000 (GMT)
-Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma21.wdc07v.mail.ibm.com (8.18.1.11/8.18.1.11) with ESMTP id 6APJJFfE2627651;
-	Wed, 25 Nov 2026 20:15:44 GMT
+	Wed, 25 Nov 2026 20:32:55 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.18.1.11/8.18.1.11) with ESMTP id 6APJJLTO1254917;
+	Wed, 25 Nov 2026 20:32:55 GMT
 Received: from smtprelay04.dal12v.mail.ibm.com ([172.16.1.6])
-	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4j5a415jq0-1
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 4j5dcuvyj7-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 25 Nov 2026 20:15:44 +0000 (GMT)
-Received: from smtpav05.wdc07v.mail.ibm.com (smtpav05.wdc07v.mail.ibm.com [10.39.53.232])
-	by smtprelay04.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 6APKFgo930671390
+	Wed, 25 Nov 2026 20:32:55 +0000 (GMT)
+Received: from smtpav06.wdc07v.mail.ibm.com (smtpav06.wdc07v.mail.ibm.com [10.39.53.233])
+	by smtprelay04.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 6APKWrJx27722414
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 25 Nov 2026 20:15:43 GMT
-Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id AEE2458053;
-	Wed, 25 Nov 2026 20:15:42 +0000 (GMT)
-Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id AD78358059;
-	Wed, 25 Nov 2026 20:15:40 +0000 (GMT)
+	Wed, 25 Nov 2026 20:32:54 GMT
+Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 976845803F;
+	Wed, 25 Nov 2026 20:32:53 +0000 (GMT)
+Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id A471058054;
+	Wed, 25 Nov 2026 20:32:51 +0000 (GMT)
 Received: from [9.111.87.46] (unknown [9.111.87.46])
-	by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 25 Nov 2026 20:15:40 +0000 (GMT)
-Message-ID: <a993fe95d464abe9526ba71f9775924ff70f8eb6.camel@linux.ibm.com>
-Subject: Re: [RFC linux v1 2/3] iommu/virtio: Prevent driver unbind via
- sysfs
+	by smtpav06.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 25 Nov 2026 20:32:51 +0000 (GMT)
+Message-ID: <f2ce64236c70db1e377c3cb5b6acabcf6e8be8d2.camel@linux.ibm.com>
+Subject: Re: [RFC linux v1 3/3] iommu/virtio: Add device links for endpoints
 From: Niklas Schnelle <schnelle@linux.ibm.com>
 To: Cam Miller <cam@linux.ibm.com>, jpb@kernel.org, joro@8bytes.org,
         will@kernel.org
 Cc: robin.murphy@arm.com, iommu@lists.linux.dev,
         virtualization@lists.linux.dev, linux-kernel@vger.kernel.org,
         mjrosato@linux.ibm.com
-In-Reply-To: <20261124155410.768743-3-cam@linux.ibm.com>
+In-Reply-To: <20261124155410.768743-4-cam@linux.ibm.com>
 References: <20261124155410.768743-1-cam@linux.ibm.com>
-	 <20261124155410.768743-3-cam@linux.ibm.com>
+	 <20261124155410.768743-4-cam@linux.ibm.com>
 Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
  keydata=mQINBGHm3M8BEAC+MIQkfoPIAKdjjk84OSQ8erd2OICj98+GdhMQpIjHXn/RJdCZLa58k
  /ay5x0xIHkWzx1JJOm4Lki7WEzRbYDexQEJP0xUia0U+4Yg7PJL4Dg/W4Ho28dRBROoJjgJSLSHwc
@@ -144,7 +142,7 @@ Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
  3FZJPTo/OpqchMm8XIeDxC4NFFiPMpyLeYzIxO7eZpiGrAjVTE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Date: Wed, 25 Nov 2026 21:14:39 +0100
+Date: Wed, 25 Nov 2026 21:31:50 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -156,70 +154,73 @@ Precedence: list
 MIME-Version: 1.0
 User-Agent: Evolution 3.60.2 (3.60.2-3.fc44) 
 X-TM-AS-GCONF: 00
-X-Authority-Analysis: v=2.4 cv=CYCdd7rl c=1 sm=1 tr=0 ts=6b0741f0 cx=c_pps
- a=GFwsV6G8L6GxiO2Y/PsHdQ==:117 a=GFwsV6G8L6GxiO2Y/PsHdQ==:17
+X-Authority-Analysis: v=2.4 cv=SoQFe/O0 c=1 sm=1 tr=0 ts=6b0745f7 cx=c_pps
+ a=aDMHemPKRhS1OARIsFnwRA==:117 a=aDMHemPKRhS1OARIsFnwRA==:17
  a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=RnoormkPH1_aCDwRdu11:22 a=Y2IxJ9c9Rs8Kov3niI8_:22 a=VnNF1IyMAAAA:8
- a=c2y1nhzc0TmZerhBWyQA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI1MDA4MCBTYWx0ZWRfXwPPxdp318sMI
- sBH1LMdtHO+1vk4fViuv0UBZ7dlJ0QhduOkyH2iYLacL4Tf31YtvN0n9GvaNs4b+KU6/kLeFWzV
- 4tJz+UT2QS64RwgSySN2K8dU7fDy1S8=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI1MDA4MCBTYWx0ZWRfX/2qCsvLdNomm
- UN4/EuHX6r5Kmx8cZw/sYgGfa5CkGuoxQWfjPc7Uq5rez31d4fNu+Z3Sx78sDXajsMLNewrZrgk
- TWmJJ3Xb8iNvICXwoNc3kCRytzT7sVE7IKNzqQc9n6sZefPrXIIvG55qa6qPSHFQAM3wEbtBpXW
- xXXVsW5cXqnc8bKTPFAkoiAklD4xzJ9mzZMdd8YONvZXbv9W1+d7Y4qE9BMW/gPxpa7bLFnQ92S
- BnCKw5iiWRs+tOCiVthRuNj5qIXnt1nYIvt9OjegGJW9MANWPmmjT/KPaSs49/OWbNoGBM2sWX0
- zd6fgUzIYm29aV1ALWHr1adfavrGLBpiUr5TuslXQasud3NOgXXdXjqjZ7CV3/GDaFGNE3vf1Y1
- +ghV7RoA9oszIhfJJpgzdO1BZJy3giVxDpaIM0GydXZrnpg8ncroOe6EytMGQMzAOuxOgzDkA17
- fh32XAsSH5hfJdeqLzA==
-X-Proofpoint-ORIG-GUID: VjzfaP0VEtXlGn5MTSQAM8vNfyOEgyxV
-X-Proofpoint-GUID: VjzfaP0VEtXlGn5MTSQAM8vNfyOEgyxV
+ a=RnoormkPH1_aCDwRdu11:22 a=uAbxVGIbfxUO_5tXvNgY:22 a=VwQbUJbxAAAA:8
+ a=VnNF1IyMAAAA:8 a=w36FetE1Bn8a3QyTgNcA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI1MDA4MCBTYWx0ZWRfX3rMBp8VrwuXs
+ TC7gM4EAMZCdQfVQABK9+9H2xjDyy9G8oAgzvqXhC/47OmL1RbD9BGTgGYhZjEgPC2lHjOJKzhk
+ Xck0hdrlWlK8J0O3J299od3baDdWZyI=
+X-Proofpoint-ORIG-GUID: gzkm3lQmll0A_GmF04sM4d0S7gAqb43j
+X-Proofpoint-GUID: gzkm3lQmll0A_GmF04sM4d0S7gAqb43j
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI1MDA4MCBTYWx0ZWRfX+D4AMmdaABfI
+ HTGE6JwDrBZn2oIX3ND0mrgszhdXgBJdAJuSuKdzFmfULaD8OYPqQ052IaLOukdmcuLan4BybC5
+ qs8Wb8t40+AxkoieakYIIh0VdvEXtxkEh2cdnMRxL301WzcUWaPQ8FJeiIexsf2DlByzZguG8kB
+ Pqs9DUq0/7IEN+Hkcputrmu2vlA1J3a8YtkEzOt4sllsGu93PP1uD4L+eAec224DmvVHyCP/0Jd
+ J3wpD+c8ljwqs8D3DEAmHGPlEbD5uarCPWpWxqK4H0pPqGRuJsZSFND8R0kWl5FqbPS95xouK5g
+ qNfQKkaPNPJO1HT/5sBmOmocwEbTrMQ3hpJE75zKB5icXw0qNeqc9lkdhLji62jUT4zIngYy97E
+ 7dLlYDULWPQGS3pMasDtzO8nGrWFt3dGHZMqBGz3xFjQjiG+hQ8A9FFdA2RXvZzaRwiooLILtVX
+ yocn46pc2RImNotMv2A==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
  definitions=2026-11-25_05,2026-11-25_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 malwarescore=0 priorityscore=1501 lowpriorityscore=0
- clxscore=1015 spamscore=0 bulkscore=0 impostorscore=0 adultscore=0
- suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2611040001
- definitions=main-2611250080
+ priorityscore=1501 suspectscore=0 spamscore=0 bulkscore=0 adultscore=0
+ lowpriorityscore=0 clxscore=1015 malwarescore=0 impostorscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611250080
 
 On Tue, 2026-11-24 at 10:54 -0500, Cam Miller wrote:
-> Set suppress_bind_attrs on the virtio-iommu driver to prevent userspace
-> from triggering driver unbind via sysfs.
+> Make each endpoint a consumer of the virtio-iommu device, so that the
+> driver core unbinds each endpoint driver before viommu_remove() runs.
 >=20
-> Unbinding the IOMMU driver from beneath live endpoint devices would
-> leave those devices with dangling domain pointers. This would not be a
-> recoverable operation.
+> Before this change, removing a virtio-iommu (for example via "echo 1 >
+> /sys/bus/pci/devices/<dev>/remove") tears down the IOMMU groups of all
+> its endpoints while their drivers are still bound. The endpoints keep
+> stale IOVAs and their later dma_free_contiguous() leads to WARNs in
+> __iommu_group_free_device(), endpoint IO hanging, and crash at shutdown.
 >=20
-> Note that suppress_bind_attrs covers only the driver bind/unbind path,
-> not PCI-level device removal triggered via the sysfs remove file.
+> Make each endpoint a consumer of the viommu with device_link_add(), as
+> arm-smmu and other IOMMU drivers do. The driver core then unbinds the
+> endpoint drivers before viommu_remove() runs, so that their DMA teardown
+> will still see an intact domain.
 >=20
 > Fixes: edcd69ab9a32 ("iommu: Add virtio-iommu driver")
+> Suggested-by: Jean-Philippe Brucker <jpb@kernel.org>
 > Signed-off-by: Cam Miller <cam@linux.ibm.com>
 > ---
->  drivers/iommu/virtio-iommu.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+>  drivers/iommu/virtio-iommu.c | 3 +++
+>  1 file changed, 3 insertions(+)
 >=20
 > diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> index a08474eeed58..dd10c3e98a3d 100644
+> index dd10c3e98a3d..a84a653f269e 100644
 > --- a/drivers/iommu/virtio-iommu.c
 > +++ b/drivers/iommu/virtio-iommu.c
-> @@ -1285,7 +1285,10 @@ static struct virtio_device_id id_table[] =3D {
->  MODULE_DEVICE_TABLE(virtio, id_table);
+> @@ -1044,6 +1044,9 @@ static struct iommu_device *viommu_probe_device(str=
+uct device *dev)
+>  			goto err_free_dev;
+>  	}
 > =20
->  static struct virtio_driver virtio_iommu_drv =3D {
-> -	.driver.name		=3D KBUILD_MODNAME,
-> +	.driver		=3D {
-> +		.name		=3D KBUILD_MODNAME,
-> +		.suppress_bind_attrs     =3D true,
-> +	},
->  	.id_table		=3D id_table,
->  	.feature_table		=3D features,
->  	.feature_table_size	=3D ARRAY_SIZE(features),
+> +	if (!device_link_add(dev, viommu->dev, DL_FLAG_AUTOREMOVE_SUPPLIER))
+> +		dev_dbg(dev, "could not add device link\n");
+> +
+>  	return &viommu->iommu;
+> =20
+>  err_free_dev:
 
-Makes sense to me and this is also in line with other IOMMU drivers
-like arm-smmu-v3 that use the same attribute.
+Looks good to me and like the unbind suppression is also already used
+by other IOMMU drivers in this case e.g. arm-smmu in a similar fashion.
 
 Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
 
