@@ -1,148 +1,50 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795638789;
-	b=cXP/Z2M1nL8CfAJkcE0wqgzGGfed91Lwo2BvqC3q7vj0fjJx6S3KoW2AuSH+3cVSXeEy
-	 tefsxIb971lXt15UoWz0SSx39qGL9Ydo4/FC+0u6Rw8oKQ7E9XRCQjsnutV1UGukv9Wx9
-	 xL/2NChrfL1G06vLoj2KWqx0WA1TpgpdmHrUJCQJxBRHZjKxLpUwzCHRq8EllIgf/AxS2
-	 2IN+zgr9yDhyGGslgvWCoi/GK1SmUcotBdZawnQZjuL+9Y6/mFhdMja5dtbkCg3nT8JwY
-	 X1y6kts0x7vhP9RCktjV6XIUJ+HlSK9Hv2uiyZH8PflMThojEhqhFi4dnUppgf2NIZQ==
+	t=1795642671;
+	b=nrUajiNhHlqUJwOqt03spOZhYTwigW4iDVfqEhtztvB3cMshM2YkIw2lExERdBJ8TIR4
+	 0GCQB1JZKUdkVqU+mxwyoyPXSFXBS5bE58/Oux9JjaKpsT5DI91UD4tlPyj6WvEA0svXE
+	 CNNJcn1dWMWUkPQbAF5fhWyQL/sGrE9lMUqujzUp978IOWwztHU2xt/Dj3meqpBw5Ptue
+	 OiKNp0HhyzZBlmtWieKEcNmrsClcoLUobBuSJeOXVzLZRjBrhFurJmMFtilQywu7ammbP
+	 Ood28gYudmYIHeAIVD6LXoa9c6QrM6A+LzlFUT9dwwPe3eHfRhwyUkNMeH52+zjiIZw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795638789;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
-	 Received:Received:Received:Received:Message-ID:Subject:From:To:Cc:
-	 In-Reply-To:References:Autocrypt:Content-Type:
-	 Content-Transfer-Encoding:Date:MIME-Version:User-Agent:X-TM-AS-GCONF:
-	 X-Authority-Analysis:X-Proofpoint-Spam-Info:X-Proofpoint-ORIG-GUID:
-	 X-Proofpoint-GUID:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=jEeLCB+aXgOVbuv66IfMGqFTl5oga9w2PPFkHOWOMdM=;
-	b=T351DBWybhGQ6MSoMa5PrdNU+v683bS5FXdrcvNsucLldn9BM2Z21Bbr5QgLlK8ZCOQM
-	 Cnty5Iy6IEhfRFT1wCNKlXIw4nog9wQtyTsH9vwsNsptWJEfQe0nRGtAGcYJBfESRsOjY
-	 eNGh01lj6pzb2zqA2xMSDo9Oj61idl8DTzDgnsSwejirOFssjz7NWuK5B4wpeUXClz2mT
-	 M2pLAcgNlrfBGuiGFHe3jMooRA3RoasTwkCTaOIlaxM86o43m1QmUv43rW2wZadqoQiMt
-	 kWufoVSd4G7XYegANwR9X3Jtw6794JRfRNMDhcNhJsANL+1i+nQw03wWujSa6C/CQaw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795642671;
+	h=Received:DKIM-Signature:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer;
+	bh=60kyMXIH5oxacfi0kIXucfPpSjIf0lxOoUeaDl5buic=;
+	b=KhKHUBtrjTLoKqX3RsIwY0jWpqkp7qGGF3M0dMJsE0RioMfG+ko4rz4D+56sPR1hz4e7
+	 dDvk8JRU4gFXtZf+LT1NOBS5z2YCa1NWcy1KgnQM6sL5TKSxid8NiCCrNQ9HqtP0iwaSX
+	 33RUg40ltpqdRd/nk3Xkv8htr888DefnCSXUGX7a+sZaTMQLMMkYBULBR6k/EsYrp43ft
+	 ezBtW/OI5RaDezDh0bSDXGfBA/v8/84hQcHciyHbOBlHOEOptmb5C1LGm0ElK6WJ2a2tH
+	 fnslRUaJ9C+imIKuMs9WGtWFBJ7Dzj+3GzTG+FjAdn7B3AlL66eGkn2JvRaP/GTDjgg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.ibm.com;
-	spf=pass smtp.mailfrom=linux.ibm.com;
-	dkim=pass header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=M9xSkiRk;
-	arc=none smtp.remote-ip=148.163.156.1
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Mq49p9IU;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B0A2606A31E;
-	Wed, 25 Nov 2026 20:33:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4B0A2606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DA26606A332;
+	Wed, 25 Nov 2026 21:37:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=M9xSkiRk
-Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6APJYlho613499;
-	Wed, 25 Nov 2026 20:32:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=jEeLCB
-	+aXgOVbuv66IfMGqFTl5oga9w2PPFkHOWOMdM=; b=M9xSkiRkEO176N8TQ1Ps5c
-	p3TkpgcyRrbbPjl6/XwPrCOwH/khz8SIIdzCwmfzISKZtgr3mkiD3zLQmjV4CQWM
-	hODw385qM1J64HExQUMD3kL2LYs5ciAnsNc9jZNdbTdLM7Qo0Bp9cA+JTqOBkAuT
-	mYmNTPEkoRzSgvw1LuJCHKgFF5UUfXpfTb5ys9fpONk85kfJSGWqPheFc4eWEFIC
-	iOeDdc98amRKKBKH/1lTaLk7PjYNnIeZ1zQIKQCAhKuKkdXaKfvm7C8slvVgfwkP
-	lmA7REQBaOU5yHLQAocWdYVWrQw7xYigFgshev1i5A1h5UuBNKwv/ivfxVPPux1Q
-	==
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4j34g3eg83-1
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Wed, 25 Nov 2026 20:32:55 +0000 (GMT)
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.18.1.11/8.18.1.11) with ESMTP id 6APJJLTO1254917;
-	Wed, 25 Nov 2026 20:32:55 GMT
-Received: from smtprelay04.dal12v.mail.ibm.com ([172.16.1.6])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 4j5dcuvyj7-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 25 Nov 2026 20:32:55 +0000 (GMT)
-Received: from smtpav06.wdc07v.mail.ibm.com (smtpav06.wdc07v.mail.ibm.com [10.39.53.233])
-	by smtprelay04.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 6APKWrJx27722414
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 25 Nov 2026 20:32:54 GMT
-Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 976845803F;
-	Wed, 25 Nov 2026 20:32:53 +0000 (GMT)
-Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A471058054;
-	Wed, 25 Nov 2026 20:32:51 +0000 (GMT)
-Received: from [9.111.87.46] (unknown [9.111.87.46])
-	by smtpav06.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 25 Nov 2026 20:32:51 +0000 (GMT)
-Message-ID: <f2ce64236c70db1e377c3cb5b6acabcf6e8be8d2.camel@linux.ibm.com>
-Subject: Re: [RFC linux v1 3/3] iommu/virtio: Add device links for endpoints
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Cam Miller <cam@linux.ibm.com>, jpb@kernel.org, joro@8bytes.org,
-        will@kernel.org
-Cc: robin.murphy@arm.com, iommu@lists.linux.dev,
-        virtualization@lists.linux.dev, linux-kernel@vger.kernel.org,
-        mjrosato@linux.ibm.com
-In-Reply-To: <20261124155410.768743-4-cam@linux.ibm.com>
-References: <20261124155410.768743-1-cam@linux.ibm.com>
-	 <20261124155410.768743-4-cam@linux.ibm.com>
-Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
- keydata=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
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 25 Nov 2026 21:31:50 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Mq49p9IU
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0AD41F000C6;
+	Wed, 25 Nov 2026 21:37:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795642670;
+	bh=60kyMXIH5oxacfi0kIXucfPpSjIf0lxOoUeaDl5buic=;
+	h=From:Subject:Date:To:Cc;
+	b=Mq49p9IUviztHKgBHD0Jsq63jIlzruPhIWld2Xsc7qz+X6oTRPsKGX6N5KksA07Ny
+	 CATzkgBG3Mxldfdp92CY1L+XkTNdySuhRXdbYlkZOpDvfmuZCu4DiPXDtZ5+7wx0pU
+	 kwolEUhlHBDHnAEvkXaS85TJoGKYJwuUCuYzWtBHT7FJL8xQQAodvmquqJSsdZUBhy
+	 YEJeL14E6/iK/Pe0R1bWfeHMJDhf2jx15+8iyp83GGVtOcZ8TbwfZe/N9akz4DZi+M
+	 tYrTY9Jflg71R5j/zwYNnDGvJJXGFPhwzR8W47osHvNy1fCdHASo2o8+t6VUafAutz
+	 XTNiJH6MgkJow==
+From: "Harry Yoo (Meta)" <harry@kernel.org>
+Subject: [PATCH slab/for-next v2 00/14] mm/slab: mandate SLAB_MAY_ACCOUNT
+ for __GFP_ACCOUNT allocations to avoid wasting memory for slab metadata
+Date: Wed, 25 Nov 2026 21:37:01 +0000
+Message-Id: <20261125-memalloc-prof-dont-waste-slabobj-ext-metadata-v2-0-7c680f02a734@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -152,77 +54,394 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Evolution 3.60.2 (3.60.2-3.fc44) 
-X-TM-AS-GCONF: 00
-X-Authority-Analysis: v=2.4 cv=SoQFe/O0 c=1 sm=1 tr=0 ts=6b0745f7 cx=c_pps
- a=aDMHemPKRhS1OARIsFnwRA==:117 a=aDMHemPKRhS1OARIsFnwRA==:17
- a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=RnoormkPH1_aCDwRdu11:22 a=uAbxVGIbfxUO_5tXvNgY:22 a=VwQbUJbxAAAA:8
- a=VnNF1IyMAAAA:8 a=w36FetE1Bn8a3QyTgNcA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI1MDA4MCBTYWx0ZWRfX3rMBp8VrwuXs
- TC7gM4EAMZCdQfVQABK9+9H2xjDyy9G8oAgzvqXhC/47OmL1RbD9BGTgGYhZjEgPC2lHjOJKzhk
- Xck0hdrlWlK8J0O3J299od3baDdWZyI=
-X-Proofpoint-ORIG-GUID: gzkm3lQmll0A_GmF04sM4d0S7gAqb43j
-X-Proofpoint-GUID: gzkm3lQmll0A_GmF04sM4d0S7gAqb43j
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI1MDA4MCBTYWx0ZWRfX+D4AMmdaABfI
- HTGE6JwDrBZn2oIX3ND0mrgszhdXgBJdAJuSuKdzFmfULaD8OYPqQ052IaLOukdmcuLan4BybC5
- qs8Wb8t40+AxkoieakYIIh0VdvEXtxkEh2cdnMRxL301WzcUWaPQ8FJeiIexsf2DlByzZguG8kB
- Pqs9DUq0/7IEN+Hkcputrmu2vlA1J3a8YtkEzOt4sllsGu93PP1uD4L+eAec224DmvVHyCP/0Jd
- J3wpD+c8ljwqs8D3DEAmHGPlEbD5uarCPWpWxqK4H0pPqGRuJsZSFND8R0kWl5FqbPS95xouK5g
- qNfQKkaPNPJO1HT/5sBmOmocwEbTrMQ3hpJE75zKB5icXw0qNeqc9lkdhLji62jUT4zIngYy97E
- 7dLlYDULWPQGS3pMasDtzO8nGrWFt3dGHZMqBGz3xFjQjiG+hQ8A9FFdA2RXvZzaRwiooLILtVX
- yocn46pc2RImNotMv2A==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-25_05,2026-11-25_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 suspectscore=0 spamscore=0 bulkscore=0 adultscore=0
- lowpriorityscore=0 clxscore=1015 malwarescore=0 impostorscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611250080
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAP1UB2sC/5WOTQ6CMBCFr2Jm7Wh/kIgr72FcDDCFKramragx3
+ N2CJ3D5MvO9930gcrAc4bD6QODRRutdDmq9gqYn1zHaNmdQQpVSyAJvfKNh8A3egzfYepfwSTE
+ xxoFqX1+QXyk/JWopEerCVIVmU5W7PeTOe2BjX8veCWZia3xAlxk4/87xUV+4SfPmDPQ2Jh/ei
+ 98oF+ynouSfKqNEgaIq90IQaa3F8crB8bDxoYPzNE1fu7frgAwBAAA=
+X-Change-ID: 20261014-memalloc-prof-dont-waste-slabobj-ext-metadata-34f943ef9658
+To: Vlastimil Babka <vbabka@kernel.org>, 
+ Andrew Morton <akpm@linux-foundation.org>, 
+ Suren Baghdasaryan <surenb@google.com>, 
+ Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>, 
+ Shakeel Butt <shakeel.butt@linux.dev>, 
+ Roman Gushchin <roman.gushchin@linux.dev>
+Cc: Hao Li <hao.li@linux.dev>, Christoph Lameter <cl@gentwo.org>, 
+ David Rientjes <rientjes@google.com>, Muchun Song <muchun.song@linux.dev>, 
+ Hao Ge <hao.ge@linux.dev>, Pedro Falcato <pfalcato@suse.de>, 
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org, kernel-team@meta.com, 
+ "Harry Yoo (Meta)" <harry@kernel.org>, 
+ "Liam R. Howlett" <liam@infradead.org>, Alice Ryhl <aliceryhl@google.com>, 
+ Andrew Ballance <andrewjballance@gmail.com>, 
+ Matthew Wilcox <willy@infradead.org>, linux-fsdevel@vger.kernel.org, 
+ Alexander Viro <viro@zeniv.linux.org.uk>, 
+ Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
+ "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
+ Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
+ Jiayuan Chen <jiayuan.chen@linux.dev>, netdev@vger.kernel.org, 
+ Kees Cook <kees@kernel.org>, David Hildenbrand <david@kernel.org>, 
+ Lorenzo Stoakes <ljs@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, 
+ Will Deacon <will@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
+ Madhavan Srinivasan <maddy@linux.ibm.com>, 
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+ Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+ Amir Goldstein <amir73il@gmail.com>, 
+ Casey Schaufler <casey@schaufler-ca.com>, Paul Moore <paul@paul-moore.com>, 
+ James Morris <jmorris@namei.org>, "Serge E. Hallyn" <serge@hallyn.com>, 
+ linux-security-module@vger.kernel.org, Richard Weinberger <richard@nod.at>, 
+ Anton Ivanov <anton.ivanov@cambridgegreys.com>, 
+ Johannes Berg <johannes@sipsolutions.net>, 
+ Eric Dumazet <edumazet@kernel.org>, maple-tree@lists.infradead.org, 
+ Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
+ Jason Xing <kerneljasonxing@gmail.com>, 
+ Willem de Bruijn <willemb@google.com>, 
+ Mina Almasry <almasrymina@google.com>, 
+ =?utf-8?q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>, 
+ Mike Rapoport <rppt@kernel.org>, Michal Hocko <mhocko@suse.com>, 
+ Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, 
+ Juri Lelli <juri.lelli@redhat.com>, 
+ Vincent Guittot <vincent.guittot@linaro.org>, 
+ Dietmar Eggemann <dietmar.eggemann@arm.com>, 
+ Steven Rostedt <rostedt@goodmis.org>, Ben Segall <bsegall@google.com>, 
+ Mel Gorman <mgorman@suse.de>, Valentin Schneider <vschneid@redhat.com>, 
+ K Prateek Nayak <kprateek.nayak@amd.com>, 
+ Anshuman Khandual <anshuman.khandual@arm.com>, 
+ linux-arm-kernel@lists.infradead.org, 
+ "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, 
+ linuxppc-dev@lists.ozlabs.org, Niklas Schnelle <schnelle@linux.ibm.com>, 
+ Matthew Rosato <mjrosato@linux.ibm.com>, 
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
+ Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
+ Samuel Holland <samuel@sholland.org>, iommu@lists.linux.dev, 
+ linux-s390@vger.kernel.org, linux-sunxi@lists.linux.dev, 
+ linux-um@lists.infradead.org, cgroups@vger.kernel.org
+X-Mailer: b4 0.16.0
 
-On Tue, 2026-11-24 at 10:54 -0500, Cam Miller wrote:
-> Make each endpoint a consumer of the virtio-iommu device, so that the
-> driver core unbinds each endpoint driver before viommu_remove() runs.
->=20
-> Before this change, removing a virtio-iommu (for example via "echo 1 >
-> /sys/bus/pci/devices/<dev>/remove") tears down the IOMMU groups of all
-> its endpoints while their drivers are still bound. The endpoints keep
-> stale IOVAs and their later dma_free_contiguous() leads to WARNs in
-> __iommu_group_free_device(), endpoint IO hanging, and crash at shutdown.
->=20
-> Make each endpoint a consumer of the viommu with device_link_add(), as
-> arm-smmu and other IOMMU drivers do. The driver core then unbinds the
-> endpoint drivers before viommu_remove() runs, so that their DMA teardown
-> will still see an intact domain.
->=20
-> Fixes: edcd69ab9a32 ("iommu: Add virtio-iommu driver")
-> Suggested-by: Jean-Philippe Brucker <jpb@kernel.org>
-> Signed-off-by: Cam Miller <cam@linux.ibm.com>
-> ---
->  drivers/iommu/virtio-iommu.c | 3 +++
->  1 file changed, 3 insertions(+)
->=20
-> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> index dd10c3e98a3d..a84a653f269e 100644
-> --- a/drivers/iommu/virtio-iommu.c
-> +++ b/drivers/iommu/virtio-iommu.c
-> @@ -1044,6 +1044,9 @@ static struct iommu_device *viommu_probe_device(str=
-uct device *dev)
->  			goto err_free_dev;
->  	}
-> =20
-> +	if (!device_link_add(dev, viommu->dev, DL_FLAG_AUTOREMOVE_SUPPLIER))
-> +		dev_dbg(dev, "could not add device link\n");
-> +
->  	return &viommu->iommu;
-> =20
->  err_free_dev:
+TL;DR
+-----
 
-Looks good to me and like the unbind suppression is also already used
-by other IOMMU drivers in this case e.g. arm-smmu in a similar fashion.
+The purpose of this series is to convert existing slab users that
+specify __GFP_ACCOUNT on allocations to specify SLAB_MAY_ACCOUNT on
+cache creation, to reduce memory waste for slab metadata with
+CONFIG_MEMCG=y && CONFIG_MEM_ALLOC_PROFILING=y.
 
-Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Longer version of the cover letter
+----------------------------------
 
-Thanks,
-Niklas
+Currently, there are two ways to charge slab objects to memory
+cgroups: 1) specify SLAB_ACCOUNT during cache creation, or 2) specify
+__GFP_ACCOUNT on allocation. The latter method made it impossible to
+assume that certain slab caches are never charged to memory cgroups.
+
+Since commit d4404b0f5b8b ("mm/slab: stop allocating objcg pointers when
+unnecessary"), slabobj_ext allocates the space for the objcg pointer
+only for caches with SLAB_MAY_ACCOUNT. However, kmem_cache_create() sets
+the flag on every cache, because any cache may be used with
+__GFP_ACCOUNT.
+
+As a result, sizeof(struct obj_cgroup *) bytes are wasted for each
+unaccounted slab object when both memalloc profiling and memcg are
+enabled. This is suboptimal when memalloc profiling is used to
+profile memory allocations on production.
+
+So, let's make memcg charging opt-in and stop wasting memory!
+
+New rule for slab users: a cache must specify SLAB_MAY_ACCOUNT
+(explicitly or implied by SLAB_ACCOUNT) for its objects to be charged
+to a memcg. Otherwise __GFP_ACCOUNT is ignored and triggers a warning on
+debug kernels (CONFIG_DEBUG_VM=y).
+
+The approach is quite straightforward, but converting all caches that
+may pass __GFP_ACCOUNT without SLAB_ACCOUNT at once is not.
+As a best-effort approach, I swept the whole tree (with help of an
+LLM) for paths that pass __GFP_ACCOUNT into slab allocations either
+directly or indirectly.
+
+While I tried to make sure the sweep is exhaustive, there can be a
+missing conversion. However that is not a correctness problem:
+the objects are just no longer charged to memcgs. Patch 13 adds
+VM_WARN_ON_ONCE in __memcg_slab_post_alloc_hook() to catch such a
+missing conversion.
+
+Patch 1 allows passing SLAB_MAY_ACCOUNT to kmem_cache_create(),
+patches 2-12 specify SLAB_MAY_ACCOUNT for the caches found by
+the sweep, and patch 14 stops setting SLAB_MAY_ACCOUNT on all caches.
+
+Memory savings and testing
+--------------------------
+
+On an idle x86 VM with both memalloc profiling and memcg enabled,
+slabobj_ext memory (the alloc_slab_obj_exts entry in /proc/allocinfo)
+drops from 1,280KB to 910KB (-29%) after boot. The savings are expected
+to be larger on real workloads, which allocate far more unaccounted slab
+objects (8 bytes per unaccounted slab object).
+
+Each tested cache was verified with the warning in patch 13:
+I confirmed that 1) the warning is triggered without the conversion,
+and 2) specifying SLAB_MAY_ACCOUNT resolves it. However I could not test
+io-pgtable_armv7s_l2 and sun50i's pt_pool caches due to lack of the
+hardware and emulation support. So they are compile-tested only.
+
+  cache                  tested  environment
+  ---------------------  ------  -----------------------
+  radix_tree_node        yes     x86
+  maple_node             yes     x86
+  buffer_head            yes     x86
+  skbuff_head_cache      yes     x86
+  fanotify_*_event       yes     x86
+  smack_rule             yes     x86
+  io-pgtable_armv7s_l2   no      compile-tested only
+  thread_stack           yes     ppc64le (64K pages)
+  pgd_cache (arm64)      yes     arm64 (64K pages)
+  PGT_CACHE (powerpc)    yes     ppc64le
+  PCI_DMA_*_tables       yes     s390x (zPCI + vfio)
+  hostfs_inode_cache     yes     UML
+  sun50i pt_pool         no      compile-tested only
+
+Signed-off-by: Harry Yoo (Meta) <harry@kernel.org>
+---
+Changes in v2:
+- Rebased onto the latest slab/for-next.
+- Collected Acked-by from Jakub and Reviewed-by from Casey. Thanks!
+- Patch 1
+  - Resolve "sysfs: cannot create duplicate filename" warning by
+    encoding SLAB_MAY_ACCOUNT in create_unique_id() (kernel test robot,
+    Sashiko).
+  - Define SLAB_MAY_ACCOUNT in tools/include/linux/slab.h to fix
+    the build of tools/testing/{radix-tree,vma} (Mike, Sashiko).
+- Swept the tree again on the new base. No new cache needs
+  SLAB_MAY_ACCOUNT.
+- Re-tested all the conversions on the new base.
+- Link to v1: https://patch.msgid.link/20261021-memalloc-prof-dont-waste-slabobj-ext-metadata-v1-0-096800aa3330@kernel.org
+
+Range-diff against v1:
+
+ 1:  f749199b4fde !  1:  31425f1e4a92 mm/slab: allow passing SLAB_MAY_ACCOUNT to kmem_cache_create()
+    @@ Commit message
+         Callers will specify SLAB_MAY_ACCOUNT for caches whose objects may be
+         allocated with __GFP_ACCOUNT. Accept the flag in SLAB_CORE_FLAGS.
+     
+    +    SLAB_MAY_ACCOUNT prevents merging but is not part of the sysfs ID. This
+    +    was fine while all mergeable caches had the flag. Now that callers may
+    +    specify it, encode it in create_unique_id() to keep the ID unique.
+    +
+    +    Define the flag in tools/ as well to avoid breaking the userspace tests.
+    +
+         Signed-off-by: Harry Yoo (Meta) <harry@kernel.org>
+     
+      ## mm/slab.h ##
+    @@ mm/slab.h: void flush_rcu_sheaves_on_cache(struct kmem_cache *s);
+      			 SLAB_NO_USER_FLAGS | SLAB_KMALLOC | SLAB_NO_MERGE)
+      
+      #define SLAB_DEBUG_FLAGS (SLAB_RED_ZONE | SLAB_POISON | SLAB_STORE_USER | \
+    +
+    + ## mm/slub.c ##
+    +@@ mm/slub.c: static char *create_unique_id(struct kmem_cache *s)
+    + 		*p++ = 'a';
+    + 	if (s->flags & SLAB_ACCOUNT)
+    + 		*p++ = 'A';
+    ++	if (s->flags & SLAB_MAY_ACCOUNT)
+    ++		*p++ = 'M';
+    + 	if (s->flags & SLAB_DEBUG_NOOP)
+    + 		*p++ = 'N';
+    + 	if (p != name + 1)
+    +
+    + ## tools/include/linux/slab.h ##
+    +@@ tools/include/linux/slab.h: enum _slab_flag_bits {
+    + 	_SLAB_PANIC,
+    + 	_SLAB_TYPESAFE_BY_RCU,
+    + 	_SLAB_ACCOUNT,
+    ++	_SLAB_MAY_ACCOUNT,
+    + 	_SLAB_FLAGS_LAST_BIT
+    + };
+    + 
+    +@@ tools/include/linux/slab.h: enum _slab_flag_bits {
+    + #define SLAB_TYPESAFE_BY_RCU	__SLAB_FLAG_BIT(_SLAB_TYPESAFE_BY_RCU)
+    + #ifdef CONFIG_MEMCG
+    + # define SLAB_ACCOUNT		__SLAB_FLAG_BIT(_SLAB_ACCOUNT)
+    ++# define SLAB_MAY_ACCOUNT	__SLAB_FLAG_BIT(_SLAB_MAY_ACCOUNT)
+    + #else
+    + # define SLAB_ACCOUNT		__SLAB_FLAG_UNUSED
+    ++# define SLAB_MAY_ACCOUNT	__SLAB_FLAG_UNUSED
+    + #endif
+    + 
+    + void *kmalloc(size_t size, gfp_t gfp);
+ 2:  7bde3ab6533f !  2:  9323ceca452f lib/maple_tree: specify SLAB_MAY_ACCOUNT for maple_node cache
+    @@ Commit message
+         Path: mtree_insert_range(GFP_KERNEL_ACCOUNT) -> mas_nomem()
+           -> mas_alloc_nodes() -> kmem_cache_alloc(maple_node_cache)
+     
+    -    Assisted-by: LLM
+         Cc: "Liam R. Howlett" <liam@infradead.org>
+         Cc: Alice Ryhl <aliceryhl@google.com>
+         Cc: Andrew Ballance <andrewjballance@gmail.com>
+ 3:  1c34ea46a76e !  3:  0558bdf4936a lib/xarray: specify SLAB_MAY_ACCOUNT for radix_tree_node cache
+    @@ Commit message
+           -> xas_store() -> xas_alloc() (gfp |= __GFP_ACCOUNT)
+           -> kmem_cache_alloc_lru(radix_tree_node_cachep)
+     
+    -    Assisted-by: LLM
+         Cc: Matthew Wilcox <willy@infradead.org>
+         Cc: linux-fsdevel@vger.kernel.org
+         Signed-off-by: Harry Yoo (Meta) <harry@kernel.org>
+ 4:  d9e638c3320d !  4:  96f41e2fa6db fs/buffer: specify SLAB_MAY_ACCOUNT for buffer_head cache
+    @@ Commit message
+         Path: ext4_getblk() -> folio_alloc_buffers(GFP_NOFS | __GFP_ACCOUNT)
+           -> alloc_buffer_head() -> kmem_cache_zalloc(bh_cachep)
+     
+    -    Assisted-by: LLM
+         Cc: Alexander Viro <viro@zeniv.linux.org.uk>
+         Cc: Christian Brauner <brauner@kernel.org>
+         Cc: Jan Kara <jack@suse.cz>
+ 5:  c986fd19aacd !  5:  4f6b86b850c7 net: skbuff: specify SLAB_MAY_ACCOUNT for skbuff_head_cache
+    @@ Commit message
+           -> alloc_skb_with_frags() -> __alloc_skb()
+           -> kmem_cache_alloc_node(skbuff_head_cache)
+     
+    -    Assisted-by: LLM
+         Cc: "David S. Miller" <davem@davemloft.net>
+         Cc: Eric Dumazet <edumazet@google.com>
+         Cc: Jakub Kicinski <kuba@kernel.org>
+    @@ Commit message
+         Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+         Cc: Jiayuan Chen <jiayuan.chen@linux.dev>
+         Cc: netdev@vger.kernel.org
+    +    Acked-by: Jakub Kicinski <kuba@kernel.org>
+         Signed-off-by: Harry Yoo (Meta) <harry@kernel.org>
+     
+      ## net/core/skbuff.c ##
+ 6:  c86eb6c221f7 !  6:  c6f61c47e801 kernel/fork: specify SLAB_MAY_ACCOUNT for thread_stack cache
+    @@ Commit message
+           -> dup_task_struct() -> alloc_thread_stack_node()
+           -> kmem_cache_alloc_node(thread_stack_cache, THREADINFO_GFP)
+     
+    -    Assisted-by: LLM
+         Cc: Kees Cook <kees@kernel.org>
+         Cc: David Hildenbrand <david@kernel.org>
+         Cc: Lorenzo Stoakes <ljs@kernel.org>
+ 7:  a37935e9f1d8 !  7:  7c448f3688f4 arm64/mm: specify SLAB_MAY_ACCOUNT for pgd_cache
+    @@ Commit message
+         Path (e.g. 64K pages): copy_process() -> mm_init() -> pgd_alloc()
+           -> kmem_cache_alloc(pgd_cache, GFP_PGTABLE_USER)
+     
+    -    Assisted-by: LLM
+         Cc: Catalin Marinas <catalin.marinas@arm.com>
+         Cc: Will Deacon <will@kernel.org>
+         Cc: Mark Rutland <mark.rutland@arm.com>
+ 8:  948c9aa21dbf !  8:  8d5c29a8d6d6 powerpc/mm: specify SLAB_MAY_ACCOUNT for pgtable caches
+    @@ Commit message
+           -> kmem_cache_alloc(PGT_CACHE(PGD_INDEX_SIZE),
+                               pgtable_gfp_flags(mm, GFP_KERNEL))
+     
+    -    Assisted-by: LLM
+         Cc: Madhavan Srinivasan <maddy@linux.ibm.com>
+         Cc: Michael Ellerman <mpe@ellerman.id.au>
+         Cc: Nicholas Piggin <npiggin@gmail.com>
+ 9:  0b2d6a632aeb !  9:  9e68e442c86b iommu: specify SLAB_MAY_ACCOUNT for slab-backed page table caches
+    @@ Commit message
+           iommu_map(GFP_KERNEL_ACCOUNT) -> sun50i_iommu_map()
+             -> sun50i_dte_get_page_table() -> kmem_cache_zalloc(iommu->pt_pool)
+     
+    -    Assisted-by: LLM
+         Cc: Will Deacon <will@kernel.org>
+         Cc: Robin Murphy <robin.murphy@arm.com>
+         Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>
+10:  df629ca9f8a3 ! 10:  0fb6578f9d32 fanotify: specify SLAB_MAY_ACCOUNT for event caches
+    @@ Commit message
+           -> fanotify_alloc_event(GFP_KERNEL_ACCOUNT)
+           -> kmem_cache_alloc(fanotify_{fid,path,perm,mnt}_event_cachep)
+     
+    -    Assisted-by: LLM
+         Cc: Jan Kara <jack@suse.cz>
+         Cc: Amir Goldstein <amir73il@gmail.com>
+         Cc: linux-fsdevel@vger.kernel.org
+11:  d3fd8833b207 ! 11:  cd123bafe26d smack: specify SLAB_MAY_ACCOUNT for smack_rule cache
+    @@ Commit message
+           -> security_prepare_creds(GFP_KERNEL_ACCOUNT) -> smack_cred_prepare()
+           -> smk_copy_rules() -> kmem_cache_zalloc(smack_rule_cache)
+     
+    -    Assisted-by: LLM
+         Cc: Casey Schaufler <casey@schaufler-ca.com>
+         Cc: Paul Moore <paul@paul-moore.com>
+         Cc: James Morris <jmorris@namei.org>
+         Cc: "Serge E. Hallyn" <serge@hallyn.com>
+         Cc: linux-security-module@vger.kernel.org
+    +    Reviewed-by: Casey Schaufler <casey@schaufler-ca.com>
+         Signed-off-by: Harry Yoo (Meta) <harry@kernel.org>
+     
+      ## security/smack/smack_lsm.c ##
+12:  e491d907f0da ! 12:  33a8d0abf54e hostfs: specify SLAB_MAY_ACCOUNT for inode cache
+    @@ Commit message
+         Path: lookup -> hostfs_iget() -> hostfs_alloc_inode()
+           -> alloc_inode_sb(sb, hostfs_inode_cache, GFP_KERNEL_ACCOUNT)
+     
+    -    Assisted-by: LLM
+         Cc: Richard Weinberger <richard@nod.at>
+         Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+         Cc: Johannes Berg <johannes@sipsolutions.net>
+13:  495470a3e8c2 ! 13:  3dd416de21c1 mm/memcontrol: do not allow charging objects without SLAB_MAY_ACCOUNT
+    @@ Commit message
+         is never charged does not access the objcg slot again, and the free
+         path already skips such caches via slab_needs_objcg().
+     
+    -    Assisted-by: LLM # Changelog
+         Cc: Johannes Weiner <hannes@cmpxchg.org>
+         Cc: Michal Hocko <mhocko@kernel.org>
+         Cc: Shakeel Butt <shakeel.butt@linux.dev>
+14:  84b9be2d2d42 ! 14:  533a72d59074 mm/slab: do not set SLAB_MAY_ACCOUNT for all caches
+    @@ Commit message
+         the objcg slot in slabobj_ext for caches that are never charged to a
+         memcg.
+     
+    -    Assisted-by: LLM # Changelog
+         Signed-off-by: Harry Yoo (Meta) <harry@kernel.org>
+     
+      ## include/linux/slab.h ##
+
+---
+Harry Yoo (Meta) (14):
+      mm/slab: allow passing SLAB_MAY_ACCOUNT to kmem_cache_create()
+      lib/maple_tree: specify SLAB_MAY_ACCOUNT for maple_node cache
+      lib/xarray: specify SLAB_MAY_ACCOUNT for radix_tree_node cache
+      fs/buffer: specify SLAB_MAY_ACCOUNT for buffer_head cache
+      net: skbuff: specify SLAB_MAY_ACCOUNT for skbuff_head_cache
+      kernel/fork: specify SLAB_MAY_ACCOUNT for thread_stack cache
+      arm64/mm: specify SLAB_MAY_ACCOUNT for pgd_cache
+      powerpc/mm: specify SLAB_MAY_ACCOUNT for pgtable caches
+      iommu: specify SLAB_MAY_ACCOUNT for slab-backed page table caches
+      fanotify: specify SLAB_MAY_ACCOUNT for event caches
+      smack: specify SLAB_MAY_ACCOUNT for smack_rule cache
+      hostfs: specify SLAB_MAY_ACCOUNT for inode cache
+      mm/memcontrol: do not allow charging objects without SLAB_MAY_ACCOUNT
+      mm/slab: do not set SLAB_MAY_ACCOUNT for all caches
+
+ arch/arm64/mm/pgd.c                |  2 +-
+ arch/powerpc/mm/init-common.c      |  3 ++-
+ drivers/iommu/io-pgtable-arm-v7s.c |  2 +-
+ drivers/iommu/s390-iommu.c         |  4 ++--
+ drivers/iommu/sun50i-iommu.c       |  3 ++-
+ fs/buffer.c                        |  2 +-
+ fs/hostfs/hostfs_kern.c            |  2 +-
+ fs/notify/fanotify/fanotify_user.c | 10 ++++++----
+ include/linux/slab.h               | 16 +++++++++++++---
+ kernel/fork.c                      |  3 ++-
+ lib/maple_tree.c                   |  2 +-
+ lib/radix-tree.c                   |  2 +-
+ mm/memcontrol.c                    |  6 ++++++
+ mm/slab.h                          |  2 +-
+ mm/slab_common.c                   |  8 +++-----
+ mm/slub.c                          |  2 ++
+ net/core/skbuff.c                  |  2 +-
+ security/smack/smack_lsm.c         |  2 +-
+ tools/include/linux/slab.h         |  3 +++
+ 19 files changed, 50 insertions(+), 26 deletions(-)
+---
+base-commit: 0b0985aeb9979c5fa5c3b872cecdf97ed4ed2b3e
+change-id: 20261014-memalloc-prof-dont-waste-slabobj-ext-metadata-34f943ef9658
+
+Best regards,
+--  
+Cheers,
+Harry / Hyeonggon
+
