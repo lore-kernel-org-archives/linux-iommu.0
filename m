@@ -1,112 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795655989;
-	b=QBUm1PHM2aOGxXS0cVVtohFpej7Jccq9UU3PGB4BQyfv0s4KcqY65+Y81SZS6ZoDE/ON
-	 RRlx0ayTQ5QqVip4ouWjRcqv6bYp6k5eqG4ZUftJe0g5hXzyb53SssAGtmLLt4cY1pAPI
-	 VoNlXz646gqX2p5Ooz5+mtqldEGgFTcaAC+Xs72y7/4/dgUC73ggpT9QiIlNjd95pEAGQ
-	 jrLZjddTkk2AC2SZi0DPec/hu8iDPSN6A6YLPV97n2qw/TR0Q6cHK2YPHKALE1aV8Yi4Z
-	 igotJjvzkAS8NLgog1w2uAZ6Ls1mQSe+8EPe5jqzgRkwwOzOANWAvKrLltRM6pktzPg==
+	t=1795659040;
+	b=1NX+1ohnL2RnC4pK+1CemHvRRmvrXUTO+mY+mOw6B9OGT2P3cF9s3w3rSl3TmDtnGj29
+	 6CE4IsnWR1EY3G/ZcMJMMhK+IwKHqiRYQK8uiWxs/rd2KY61UvFOGVWB27dMYSv4UnZ33
+	 2vdAlj0ahV89V8bn3Ti2SwtNkqlK9EN3PfMsaYtCZ+gHuRFLFoy5+CISsqL2VO54nsWI9
+	 3qct2tHeKNPYlPNDbq6ue9gBe8MmBPAYqIKkQGC4rvzNqfnXAZURBv8VysBJABfBlp5nb
+	 DpeLcHahL6WBleRtvAafp6DmSI2EkO2FDvPLvCHdoQniCULSiz+PYk213VeDz2cBHqg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795655989;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
-	 Received:Received:Received:Received:Date:From:To:Cc:Subject:
-	 Message-ID:In-Reply-To:References:Organization:X-Mailer:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-TM-AS-GCONF:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Info:X-Proofpoint-GUID:
-	 X-Authority-Analysis:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=ryUXjzMtazy3gSaZGHa2Eq3V/fW4l8VdcGVzhCJFDqE=;
-	b=TRULCLsNzpZ7P/ACPYnwHCu5/pziYwa4Zj3qbIxC+aPquPdyC0jhgAfl3vl0O9IDsm9q
-	 rvvkUYluP+QmyEdzR4w0Fc1qZwBhT24MS3QiR7sMTV6VAOvlPz0VEem3ewZUghtKuFZJo
-	 Cb5yT2bQpkX1cboH5fViG+4gQT6da4jDiwEJyAJMl8OP77HFRS7ASE3RyvsjO1rh7A+du
-	 TXhyaGBGKytlyflVNP4lIiO2LqRNKprn4BgTOC9MUjSKGmCwele6BDtaEd1jHWot77yHd
-	 Av0O7WiCjKmGfM9AYctAGDwM7ZjriWOYmg6QR4lKt5HI2lDDmHQylzpfbArGrXu2qZw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795659040;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=sfOd+NziBzTa22yAYn3r1uv53slyazXEMhCyhMfSPQo=;
+	b=MpxoV2R0zWpEB+L/qUdl0JdewSHxgPm9vrUR5uYiv/ckoil1stwyJyuuqqFfJUeFAJ5B
+	 3hR2Z7EwLFt2MlcIsrLQ0vdXO9sL6C6PflyVaCI0/V3NN+1160mRVFsSYJkV80CTqU46A
+	 gdoOyL/I8Pf82th10H4yI7H/f/bL6W0TdFAkuz4/n3SBr5aFiDSp1kqxMHfPS3/5+bECH
+	 RwFG/6htWzCXMy92GPMeeMEZxF20gp8XcpoEpxGRmFDrEfLD/unqcY/+/nop5SA423iJS
+	 5slHpjc+8W7kFPcmWPd9xIA5xtnoznFL5rQV1udIc8lnoR2pQOAHpTzUtgt/h0o1+MA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.ibm.com;
-	spf=pass smtp.mailfrom=linux.ibm.com;
-	dkim=pass header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b="h/YHGl88";
-	arc=none smtp.remote-ip=148.163.158.5
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Uq0Jx+5Y;
+	arc=none smtp.remote-ip=198.175.65.14
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A724606A31E;
-	Thu, 26 Nov 2026 01:19:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1A724606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 310C9606A321;
+	Thu, 26 Nov 2026 02:10:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 310C9606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=h/YHGl88
-Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6APJYmaG2231504;
-	Thu, 26 Nov 2026 01:19:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=ryUXjz
-	Mtazy3gSaZGHa2Eq3V/fW4l8VdcGVzhCJFDqE=; b=h/YHGl88fdNjiCdKZon8er
-	lltC7iNg+AA9G/iZU4u3jCmuQkRhqvSr24HOAZymtOaIRy0zUSm95U5l7jLspmMT
-	kd4XkHSiXrnNfFjxemEpPJ3B0JxrIzrCf9LK/OI0ma8U0Kuph+gnnV/1ZepkZi1L
-	MTyo8juDIehL29Qojbf9dUE/ZxB8GDtNxS2iF8ah+PzbLStmGYhyBXFuiaqb6qRe
-	4JrcUqbwZTA7rbwUtYGDheVKCrZdu4PmHOeWoa2lu04Ilx1v7NCZYjSqGX6YwM4q
-	fVuGDY0bNMA39FpvYKl+W62eeJ0FsiQ+KE3Pg17Nr9xpLBF+1ooPf3xOTGUsemdA
-	==
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4j34g1ep0h-1
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Thu, 26 Nov 2026 01:19:13 +0000 (GMT)
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.18.1.11/8.18.1.11) with ESMTP id 6AQ117kS2309448;
-	Thu, 26 Nov 2026 01:19:12 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4j3q4hgp3m-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 26 Nov 2026 01:19:12 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
-	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 6AQ1JARZ49545536
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 26 Nov 2026 01:19:10 GMT
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B607020043;
-	Thu, 26 Nov 2026 01:19:10 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 1FC7820040;
-	Thu, 26 Nov 2026 01:19:10 +0000 (GMT)
-Received: from li-ce58cfcc-320b-11b2-a85c-85e19b5285e0 (unknown [9.111.45.88])
-	by smtpav03.fra02v.mail.ibm.com (Postfix) with SMTP;
-	Thu, 26 Nov 2026 01:19:10 +0000 (GMT)
-Date: Thu, 26 Nov 2026 02:19:08 +0100
-From: Halil Pasic <pasic@linux.ibm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Shukai Ni <shukai.ni@kuleuven.be>,
-        "Edgecombe, Rick P"
- <rick.p.edgecombe@intel.com>,
-        "m.szyprowski@samsung.com"
- <m.szyprowski@samsung.com>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        "will@kernel.org" <will@kernel.org>,
-        "jo.vanbulck@cs.kuleuven.be"
- <jo.vanbulck@cs.kuleuven.be>,
-        "Reshetova, Elena"
- <elena.reshetova@intel.com>,
-        "kas@kernel.org" <kas@kernel.org>,
-        "carlos.bilbao@kernel.org" <carlos.bilbao@kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        Halil Pasic
- <pasic@linux.ibm.com>
-Subject: Re: [PATCH] swiotlb: clear read bounce buffers on confidential
- guests
-Message-ID: <20261126021908.59b2105f.pasic@linux.ibm.com>
-In-Reply-To: <d5dfd9a2-4ac6-415c-b719-699b264fa39d@arm.com>
-References: <20261123205302.1034348-1-shukai.ni@kuleuven.be>
-	<3a70a26adccc47b1bae3a22e4907174271703a10.camel@intel.com>
-	<9bc0d7ed-0799-45dc-8d74-25ed66851a20@kuleuven.be>
-	<d5dfd9a2-4ac6-415c-b719-699b264fa39d@arm.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Uq0Jx+5Y
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795659039; x=1827195039;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=3VD5OE3lHqN+lJeIaePByLYe9hp07+ylRNPf3AKi6T0=;
+  b=Uq0Jx+5YEslx0uxdxpjZHn3QQbLDLtyv6VwHtc2Iq//gZYe1CYBsOgCs
+   yNVgNHdroU+kQ/LAClC+ZUsYN6TioUdZ8XPJX63IiETLt07+lLLp6Ditl
+   JG42Y0DDHHrwtseKLpoP9UM+N6XxytUaGjtIDYjkqa27IQGvudm7SZpnC
+   S/TIBrJYiVM/pJdskAMqm4hw8ciF8C8yCRgCKTkp+lyJEl9x5i7Cx0MaZ
+   OFMVfvcJcJG29Cd4zzJp13moHUSsLm5zONwjLTkoy+rioiy9DiI7jyu/w
+   kjj2FKJpcPwtsNsDHh6l53VC0qsePHcyeX2JEOrNsEwAYXV1zOmrliGeS
+   g==;
+X-CSE-ConnectionGUID: P07HsrSzR6auGqKXwVEnPQ==
+X-CSE-MsgGUID: GV8BftsPR0aC7Z0AnMMjgw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11977"; a="4464111"
+X-IronPort-AV: E=Sophos;i="6.27,233,1787036400"; 
+   d="scan'208";a="4464111"
+Received: from fmviesa011.fm.intel.com ([10.60.135.151])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 18:10:38 -0800
+X-CSE-ConnectionGUID: tZeL6rgGT4mSB/WLC+H1sQ==
+X-CSE-MsgGUID: PHp++zb5QCeZIucqP1r//Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,233,1787036400"; 
+   d="scan'208";a="13814504"
+Received: from unknown (HELO [10.238.1.144]) ([10.238.1.144])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 18:10:36 -0800
+Message-ID: <c1e39b60-c748-488b-ad2b-f94bf71e2441@linux.intel.com>
+Date: Thu, 26 Nov 2026 10:10:32 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -116,108 +72,342 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 9Mkjofwp1NYMaNx3EXnPvCxxnD1XHfSD
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI2MDAwMyBTYWx0ZWRfX39cwUofRUkXl
- xOeO5KVFjVaTJ8IL1+iann34pCzPRPiouNlVld8JakG3OB7F6krFYKioHKXKJmvnsZergf3o1US
- W2G3GXd5ePgroY0/jLWR7cHDHeoG7hE=
-X-Proofpoint-GUID: 9Mkjofwp1NYMaNx3EXnPvCxxnD1XHfSD
-X-Authority-Analysis: v=2.4 cv=c8M+0h9l c=1 sm=1 tr=0 ts=6b078911 cx=c_pps
- a=3Bg1Hr4SwmMryq2xdFQyZA==:117 a=3Bg1Hr4SwmMryq2xdFQyZA==:17
- a=kj9zAlcOel0A:10 a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=RnoormkPH1_aCDwRdu11:22 a=RzCfie-kr_QcCd8fBx8p:22 a=7CQSdrXTAAAA:8
- a=sBmwBxJFO0rdLi8qyDgA:9 a=CjuIK1q_8ugA:10 a=a-qgeE7W1pNrGK8U0ZQC:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI2MDAwMyBTYWx0ZWRfXwriPCmfZW0+B
- N02ShTb3puZ1T4i49KD+8L22l1GsKBDyVGH6GWQDb3MB2LdAW1RTGCVFogJk7W57QuPbweEUVin
- 1NwUMsmYmT+MqWjwyi363UzFMVt3JUDQ+Xcm7Y8JR3gYNhsyo/lF1LWQU7dDtvbNiUA8k+3QjIS
- oaQXodDp3Yzw97npDZxr2s3MfXqTB9+c07E0ZE5VQ7HDTwkN9aZFW1qEGg+kpFwHcj7e16DF99P
- pQk5uczqkuw06CDiycL+KmdRxFBDW8ZJpRJzjSmWa9RFRb5o0R1uXOInchs5babExEgplkL8rjm
- FpmHo+42+O4V5S5c8ayaIuxcvY4j85bRCuoWky/W/jrmGqjpcZwZ0VfdO99Exc7VqN48u4rvoRu
- YapdSKfXY1/7ErIw9zx9OAPLxR4CBIen0fhqunNBRoLWVPv+S1FMtIZleIyqUWbnfEGHAuCTJv7
- tWdDlAxlKjf+oDu7bLA==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-25_05,2026-11-25_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 clxscore=1011 malwarescore=0 suspectscore=0 bulkscore=0
- priorityscore=1501 phishscore=0 adultscore=0 spamscore=0 lowpriorityscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611260003
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kiryl Shutsemau <kas@kernel.org>,
+ "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+ "yilun.xu@linux.intel.com" <yilun.xu@linux.intel.com>,
+ "Li, Xiaoyao" <xiaoyao.li@intel.com>, "Gao, Chao" <chao.gao@intel.com>,
+ Binbin Wu <binbin.wu@linux.intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 5/9] iommu/vt-d: Block GCMD and ECMD while acquired by
+ the TDX module
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "x86@kernel.org" <x86@kernel.org>,
+ "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+References: <20261112043054.2664857-1-baolu.lu@linux.intel.com>
+ <20261112043054.2664857-6-baolu.lu@linux.intel.com>
+ <CO1PR11MB4835F23CDAD5127487B5978B8C432@CO1PR11MB4835.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <CO1PR11MB4835F23CDAD5127487B5978B8C432@CO1PR11MB4835.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, 24 Nov 2026 16:13:52 +0000
-Robin Murphy <robin.murphy@arm.com> wrote:
-
-> > Thanks for looking at this, and we had very similar thoughts when 
-> > writing the patch. Our impression was that in many cases the driver
-> > doesn't own the buffer (page cache, dm-crypt, O_DIRECT), so fixing it
-> > there seemed hard, which is why we tried swiotlb instead. But we may be
-> > missing something.
-> >   
-> >> It seems like the fixes commit was arguing that copying the contents 
-> >> to the
-> >> swiotlb buffer was more transparent. So this patch kind of goes back 
-> >> against
-> >> that argument. That seems to be another point that the drivers should 
-> >> be fixed.
-> >> If this is essentially more of a potentially behavior altering kernel 
-> >> hardening,
-> >> then I wonder about putting it behind some kind of hardening config like
-> >> CONFIG_INIT_ON_ALLOC_DEFAULT_ON.  
-> > 
-> > As far as we can tell, keeping the old contents for DMA_FROM_DEVICE
-> > was never really promised. Before ddbd89deb7d3, swiotlb
-> > didn't do it. That commit was mainly about not returning stale bounce
-> > data to the caller, which zeroing should still prevent.  
+On 11/25/2026 11:49 AM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Thursday, November 12, 2026 12:31 PM
+>>
+>> Once tdx-host acquires an IOMMU for TDH.IOMMU.SETUP, the TDX module
+>> owns its Secure TDX Mode state. The VT-d driver must not change the
+>> global state of the IOMMU behind the TDX module's back, nor issue
 > 
-> SWIOTLB is an implementation detail of the DMA API. If some future CoCo 
-> environment happens to be able to share a buffer in-place with less 
-> overhead than bouncing then it will be free to do so, and drivers which 
-> do not sanitise DMA_FROM_DEVICE or DMA_BIDIRECTIONAL buffers will 
-> continue to leak data...
+> just part of the global state, right?
+
+Yes, only the state controlled through GCMD and ECMD interfaces. Once
+the IOMMU is in TDX mode, the hardware ignores host writes to GCMD and
+ECMD, so the driver would wait for a status update that never comes.
+
 > 
-> Note in particular the case of DMA_BIDIRECTIONAL, which means the caller 
-> expects the buffer to either be written and read, or read and written, 
-> or read, or written, or any or all of the above. How is the DMA layer 
-> going to know whether the initial buffer contents are meaningful and 
-> must be preserved, or stale and potentially leaking something?
+>> enhanced commands, until the IOMMU is released after TDH.IOMMU.CLEAR.
+>>
+>> Use the tdxc_acquired flag of struct intel_iommu, which is protected
+>> by register_lock, to block both. dmar_tdxc_acquire() now fails with
 > 
-> Also how is the DMA layer to know if a driver is intentionally making 
-> DMA_TO_DEVICE mappings of random (or targeted) kernel memory for the 
-> sole purpose of malicious sharing? If people want to use device drivers 
-> in CoCo environments then the onus being on auditing and hardening the 
-> individual drivers themselves doesn't seem too unreasonable.
+> 'both' means what?
 
-I'm 100% with Robin on this one! Reusing a buffer is not a problem
-in itself. Exposing private data is. And the only clean way I see is
-prevent that from happening is to not DMA map buffers containing private
-stuff. Not even as DMA_FROM_DEVICE. The blamed patch is about
-propagating the sanitation done on the original buffer to the swiotlb
-buffer to which the access is granted to the untrusted host.
+GCMD and ECMD interfaces.
 
-I wonder what type of reuse are we talking about here? If the
-buffer contains data from an old co-co IO might be acceptable,
-as the assumption there is that co-co IO has to be cryptographically
-protected anyway (from the non-trusted host).
+> 
+>> -EBUSY if an enhanced command is still in progress when it sets the
+>> flag. All GCMD writers hold register_lock and wait for completion before
+>> dropping it, so setting the flag under the same lock guarantees no GCMD
+>> operation is in flight once acquire() returns. While the flag is set,
+>> ecmd_submit_sync() fails with -EBUSY rather than waiting, as it may be
+>> called from atomic context.
+> 
+> this needs a re-write for why GCMD/ECMD are blocked differently.
 
-Another thought: My understanding is that an actual IOMMU may or may not
-support "write only".  I think, the swiotlb is not the right place to
-address this. But if we allow for IOMMUs may not supporting "write only"
-DMA API in general may be. The thing is, if the conceptual IOMMU actually
-guarantees that write only is indeed write only and then there is no
-harm per se in not sanitizing as, we can be sure that there is not leak
-with respect to the conceptual device at least. If however the
-conceptual IOMMU is not capable of doing so, then one could argue
-that this constitutes a leak even without co-co. And for non-trusted
-devices and co-co (i.e. with swtiotlb) the conceptual IOMMU would
-never be able to guarantee "write only": because even if the IOMMU of the
-platform does, the host can still access the shared buffer, so
-we have a leak (an we would consider the host a par of the conceptual
-device as it is effectively capable of doing conceptual DMA). I admit
-something like this still feels a little hacky, but I hope worth
-discussing nevertheless.
+This is stale. They are actually blocked the same way.
 
-Regards,
-Halil
+ecmd_submit_sync() also holds register_lock until the command completes,
+and IOMMU_WAIT_OP() panics rather than returning on timeout. So no
+enhanced command can be in progress once acquire() takes the lock.
 
+The only difference is whether a writer can be reached. GCMD is only
+accessed at init, hotplug, suspend and shutdown, so they get
+WARN_ON_ONCE(). ECMD can be reached at runtime through perf, which
+should be handled specially (see below).
+
+>>
+>> Write buffer flushing is the only GCMD write reachable on the runtime
+>> map path. Rather than adding a check there, refuse to acquire IOMMUs
+>> that require it (rwbf_quirk or CAP.RWBF). Move rwbf_quirk and
+>> rwbf_required() to iommu.h so dmar.c can use them.
+> 
+> good to mention that this quirk is on early old platforms.
+
+Yes. CAP.RWBF is only set on early VT-d hardware. It doesn't apply to a
+scalable-mode IOMMU hardware that supports TDX Connect. I am not sure
+about a virtualized VT-d. So a WARN_ON check is still needed.
+
+> 
+>>
+>> The remaining GCMD writers (root table, translation enable/disable,
+>> queued invalidation and interrupt remapping) are only used at init,
+>> hotplug and suspend/resume. Acquired units are never hot-removed,
+>> hibernation is unavailable with TDX, and the following patch refuses
+>> system suspend while an IOMMU is acquired. Guard them with
+>> WARN_ON_ONCE() ahead of their companion register writes (RTADDR,
+>> IQT/IQA, IRTA).
+>>
+>> intel_iommu_shutdown() is the exception. It is only called from
+>> native_machine_shutdown() via machine_shutdown(). On restart, halt,
+>> power-off and kexec, syscore_shutdown() runs first and tdx_shutdown()
+>> issues TDH.SYS.DISABLE, which takes every IOMMU out of Secure TDX Mode.
+>> The crash kexec path doesn't call it. Clear tdxc_acquired there so
+>> translation is still turned off.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/iommu.h         |  8 ++++-
+>>   drivers/iommu/intel/dmar.c          | 50 ++++++++++++++++++++++++-----
+>>   drivers/iommu/intel/iommu.c         | 33 +++++++++++++++++--
+>>   drivers/iommu/intel/irq_remapping.c | 10 ++++++
+>>   4 files changed, 89 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+>> index 18fef91753a0..26135248675d 100644
+>> --- a/drivers/iommu/intel/iommu.h
+>> +++ b/drivers/iommu/intel/iommu.h
+>> @@ -690,7 +690,10 @@ struct intel_iommu {
+>>   	u64		ecmdcap[DMA_MAX_NUM_ECMDCAP];
+>>   	u32		gcmd; /* Holds TE, EAFL. Don't need SRTP, SFL, WBF
+>> */
+>>   	raw_spinlock_t	register_lock; /* protect register handling */
+>> -	/* Acquired for the TDX module. Protected by register_lock. */
+>> +	/*
+>> +	 * GCMD and ECMD writes are rejected while the TDX module owns
+>> this
+>> +	 * IOMMU. Protected by register_lock.
+>> +	 */
+>>   	bool		tdxc_acquired;
+> 
+> No need to update this comment. It's still for acquiring the tdx mode.
+> 
+> explanation of restrictions in the tdx mode belongs to other places.
+
+Agreed.
+
+>   
+>> -static void dmar_tdxc_set_acquired(struct intel_iommu *iommu, bool
+>> acquired)
+>> +static int dmar_tdxc_block_regs(struct intel_iommu *iommu)
+> 
+> You could keep the original name with comment internally to explain
+> the need of blocking certain registers.
+
+Agreed.
+
+> 
+>>   {
+>> -	guard(raw_spinlock_irqsave)(&iommu->register_lock);
+>> -	iommu->tdxc_acquired = acquired;
+>> +	unsigned long flags;
+>> +	int ret = 0;
+>> +
+>> +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+>> +	if (cap_ecmds(iommu->cap) &&
+>> +	    (readq(iommu->reg + DMAR_ECRSP_REG) &
+>> DMA_ECMD_ECRSP_IP))
+>> +		ret = -EBUSY;
+> 
+> here a comment is appreciated, for both why a check on ecmd is required
+> but not for gcmd.
+
+Will fix this.
+
+> 
+>> @@ -2669,11 +2695,19 @@ int dmar_tdxc_acquire(struct pci_dev *pdev,
+>>   	if (!(iommu->gcmd & DMA_GCMD_TE) || !iommu->qi
+>> || !sm_supported(iommu))
+>>   		return -EINVAL;
+>>
+>> +	/* Write buffer flushing needs GCMD, which is blocked once acquired.
+>> */
+>> +	if (rwbf_required(iommu))
+>> +		return -EOPNOTSUPP;
+>> +
+> 
+> let's be clear here that WBF is incompatible with tdx mode. It's an old
+> quirk hence simply rejecting it if required.
+
+Yes, sure.
+
+> 
+>> @@ -4336,6 +4353,16 @@ int ecmd_submit_sync(struct intel_iommu
+>> *iommu, u8 ecmd, u64 oa, u64 ob)
+>>
+>>   	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+>>
+>> +	/*
+>> +	 * The TDX module owns this IOMMU. This may be called from
+> 
+> the TDX module doesn't own the entire IOMMU
+
+Will fix this.
+
+> 
+>> atomic
+>> +	 * context (e.g. perf pmu::start/stop), so don't sleep; just reject
+>> +	 * the request.
+>> +	 */
+>> +	if (iommu->tdxc_acquired) {
+>> +		ret = -EBUSY;
+>> +		goto err;
+>> +	}
+>> +
+> 
+> iommu_pmu_stop() doesn't check the return value of this. It's a void
+> function. So returning error here still breaks the perf feature.
+> 
+> we may need a way to disable iommu perf completely in the acquire
+> function.
+
+Good catch. Returning an error there leaves events that look like
+they're running but never count, or that can't be stopped.
+
+I'll make perf events and TDX mode mutually exclusive instead:
+
+- The iommu pmu counts its live events under register_lock.
+- event_init() fails with -EBUSY while the IOMMU is acquired.
+- acquire() fails with -EBUSY while any event exists.
+
+Something like the following(compiled but not tested). Does this work
+for you?
+
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 1bbfb1b6f905..0945e63c901a 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -674,6 +674,7 @@ struct iommu_pmu {
+  	struct pmu		pmu;
+  	DECLARE_BITMAP(used_mask, IOMMU_PMU_IDX_MAX);
+  	struct perf_event	*event_list[IOMMU_PMU_IDX_MAX];
++	unsigned int		nr_events;	/* Protected by iommu->register_lock */
+  	unsigned char		irq_name[16];
+  };
+
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index f0ac8c433198..1ae27198b999 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -2588,10 +2588,15 @@ static void dmar_tdxc_unreserve_did(struct 
+intel_iommu *iommu)
+  }
+
+  /* GCMD and ECMD writers complete under register_lock, so none is in 
+flight. */
+-static void dmar_tdxc_set_acquired(struct intel_iommu *iommu, bool 
+acquired)
++static int dmar_tdxc_set_acquired(struct intel_iommu *iommu, bool acquired)
+  {
+  	guard(raw_spinlock_irqsave)(&iommu->register_lock);
++	/* Perf issues enhanced commands at runtime and can't handle failure. */
++	if (acquired && iommu->pmu && iommu->pmu->nr_events)
++		return -EBUSY;
++
+  	iommu->tdx_acquired = acquired;
++	return 0;
+  }
+
+  static struct dmar_drhd_unit *dmar_tdxc_find_drhd(struct pci_dev *pdev)
+@@ -2677,9 +2682,11 @@ int dmar_tdx_acquire(struct pci_dev *pdev)
+  	if (ret)
+  		return ret;
+
+-	dmar_tdxc_set_acquired(iommu, true);
++	ret = dmar_tdxc_set_acquired(iommu, true);
++	if (ret)
++		dmar_tdxc_unreserve_did(iommu);
+
+-	return 0;
++	return ret;
+  }
+  EXPORT_SYMBOL_FOR_MODULES(dmar_tdx_acquire, "tdx-host");
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 6dbb421d8099..c810b4776fd7 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4358,12 +4358,8 @@ int ecmd_submit_sync(struct intel_iommu *iommu, 
+u8 ecmd, u64 oa, u64 ob)
+
+  	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+
+-	/*
+-	 * The TDX module owns this IOMMU. This may be called from atomic
+-	 * context (e.g. perf pmu::start/stop), so don't sleep; just reject
+-	 * the request.
+-	 */
+-	if (iommu->tdx_acquired) {
++	/* Perf, the only caller, is kept off IOMMUs acquired for TDX mode. */
++	if (WARN_ON_ONCE(iommu->tdx_acquired)) {
+  		ret = -EBUSY;
+  		goto err;
+  	}
+diff --git a/drivers/iommu/intel/perfmon.c b/drivers/iommu/intel/perfmon.c
+index e40ed253eaa9..e4df1aee4fcd 100644
+--- a/drivers/iommu/intel/perfmon.c
++++ b/drivers/iommu/intel/perfmon.c
+@@ -276,9 +276,19 @@ static int iommu_pmu_validate_group(struct 
+perf_event *event)
+  	return 0;
+  }
+
++static void iommu_pmu_event_destroy(struct perf_event *event)
++{
++	struct iommu_pmu *iommu_pmu = iommu_event_to_pmu(event);
++
++	guard(raw_spinlock_irqsave)(&iommu_pmu->iommu->register_lock);
++	iommu_pmu->nr_events--;
++}
++
+  static int iommu_pmu_event_init(struct perf_event *event)
+  {
+  	struct hw_perf_event *hwc = &event->hw;
++	struct iommu_pmu *iommu_pmu;
++	int ret;
+
+  	if (event->attr.type != event->pmu->type)
+  		return -ENOENT;
+@@ -295,7 +305,20 @@ static int iommu_pmu_event_init(struct perf_event 
+*event)
+
+  	hwc->config = iommu_event_config(event);
+
+-	return iommu_pmu_validate_group(event);
++	ret = iommu_pmu_validate_group(event);
++	if (ret)
++		return ret;
++
++	iommu_pmu = iommu_event_to_pmu(event);
++	guard(raw_spinlock_irqsave)(&iommu_pmu->iommu->register_lock);
++	/* The enhanced commands that perf relies on are blocked in TDX mode. */
++	if (iommu_pmu->iommu->tdx_acquired)
++		return -EBUSY;
++
++	iommu_pmu->nr_events++;
++	event->destroy = iommu_pmu_event_destroy;
++
++	return 0;
+  }
+
+  static void iommu_pmu_event_update(struct perf_event *event)
+-- 
+2.53.0
+
+Thanks,
+baolu
