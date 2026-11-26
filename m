@@ -1,120 +1,71 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.201.16
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795687107;
-	b=iQ5rDio8mrnCKeZ57z6O7dcMUwpHjH2vllisnr9mGIMXOemodwTGt4RlBNsw8SYdldpO
-	 /7DK53dBLd4JvSYnuPYXq6VPDTW0P1OKOWSte/bb7Xe3SB4SAw7KvdBSVge0PsMRoKpjN
-	 g9Xh35gnHNqZaa4tWpOV3b06yH63vDo4AtgWsKBe3epHRHfKoHVOatWxCODQUqznxN5OH
-	 iUigttaZnk5Iqcy4MqNaXyKnCZT0o18bMQpb3aEJS9TLcfGIvVZJ5MDdO1pg3KNWqf2CK
-	 e/HgQGMS0Tfh3M2PYyCE4DnFwstBh8rWTWDSXZXGYbco1oY0iYN/ks/JjAdlzO0xMow==
+	t=1795687767;
+	b=lG4FWFEHZZLGqAuhVtIe4BKfvi8h2EaWoAPNW4DlJik7sThAgRFg86W27o9oRIOwwEP9
+	 rwBC/PsNUtH4Q4RucRZz28q0/wGgkiAcH1iuXUuXMY31alr5wDXQWpmJuwUi4Pq9oPzhr
+	 wdR5zZQPc1htO/UC77rA8YdKGs59wUk9/KBHLLEQ4xfXKp7M51UwO1YOmsnPO2owSUKFO
+	 tYG2ha2xMvRRCMHLNNqUHlK6Wt9CQPrBctQDFMWAGzhPl5pXETOPwLpUt00T16Ye88y2z
+	 A3sK4rjFX895a9P9kbjwyy3umLH9ggaQpslPN1mRZW3Jwkx0AgTaFeVb3BrzRpoj8+Q==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795687107;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=7v+6/vdC8tOuJLuiiuW+HG7sVDDsOHr6dIFJ9e43AAI=;
-	b=WXMTSD2SizfFZ2YEtMzFCZVrmEWGkwK1JD5J2w/1XmgJMOY2tjgjAcgiz7Urvwub+vm/
-	 UOTQ6gLoJPLEggQxwIw6CvEArdhrdkG0b8a+9WToe3dqXBG6isrWeAHMHqfRVCPQ/fRK5
-	 rkMKCbXh9UScb2+2l0VXvzmuKc/MdMsdcrzsmsVgtgAYoBwgTw2E7rMbJ19pIGpu9hxhv
-	 +VVlhXvyCsdhUnZN8UqnhKoongnTtY95dOQ6gDQPUBqIMLNrOzXQsGrp+LFIolCdP1Qmx
-	 DWKUh1eWx1mN18yLIcbnATu80g6uSRpzVzni2dBaPkELFIMKXeBjTU84Sl5NiVIVO/g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795687767;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:X-Zoho-Virus-Status:X-Zoho-AV-Stamp:
+	 X-ZohoMailClient;
+	bh=l7d5IaQ6JOFWPkAFn1T5RV5TtU7SOPA7qfljz9g0TC4=;
+	b=k9/w3mm28p7OnHDbDCHP469gKFiJpLE3ghmDglCa+uqOX8LSRiCYbnyJ49ZAa0iVa1/5
+	 fT9LqXii+CUa3avx8V8W7kYkATNkq+ke9vQ0wY1KsVylwV6CCCkaw+RZE1pU8lfZFPw8F
+	 IPpVauqKE5pmOU+Lem8gcY4LBBB2usIiKVkSAHPelaFOREyRzEHIHQdLq8ED2LNrYpEFG
+	 X/out1cJ4PnG0aB9qOzU8yUGpQF2eG4hmS7uPbEH3sN2RreqfkNgqUhK/jDyKTL5V0Bu4
+	 5OjwDERoXGHZhUUh6B7pT6qEPvLiQHM3rHTBfGZ8Vh5FP938OYuI45yHu+TqAoJofSw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=04+uEy6b;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.201.16
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013016.outbound.protection.outlook.com [40.107.201.16])
+	dmarc=pass header.from=collabora.com;
+	spf=pass smtp.mailfrom=collabora.com;
+	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=esdLImf0;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
+Received: from sender6-op-o11.zoho.com (sender6-op-o11.zoho.com [165.173.180.11])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35301606A327
-	for <iommu@lists.linux.dev>; Thu, 26 Nov 2026 09:58:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 35301606A327
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34704606A31C
+	for <iommu@lists.linux.dev>; Thu, 26 Nov 2026 10:09:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 34704606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=04+uEy6b
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=qnsPdRSUQVgweAPitwb8JDr9Xu+S+ttT+NkzL8mEGmBRgDE7Swu9pEtvMTwOSKNq25DKaVZmvxuR7mUS4A3mFgcufT2N1JZp778FXgeRNqixGyjUVSzu45JCM2clHK+XhPqkHUwbPGVyFyc8RmvZB1chx4+oSXmAiIv5L/Hksd70doPvJPn+ZCG268HBAPy5as/ZwEsyCegPGZQoTNzdDuTXOV1ZHa8V4awttOJgKgmpQaCVvPISG5J9HdX1ZCchyEq3wGaI4WU6GbD+LBTLtJsbA4sfJ6WAKXfXNnYKLoEXaxY2P3zbWxjJSj3PmL6NIpjfJDevtyzK1XtQOpzyNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7v+6/vdC8tOuJLuiiuW+HG7sVDDsOHr6dIFJ9e43AAI=;
- b=zUit2FqbcNT5Qz6I6SKetFnAScCTqpRM+CNszsuSkMM6mWd0SbHS+y/c+RooYRBsm5QqH/OWUUJ7IT+2i4J3oZhW4zaGKA0FL+I2oo0b/96ppNOLRJuC9S0+14MBK0/wbsP7oL1ZAoaHsksm9S4qTYkZzaFrTgJr6cr15gcnGRLeGpd/Cn8JaB4dRVn/shpAdCdvDmQ/pvB0JULwnvP4RonWsCfH4RGiHyIr9CiFcINOzIE8HRZvLQUUTY+cm3mpvSOfJYGXCpHukSHhiudi3jdMkX/AUa9qfd0AQ6zuf4tk8p91jVa0+YG/AZeeTfCLXbtsyvjtmevfOsafjyxufg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7v+6/vdC8tOuJLuiiuW+HG7sVDDsOHr6dIFJ9e43AAI=;
- b=04+uEy6bsbe6i6uc5PUzVZsBIryOeakc/Sgz0r31BvGmFpsv3Q2NqzNMyw6MSVlXzSbtRUl+H9Z9JqAGbtsdlURjhYxXg0VXE+71ZrunuuYqVxllDWt1cMD2ShHgOk4jZi3DwYp/9mL1UVJ2vHHZVq6OjK9S4iBr6efriRs7F/8=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by IA0PR12MB8893.namprd12.prod.outlook.com (2603:10b6:208:484::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.7; Thu, 26 Nov
- 2026 09:58:23 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0662.004; Thu, 26 Nov 2026
- 09:58:23 +0000
-Message-ID: <a8c00bbf-dddb-4207-bcdf-af58d27116c5@amd.com>
-Date: Thu, 26 Nov 2026 10:58:13 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 03/24] dma-buf: Add the SGT DMA mapping type
-To: Alistair Popple <apopple@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- Simona Vetter <simona.vetter@ffwll.ch>,
- Matthew Brost <matthew.brost@intel.com>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>,
- Dongwon Kim <dongwon.kim@intel.com>, Kevin Tian <kevin.tian@intel.com>,
- Xu Yilun <yilun.xu@linux.intel.com>,
- Karl Mehltretter <kmehltretter@gmail.com>,
- Baolu Lu <baolu.lu@linux.intel.com>, Felix Kuehling
- <felix.kuehling@amd.com>, Alex Deucher <alexander.deucher@amd.com>,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
- linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
- linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
- Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
- Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
- linux-nvme@lists.infradead.org, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
- Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
- Alexey Kardashevskiy <aik@amd.com>, zhipingz@meta.com, treding@nvidia.com,
- jhubbard@nvidia.com, chaitanyak@nvidia.com, Leon Romanovsky <leon@kernel.org>
-References: <awT8prWsj11TBdmP@nvdebian.thelocal>
- <63eb7b6e-e0a8-4443-a434-0301ed59beae@amd.com>
- <20261124142032.GN9566@ziepe.ca>
- <7a5a2d3a-e42e-4dc0-8d22-8dd1bd249501@amd.com>
- <20261124194618.GC114530@ziepe.ca> <awZ_Os1pXelOGaFP@nvdebian.thelocal>
- <fb9a6b12-c134-4e40-86a5-dbcb59c0b91b@amd.com>
- <20261125155559.GL246011@ziepe.ca>
- <5fb8bb60-7d9f-49b1-899c-40a890fdc14b@amd.com>
- <20261125190705.GN246011@ziepe.ca> <awfMy1d8ICL6mr9i@nvdebian.thelocal>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <awfMy1d8ICL6mr9i@nvdebian.thelocal>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0372.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:f8::18) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (1024-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=esdLImf0
+ARC-Seal: i=1; a=rsa-sha256; t=1795687758; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=efaMgozkJueJiSs2swC40lOWWCxi/7Qg8e+K/GtQOUqIsY0pXuMWbjw/DJFPF8vEWKyguNsJV/0fGff39z/+EgwELScgIamYYe6WPzlp3dvQtmvS7McROLHGl+1mjM/5IJdAuVuau7z3Yc3LEvsnD3NWjepdrA+tC7sAuzev0+w=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1795687758; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=l7d5IaQ6JOFWPkAFn1T5RV5TtU7SOPA7qfljz9g0TC4=; 
+	b=NO6Yzv6d/2Rpv1/e5VQHt2h97mzw9tSi/y02PRA+wY0EIOslpJbfqD6yeJonnK9H3Wu1nd3DgAQMmPmbAjZCUR5C2OTxFp4N0DLsb213ZXbf7tTDCE+1RUq6TErRyKW9UwJeqlKaR0Qp3rkJzvRhwmuSFLz7NokiWT4qGdiq8Kg=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=sebastian.reichel@collabora.com;
+	dmarc=pass header.from=<sebastian.reichel@collabora.com>
+DKIM-Signature: a=rsa-sha256; b=esdLImf0LzvU9760wveffdTdVGwTvsAtjHzK6BpB/YKvVtrLYztUTDFrmsPnazV165g9oBJHyuvHVCj9B+r7p7oiCPAm2zbjLIb2ktBGFgzqdtIEqa5eCpo1b9sEO0aQx3x3Vp85JPQ5IBdpEYN0UC7/fu7Zx08Lg0P3sh5TVWE=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=l7d5IaQ6JOFWPkAFn1T5RV5TtU7SOPA7qfljz9g0TC4=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
+Received: by smtp.zohomail.com with SMTPS id 1795687756197766.9363163176183;
+	Thu, 26 Nov 2026 02:09:16 -0800 (PST)
+Received: by venus (Postfix, from userid 1000)
+	id E71F718040B; Thu, 26 Nov 2026 11:09:10 +0100 (CET)
+Date: Thu, 26 Nov 2026 11:09:10 +0100
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: aiyengar1990@gmail.com
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Heiko Stuebner <heiko@sntech.de>, Niklas Cassel <cassel@kernel.org>, 
+	Pranjal Shrivastava <praan@google.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org, 
+	Shawn Lin <shawn.lin@rock-chips.com>, Simon Xue <xxm@rock-chips.com>, 
+	Finley Xiao <finley.xiao@rock-chips.com>
+Subject: Re: [PATCH v4 1/3] dt-bindings: iommu: arm,smmu-v3: Allow a clock
+ and a reset
+Message-ID: <awgFFhKsT87wTwJK@venus>
+References: <20261126-smmu-v3-pcie-pd-v4-0-c340c2dbd1d2@gmail.com>
+ <20261126-smmu-v3-pcie-pd-v4-1-c340c2dbd1d2@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -124,139 +75,91 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|IA0PR12MB8893:EE_
-X-MS-Office365-Filtering-Correlation-Id: b5158486-a275-49d2-27eb-08df4ba3ce95
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|23010399003|366016|10067099003|56012099006|11063799006|4143699003|261022105027099003|261021121427099003|261021123027099003|261102123227099003|261102130727099003|261026140227099003|261026121527099003|261028144727099003|22082099003|18002099003|6133799003;
-X-Microsoft-Antispam-Message-Info:
-	jNH/7tSUkOpZBN5rKDbGK6/xsFjuIvIWWhn6TXdzXIos1ZDyyzWhckZELrgzYob5iRIGxsT1GGiujGpFCOcTSiDi6yjH+xtrHvJ0AxVE66T5++Dux/IFj00wiDnsIkkVIo2/aOxGIxkRy04nz9oNbakytWsmfKw11miCvhbOsVZN1Enz1/8Cn7w5JmIc8mdXRaRWSZmYB99al51dnaLtFbAu8dwMQcMJP/QT+g4If7dGgELNbn2+5z2wtfeWJwtxivVtl7jW2fjDKpWzBpgF+zQ4LEFIJ5Z4Qu1VHrZgTP6A3wh6WPjRPG3JmmUaoSzSsxKmjCWxA/N4JLKJ8Gy3fmdwv80MwLiXjSUfDXdmxHlfYdi5VgDLCYVtjkSofbCFJ34gJWMATrIu4+C7CKc2sEZgytTJo+zOiAkoP1bguhlCYiXVZwBNBIkIPgP8Bo77I0Cd+OFedw2Evu4l5nTERw9UGOK6VwfpoSscen+ay6CKU6LYSWTZ0jB3HWztR6StkYKXKwsZYWyXrSKkM16Fy18nXIfYVVqDffKgzGm4egYDEcrNQCp4YHLT7cP0Bc/oPYKM20OVl2yIUvswiqzb4RiyFnKQp9Yn2yhx6fEowlpudBKYFDWaqQVDLBY3rIeOMdRdJEvk1rAqioDv/vWJIDUJjds5t1A3/pvjfHWyqXU=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(23010399003)(366016)(10067099003)(56012099006)(11063799006)(4143699003)(261022105027099003)(261021121427099003)(261021123027099003)(261102123227099003)(261102130727099003)(261026140227099003)(261026121527099003)(261028144727099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?TmtabG50RUlWNjMzYXUrTEpFUEdCaWZVWW1acWQ2Nmh1aTk3eVBlMzZpNU8w?=
- =?utf-8?B?WUh5bVEwdWtuMWhKNnNaTnZwQkk0TmhWODN4QVlOVXYvbGhybEtrbG9scmRS?=
- =?utf-8?B?Uk9SMTF5RkdNNTQ1ZWw2K0xPOFFvZ1haY09wTGhOMG1IYmx3QTExOTdFbGto?=
- =?utf-8?B?TTNFcTArdll5b2swMDlvNG43Y1hCTC93bnVhS3ZwTGowMlF3anlEUDhuQlQ4?=
- =?utf-8?B?Qnk0ZTkxTVVVNUxJaWNRbWNXaFpEa2VuVUlkZnQ0TGVmMndWNEpXOE4zRnRz?=
- =?utf-8?B?eUQ2RjBiV3RJZktXTyt4YXdRSVlPelU5bWViSEdyUzVWcEo0VlZRWU1aNDQx?=
- =?utf-8?B?YVcxVXlLcHd3c2VCbnJscFFBMDVMcGNuaEJvdzFGRytYUklJSGN0K2tBMEVE?=
- =?utf-8?B?NDJmWTh6YUZhMjltM2xRcEVJTWRCMVc2TXl4Z3RIamphZEVrNjI3biszS3NO?=
- =?utf-8?B?RktNYTBlWk9zTVVnalczTUtpSkUzbUQyUFNhamtNN2Z1NmNxdkljVFJNbCti?=
- =?utf-8?B?NVRNRWdmd3QxWS95Y29FQXNBQ3l5YTc0azVKbnB6bDBTK2VPRkMzTGtoVlVl?=
- =?utf-8?B?dFVESkdpUDZ3ajE0T0xRME56bGpRNlE4ckFJdGVvR1lmcGFQWW43dGxSVXJV?=
- =?utf-8?B?VHZXcC8rQjFLcnViZ2U2NzhPV29ROCt5d0RiZjUyU2FGT1hVblc2cFNaMTRL?=
- =?utf-8?B?NDZBL1BuUmNaSXc0dXJjend6NlFQS25xQTAzanJrNHd4Y2wrcHRoVmFLZ0ZU?=
- =?utf-8?B?YXN0Mkd1M1pZaUVZQ2JQZmQ5b0pvTTR3Z3JCVmQrd3lYVjJhVXphMXFnbVBq?=
- =?utf-8?B?OEdqSXJ5clRCS2FITiszZ1h1Y1o5YWlnKzZCc3h3M2JSSWxzK2NETFF2K3Uy?=
- =?utf-8?B?MWl2bjJaVFI2empXZEdtRzVuTGloc1dkUzN2QnhHNitSQ0UwYVo3ckgvTSsx?=
- =?utf-8?B?SXUxVzdJVkFTbmlpNXArRm5aU00xVlpsclZGQU02OXhOTGIwck1JbFhucldP?=
- =?utf-8?B?YnZ4YldMQkduMVJKbG1seUdqbTBFVmNmWFpWaGdCblhaZWdBWTV2amNsYmlk?=
- =?utf-8?B?eUEzaENRZUljZm5RdjZnaE5oMWhQVkZXWFdNak5SQXFqYzRUaTgrd0hSTXBo?=
- =?utf-8?B?ekJQcWZaZUJCSGZrL1NWQW1lTUNleWVuOHo1YjVBdnV6Q1FLYVlwdWJBbXE3?=
- =?utf-8?B?R3JqODhMbnZBalM2OEEzWG10UE9KUWZMaEppUThnWkpaSUc2emRIQ2EvYi9B?=
- =?utf-8?B?NjdmNGk0NS9WVHo5Vnh4SFR5SUdiYTBDckg0amx2VTl1b2JCc1NQMVVyaFl4?=
- =?utf-8?B?QVFJUi9rbTRqYmJna1d2aFZxZ3k1bkxIVGJyaGh2eENTY1QyaWFWbXd0dzFC?=
- =?utf-8?B?L1Y5R1l2Z3hnZ3hnSUtOdjltaFAzeUNuVC96a01VaUg1ZjFCbnFoUWh2cTJU?=
- =?utf-8?B?N0dLV1BLM3BqZHZBbU9CQ2ZpS1lBR0s4V3lDdzFoMWpoU1ZzYUZHSFZjV3dh?=
- =?utf-8?B?T0VPcGpRWVUvK04zTXI4NjdORjBob1gyZm5mdHBYb2VoYWxMNkNpRmlDTVZB?=
- =?utf-8?B?Y0JYUlFwSW13aUpRVEpSSzRPKytmaENaanFyT2NubzAxQW9KQmxLT1VsRVVP?=
- =?utf-8?B?bm9DdzZ4SU9TT00yN2o2cS9rb3VqM1hUMmcrQ1VnS29wKzBEQXFiaHc4MGxk?=
- =?utf-8?B?TjU4RlFoZVY1aWJLUUNVeElodW5DdDZFcy9BTW9XTkRXdTlJczEwNGJxNHRD?=
- =?utf-8?B?d3NGS1JWZ21qNG9SR1JNRDU4U0ZxdW1Jai9mYTk4aHQyTlVXVGwzK25VSUtz?=
- =?utf-8?B?SjVNNEFsMk5BSWtwWTh5ZmRZSWJHRFV1Y2c5SzZyZDZnelNCeTVNeHBVMWc2?=
- =?utf-8?B?c1ZRcmdnUDdZdjJha2RuS0xQYUVNOWJmN3k1bHFlYW5wVWc3VzIyZlNjQTYr?=
- =?utf-8?B?cHp2TUVUUWQyMlErMnBOc1hTdENIMzZ3UVl3MjdROW1vZmdQWlVHaHhrTlZB?=
- =?utf-8?B?dy9zcFc3V09qZXEwSWI2cFU3eDdOdmt0bHNqYkQ5d21YZjNraTJhbm1vUzBL?=
- =?utf-8?B?eU45YlZQRUNJd1hrdE9GQVBwV3pYOVdKbEo1bHhIM3JPY3BTcE9ZUGIwUnV3?=
- =?utf-8?B?TU0yL2dLQ1JHTHp0YlE1V1kxNmI4a1E2N3FROWF5NFBYbGQ1WEsxU1AvaFdK?=
- =?utf-8?B?YWdrT2NSWm83L3Iya1NPSEwxYkgzbVp4Z29tVDNpSlVuUFZxeSt2TVMvNEUv?=
- =?utf-8?B?amRIOWFYbkp0d2YzM1J1NlQ2VVVYWUxGbFREY1RpaTQ3RHcvcVJLZkl6cjdo?=
- =?utf-8?Q?PFrOAE+1TwFt4xFQsE?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b5158486-a275-49d2-27eb-08df4ba3ce95
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Nov 2026 09:58:22.9662
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9GAhOlm8zIN62e3nAX/NwX3vxI9IipWrmBBGM2UpfXcTC2HYN7rH6lyPGubRAUHg
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8893
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="356dxsaiqd4y3y2b"
+Content-Disposition: inline
+In-Reply-To: <20261126-smmu-v3-pcie-pd-v4-1-c340c2dbd1d2@gmail.com>
+X-Zoho-Virus-Status: 1
+X-Zoho-AV-Stamp: zmail-av-0.2.13.1.5.4/295.675.79
+X-ZohoMailClient: External
 
-On 11/26/26 07:24, Alistair Popple wrote:
-> On 2026-11-26 at 06:07 +1100, Jason Gunthorpe <jgg@ziepe.ca> wrote...
->> On Wed, Nov 25, 2026 at 07:17:51PM +0100, Christian König wrote:
->>> On 11/25/26 16:55, Jason Gunthorpe wrote:
->>>> On Wed, Nov 25, 2026 at 12:19:08PM +0100, Christian König wrote:
-> 
-> [...]
-> 
->  > > We cannot disconnect this from the DMA API, ie to use an iommu domain
->>>> or ualink, if exporting drivers are hardwiring calls into it.
->>>
->>> Well the plan is to not disconnect it at all. The exporting drivers
->>> just says to the underlying API here is my buffer please map that
->>> for this importer and that result is then given back to the importer
->>> through the DMA API again.
->>
->> DMA API will only do basic PCI DMA mappings into dma_addr_t.
->>
->> It will never handle iommu_domain, it will never handle ualink/etc.
->>
->> Give us a plan for those if you don't like any of these ideas.
->>
->>>> Fundamentally the need is for the driver to get the phys_addr list,
->>>> exactly like today, and then pass it to an op which formats that into
->>>> the right data structure for the importer. Be it dma_addr[],
->>>> iommu_domain, or some ualink_addr[] - or whatever.
->>>
->>> No, the phys_addr type should only ever been seen by the DMA API and
->>> not by DMA-buf.
->>
->> Again, I don't care how you label things or what "library" they live
->> in, I can't tell if we are nitpicking names or what.
->>
->> But there needs to be some kind of abstraction that takes in
->> phys_addr_t and makes sgt, dma_addr_t, or iommu_domain depending on
->> what the importer needs.
->>
->> Exporters must not open code that.
->>
->> Obviously DMABUF is involved here *somehow* since it is the only thing
->> that knows an importer even exists.
->>
->> Would you be happy if we made a 'dma mapping for dmabuf' library that
->> did all of this and DMABUF just passes its type opaquely and drivers
->> just call its tightly abstracted functions?
->>
->> That is the component Alistair is proposing, he just prefixed it with
->> dmabuf_* as the namespace because, lets be honest, only dmabuf needs
->> this weird looking thing.
-> 
-> Right, I don't really mind where and what things are named. I'm fine with this
-> being a separate library somewhere or building it all on top of opaque/private
-> types. But I'm having trouble understanding where exactly the objections lie and
-> what the path forward is.
 
-Would it help if have a call on Teams or similar services to discuss the whole thing?
+--356dxsaiqd4y3y2b
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v4 1/3] dt-bindings: iommu: arm,smmu-v3: Allow a clock
+ and a reset
+MIME-Version: 1.0
 
-That might be easier and especially faster than by mail.
+Hi,
 
-Regards,
-Christian.
+On Thu, Nov 26, 2026 at 09:54:13AM +0000, Arun Iyengar via B4 Relay wrote:
+> From: Arun Iyengar <aiyengar1990@gmail.com>
+>=20
+> The RK3588 PCIe MMU-600 has a clock (ACLK_MMU_PCIE) and a reset
+> (SRST_A_MMU_PCIE) in the CRU. When no PCIe controller holds the clock,
+> it is gated as unused and the SMMU stops responding. Allow one clock and
+> one reset.
+>=20
+> Acked-by: Rob Herring (Arm) <robh@kernel.org>
+> Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
+> ---
 
-> So given no one outright rejected the plan I wrote earlier I'm going to go ahead
-> and post the series implementing it (I was hoping to do that today, but it's not
-> quite ready).
-> 
-> Hopefully that will help by giving us actual code to ground the discussion on.
-> 
->  - Alistair
-> 
->> Jason
+Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
+Greetings,
+
+-- Sebastian
+
+>  Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/D=
+ocumentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+> index 3c044e4f03d4..9ab80142a485 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+> @@ -63,6 +63,14 @@ properties:
+> =20
+>    msi-parent: true
+> =20
+> +  clocks:
+> +    maxItems: 1
+> +    description:
+> +      Clock of the SMMU's register and memory interfaces.
+> +
+> +  resets:
+> +    maxItems: 1
+> +
+>    nvidia,cmdqv:
+>      description: |
+>        A phandle to its pairing CMDQV extension for an implementation on =
+NVIDIA
+>=20
+> --=20
+> 2.55.0
+>=20
+>=20
+
+--356dxsaiqd4y3y2b
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmsIBUIACgkQ2O7X88g7
++pojpxAAl60EjN/Ws/Tt4rGo9MZ+TYyUyltt45l8mZYJuUkNuRTlwc+WJHOIJnKl
+gofGkYklDG1He/k/dP11sYRSyB24Z1EMr3x1nzlXeuFF9PZaxOGOn2J1e2vLnNfo
+tXNDP1TC4fBm/uun2sdoOBQmm+ZtUEoNGcnmeMW8DEc4MQz7+czum8+wzlMjquhF
+7OFQO6tX2HvByW1ARUujDlkwSPVfQSQYXXwrDoh1Si4kojAk4z9jIBN0dzPp8Z1y
+/T3vY56GBVN4K8P+uRtKs7Q3cQvoySwb/tbMtjUukseYQOu4y07Ahjih2fRrtRf4
+/5Pu8P0BNITQfmc0nsTP9IBI+JEIpwModufX8QZGS15HyoupoA21w7OpzAVamVlx
+OImMB22d32mFMv/OM3oJn4f7Praa3h6j8qKREbwo0FZsCl4rOKqQWVGILY0cBxIB
+9kaaUWW/Ju78xwH72nlyJl1zXuqDYjsAh7BXY6457zJp/8eutSNikalsgdkEVNGF
+4CMbAicoPTatPFkIM8LZ2sNFNMGAdwh1XrZardea9NJV3DK5jXkY8zy4Y0KjM8FA
+maVJONdZQv2d6N50Owf61bS7gHeKTmyG9P4WO9XvRHEnVdZPJuEQo28LpT/+7gdK
+PRtNSKzr5Bxv9PdT7m9YCDpH9qNq09civvhOB8ittmjC3h5yVCo=
+=r4Q7
+-----END PGP SIGNATURE-----
+
+--356dxsaiqd4y3y2b--
