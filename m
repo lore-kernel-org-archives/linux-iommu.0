@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.251.105.195
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795724431;
-	b=n6mOaUB9wNdBdWtFCsW++7jQ3v2/6Anho/dER32Hn6HEKTpzFSBi+/kJlXrG+mlOSxjz
-	 pmz80sIDRYZMvOrfRiQtNBQrJ23lzM7RTfrmPXYbDftXHPkAUjVb9VECxVED/m9bRxgro
-	 PaCzDkonaVi98SCfvdeNW1vSxBXcyHNzn4c7Zwvh68Xz9u8BWpeAc2rx07CuO19PwMPvR
-	 LpCeZjzVkenvdCw1nrCDsL/TIV04JlCheXaOgonNZF/KvhaTbu3IfOD0sZiedeA5Bwohu
-	 lFGWIoo4abocFr8S7wiMWGj/5nCBuSHehC/PBksdVhAsqYso00ih3sjecbK+l5tV7sQ==
+	t=1795725262;
+	b=KfS6YF7gV/0q4YEB9Zpaj3rtIGMr6kHqUBib7VrXjCqcdVe1jIrWr2Ex9xVDKnhxw/ld
+	 PPeY0Nst4azzPOCG2XYmyPN5uB3vDvATNWg/etl0TW2HS1SOcvbYpvFtIyRiHHMiRzttq
+	 p4MzjmAdkgDJgmPJWVTPrBjNK3664QBr5P8HEH9K1Er7sfKvM0h9CX5sNjE6O4UnKh+GT
+	 4Qq+RoJB6n51fmEQGyiPj8+P2cMQFGpBDigx4O+cPGaBYL8acj6v5Kv8JBGYCB0qgguY1
+	 CXzLzz5mc67OdL+YXtwdJE4ZIyx3WuEx77PyCgZjjbTzo7C2/LgcX41Y3yANBITe7Ww==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795724431;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795725262;
 	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Subject:From:To:Cc:
 	 Date:In-Reply-To:References:Autocrypt:Organization:Content-Type:
 	 User-Agent:MIME-Version;
-	bh=7CCrVyrTBdPbSe+1if8Pi4d/84Yf1ZbiqX0NUSqRqbc=;
-	b=nqEBMvaGq1qh2hAi7APLpP1JvxD+pwTF4AVQcBtcOOIea2+6eLbUsxXaOFofRDCyRqnm
-	 9TyU75Vj7ORBOf36bAYIkzOFti7sPrup+EsCwgLEl2jiaMyShW2BgKb0GihqreucCaSBw
-	 DsKS5PiEhBTHeg8zSvu5mbizTBYGcl7/2bMe2MIlhsLIvPRaoE+M0xmkUdF3x73TuQMsF
-	 6vl2/ngMW+7RtEqeKRhI7cYZnew4qfiNxm3SF7tM5jog3BXe4+Tk0CSwt1l29x0FU1OZA
-	 Xf4NHlNaqb6ejYEwl2fv0Je48AIyzBxjJXByWHM7ej309KfUPRfeHrQj582hMPZpH3A==
+	bh=ZtyRiqIaJqFwMQaq2Qb+Lq38EH6o6V0HwgTuxki6ieU=;
+	b=4Zmnfm8VVzLp6hmzw5Q6zSf0Ys6q01wMORZK3lr14w3ZXLVk6LokWjfb65VUVXYYYYbq
+	 j94vqXSvldTjRiYdDKHJpNEKnnb2VkbW1EFk0Kd7t1fHCr9hWduEQp1fFMeFhtxCKb5Hy
+	 XvuYOp/g/sUlUBSdqHJTwkhWqke0smOVO1dD7hzvI/pUIQRSARggYs8ztA5T4dOqV7q0w
+	 Q781k1BvKA2YElCZU21Vvwvw1x+kFlZc7Ugtk3MbxdQyO/rHnEBxMlWA8bNAKXsbxz7BW
+	 w0qlKMUwApDwDjllbay9b3AA45R4dCYOygKmtNN2+/2k5cd05UIw4y7MbbLwnF3JVwg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=collabora.com;
 	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=qSOzqmLQ;
+	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=frUaz41j;
 	arc=none smtp.remote-ip=148.251.105.195
 Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C4BA606A31E
-	for <iommu@lists.linux.dev>; Thu, 26 Nov 2026 20:20:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7C4BA606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8715606A32F
+	for <iommu@lists.linux.dev>; Thu, 26 Nov 2026 20:34:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B8715606A32F
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=qSOzqmLQ
+	dkim=pass (2048-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=frUaz41j
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1795724428;
-	bh=pUN2TxTtZtOVhddUkx6PB3N78CQVfEnriFZuNg5Tvgk=;
+	s=mail; t=1795725259;
+	bh=abqDquCjMGqMJ3NkU3LM2AslGjSstfozpN5N2jtE3gM=;
 	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=qSOzqmLQEkX+WmrOPd53ng4Ub+f3WGThnGgKuLjCGaW25geqXy7wFsN4FAoD2V6V+
-	 G5135TPN/vMUQg07ob8ICMRGsXkKtPnhoNQqZwD5Fs2yZnXUwxWyLXoAmQQ/deolyN
-	 dgAvUV1LAQ899xivuB4Txz9UumTJQECIAusvR9raaAe8hLxfOnFk9OM5wUn0umBuFd
-	 Bl0TGgC4t23igBCkDDEN7lWTyb05AfGEvQH0MQuEtNqlLipxq+V/Ph8Yer1a0QcCSA
-	 IVLSFNwOuVnFv0mwHxw11o9Fnr28wW6V+ywmW9VqMgerhDB/njmIcc6XDjfuqMomyl
-	 B7OIaLOGRW9Tw==
+	b=frUaz41jyxqWysbTEj7WnpwOkf/UkdVpsl4V+c3czHyi+dNs3eM8KpUC1JuQmitop
+	 1uuld94b69SM+aY/Mg19vPINTbi21n3CVEi6rwCSRUzuYXY78rnLoVcM2YkJy3MI1E
+	 h0fm6FX51SWmK/G65FoJY2xaJcYi1TiyjQrIO1vrVWDMam2DRPswx80TnYA75A5+3i
+	 YPJ/r+iGOJxMOmTpteOELJIk9303GQsUw239RzduK2ZWbn03O66osJfjMXzWkTD68i
+	 /qt8fg9tZP+hCsYWfdRsNqOvbJKGetDArEpLvcqI5Vuc5tkR6B2Yc5Lm2l9xzy0Xv9
+	 aRASBYTmrSD7Q==
 Received: from [100.64.0.214] (unknown [100.64.0.214])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange secp256r1 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: nicolas)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 6A5A817E00E8;
-	Thu, 26 Nov 2026 21:20:26 +0100 (CET)
-Message-ID: <23748f44fb9f43f88af97c65200cc75ed5d1ee6e.camel@collabora.com>
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 6169517E01D1;
+	Thu, 26 Nov 2026 21:34:17 +0100 (CET)
+Message-ID: <3d866004c558c169d3bdbee8cd737b0fb818f3d9.camel@collabora.com>
 Subject: Re: [PATCH v5 2/4] iommu/rockchip: Add rockchip_iommu_restore()
 From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 To: aiyengar1990@gmail.com, Mauro Carvalho Chehab <mchehab@kernel.org>, Rob
@@ -62,7 +62,7 @@ Cc: linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
 	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Hans Verkuil
 	 <hverkuil@kernel.org>, Alex Bee <knaerzche@gmail.com>
-Date: Thu, 26 Nov 2026 15:20:24 -0500
+Date: Thu, 26 Nov 2026 15:34:15 -0500
 In-Reply-To: <20261126-iep2-v5-2-3deac0976f10@gmail.com>
 References: <20261126-iep2-v5-0-3deac0976f10@gmail.com>
 	 <20261126-iep2-v5-2-3deac0976f10@gmail.com>
@@ -81,7 +81,7 @@ Autocrypt: addr=nicolas.dufresne@collabora.com; prefer-encrypt=mutual;
  bRLv9QjuqsE6oQZra/RB4widZPvphs78H0P6NmpIJ
 Organization: Collabora Canada
 Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-dQAySM4Jzz+X++kJrWM9"
+	protocol="application/pgp-signature"; boundary="=-3MjT44OPCjy6caLCkHly"
 User-Agent: Evolution 3.62.1 (3.62.1-1.fc45) 
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -93,7 +93,7 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 
---=-dQAySM4Jzz+X++kJrWM9
+--=-3MjT44OPCjy6caLCkHly
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -109,19 +109,6 @@ Le jeudi 26 novembre 2026 =C3=A0 19:51 +0000, Arun Iyengar via B4 Relay a =
 > does the same with rkvdec_iommu_restore().
 >=20
 > Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
-
-Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-
-We are trying to get rid of hacks in many Rockchip m2m media drivers. rkvde=
-c
-have that hack upstream, and now I have rga2 and iep2 driver submission wan=
-ting
-to use the same hack. So I asked Arun to give it a try and find a solution.=
- So
-see this as a v1.
-
-Nicolas
-
 > ---
 >  drivers/iommu/rockchip-iommu.c        | 36 +++++++++++++++++++++++++++++=
 ++++++
@@ -171,6 +158,21 @@ f.
 > +=09iommu =3D rk_iommu_from_dev(dev);
 > +=09if (!iommu || iommu->domain =3D=3D &rk_identity_domain)
 > +=09=09return 0;
+
+I was checking the core, even though I'm not very knowledgeable, and all th=
+e
+attach/detach is protected by the group mutex. This helper bypass this. In =
+many
+ways, its fine for the media m2m use cases, since we call this "just after"=
+ we
+have performed a reset of the core that exclusively use the IOMMU.
+
+If it was shared, here the condition above isn't guaranteed without holding=
+ that
+mutex. Maybe its the documentation that should make that super clear?
+
+Nicolas
+
 > +
 > +=09ret =3D pm_runtime_get_if_in_use(iommu->dev);
 > +=09if (ret <=3D 0)
@@ -211,17 +213,17 @@ f.
 > +
 > +#endif /* __SOC_ROCKCHIP_IOMMU_H__ */
 
---=-dQAySM4Jzz+X++kJrWM9
+--=-3MjT44OPCjy6caLCkHly
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQTvDVKBFcTDwhoEbxLZQZRRKWBy9AUCawiUiAAKCRDZQZRRKWBy
-9BjUAQDSNPqdSlLUl/O9azaIblOpLLPu+oK5Nw5EuSLHW+r7zAEAxnuyZq9XVKSw
-gxVnBpP/poBKRTNumlOhqdw1p4TEoAQ=
-=p9Z6
+iHUEABYKAB0WIQTvDVKBFcTDwhoEbxLZQZRRKWBy9AUCawiXxwAKCRDZQZRRKWBy
+9Cr2AQCsTl6XPrjbaY0SjcDbbzXlND83mZ41UCypu76rA3F1DQEAy7HVkCPVts6P
+z7OrYiyBAVAHXip+a45hCdo/piTAIwU=
+=KzIp
 -----END PGP SIGNATURE-----
 
---=-dQAySM4Jzz+X++kJrWM9--
+--=-3MjT44OPCjy6caLCkHly--
