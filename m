@@ -1,78 +1,80 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795686881;
-	b=vd+KwxtjxW19nhG0lUvoFqcHPlqKC8Pjki062OW/9D5YHWB5O2ClRKRrSxlM3FgJZ7wx
-	 CFjEIdR4t9ZBOKImoCObijWU735bZM29oTJtRMQsz06jWoJFQGbi7KzRePGbH+P2MMAPc
-	 0tWJ/WIulGQcmXq/aQeATTPHblXEv5wGcYxfM/zuPS+ezf8azlHItHRjS3DotZhhdjsCV
-	 pCgigEjEVZPAJlbSR80YCQFmtoeFoo4AjmF/CQOOQIpLUPBHJscnxjO8Dwz4MEslN9LtR
-	 XOhUdnYE+EQFyxSW+W0UQQq2ltnVdywQIfGPNlWuJSS3n1cqnxQagtBpAZzzilYcyiw==
+	t=1795686879;
+	b=Lt3blWCSXmpwIgEblh30q+53epiHjPgaAlJsmUEgYURsUhmzr8OC/vgAIUCJHwJXZHAG
+	 KsWFQp6Lg30MFpzvBCe4d6l6Y3cwdQREIfe+P06tDUCMSS8urs0FbuWsW5fcX6sxTO7a1
+	 jL5yrBHOxoApMWYqHL6Tr3n38ctM27s7tINX7iX5IkdozOdn4lykUo3oalHPvBYnLF0Yv
+	 DAlGBwsRCcHiLJekthDLR162SRosrnjf/SEvZHQsxRDx2m1nfpQzFqlxLkfTGXs9EYJGP
+	 YBNIaiNmzNQKBRgtZrNd/zM2DzAZXSNVZjkjN0EwU89Prq/cSvblEO1IThwpT6gRGIQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795686881;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=HQOWs16y1/eFC3awJ/S60wuu/9tLYEZ3KFYM+GNL2Kc=;
-	b=SLEhZ4fnwvCF6VtGS1IabolxzBHz5g+/x0Rq7lQ4TeNH76Bx9XOV6+rK1xsb58niSoTI
-	 Jhb19It3a1KfNxOMS0JT/7xhxvTMb18GMJHh9B1hfas74rd2IkxkbmOwrxO8J7275LRuB
-	 saqZXTkVac2qqc1YcMeYCJ+mCU73zyVHZSVOMVYDKcoCfmkdIGkRrVuWxIrPxRYxiXO9O
-	 gspahHdajhgIUn6xkuOJYpj/yS2eKwyByTMpzRcf81bilNp6nZ2mOVoJ2D/DaWcotMpFP
-	 YTnrZDMn/Gj2TfWxvPgREJOxRyZUWQ0oRkLeergiGndjflb8i2VCXO+oMB+T1na5WLQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795686879;
+	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
+	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
+	 X-Endpoint-Received:X-Original-From:Reply-To;
+	bh=LrXkkhn+csZHwC0v+/65n16FhGVifrxEgQhE/Pa5wFw=;
+	b=WpbYt3WvdobSnobtjpkw4MEQLBABvx+z808xegH+PkXG+n9N8zQezDGA4sXm9/6tNbe0
+	 hifTodihc3fPNdYbSEkFuR/NUuIkHsqmr1piik96AYiMQZMS3gTRHXF40Lak8btrgtQFw
+	 8/EQfsrC0JViYJiVfQ/3+DTKNMJu8PVATz3nGuByDd0LiDo1fWtcnS+R3hKcDhV1PH5+5
+	 otcU9k/Cjpb1R7SDXNRTaAQifN2o71G06ixDbxcjxKzTCmmjdeob/N7xmVYd6y9/dMHhe
+	 +njF3X+vL0KiUnRdncjnO2BNGcdEGgqCEX4AMObw518RLfPa+kjrYX32SxbcgPREd/Q==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Y8viLU1F;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=F+3nfrFb;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 299AF606A323;
-	Thu, 26 Nov 2026 09:54:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2389A606A31C;
+	Thu, 26 Nov 2026 09:54:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Y8viLU1F
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=F+3nfrFb
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795686880;
-	b=AmOHBczvARE5i2VNRzasL1TVo+KP7yxEYFyM0qOBMSZK37OvKKcSTCivyVldqtm/wwUM
-	 oJgEdQa4QZLcx4ihJxr5CIeq/J1T67kwC9Lw2XF74D2ts5qkLLCK7by8zbLw1hAf+sOlm
-	 WmhGIKFNb5GMrdDUesCchl6yzYhX+ay3NS3+c7jCRGMnOL5MrIHGg6StY52E9eJ7GjHKt
-	 x539umzNYfi2K2FYsi0aoPPBpRoYLJ6gkcgnQj10zsCCeE+ZqP/sJUJCR/GOYQH1h0h+h
-	 zjSXp2qK+2zrdstuAY8sTS/2+uwmUAeeIAenT7iFT6K5r2eX+hQ6W2KhrrSL9WqR5mQ==
+	t=1795686878;
+	b=TDi1yMZh+0pTTnRJaOEDo9LEQJ7EfmonNLsLcLZ9XHiaPD2Xsr2coH3DTIoBfczFEOKd
+	 SBz+zIA5UUo3fAaeLZDA7vB5S08YYlht5mDfsiUQ97Hk6JSK8dnykprjfgJBrJLCzFjwO
+	 v61ynUBVGUJMNlkaRpHL27cSywkYKILvLHW35NLrSz5iqkOHMDKBY3GgCYtnD+/ACRfj2
+	 AR9MyjZaS1bM5+zCjx8oLasv1WoGl3eKod3ksOVrrHCXhs8Oxc1rsSd7mBKRA71EW7OAS
+	 S7efwz1GcVBOoGXpBtlhdInujsSNcAmukvmWJLZ/Z8LmCRStjmwk25rfS3/hbDGOvXA==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795686880;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=HQOWs16y1/eFC3awJ/S60wuu/9tLYEZ3KFYM+GNL2Kc=;
-	b=X74FhZ0/WZZcSbi7EyrMsfD6cN6tU2JEsq3nkC122UqG6QZUUbZb78JjW5LnvmdP8fK5
-	 COTSda8USSm5NlYHfN0smSTcWodkMzvQWHOXJAfWHKjX4dFOuESQlAkZj7DXyG6kZoRlZ
-	 gXknT29EEG3FuCJp0wQJhs2CC9shnmKpLJyxKp+1yd++XQCnzIy/YBX8InX8CYtV/RRnc
-	 RG2Rh8gQi+K1PAavqtOJMSirkxCVvEz/hF31B8Bp3d2MqCDmKo+QaQa1yECArdd48leb3
-	 ZKqdveiaXnawdMnRNn+qZb1BirJ2t2uqIp32UNB2XLybs04m4hd0YaqLv9WksP/YUwA==
+	c=relaxed/relaxed; t=1795686878;
+	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To;
+	bh=LrXkkhn+csZHwC0v+/65n16FhGVifrxEgQhE/Pa5wFw=;
+	b=fh9wQmP/9fVf4DStKALhOi1haMRb3WJNKSq21SMdDFeWCsc1eMXjNTL/51QejcxIB2ww
+	 Qvo363Pv/St0z13kCFlCgaQ+AOKCu1fvXL6LpasE6VH7O5BHRyAw6z1oFu49FfxeKojY+
+	 Tom3GdowWO1EctIhx+yPahGJfQrwhCK2VqgtUDNXbG/ANi9aIT4dy3z3sKM0cne2iMgIC
+	 Fkd+RDwp11TIIiJdfzzLP83eSvBJmsMMSf29AvVPnxE6oFrzYtN+8hPHDZD4+dk8AVBA9
+	 qzsmOIff8xqcaStxfOyAbZHXH9x1BL4pObIK/9ujvECADq2c38cCseM6rjLRt6IImsA==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id D78111F000D2;
+	by smtp.kernel.org (Postfix) with ESMTPS id 67F8E1F000C4;
 	Thu, 26 Nov 2026 09:54:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795686880;
-	bh=HQOWs16y1/eFC3awJ/S60wuu/9tLYEZ3KFYM+GNL2Kc=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=Y8viLU1FRAKKsZChVzjh7vJoJKKBaxBmtXYcuwH/zVoJQt7/sAVniHDUn4fzhORiA
-	 HUP6Q8seu3RUJOX4rRTOoVT99pc4NksQ/wHT3kXOtmAEFnUvew3g50QmL69ZLG+nqr
-	 84Cd12LBm6Pv8ys6NqbxmAjJ44J6dOIoMOe0EPhsAZamv6b56QNBkxpx3/5bvADORw
-	 d2Ax0kUHUs00kL2urE9pHBPATNiZi+zn8MmdGn4k+rrqQKIqpytSRtBb19ZKxdShYs
-	 ih65yCzFiZMwwDemGhVXThAPMNVce1mnVVwaCKjMLsoLFlGecuoraBpVt9Pq7TSSjH
-	 t6CsG/nmgG4Ow==
+	s=k20260515; t=1795686878;
+	bh=LrXkkhn+csZHwC0v+/65n16FhGVifrxEgQhE/Pa5wFw=;
+	h=From:Subject:Date:To:Cc:Reply-To;
+	b=F+3nfrFbvd2n9Exq6P/RJBPmUwQm88ebWYY57R9qicJHbttkmhGDjz0llWSf6yilI
+	 dJMdxVuMiWAJkRzKM7FdTe+h2KZdiYXhSUDGpsVodq6rv4MKOEGg19VYUMNS1ynoe0
+	 pbRlxDmTEinR+U6OFjwbP83B15JepldMR6UTANTtWxpiVzEJ60E2PNks+3uE0Tjkhz
+	 oczQkpU/qIPlyy656Kl+ejSPndotet3F3yocGkaEHFR7rLVM7FQau3Ol7dwE+yqQwV
+	 twdKXvLsuMsToxbOPMvXsG5N6zoYoqA1e5tVF0xFC110kK+a2UzoqbbwnhsOVg0Anb
+	 3PhNn9IhINYOQ==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 666C34D3D1;
-	Thu, 26 Nov 2026 09:54:13 +0000 (UTC)
+	by lkml.kernel.org (Postfix) with ESMTP id E02944D3BE;
+	Thu, 26 Nov 2026 09:54:12 +0000 (UTC)
 From: Arun Iyengar via B4 Relay <devnull+aiyengar1990.gmail.com@kernel.org>
-Date: Thu, 26 Nov 2026 09:54:14 +0000
-Subject: [PATCH v4 2/3] iommu/arm-smmu-v3: Enable an optional clock
+Subject: [PATCH v4 0/3] iommu/arm-smmu-v3: Keep the clock of the RK3588
+ PCIe SMMU running
+Date: Thu, 26 Nov 2026 09:54:12 +0000
+Message-Id: <20261126-smmu-v3-pcie-pd-v4-0-c340c2dbd1d2@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -83,9 +85,12 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261126-smmu-v3-pcie-pd-v4-2-c340c2dbd1d2@gmail.com>
-References: <20261126-smmu-v3-pcie-pd-v4-0-c340c2dbd1d2@gmail.com>
-In-Reply-To: <20261126-smmu-v3-pcie-pd-v4-0-c340c2dbd1d2@gmail.com>
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3XNTQ6CMBQE4KuQrq3hvVagrryHcdGWAjXyEwqNh
+ nB3KW5Q4nKS+WYm4kxvjSPnaCK98dbZtlkCP0REV7IpDbX5kgnGmABATF1dj9Qz2mlraJdTiQV
+ gqjLIs4IsqutNYZ/r4vX2yW5Ud6OHMBMalXVD27/WSw+h93/dA41pglkGQkvOlbiUtbSPo25rE
+ tY9bj3uPS6eyTRVSiUKNf/1bOvZ3rPghVG8ECBO+PU/z/MbLIR2xEABAAA=
+X-Change-ID: 20261110-smmu-v3-pcie-pd-a2f127b81d8f
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
  "Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -100,64 +105,82 @@ Cc: Pranjal Shrivastava <praan@google.com>,
  Finley Xiao <finley.xiao@rock-chips.com>, 
  Arun Iyengar <aiyengar1990@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795686852; l=1455;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795686852; l=2915;
  i=aiyengar1990@gmail.com; s=20261110; h=from:subject:message-id;
- bh=lCcYyOtmQB3eNSuw9WLfzwzQ/FRb4bdLv3eGq+ciMVc=;
- b=xJ5TqNglUYP4qkntJy9fB78WeKA2qNRggzpgnu2o5dsQ/3h5cv0EehwW8w/8UYZh5zN/pU5t0
- XwRWI1cW4I6CkGfU1bYIGfwSOTJ4oyJWyE05Q8boO3/1nAabR0MuIvc
+ bh=OykbgClr+ZRK4+0ppCdomu1EHFQbW+fawWJaWWyDfFk=;
+ b=4w4KGwCAjg+suLsY7Wb+HjUF+MXqiHM+K6VvQS1vu8dKFbs1s3X6LFFI9MENRlif9M9NxN7S1
+ uwd52RE1j4wBnUqWqyH26/yNQulQKg1cKZ6csv8oSQrHEfUy1zQE0eT
 X-Developer-Key: i=aiyengar1990@gmail.com; a=ed25519;
  pk=zXpRgUTrhaFe6jLyPqbBy3ccfkj04w0g2690Wv3mg+0=
 X-Endpoint-Received: by B4 Relay for aiyengar1990@gmail.com/20261110 with
  auth_id=1480
 X-Original-From: Arun Iyengar <aiyengar1990@gmail.com>
 Reply-To: aiyengar1990@gmail.com
-Content-Transfer-Encoding: 7bit
 
-From: Arun Iyengar <aiyengar1990@gmail.com>
+On RK3588 boards without an enabled PCIe controller, ACLK_MMU_PCIE is
+gated as unused while arm-smmu-v3 is bound to the PCIe SMMU, and reboot
+hangs in arm_smmu_device_shutdown() until the watchdog fires.
 
-On the RK3588 the PCIe SMMU's clock is gated as unused when no PCIe
-controller holds it, and the CR0 write at shutdown then hangs. Enable
-the clock from the firmware node, if any, while the driver is bound.
+Patches 1-2 are for the iommu tree, patch 3 for the Rockchip tree. The
+clock can move into the runtime PM callbacks of Pranjal Shrivastava's
+pending SMMUv3 sleep ops series once it lands.
+
+Tested as v2 (same code apart from comments) on an Orange Pi 5 with the
+M.2 slot in SATA mode: reboot reaches the boot loader in 0.59 s (was
+~89 s, via the watchdog). The resets property is unused by the driver
+and untested.
+
+Developed with Claude (Anthropic), which wrote the code and the commit
+messages. I reviewed every change.
 
 Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Changes in v4:
+- 1/3: Acked-by Rob Herring
+- 2/3: kept dev_err_probe(): the clk getters do not print, and the
+  message records the deferral reason (Sebastian Reichel)
+- 2/3, 3/3: shorter commit messages; 2/3: shorter comment
+- Rebased
+- Link to v3: https://patch.msgid.link/20261113-smmu-v3-pcie-pd-v3-0-39eb4f919529@gmail.com
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 100b34f07032..beea222dcf57 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -12,6 +12,7 @@
- #include <linux/acpi.h>
- #include <linux/acpi_iort.h>
- #include <linux/bitops.h>
-+#include <linux/clk.h>
- #include <linux/crash_dump.h>
- #include <linux/delay.h>
- #include <linux/err.h>
-@@ -5786,12 +5787,19 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	resource_size_t ioaddr;
- 	struct arm_smmu_device *smmu;
- 	struct device *dev = &pdev->dev;
-+	struct clk *clk;
- 
- 	smmu = devm_kzalloc_obj(dev, *smmu);
- 	if (!smmu)
- 		return -ENOMEM;
- 	smmu->dev = dev;
- 
-+	/* Before the firmware probe, which may take a CMDQV reference */
-+	clk = devm_clk_get_optional_enabled(dev, NULL);
-+	if (IS_ERR(clk))
-+		return dev_err_probe(dev, PTR_ERR(clk),
-+				     "failed to enable clock\n");
-+
- 	if (dev->of_node) {
- 		ret = arm_smmu_device_dt_probe(pdev, smmu);
- 	} else {
+Changes in v3:
+- Shortened the commit messages and the cover letter, and dropped the
+  "on SoCs where ..." part of the binding's clock description
+  (Sebastian Reichel).
+- Squashed the DTS reset patch into the clock patch (Sebastian Reichel).
+  His Reviewed-by of the clock patch is kept.
+- Dropped the description of the binding's resets property.
+- No code changes.
+- Link to v2: https://patch.msgid.link/20261112-smmu-v3-pcie-pd-v2-0-3a77bbb6b2c4@gmail.com
 
--- 
-2.55.0
+Changes in v2:
+- Moved the fix for the Tegra CMDQV reference leak on a bad
+  #iommu-cells (Sashiko AI review) to a separate patch.
+- Dropped the power-domain patches: the TRM puts MMU600_PCIE in PD_PHP,
+  which Linux does not control (Sebastian Reichel, Shawn Lin).
+- Binding: one clock instead of up to four (Sashiko, Sebastian Reichel).
+- Driver: one optional clock, got before the firmware probe so a failure
+  cannot leak the CMDQV reference (Sashiko); shorter comment (Sebastian
+  Reichel).
+- Added the reset to the binding and the DTS (Sebastian Reichel).
+- Link to v1: https://patch.msgid.link/20261110-smmu-v3-pcie-pd-v1-0-628819ca44b9@gmail.com
+
+---
+Arun Iyengar (3):
+      dt-bindings: iommu: arm,smmu-v3: Allow a clock and a reset
+      iommu/arm-smmu-v3: Enable an optional clock
+      arm64: dts: rockchip: Add the clock and reset of the RK3588 PCIe SMMU
+
+ Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml | 8 ++++++++
+ arch/arm64/boot/dts/rockchip/rk3588-base.dtsi            | 2 ++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c              | 8 ++++++++
+ 3 files changed, 18 insertions(+)
+---
+base-commit: c9b82d9808c4af1734e6d08f06fd411c30438ae8
+change-id: 20261110-smmu-v3-pcie-pd-a2f127b81d8f
+
+Best regards,
+--  
+Arun Iyengar <aiyengar1990@gmail.com>
 
 
