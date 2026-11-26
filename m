@@ -1,60 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=79.135.106.102
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795701137;
-	b=p6DiR2oBQcweQQa+Crlx0DqKfbYguWVRLJw6+SRJN179D81Phmfom2kyVkbCKQc+UigK
-	 2JK7St8g2kcmbugAkWhbUODPrYPfSg1W8g/HP7gBSeN3tBzPMCGoYIosPcCYb5of0c74l
-	 6TVL/Nn6vSOPY5PxeDoLd/iXQ02sCazJAa/zqTDJ36mmfWPr9cUdU5Iy6B8U1uwWVfHrX
-	 q3J2NtkSW+PrLjgHAm1mx5b0FlL+Bm1LTUuYcGIw7b0g5aKk9VYDKmJYelblyNe6NgLzg
-	 yURVuDmYgwMV9ynf2/Vcopk0XGugW4k1V6RIoSttYZsm/1xZnjLNy0VbrVajHeecYOw==
+	t=1795703784;
+	b=gwN16tGVawTV9IyzPnppfiSPgin3MRivyowM5EWvCyWYB+R98a1BSvJTyEuvKG7icCab
+	 tFZQEk++JxTLQOiOEncTR0kvDwFw5lkQTky4DlpK0zhgrGugbOFhSei7843HvPiWZXA+z
+	 rvm05hZmEIoLCku/9g7vLMcWjSlWYXbNY9MkejP5x+o9K6NCzwrwkiGJ4GF1LnqgO0mKI
+	 hEx8ryB7Rf+3q1A0QKZbQcrqynkX2yibUdNydn20sc+OPaT5bl/Ts4/e4GJXMJOpvN83F
+	 KjR2eulFcc8hawPbFU0MnjF1gwJ+/4sYyKPxiXRGV+HhhNGbfTqQI2FOtbLj2udStpg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795701137;
-	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
-	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
+	a=rsa-sha256; c=relaxed/relaxed; t=1795703784;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=qmxdQdsYvQsbP6RvRUa+YT9fFm8Eok7knWdEbEHTcbI=;
-	b=qb1ZFdQ9eszKCuNq75kDMzbiG2apAHrf8UkUGi84IK9Vw4QakjtCszepTYoVptPQPH2c
-	 eQZUHgsX4ag1iwcXGt0M+ccBV1oKWPkQwzSdG9NkzmF+G5+9JzCmgoePkMideHbDBlW9J
-	 jIG/adQyWG852mFIV5Qvv6ez9FEqJL5aCuwtELBKBsFhFx+IsFbpkxkp9c2s+9BniFbbq
-	 XpxC5+1yRf59/VIxRHIMTBH95mxNzc5U1zNnuC6Pkq0qPUlf8OpbAwlUY9od892XpIQuZ
-	 ebIiWTFOFGXjaLX5LvowBtp6oOHV4yFleUihmKtqacK5TjdHtueVaZLonPTPliNZNHA==
+	bh=zj0JE2YyafWc6urtXStDlJMn1hg/PIQWGQas+jhQ4rY=;
+	b=QX/sLPSjS5xqiyOIUCbf/BgWpQG7TEzRHCh1rsxPq9gOKpUmzybF2gJn/GF44yfn0mFg
+	 crpFELvwCRIQgYysH0DDCgpvocBXXglcTlmpfvkMTEzNbjDiEFpjqIZ7oAXzmiB0KgUtY
+	 hmIObxl7Y+c4Ea9k6vobfI2kRbOKl0VTa5DJi45ZUMYgo7vS2F47aUR3xuFcjH2D+jxEu
+	 vW+9X+DjmHMTHOvvB972hgZQBgvzJ7Bq0y4PFnZ1F38jy5Rup0A2YWJBvndynJ8JaA5at
+	 guUw8szGnZmZhJC3CEovGM355uiwxUxmcYt1xgNKVDeZRNpUyqFnrCH1mD9UJQo4Hng==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=protonmail.com;
-	spf=pass smtp.mailfrom=protonmail.com;
-	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=g8AKhFjV;
-	arc=none smtp.remote-ip=79.135.106.102
-Received: from mail-106102.protonmail.ch (mail-106102.protonmail.ch [79.135.106.102])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mRLysoad;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB01D606A321
-	for <iommu@lists.linux.dev>; Thu, 26 Nov 2026 13:52:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BB01D606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2D02606A31C;
+	Thu, 26 Nov 2026 14:36:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=g8AKhFjV
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1795701134; x=1795960334;
-	bh=qmxdQdsYvQsbP6RvRUa+YT9fFm8Eok7knWdEbEHTcbI=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=g8AKhFjVLx5n0flhoNPdBQjEI/6SYzS1dRgak75zH6x8o0E25JXSR2rroR0VKk4l3
-	 jpciua5jiCcM1aV9WgkuNhy16l9/NP+6cod+9oVPwEI/BfYySX13B0ZYrOyMndVzfd
-	 3Wr0rAWgb/Aq36wUyH94nsMmP+uYV/Ii+hFMl4hfKxdHRcTQ3SUHlfzUihrwbdvhbI
-	 8pzE05OlEN6qiagfeI7zPL5azBtLK0Vset80C/37J0HIpacCEDwpU7frUkM4ZNnZ3d
-	 aWeR/V1utsiAylTpGjhcIkFdj9Va1selggcP0+CcZddlnXpOf+BYs0tZeiphr0WADn
-	 yaWAAcX1GlhcA==
-Date: Thu, 26 Nov 2026 13:52:06 +0000
-To: Laurence Oberman <loberman@redhat.com>
-From: 70sp <70sp@protonmail.com>
-Cc: Bart Van Assche <bvanassche@acm.org>, Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>, Thorsten Leemhuis <regressions@leemhuis.info>, Tobias Laas <tobias.laas@posteo.de>, Damien Le Moal <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>, regressions@lists.linux.dev, linux-block@vger.kernel.org, linux-ide@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, Will Deacon <will@kernel.org>, Niklas Cassel <cassel@kernel.org>
-Subject: Re: [REGRESSION] DMAR fault by Intel H97 SATA controller since "block: Increase BLK_DEF_MAX_SECTORS_CAP" (6.17-rc1)
-Message-ID: <e_efhbm0Vxq0FxO3-QqPkyhGrjzTvBDYmUOsGgmebVSyd0qsXXxYFXwC9sSjRAP06gcpsttHunBLtc0Mmt0cIjEI_0sDXL61lnxHhmuaxWs=@protonmail.com>
-In-Reply-To: <f323c3d62265dfe90fa71514028af4d35f6e2420.camel@redhat.com>
-References: <5ad27a97aafbc08a8702d5b90d09cd59@posteo.de> <awSs5Cw3hFkf4O4T@ryzen> <ec36d13e-e4c2-4bfb-8b50-69d4a1628839@leemhuis.info> <87b1bbd8-8113-4890-8623-738b19a9cc7b@leemhuis.info> <a0ff3156-add0-4f7d-8373-09f95bd7036b@acm.org> <2adaf0ef9e1a2fa18590f7d8dbf203c0f7de2be7.camel@redhat.com> <uJluFNYGCCrdvnYT3MatN_4Om8UczTJX_dzxumJxyCAC7F-Ubrekb7LPwlRxhCW0J91UBf-TqeRoJQfgYIYBRvMsPmE-Qs1eAg5zbDP0s58=@protonmail.com> <0edb9525-5068-42e6-b6c3-a1dcebcbcea7@acm.org> <f323c3d62265dfe90fa71514028af4d35f6e2420.camel@redhat.com>
-Feedback-ID: 144929603:user:proton
-X-Pm-Message-ID: cb7dcd4e8530543ae7f0724237de0a0105a4e0b5
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mRLysoad
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 815041F000C0;
+	Thu, 26 Nov 2026 14:36:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795703784;
+	bh=zj0JE2YyafWc6urtXStDlJMn1hg/PIQWGQas+jhQ4rY=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=mRLysoadABmBeW3KIErKB7poC2Z7v6ZV49ekiOGD29UKxV7vMT9Tdgp95ihR49SPS
+	 baRpmglmNcxkMbHlPIE3Gokh/rKc67lpqEl98c2p2Y9WRAoNyjk1maBD4Jy0FjSFlm
+	 TKGRVCgqhj3UI1p1FR1BWZE6hZ3eEYGv3RK/cLr9yIZazYhwp9oYWvjXZjnn/Mj7M1
+	 19GP5oIU0kLPlni7vcpsK9WQ5YggRVuTS6bQcsbkjML++bWVZh+OMIZn82Dz+lIlgw
+	 0myTCkKfV9dY67yUTY0uFKRfJJE5ask5/kZZf+BontU+WbejgIGQzovZiQN6b45poH
+	 K6/0Qf6QNFjvg==
+Message-ID: <a77c9b9b-ae0b-455f-b51e-f5dfb47a753e@kernel.org>
+Date: Thu, 26 Nov 2026 15:36:12 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,23 +51,83 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/9] dt-bindings: net: rockchip-dwmac: Allow iommus
+To: Arun Iyengar <aiyengar1990@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+ Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ David Wu <david.wu@rock-chips.com>, Damien Le Moal <dlemoal@kernel.org>,
+ Niklas Cassel <cassel@kernel.org>, Serge Semin <fancer.lancer@gmail.com>,
+ netdev@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
+ Pranjal Shrivastava <praan@google.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ Shawn Lin <shawn.lin@rock-chips.com>,
+ Sebastian Reichel <sebastian.reichel@collabora.com>
+References: <20261113-mmu600-php-v1-0-231196049a3b@gmail.com>
+ <20261113-mmu600-php-v1-1-231196049a3b@gmail.com>
+ <20261123-quirky-scallop-of-beauty-c662b7@quoll>
+ <CAEy9hNX-TiThoXZ9+Q7j=bB7PpNBr7Wjz8_sH7C081HXka4xHA@mail.gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <CAEy9hNX-TiThoXZ9+Q7j=bB7PpNBr7Wjz8_sH7C081HXka4xHA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-> @Simon,
-> To be clear, What I tested was the patch Bart suggested. Not your
-> original suggestion. We will still need a test from Tobias to make
-> sure.
->=20
-> Thanks
-> Laurence
+On 26/11/2026 09:55, Arun Iyengar wrote:
+> Sorry, I missed the report. v2 allows iommus only on the RK3588
+> compatibles and drops the nested ifs in 3/9. It follows once the
+> arm-smmu-v3 clocks/resets binding it needs is settled.
+> 
 
-I know. Mine and Barts patches work on the same basis. I just said my opini=
-on in general about this solution. I know we need a test from Tobias to con=
-firm whether it's exactly this and not something else related to superpages=
-. I just wanted to make sure everyone knows that it was just a patch made t=
-o confirm the exact issue, not the one that should be in mainline.
+What's this about? There is no context here at all.
 
-Thank you.
-
-=C5=A0imon Posp=C3=ADchal
+Best regards,
+Krzysztof
