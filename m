@@ -1,84 +1,112 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.158.5
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795653217;
-	b=SyaNwuZdeXcb+0tfihr1beRcGT6JdS66InoNgKqvkTt8z0Ntnu4HrFv4hvTVtIZzYXvt
-	 uokQSZkhNcg3NOi/7PooBJHkBQRqEgAsyQoUSeRUYwFTF47YHq7OoryUezfFbWnic7kBU
-	 GQJryZj8RMz/Ba0txsaoPWhnIvPFQ7J9abrMZ28hwCF/hH1x6mi2rBKgHE0abuoTkyXOD
-	 Csd1t62xxTjdmnKrKNTcUlVD+gkoZ1sA366U1LmVnHuYMtYkhZVAGAgcR6giQ3A1U5aON
-	 OrKt6EBrnxLPCOFfyKB5ApBRXvbiokKUH95+jNbAZsepg1qpnP2BzT9B8h4I31WbFZg==
+	t=1795655989;
+	b=QBUm1PHM2aOGxXS0cVVtohFpej7Jccq9UU3PGB4BQyfv0s4KcqY65+Y81SZS6ZoDE/ON
+	 RRlx0ayTQ5QqVip4ouWjRcqv6bYp6k5eqG4ZUftJe0g5hXzyb53SssAGtmLLt4cY1pAPI
+	 VoNlXz646gqX2p5Ooz5+mtqldEGgFTcaAC+Xs72y7/4/dgUC73ggpT9QiIlNjd95pEAGQ
+	 jrLZjddTkk2AC2SZi0DPec/hu8iDPSN6A6YLPV97n2qw/TR0Q6cHK2YPHKALE1aV8Yi4Z
+	 igotJjvzkAS8NLgog1w2uAZ6Ls1mQSe+8EPe5jqzgRkwwOzOANWAvKrLltRM6pktzPg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795653217;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Mime-Version:Content-Transfer-Encoding:Content-Type:Date:Message-Id:
-	 Cc:Subject:From:To:X-Mailer:References:In-Reply-To;
-	bh=n7CSRRc6wmlgTahpgsaeBRSOFvVKDVf8gI4nOytFKB4=;
-	b=QU23qsvoVsR2X0BQo2RJWylK6+1qTiicrFfAbQnxK0wdzkPoxbRxxyYbGF5U/3q/MYwu
-	 iKvPGc8s07BF7TSKpL4bIxcukrziskXaYQjOyHhXL/fa+kG6zs4B1FqZ/zGVaT2CcDuFP
-	 UYaxz2udSR9Quv7Xb6EdfavMa3NS/LW8aPXzLuVu2dF2u2KkF/khb2iSiGgV8MIMjWHzG
-	 1Q7WYd3fGAAx0EetYBtVNWIIlQMGLKUtnv21uH68Blr6K5DMKrNAMsY1de1l3oNfaG93T
-	 OZYlEWsuTV1oduwSHT/5pVFOcR9UpqMhRqFLB7hboZTqYCSRBC9wWny5om0wNABUjbQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795655989;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
+	 Received:Received:Received:Received:Date:From:To:Cc:Subject:
+	 Message-ID:In-Reply-To:References:Organization:X-Mailer:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-TM-AS-GCONF:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Info:X-Proofpoint-GUID:
+	 X-Authority-Analysis:X-Proofpoint-Spam-Details-Enc:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=ryUXjzMtazy3gSaZGHa2Eq3V/fW4l8VdcGVzhCJFDqE=;
+	b=TRULCLsNzpZ7P/ACPYnwHCu5/pziYwa4Zj3qbIxC+aPquPdyC0jhgAfl3vl0O9IDsm9q
+	 rvvkUYluP+QmyEdzR4w0Fc1qZwBhT24MS3QiR7sMTV6VAOvlPz0VEem3ewZUghtKuFZJo
+	 Cb5yT2bQpkX1cboH5fViG+4gQT6da4jDiwEJyAJMl8OP77HFRS7ASE3RyvsjO1rh7A+du
+	 TXhyaGBGKytlyflVNP4lIiO2LqRNKprn4BgTOC9MUjSKGmCwele6BDtaEd1jHWot77yHd
+	 Av0O7WiCjKmGfM9AYctAGDwM7ZjriWOYmg6QR4lKt5HI2lDDmHQylzpfbArGrXu2qZw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=iFRO19YM;
-	arc=none smtp.remote-ip=209.85.214.177
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=linux.ibm.com;
+	spf=pass smtp.mailfrom=linux.ibm.com;
+	dkim=pass header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b="h/YHGl88";
+	arc=none smtp.remote-ip=148.163.158.5
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8109606A326
-	for <iommu@lists.linux.dev>; Thu, 26 Nov 2026 00:33:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C8109606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A724606A31E;
+	Thu, 26 Nov 2026 01:19:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1A724606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=iFRO19YM
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2f046b0adc0so37256675ad.1
-        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 16:33:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1795653216; x=1796258016; darn=lists.linux.dev;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-type:content-transfer-encoding:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=n7CSRRc6wmlgTahpgsaeBRSOFvVKDVf8gI4nOytFKB4=;
-        b=iFRO19YM0Tac6Z6LV7kSliffCwl7Wx3vJoLJZOieP0XvlvGjpo+/U0MtrxGYrfKGT8
-         wSddWer8b4w8l1PhNc9lWuqySjNEYFrM4GYRDwRpBS7VXF3Lw6IRLINuHM6xp5k8oR4G
-         V/ZxWzEZgQbVE+sHCG0rtXUVj7W4Oq1VmrTI5d7eqFFMJZrp5P5K/A0pldZTBiXz7RFt
-         Y7+4PiSlG8MP84tZdT0Tp4Tr0wofdntu6F4h6S8C7KPy8RBUUxeE/lO01SQ9lryFMMiO
-         VVKL7L17u4F60ffIOPIqweEQHnAXGUmlPBZ0u+xQ1rrCmkMWN7WmMI8JgQdrYRYSUoMV
-         eRDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795653216; x=1796258016;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-type:content-transfer-encoding:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=n7CSRRc6wmlgTahpgsaeBRSOFvVKDVf8gI4nOytFKB4=;
-        b=r/sbNNNtWBxOjSHhun2RoqwWRPTeSpTxHXwjZ7Q2QjjGCYfGx6FgqgiEi1xoWVpviQ
-         shUwHKjZsZJCC0xtfw3k/pV6tEd2QV7qAnlCFUJ2IN8Vbs99dPjwP3rR66Il8UkFXHy3
-         CJb9q1SvoQVGojvSuhi5J1pi4hxsp2NMayJ1UTdbVcrCxoIKceU5eax6dJk8f88I9yqZ
-         3VwZSDZm+zxdZ+r9Vbc64nU/Cf81K4Rg9KhydrN0+cYL+Z9AUf7rntIAkHkHv3HcUeOy
-         SSyQCv+ffyDGYLxliRpsbpvF6Bry786hixb6OR3AnoPuA0cD397SYJwqiyZgk5uKS5KA
-         tjEg==
-X-Forwarded-Encrypted: i=1; AL+hErE8LcUU/k4PV7HFEP5bsHOY3EIhPpj66TLwJk03U0i509xH7Q2vuxU+gpncVYMezmzvgEJjTQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+WqfZupaFj5yVvkBnAx4oUVTdpAvNEkFrS8PZGtUpF/EKC7P2D
-	J5nDlKcI8LuvITC5TM5UaxaZy3EQJ9OY3RfVHGmQs0MctGhVzqP2/J/LvzKQuPNR6w==
-X-Gm-Gg: AZFdTZckrnQIHX/Irjxxx7ccYJq+nIUwwDs6Ggt/m/bKNHR1s+a9+8xRm8W0zi6dHMs
-	Qb+paTX4lqX+tlUT6cHfKXLu1xbCrlHlyKaiAPyhLxR3uW58AcJhB3eGL2B9vgEjcNOGyW5yccK
-	a0OR34Bg4ehyOXvkdabs8H06QrvJChojkCffyakDUpv5X5W+yIQHh49sWsHeucxzb9+o2OpcSi4
-	i5bH0itF0ApN02j+stxTFlSVaglCrNrJEGZf+xJklJBwfR4q/N6pMRLPHd6LEQ1NDuCMPZqIXYl
-	17K0LFOV9CqDYwJAlryxHpDIkNdHzStal33EATISBVTcGHbmAbngfrxQzcHIWdMcPR2vyEVISQ1
-	UcEfalT51+jB7dlsFaXcqZ/42pv4I2+qn85l+li45nUFDjBbjXQshNpvM9GhdlHRowEqVnmOgjp
-	qUXpFsAEzLQE8dbmCdcUBlHE3GbXmeV/wS5jTTFzb8ZMC3wfw62AEyQaoG045Wu38N+GHldR4Hq
-	S6T6mBRB/lw24VIsvF0pMQ+1Hd/Bn7XFb3D0y0gu4U/jMH2Ckkpp5eV1FEzlJsCKB7LTTDLm/Le
-	JNK8RA+SKbdN9ZlHaCSVlcZeYdiibhJovO5sx4jH0y6AywO9YvBJDsFJwspIjTg0
-X-Received: by 2002:a17:902:e80b:b0:2e9:9a19:c43 with SMTP id d9443c01a7336-2f03f118277mr192264515ad.15.1795653215229;
-        Wed, 25 Nov 2026 16:33:35 -0800 (PST)
-Received: from localhost (33.79.127.34.bc.googleusercontent.com. [34.127.79.33])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2f03f14a432sm95165955ad.75.2026.11.25.16.33.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Nov 2026 16:33:33 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=ibm.com header.i=@ibm.com header.a=rsa-sha256 header.s=pp1 header.b=h/YHGl88
+Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6APJYmaG2231504;
+	Thu, 26 Nov 2026 01:19:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=ryUXjz
+	Mtazy3gSaZGHa2Eq3V/fW4l8VdcGVzhCJFDqE=; b=h/YHGl88fdNjiCdKZon8er
+	lltC7iNg+AA9G/iZU4u3jCmuQkRhqvSr24HOAZymtOaIRy0zUSm95U5l7jLspmMT
+	kd4XkHSiXrnNfFjxemEpPJ3B0JxrIzrCf9LK/OI0ma8U0Kuph+gnnV/1ZepkZi1L
+	MTyo8juDIehL29Qojbf9dUE/ZxB8GDtNxS2iF8ah+PzbLStmGYhyBXFuiaqb6qRe
+	4JrcUqbwZTA7rbwUtYGDheVKCrZdu4PmHOeWoa2lu04Ilx1v7NCZYjSqGX6YwM4q
+	fVuGDY0bNMA39FpvYKl+W62eeJ0FsiQ+KE3Pg17Nr9xpLBF+1ooPf3xOTGUsemdA
+	==
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4j34g1ep0h-1
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Thu, 26 Nov 2026 01:19:13 +0000 (GMT)
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.18.1.11/8.18.1.11) with ESMTP id 6AQ117kS2309448;
+	Thu, 26 Nov 2026 01:19:12 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4j3q4hgp3m-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 26 Nov 2026 01:19:12 +0000 (GMT)
+Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
+	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 6AQ1JARZ49545536
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 26 Nov 2026 01:19:10 GMT
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id B607020043;
+	Thu, 26 Nov 2026 01:19:10 +0000 (GMT)
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 1FC7820040;
+	Thu, 26 Nov 2026 01:19:10 +0000 (GMT)
+Received: from li-ce58cfcc-320b-11b2-a85c-85e19b5285e0 (unknown [9.111.45.88])
+	by smtpav03.fra02v.mail.ibm.com (Postfix) with SMTP;
+	Thu, 26 Nov 2026 01:19:10 +0000 (GMT)
+Date: Thu, 26 Nov 2026 02:19:08 +0100
+From: Halil Pasic <pasic@linux.ibm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Shukai Ni <shukai.ni@kuleuven.be>,
+        "Edgecombe, Rick P"
+ <rick.p.edgecombe@intel.com>,
+        "m.szyprowski@samsung.com"
+ <m.szyprowski@samsung.com>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "will@kernel.org" <will@kernel.org>,
+        "jo.vanbulck@cs.kuleuven.be"
+ <jo.vanbulck@cs.kuleuven.be>,
+        "Reshetova, Elena"
+ <elena.reshetova@intel.com>,
+        "kas@kernel.org" <kas@kernel.org>,
+        "carlos.bilbao@kernel.org" <carlos.bilbao@kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Halil Pasic
+ <pasic@linux.ibm.com>
+Subject: Re: [PATCH] swiotlb: clear read bounce buffers on confidential
+ guests
+Message-ID: <20261126021908.59b2105f.pasic@linux.ibm.com>
+In-Reply-To: <d5dfd9a2-4ac6-415c-b719-699b264fa39d@arm.com>
+References: <20261123205302.1034348-1-shukai.ni@kuleuven.be>
+	<3a70a26adccc47b1bae3a22e4907174271703a10.camel@intel.com>
+	<9bc0d7ed-0799-45dc-8d74-25ed66851a20@kuleuven.be>
+	<d5dfd9a2-4ac6-415c-b719-699b264fa39d@arm.com>
+Organization: IBM
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -87,140 +115,109 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 25 Nov 2026 16:33:32 -0800
-Message-Id: <DN4PXTY768YS.3I99BQYLC8VXI@google.com>
-Cc: "Mostafa Saleh" <smostafa@google.com>, "Daniel Mentz"
- <danielmentz@google.com>, "Samiullah Khawaja" <skhawaja@google.com>,
- <iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
- <linux-kselftest@vger.kernel.org>, <linux-doc@vger.kernel.org>, "Logan
- Odell" <loganodell@google.com>, <linux-fsdevel@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 7/7] vfio/selftests: Add observability test for IO
- page table usage
-From: "David Matlack" <dmatlack@google.com>
-To: "Pranjal Shrivastava" <praan@google.com>, "Joerg Roedel"
- <joro@8bytes.org>, "Will Deacon" <will@kernel.org>, "Robin Murphy"
- <robin.murphy@arm.com>, "Jason Gunthorpe" <jgg@ziepe.ca>, "Kevin Tian"
- <kevin.tian@intel.com>, "Alex Williamson" <alex@shazbot.org>, "David
- Matlack" <dmatlack@google.com>, "Jonathan Corbet" <corbet@lwn.net>, "Shuah
- Khan" <skhan@linuxfoundation.org>, "Randy Dunlap" <rdunlap@infradead.org>
-X-Mailer: aerc 0.21.0
-References: <20261001224531.765278-1-praan@google.com>
- <20261001224531.765278-8-praan@google.com>
-In-Reply-To: <20261001224531.765278-8-praan@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 9Mkjofwp1NYMaNx3EXnPvCxxnD1XHfSD
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI2MDAwMyBTYWx0ZWRfX39cwUofRUkXl
+ xOeO5KVFjVaTJ8IL1+iann34pCzPRPiouNlVld8JakG3OB7F6krFYKioHKXKJmvnsZergf3o1US
+ W2G3GXd5ePgroY0/jLWR7cHDHeoG7hE=
+X-Proofpoint-GUID: 9Mkjofwp1NYMaNx3EXnPvCxxnD1XHfSD
+X-Authority-Analysis: v=2.4 cv=c8M+0h9l c=1 sm=1 tr=0 ts=6b078911 cx=c_pps
+ a=3Bg1Hr4SwmMryq2xdFQyZA==:117 a=3Bg1Hr4SwmMryq2xdFQyZA==:17
+ a=kj9zAlcOel0A:10 a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=RzCfie-kr_QcCd8fBx8p:22 a=7CQSdrXTAAAA:8
+ a=sBmwBxJFO0rdLi8qyDgA:9 a=CjuIK1q_8ugA:10 a=a-qgeE7W1pNrGK8U0ZQC:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI2MDAwMyBTYWx0ZWRfXwriPCmfZW0+B
+ N02ShTb3puZ1T4i49KD+8L22l1GsKBDyVGH6GWQDb3MB2LdAW1RTGCVFogJk7W57QuPbweEUVin
+ 1NwUMsmYmT+MqWjwyi363UzFMVt3JUDQ+Xcm7Y8JR3gYNhsyo/lF1LWQU7dDtvbNiUA8k+3QjIS
+ oaQXodDp3Yzw97npDZxr2s3MfXqTB9+c07E0ZE5VQ7HDTwkN9aZFW1qEGg+kpFwHcj7e16DF99P
+ pQk5uczqkuw06CDiycL+KmdRxFBDW8ZJpRJzjSmWa9RFRb5o0R1uXOInchs5babExEgplkL8rjm
+ FpmHo+42+O4V5S5c8ayaIuxcvY4j85bRCuoWky/W/jrmGqjpcZwZ0VfdO99Exc7VqN48u4rvoRu
+ YapdSKfXY1/7ErIw9zx9OAPLxR4CBIen0fhqunNBRoLWVPv+S1FMtIZleIyqUWbnfEGHAuCTJv7
+ tWdDlAxlKjf+oDu7bLA==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-25_05,2026-11-25_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 clxscore=1011 malwarescore=0 suspectscore=0 bulkscore=0
+ priorityscore=1501 phishscore=0 adultscore=0 spamscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611260003
 
-On Thu Oct 1, 2026 at 3:45 PM PDT, Pranjal Shrivastava wrote:
-> Add a new selftest, vfio_nr_pages_test, to validate the iommu-nr-pages
-> fdinfo metric across all IOMMU backends (Type 1 and IOMMUFD native/compat=
-).
+On Tue, 24 Nov 2026 16:13:52 +0000
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-What's the status of this series? Should we expect another version
-(e.g. after the discussion on the shrinker RFC and at LPC)?
+> > Thanks for looking at this, and we had very similar thoughts when 
+> > writing the patch. Our impression was that in many cases the driver
+> > doesn't own the buffer (page cache, dm-crypt, O_DIRECT), so fixing it
+> > there seemed hard, which is why we tried swiotlb instead. But we may be
+> > missing something.
+> >   
+> >> It seems like the fixes commit was arguing that copying the contents 
+> >> to the
+> >> swiotlb buffer was more transparent. So this patch kind of goes back 
+> >> against
+> >> that argument. That seems to be another point that the drivers should 
+> >> be fixed.
+> >> If this is essentially more of a potentially behavior altering kernel 
+> >> hardening,
+> >> then I wonder about putting it behind some kind of hardening config like
+> >> CONFIG_INIT_ON_ALLOC_DEFAULT_ON.  
+> > 
+> > As far as we can tell, keeping the old contents for DMA_FROM_DEVICE
+> > was never really promised. Before ddbd89deb7d3, swiotlb
+> > didn't do it. That commit was mainly about not returning stale bounce
+> > data to the caller, which zeroing should still prevent.  
+> 
+> SWIOTLB is an implementation detail of the DMA API. If some future CoCo 
+> environment happens to be able to share a buffer in-place with less 
+> overhead than bouncing then it will be free to do so, and drivers which 
+> do not sanitise DMA_FROM_DEVICE or DMA_BIDIRECTIONAL buffers will 
+> continue to leak data...
+> 
+> Note in particular the case of DMA_BIDIRECTIONAL, which means the caller 
+> expects the buffer to either be written and read, or read and written, 
+> or read, or written, or any or all of the above. How is the DMA layer 
+> going to know whether the initial buffer contents are meaningful and 
+> must be preserved, or stale and potentially leaking something?
+> 
+> Also how is the DMA layer to know if a driver is intentionally making 
+> DMA_TO_DEVICE mappings of random (or targeted) kernel memory for the 
+> sole purpose of malicious sharing? If people want to use device drivers 
+> in CoCo environments then the onus being on auditing and hardening the 
+> individual drivers themselves doesn't seem too unreasonable.
 
-nit: Please use "vfio: selftests:" as the shortlog prefix for VFIO
-selftests (see Documentation/driver-api/vfio-selftests.rst).
+I'm 100% with Robin on this one! Reusing a buffer is not a problem
+in itself. Exposing private data is. And the only clean way I see is
+prevent that from happening is to not DMA map buffers containing private
+stuff. Not even as DMA_FROM_DEVICE. The blamed patch is about
+propagating the sanitation done on the original buffer to the swiotlb
+buffer to which the access is granted to the untrusted host.
 
-I gave this a try in QEMU with an emulated Intel IOMMU (which uses
-generic_pt, so it reports iommu-nr-pages), on top of this series. It
-fails in every mode except iommufd, which skips. Details below.
+I wonder what type of reuse are we talking about here? If the
+buffer contains data from an old co-co IO might be acceptable,
+as the assumption there is that co-co IO has to be cryptographically
+protected anyway (from the non-trusted host).
 
-[...]
+Another thought: My understanding is that an actual IOMMU may or may not
+support "write only".  I think, the swiotlb is not the right place to
+address this. But if we allow for IOMMUs may not supporting "write only"
+DMA API in general may be. The thing is, if the conceptual IOMMU actually
+guarantees that write only is indeed write only and then there is no
+harm per se in not sanitizing as, we can be sure that there is not leak
+with respect to the conceptual device at least. If however the
+conceptual IOMMU is not capable of doing so, then one could argue
+that this constitutes a leak even without co-co. And for non-trusted
+devices and co-co (i.e. with swtiotlb) the conceptual IOMMU would
+never be able to guarantee "write only": because even if the IOMMU of the
+platform does, the host can still access the shared buffer, so
+we have a leak (an we would consider the host a par of the conceptual
+device as it is effectively capable of doing conceptual DMA). I admit
+something like this still feels a little hacky, but I hope worth
+discussing nevertheless.
 
-> +static long read_nr_pages(struct iommu *iommu)
-> +{
-> +	char path[256];
-> +	char line[128];
-> +	FILE *f;
-> +	long val =3D -1;
-> +	int fd =3D iommu->container_fd !=3D -1 ? iommu->container_fd : iommu->i=
-ommufd;
+Regards,
+Halil
 
-In iommufd mode container_fd is 0, not -1, so this reads the fdinfo for
-stdin, never finds the key, and the test skips with "iommu-nr-pages not
-reported by this IOMMU". libvfio uses a non-zero iommufd to mean
-iommufd mode, so:
-
-	int fd =3D iommu->iommufd ? iommu->iommufd : iommu->container_fd;
-
-Also, consider moving this into the VFIO selftests library (lib/iommu.c
-and libvfio/iommu.h), e.g. as iommu_nr_pages(), so other tests can use
-it and the library can hide which fd to read.
-
-[...]
-
-> +FIXTURE_SETUP(vfio_nr_pages_test)
-> +{
-> +	self->iommu =3D iommu_init(variant->iommu_mode);
-> +	if (!self->iommu)
-> +		SKIP(return, "IOMMU mode %s not supported", variant->iommu_mode);
-> +
-> +	self->device =3D vfio_pci_device_init(device_bdf, self->iommu);
-> +	if (!self->device) {
-> +		iommu_cleanup(self->iommu);
-> +		SKIP(return, "Failed to initialize VFIO device");
-> +	}
-> +}
-
-iommu_init() and vfio_pci_device_init() assert on failure and never
-return NULL, so these checks (and the matching ones in the teardown) can
-be dropped. Please follow the setup in the other VFIO selftests, e.g.
-vfio_dma_mapping_test.c.
-
-[...]
-
-> +	if (!self->iommu || !self->device)
-> +		SKIP(return, "Fixture setup failed");
-
-This can be dropped too. On top of the above, the harness doesn't run
-the test body at all if FIXTURE_SETUP() skips or fails.
-
-[...]
-
-> +	/* Map a page at start */
-> +	region1.size =3D SZ_4K;
-> +	region1.vaddr =3D mmap_reserve(region1.size, region1.size, 0);
-> +	ASSERT_NE(MAP_FAILED, region1.vaddr);
-> +	region1.iova =3D 0x100000;
-> +	iommu_map(self->iommu, &region1);
-
-mmap_reserve() returns a PROT_NONE reservation (it's meant for reserving
-aligned virtual address space, e.g. for mapping BARs), so there's
-nothing for VFIO or iommufd to pin, and iommu_map() fails with -EFAULT:
-
-  #  RUN           vfio_nr_pages_test.vfio_type1_iommu.sparse_mapping_stick=
-y_reclamation ...
-  # .../libvfio/iommu.h:42: Assertion Failure
-  #   Expression: __iommu_map(iommu, region) =3D=3D 0
-  #   Observed: 0xfffffffffffffff2 =3D=3D 0
-  #   [errno: 14 - Bad address]
-
-Please mmap() real anonymous memory instead (PROT_READ | PROT_WRITE,
-MAP_PRIVATE | MAP_ANONYMOUS). With that and the fd fix above, the test
-passes in all 5 modes.
-
-Also, please allocate the IOVAs with iova_allocator rather than
-hardcoding them, so the test doesn't trip over reserved IOVA ranges on
-other platforms. e.g. allocate SZ_2G and use the start and start +
-SZ_1G.
-
-[...]
-
-> +	nr_pages_final =3D read_nr_pages(self->iommu);
-> +
-> +	/* Page tables should remain allocated */
-> +	ASSERT_EQ(nr_pages_final, nr_pages_mapped);
-
-This asserts the behavior that the cover letter describes as the
-problem, and that the IO page table shrinker (or the clean(gap) approach
-Jason suggested on that thread) is meant to change. The test will break
-as soon as empty tables get freed.
-
-I think it would be more useful to check that the accounting tracks the
-page table in both directions. e.g. also map and unmap a range that
-covers an entire table with a single unmap, which generic_pt frees
-today, and check that iommu-nr-pages goes back down. For the sparse
-case, ASSERT_GE(nr_pages_final, nr_pages_initial) would still catch
-underflow without depending on when tables get freed.
