@@ -1,72 +1,117 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=170.10.133.124
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795695486;
-	b=xAm2++LcbI2PG7Wvt5ZI8/q/Ti01PO1exXNXBQPLsYKjQZTJy3bg4tXEL/drD+RgmUle
-	 bUtDMHJZ3j6grCGWgZ8uP/y+8PbL4Y5bFt+n7nNLUryJ2faHeyqgJ0NXbPjwB3McXq+Gs
-	 SY3tJ3bsatky5ozU7rWj73ilpoJacqeDcmbHN+BxiCNkOM2ZZReyvkrxdte33SuoQTy5F
-	 C8GMUP5qPWWN8+fyux1l9ydGj3Yqd+RPDrj41535Jk1MLbobEL31bH5OREnxoHMfU+713
-	 SzmzpclAsDunWmGueL9+IuVQjisu+Whyqn2mv5wI8tJQKSnIuli5ongzZIyTmCvpbZQ==
+	t=1795699918;
+	b=rUxtzAVJ1MNwSdFH/3eFgr32Ta8JuMWQI2MtJdJYuhmx/f4pH3lle2RoOnwYHqLAGV47
+	 j9leRYRmn4ZQPMr8a9iAL0X6gEUCy0dahF/SN/eZrQQFdcS50g/eDzm7H9vqjIzwJGQA+
+	 9WalhVQWKsKGLOrLUyBSrbrju8WtJxteudWs5NNkmOn1JP/lI+5v14gvC1QPIYGYK6zv0
+	 0TWjtpaHCmwXOtdaxc+embCdYGU6W4bP7/fuPCe+iLY/gLV+bTzBEtuAP3qjphGg4F/DK
+	 6PD7UtLb01/0aDdpoIRtiCso1Gknj/esC/nGfT1+HskLPQidwssG4vXzHkfh1S/szjA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795695486;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:References:
-	 Date:Message-ID:User-Agent:MIME-Version:Content-Type;
-	bh=fv3YfealIuJOICIo52kCGcexbGGkcP1zYkCoBpg/CRc=;
-	b=0px4tKwvyeKRbrBvaZGnKkMNCmzR110AbzLL7PvwSD16WMrh/dvEzU2yJ0NT3CViuXsx
-	 RbUSVdNfu+0TR0y5TZXQ+UCz+pkUd0TvURkia4/kpV1Og0J1UfpIuTvalzCwXOD8MK9G2
-	 vLf8+gh6Ir46WOfq3wr0ua06jo3yaG1UFfFHvaM16bqGrXwLzlkuSr0+lq52nZbBz2OoP
-	 SKM9f/44R0Q0XElSB/mVjFij+ovHG1VGYUpheT3WsaLKXqb2u6lFK/kt52QaOnCp+Y5Ih
-	 s1qLygWP4qYlxRMWurbQ5bAHYlKr9BYpw6MdQ2R4g4xfhxNR+uSwxfOz/z28nJ6RYmw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795699918;
+	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
+	 X-Mimecast-MFC-AGG-ID:Received:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 X-Received:Received:Message-ID:Subject:From:To:Cc:Date:In-Reply-To:
+	 References:User-Agent:MIME-Version:X-Mimecast-Spam-Score:
+	 X-Mimecast-MFC-PROC-ID:X-Mimecast-Originator:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=3B43kyyzUUTLVNXK4AN+mljA56km2Ewzy7V4dK6lZDs=;
+	b=vi9vgecc/6UcMj8HazmAJyxR23a4N1gPT9ygiHGDf9EDloNqU2DKP/fF3lwkNsQLwy5/
+	 8MeFMSkBX7NNw1zTJy9c7TIiaWu0yb5zRg7DCgCPMtCDwC0KjjKOA4uuS/CRpKNTpmtaQ
+	 LZnmVqI7CsiiP+ZqeWnRy34Hx/0aeMn/tJwzfBtbchpxaBdYj91zI7ogPm1lpjbB5Exzd
+	 G+M8GhuSRm0nWF7SI2HVGa67rJvCW1ivdDDvxcjeLsZGS1SUjeyy+6WlDJpOEQM1rYLXt
+	 Xp7XWQ0Us4GjzW/cXYX6eDd5DFSYoOU45jpQzDEaW5UDZ8CPd0ybWIHMAOZkx2jKmIQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="d7FHZ7/q";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=redhat.com;
+	spf=pass smtp.mailfrom=redhat.com;
+	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b="WJ/MpnsM";
+	arc=none smtp.remote-ip=170.10.133.124
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A65B606A337;
-	Thu, 26 Nov 2026 12:18:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5033B606A682
+	for <iommu@lists.linux.dev>; Thu, 26 Nov 2026 13:31:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5033B606A682
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=d7FHZ7/q
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6A351F000E0;
-	Thu, 26 Nov 2026 12:17:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795695486;
-	bh=fv3YfealIuJOICIo52kCGcexbGGkcP1zYkCoBpg/CRc=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=d7FHZ7/qUp6WWqybny1XNnHENYGPzZQbY033qB8LP+ktd04t0YBSNl5E0O+sG4tfb
-	 qYjI0sP/lnADMjPMofkcXeziLzNt7GqRbBheXfA2+1yhLE0CUrcyMTtSlYaCCY7H09
-	 uoMkRwHYyHZRx5vDQSEUejVWNr5nGWk78t+OYL5ASbIHgkGtkdyCcdhFJV2QYRTSX/
-	 AntiUF73LI7CSYKoLAM+NcGDiRodxjxMn3ADxZ3atvxtzb+Myp9Q0iMVOVib4BIMtZ
-	 Fakbv0fVxZv2UKoKkwnrXPj8HzqFSo+iA92jTp57TPWKBAjOTopU0UM3cZv4WOkqPY
-	 L5VoV6BiLk/zg==
-From: Pratyush Yadav <pratyush@kernel.org>
-To: "David Matlack" <dmatlack@google.com>
-Cc: "Pratyush Yadav" <pratyush@kernel.org>,  "Tarun Sahu"
- <tarunsahu@google.com>,  "Pasha Tatashin" <pasha.tatashin@soleen.com>,
-  "Mike Rapoport" <rppt@kernel.org>,  <robin.murphy@arm.com>,
-  <maz@kernel.org>,  <will@kernel.org>,  "Alexander Graf"
- <graf@amazon.com>,  <seanjc@google.com>,  <jgg@nvidia.com>,
-  <loganodell@google.com>,  <arnd@arndb.de>,  <dwmw2@infradead.org>,
-  <baolu.lu@linux.intel.com>,  "Bjorn Helgaas" <bhelgaas@google.com>,
-  <oupton@kernel.org>,  <alex@shazbot.org>,  <gle.com@google.com>,
-  <pbonzini@redhat.com>,  "Andrew Morton" <akpm@linux-foundation.org>,
-  <kevin.tian@intel.com>,  <joro@8bytes.org>,  <kvmarm@lists.linux.dev>,
-  <linux-pci@vger.kernel.org>,  <kexec@lists.infradead.org>,
-  <kvm@vger.kernel.org>,  <iommu@lists.linux.dev>,
-  <linux-arm-kernel@lists.infradead.org>,  <skhawaja@google.com>,
-  <sagis@google.com>,  <linux-arch@vger.kernel.org>,  <linux-mm@kvack.org>,
-  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 05/19] kho: Add feature header for fine-grained ABI
- compatibility
-In-Reply-To: <DN3O9LHR4XNH.1EYLA6D1F0J2P@google.com> (David Matlack's message
-	of "Tue, 24 Nov 2026 11:02:12 -0800")
-References: <20261110050202.529473-1-tarunsahu@google.com>
-	<20261110050202.529473-6-tarunsahu@google.com>
-	<2vxzse0rzjdn.fsf@kernel.org> <DN2RQ7LGX224.3W3PSQ2PBHTJZ@google.com>
-	<2vxz33sqz1xj.fsf@kernel.org> <DN3O9LHR4XNH.1EYLA6D1F0J2P@google.com>
-Date: Thu, 26 Nov 2026 12:17:58 +0000
-Message-ID: <2vxz5wxjyefd.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=WJ/MpnsM
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1795699917;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=3B43kyyzUUTLVNXK4AN+mljA56km2Ewzy7V4dK6lZDs=;
+	b=WJ/MpnsMhiux4kO2TcryEy1ZEU7GoPXkgoJC32P2byjNky3ic9339pCaDTb4YOSj89LiDp
+	rc4Gd6JzCwvDpsVXmeNc7EB00f/DQHaNnauPQ8lOEkPdN3VZy41AWjLpA3/DF6cxQdMzPb
+	Ny3szvQ5hjT6sVl0cCoyl5kbCKp27XU=
+Received: from mail-vk1-f198.google.com (mail-vk1-f198.google.com
+ [209.85.221.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-118-aZVcC6G-O3ySOYB9yE_xwQ-1; Thu, 26 Nov 2026 13:31:55 +0000
+X-MC-Unique: aZVcC6G-O3ySOYB9yE_xwQ-1
+X-Mimecast-MFC-AGG-ID: aZVcC6G-O3ySOYB9yE_xwQ_1795699915
+Received: by mail-vk1-f198.google.com with SMTP id 71dfb90a1353d-5ed100ed770so596935e0c.1
+        for <iommu@lists.linux.dev>; Thu, 26 Nov 2026 05:31:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795699915; x=1796304715;
+        h=mime-version:user-agent:content-transfer-encoding:content-type
+         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=3B43kyyzUUTLVNXK4AN+mljA56km2Ewzy7V4dK6lZDs=;
+        b=Ey+RJqI8CAm+uRctg9xy03JfgKpRu6NGGJmUgWitUhl9pxXWgEe8o9iAEeLOuk1yGy
+         lJmaBEmHY7O8El8foYvoFMpJGBorXIoDS0ENngH/LW5XUtzxpWrRvZoblgaJoOz+Sj1k
+         Pk4ZyyDFOOVXJmV9E5vmYmQrS0hmxDio1IiraJfus4DLmETZBLgZ2sRJtJp6KNO5ZcEr
+         K4MMbwc/oigY9qMQxlqQCVGqP7pogm7/3/V5NJI+dKQfs+y9kFFiqtRF9jmoWxB0K20J
+         j4SZyqpw1haUbrSKMBPhQ0AreGzsb4rJCtsmgArWtxZBH2qUUTaie70AfcW4KVix2vgf
+         Ofgg==
+X-Forwarded-Encrypted: i=1; AL+hErE6lcauXFhyD2g70UThRBGAgaw4VONBaHUEf1+0tyWCbgRy8WNS27VSOJWtBXi9fczpYG6Y5Q==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8G35VCAlMLZ22MdEfiy25qfIGMckEb+rVp+fNuYzL+kCAMa2Iz
+	iGglRblWchfQuRYVp6xF+17XV1wTGoFaJACon0kSb/sL4KYU45qQ8hYWxXjduGJ5hBzbp6OY9id
+	pyX9NLIvpT0o+1frFvxI07WBF1R/7HkfeBeo6YI21YF+1dyUY/JYwX83m
+X-Gm-Gg: AZFdTZc55IQrhO+IzjeYb2g6jqZA3P9Ua2chePnMh6sP1Jx+wClGPHqnC89B8ybGeb3
+	CQO3T6ZRmwYywDp0zvM/6VDSORV3cNCCCDeNERFUxjhVoJXk3m1A6C5k+LN/h7MhpZmKOD7kehl
+	DdaCGBUHkzbnL2wICghmwFuwbydNs3heKE9WU/d7qV7FUrIi3+XPA7OMNoW5AYjV/Na3CFvej4j
+	/MHwWH8ss2gKZBm6SHYLiGkj0dbuCdFA+ciWjEOnQ4RZtYqSWO6+f3hbaO48aC5C3BUHcm61cwu
+	7Wmju8FOtTKY/ie4UqeTRWQn0vhenr0vLoRoqePWudmfgbK1COr+5mScfz/U3/mI0yn22FqUkE/
+	GGL1CqOlFG8ZaN6M3uqDxasmXWJk56d8yu7joxu+ICONtQM2At2keGV6Q0vCpFQDjCNcHNoWm3U
+	dQD/SD41TKD59kO38e3FUwqdAp0pyAY3nMncerJ8Pnv+rGCJU4/RcDl9XiRlx8BV71ziTTew==
+X-Received: by 2002:a05:6122:29cd:b0:5ec:d751:a18e with SMTP id 71dfb90a1353d-5ee8af5d5c6mr11288508e0c.19.1795699911800;
+        Thu, 26 Nov 2026 05:31:51 -0800 (PST)
+X-Received: by 2002:a05:6122:29cd:b0:5ec:d751:a18e with SMTP id 71dfb90a1353d-5ee8af5d5c6mr11288267e0c.19.1795699910439;
+        Thu, 26 Nov 2026 05:31:50 -0800 (PST)
+Received: from loberman-thinkpadp1gen5.rmtusma.csb ([2600:6c65:2440:d8c:929c:b769:6def:faa3])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-55d788506b0sm180018331cf.17.2026.11.26.05.31.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Nov 2026 05:31:49 -0800 (PST)
+Message-ID: <f323c3d62265dfe90fa71514028af4d35f6e2420.camel@redhat.com>
+Subject: Re: [REGRESSION] DMAR fault by Intel H97 SATA controller since
+ "block: Increase BLK_DEF_MAX_SECTORS_CAP" (6.17-rc1)
+From: Laurence Oberman <loberman@redhat.com>
+To: Bart Van Assche <bvanassche@acm.org>, Lu Baolu
+ <baolu.lu@linux.intel.com>,  Jason Gunthorpe	 <jgg@ziepe.ca>, Joerg Roedel
+ <joro@8bytes.org>
+Cc: 70sp <70sp@protonmail.com>, Thorsten Leemhuis
+ <regressions@leemhuis.info>,  Tobias Laas <tobias.laas@posteo.de>, Damien
+ Le Moal <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>, 
+	regressions@lists.linux.dev, linux-block@vger.kernel.org, 
+	linux-ide@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org,  David Woodhouse <dwmw2@infradead.org>, Will
+ Deacon <will@kernel.org>, Niklas Cassel <cassel@kernel.org>
+Date: Thu, 26 Nov 2026 08:31:48 -0500
+In-Reply-To: <0edb9525-5068-42e6-b6c3-a1dcebcbcea7@acm.org>
+References: <5ad27a97aafbc08a8702d5b90d09cd59@posteo.de>
+	 <awSs5Cw3hFkf4O4T@ryzen>
+	 <ec36d13e-e4c2-4bfb-8b50-69d4a1628839@leemhuis.info>
+	 <87b1bbd8-8113-4890-8623-738b19a9cc7b@leemhuis.info>
+	 <a0ff3156-add0-4f7d-8373-09f95bd7036b@acm.org>
+	 <2adaf0ef9e1a2fa18590f7d8dbf203c0f7de2be7.camel@redhat.com>
+	 <uJluFNYGCCrdvnYT3MatN_4Om8UczTJX_dzxumJxyCAC7F-Ubrekb7LPwlRxhCW0J91UBf-TqeRoJQfgYIYBRvMsPmE-Qs1eAg5zbDP0s58=@protonmail.com>
+	 <0edb9525-5068-42e6-b6c3-a1dcebcbcea7@acm.org>
+User-Agent: Evolution 3.60.2 (3.60.2-3.fc44)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -76,107 +121,51 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: Foua6ggIv6E4l30y6QsXktv5IEAH53MB0FrXD-CqZcM_1795699915
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 24 2026, David Matlack wrote:
+On Wed, 2026-11-25 at 15:27 -0800, Bart Van Assche wrote:
+> On 11/25/26 2:51 PM, 70sp wrote:
+> > as I mentioned in the referenced regression thread I reported, the
+> > patch I sent out was basically an example to show that it works for
+> > my use case. I wrote that I don't think the patch is ideal (in
+> > fact,
+> > I think it's an absolutely terrible solution to fix this). This is
+> > also the reason, why I just sent it as a snippet of code.
+> >=20
+> > Please take a look at the code before the regression started to
+> > occur. It was implemented universally. These vibe coded patches are
+> > horrible compared to the original code. We are literally making an
+> > exemption for a specific CPU in a place where it shouldn't be. The
+> > actual correct solution would be to make a patch which works
+> > similarly to the pre-regression state.
+> >=20
+> > If we are going to merge something that is made by a LLM we should
+> > at least make it good. Ideally made by an actual human.
+> (+Lu, Jason and Joerg, signers/reviewers of the patch mentioned in
+> the
+> Fixes: tag)
+>=20
+> Is a better solution possible than the patch "iommu/vt-d: Disable
+> superpages on Haswell with integrated graphics" I posted here:
+> https://lore.kernel.org/linux-block/uJluFNYGCCrdvnYT3MatN_4Om8UczTJX_dzxu=
+mJxyCAC7F-Ubrekb7LPwlRxhCW0J91UBf-TqeRoJQfgYIYBRvMsPmE-Qs1eAg5zbDP0s58=3D@p=
+rotonmail.com/T/#mc147f250c5356e3742ab3d30ccf6b4a3a8c4196b
+> =C2=A0
+> ?
+>=20
+> Thanks,
+>=20
+> Bart.
 
-> On Tue Nov 24, 2026 at 7:25 AM PST, Pratyush Yadav wrote:
->> I don't think it buys us any functionality. It just hides the problem in
->> some lucky cases.
->
-> Following up on our offline discussion: I think it's worth keeping
-> support for optional features, both before and after the spec changes
-> land.
->
-> Before the spec lands, optional features are the only way to enable new
-> features at all. For example, the PCI follow-up series [1] preserves
-> BARs and bridge windows using an optional flag. It's purely additive: a
-> kernel that doesn't understand it keeps behaving the way it does today.
-> With optional features it can be enabled as soon as it lands, and Live
-> Update keeps working in both directions, including rollback. If every
-> feature is required, there is no way to enable it until the outgoing
-> kernel can learn what its target supports.
+@Simon,
+To be clear, What I tested was the patch Bart suggested. Not your
+original suggestion. We will still need a test from Tobias to make
+sure.
 
-Right, that's a fair point. But I really do hope we land the spec API,
-because I don't think we will get very far with only optional features.
-More on this below.
+Thanks
+Laurence
 
->
-> After the spec lands, optional features are still useful, and at worst
-> harmless:
->
->  - Kernels that predate the spec mechanism can't provide a spec. As long
->    as one of them is a possible target (e.g. for rollback), optional
->    features are still the only features the outgoing kernel can use.
-
-Technically speaking, you can generate their spec by hand and feed it
-into the outgoing kernel, as long as they use the same flags format
-(which they should).
-
->
->  - The outgoing kernel doesn't need to consult the spec for optional
->    features at all (less complexity), since by definition the target can
->    ignore them. It can always produce the same payload, and only
->    required features need to be gated on what the target supports.
->
->  - Nothing prevents an outgoing kernel that has a spec from choosing not
->    to set optional bits its target doesn't understand, if we ever want
->    that.
-
-Makes sense.
-
->
-> The cost of keeping them is negligible in the current design: the same
-> number of bits in the header, and one range check on the incoming side.
-
-Yeah. The ABI ends up being a tiny bit more complex, but I think it
-should be fine. It does plug a gap until we land the spec API, and since
-PCI would use it in the near future, I think it is fine to keep both.
-
->
-> The one rule we need is that optional really means safe to ignore, e.g.
-> optional data must not reference preserved memory or carry restrictions
-> that the next kernel has to act on. Anything like that must be a
-> required feature.
-
-Right. If an optional feature preserves any memory, it will get leaked
-if the next kernel doesn't understand it. So I think it is only useful
-for adding extra information in the main serialization structure.
-
-While we're on this topic, here's a brain dump of my ideas of how the
-feature flags should be used.
-
-I don't think feature flags from the spec should be a passive check of
-"can the next kernel understand my payload?". I think it should take an
-active role in deciding how serialization works. Each serializer should
-look at the spec to figure out what tools it can use to best describe
-the object being preserved.
-
-I'll take the example of memfd and KHO map once again. If we already had
-the spec API available, multi-index entries would be added as a required
-feature.
-
-Then, during preserve(), memfd_luo should look at the spec of the next
-kernel, and decide if it can use multi-index entries, or if it should
-fall back to single-index entries. Userspace does not directly dictate
-any of this. memfd_luo makes this decision based on the spec it has for
-the next kernel (set at a system-wide level). It figures out the best
-way to describe the memfd with the features that the next kernel can
-understand.
-
-Another example to demonstrate this would be LUO moving from a fixed
-buffer to hold LUO sessions and files to KHO block.
-
-Assuming the spec and feature flags were available at that time, we
-should have added a new feature flag for KHO block, but still kept the
-old code around for the fixed buffer. When doing the serialization, the
-kernel decides if the spec has KHO block enabled. If it does, LUO uses
-KHO block. Otherwise, it falls back to the fixed buffer.
-
-I think this scheme will be a lot more flexible and future proof than
-using the spec passively for validation and trying to write a payload
-that can be understood by as many kernels as possible.
-
--- 
-Regards,
-Pratyush Yadav
