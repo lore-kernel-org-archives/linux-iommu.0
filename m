@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795687767;
-	b=lG4FWFEHZZLGqAuhVtIe4BKfvi8h2EaWoAPNW4DlJik7sThAgRFg86W27o9oRIOwwEP9
-	 rwBC/PsNUtH4Q4RucRZz28q0/wGgkiAcH1iuXUuXMY31alr5wDXQWpmJuwUi4Pq9oPzhr
-	 wdR5zZQPc1htO/UC77rA8YdKGs59wUk9/KBHLLEQ4xfXKp7M51UwO1YOmsnPO2owSUKFO
-	 tYG2ha2xMvRRCMHLNNqUHlK6Wt9CQPrBctQDFMWAGzhPl5pXETOPwLpUt00T16Ye88y2z
-	 A3sK4rjFX895a9P9kbjwyy3umLH9ggaQpslPN1mRZW3Jwkx0AgTaFeVb3BrzRpoj8+Q==
+	t=1795688037;
+	b=OMj3iHZ5sLHjuAoYH0EcpWucdo8uqIwrTx1q5+XfLH83BkMhamdAsX0byjgFygx7Zbxl
+	 2MwicGWZIzT+uQ4UOp/AQOgHqZvpyCVV2TctUeE+BOq0xDYsgcbNxAlR9etqFvPMb8Ert
+	 wYXxAeESmfjhYhGutfxD0xmLpO3NaAwNS8TcZfTyyabvKhwvSn10ipJcGNp2iQxJr8auK
+	 sfNMCGhifes3KrtSg1MvdDKs+eOlm0LyrctAPAJa5E+2QyiGA21dENmAf2H+1EiIZEUA9
+	 /AvXYVF5UW3Y0Tjaog7tAPqb1AfyDaV6suS/pScPGalEXjAA4v9n8HDWcKGr5GmSUOQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795687767;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795688037;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:X-Zoho-Virus-Status:X-Zoho-AV-Stamp:
 	 X-ZohoMailClient;
-	bh=l7d5IaQ6JOFWPkAFn1T5RV5TtU7SOPA7qfljz9g0TC4=;
-	b=k9/w3mm28p7OnHDbDCHP469gKFiJpLE3ghmDglCa+uqOX8LSRiCYbnyJ49ZAa0iVa1/5
-	 fT9LqXii+CUa3avx8V8W7kYkATNkq+ke9vQ0wY1KsVylwV6CCCkaw+RZE1pU8lfZFPw8F
-	 IPpVauqKE5pmOU+Lem8gcY4LBBB2usIiKVkSAHPelaFOREyRzEHIHQdLq8ED2LNrYpEFG
-	 X/out1cJ4PnG0aB9qOzU8yUGpQF2eG4hmS7uPbEH3sN2RreqfkNgqUhK/jDyKTL5V0Bu4
-	 5OjwDERoXGHZhUUh6B7pT6qEPvLiQHM3rHTBfGZ8Vh5FP938OYuI45yHu+TqAoJofSw==
+	bh=1uwUfdoO2tZn9/T6hpBts/o6K5tW0x82owJfGpBjksM=;
+	b=UDDIxOYoLXsYDTgUG9Halv0tjkoAo4zInE4Isc3bO/9DygdqhRmRJd7JswTyXkMb4joB
+	 wGGDmpgRQS8BDBoVCp5uWfUusXLULNI5kGZgEQZT2p/HKwN/tGOGMc8+Ey0w+yUKQ7u0R
+	 NQzKhUnMva7RDeV1WrRzfB5PWdNOojVXBj80/RnjbHcqGmHZo7/rHCkdTB/9Hm+jQSWi7
+	 HYdsMYUoPeopNGK9lSL9FXOqX3xDT9iF9rGleK/EYF1cj21+bsaefBbew2F+3pn1PxopL
+	 7a0V51U7GP/US2e/d+lKfxo3UdCyaf1UCdyaq0jWY49isSVb+CIO9kAWLy7b6QJWcDg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=collabora.com;
 	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=esdLImf0;
+	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=M46VGZc8;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
 Received: from sender6-op-o11.zoho.com (sender6-op-o11.zoho.com [165.173.180.11])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34704606A31C
-	for <iommu@lists.linux.dev>; Thu, 26 Nov 2026 10:09:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 34704606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C112606A31E
+	for <iommu@lists.linux.dev>; Thu, 26 Nov 2026 10:13:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5C112606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=esdLImf0
-ARC-Seal: i=1; a=rsa-sha256; t=1795687758; cv=none; 
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=M46VGZc8
+ARC-Seal: i=1; a=rsa-sha256; t=1795688029; cv=none; 
 	d=zohomail.com; s=zohoarc; 
-	b=efaMgozkJueJiSs2swC40lOWWCxi/7Qg8e+K/GtQOUqIsY0pXuMWbjw/DJFPF8vEWKyguNsJV/0fGff39z/+EgwELScgIamYYe6WPzlp3dvQtmvS7McROLHGl+1mjM/5IJdAuVuau7z3Yc3LEvsnD3NWjepdrA+tC7sAuzev0+w=
+	b=FEKYPcf0ZahrNVgYr4P69tIWo7QWRD59zHUNVwhLfdnaHUVlX3Lf98cNyzlxx+yxdpl7zIo6uGjx+0MHmKh6Sh4c20pNQq/UGyF0g0qlavYdfZS+3ZdtDa2Ex9+OUYuIAgVwJvDj7ZhfrURIZMRIj1udTUhEwIOqicWhXPsW/Pw=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1795687758; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=l7d5IaQ6JOFWPkAFn1T5RV5TtU7SOPA7qfljz9g0TC4=; 
-	b=NO6Yzv6d/2Rpv1/e5VQHt2h97mzw9tSi/y02PRA+wY0EIOslpJbfqD6yeJonnK9H3Wu1nd3DgAQMmPmbAjZCUR5C2OTxFp4N0DLsb213ZXbf7tTDCE+1RUq6TErRyKW9UwJeqlKaR0Qp3rkJzvRhwmuSFLz7NokiWT4qGdiq8Kg=
+	t=1795688029; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=1uwUfdoO2tZn9/T6hpBts/o6K5tW0x82owJfGpBjksM=; 
+	b=YMK24uA7i7q/7bZ39bGaR7Kk3GGIKyqKP8bdZ/7LWVonlwjgwjL8vl1Ltb4iM7O+ZM1/kg6UPGyBlIroi1dLv5+L9kXoXvGKooZoz3HZvaBqbGmVJiUbkfGtDjfexpEMvEoOWLdlm3tIrHpghdqPppQcNB8Xrb64sN0eosh3IZg=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
 	dkim=pass  header.i=collabora.com;
 	spf=pass  smtp.mailfrom=sebastian.reichel@collabora.com;
 	dmarc=pass header.from=<sebastian.reichel@collabora.com>
-DKIM-Signature: a=rsa-sha256; b=esdLImf0LzvU9760wveffdTdVGwTvsAtjHzK6BpB/YKvVtrLYztUTDFrmsPnazV165g9oBJHyuvHVCj9B+r7p7oiCPAm2zbjLIb2ktBGFgzqdtIEqa5eCpo1b9sEO0aQx3x3Vp85JPQ5IBdpEYN0UC7/fu7Zx08Lg0P3sh5TVWE=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=l7d5IaQ6JOFWPkAFn1T5RV5TtU7SOPA7qfljz9g0TC4=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
-Received: by smtp.zohomail.com with SMTPS id 1795687756197766.9363163176183;
-	Thu, 26 Nov 2026 02:09:16 -0800 (PST)
+DKIM-Signature: a=rsa-sha256; b=M46VGZc8Vp3HDlDTtJgWb3/jv13b7Ol0fD6XZ8z56pfZPIaWtEfLv+QovrWC/cJHITUpE+9FqRLPh/xojUYxGkmO6i6takle3ik7udQkhuMj5R0vYlbZ5+/qCBHsGoZk8HPHIA0xv3hK12oRPRw/7XyVF+WUzDKpiwqS98fc+B0=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=1uwUfdoO2tZn9/T6hpBts/o6K5tW0x82owJfGpBjksM=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
+Received: by smtp.zohomail.com with SMTPS id 1795688026107369.88534777876225;
+	Thu, 26 Nov 2026 02:13:46 -0800 (PST)
 Received: by venus (Postfix, from userid 1000)
-	id E71F718040B; Thu, 26 Nov 2026 11:09:10 +0100 (CET)
-Date: Thu, 26 Nov 2026 11:09:10 +0100
+	id ED61718040B; Thu, 26 Nov 2026 11:13:40 +0100 (CET)
+Date: Thu, 26 Nov 2026 11:13:40 +0100
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 To: aiyengar1990@gmail.com
 Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
@@ -61,11 +61,10 @@ Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
 	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org, 
 	Shawn Lin <shawn.lin@rock-chips.com>, Simon Xue <xxm@rock-chips.com>, 
 	Finley Xiao <finley.xiao@rock-chips.com>
-Subject: Re: [PATCH v4 1/3] dt-bindings: iommu: arm,smmu-v3: Allow a clock
- and a reset
-Message-ID: <awgFFhKsT87wTwJK@venus>
+Subject: Re: [PATCH v4 2/3] iommu/arm-smmu-v3: Enable an optional clock
+Message-ID: <awgFSStwki6ytKsQ@venus>
 References: <20261126-smmu-v3-pcie-pd-v4-0-c340c2dbd1d2@gmail.com>
- <20261126-smmu-v3-pcie-pd-v4-1-c340c2dbd1d2@gmail.com>
+ <20261126-smmu-v3-pcie-pd-v4-2-c340c2dbd1d2@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -76,35 +75,35 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="356dxsaiqd4y3y2b"
+	protocol="application/pgp-signature"; boundary="trvqlmcklbkkvnwt"
 Content-Disposition: inline
-In-Reply-To: <20261126-smmu-v3-pcie-pd-v4-1-c340c2dbd1d2@gmail.com>
+In-Reply-To: <20261126-smmu-v3-pcie-pd-v4-2-c340c2dbd1d2@gmail.com>
 X-Zoho-Virus-Status: 1
 X-Zoho-AV-Stamp: zmail-av-0.2.13.1.5.4/295.675.79
 X-ZohoMailClient: External
 
 
---356dxsaiqd4y3y2b
+--trvqlmcklbkkvnwt
 Content-Type: text/plain; protected-headers=v1; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v4 1/3] dt-bindings: iommu: arm,smmu-v3: Allow a clock
- and a reset
+Subject: Re: [PATCH v4 2/3] iommu/arm-smmu-v3: Enable an optional clock
 MIME-Version: 1.0
 
 Hi,
 
-On Thu, Nov 26, 2026 at 09:54:13AM +0000, Arun Iyengar via B4 Relay wrote:
+On Thu, Nov 26, 2026 at 09:54:14AM +0000, Arun Iyengar via B4 Relay wrote:
 > From: Arun Iyengar <aiyengar1990@gmail.com>
 >=20
-> The RK3588 PCIe MMU-600 has a clock (ACLK_MMU_PCIE) and a reset
-> (SRST_A_MMU_PCIE) in the CRU. When no PCIe controller holds the clock,
-> it is gated as unused and the SMMU stops responding. Allow one clock and
-> one reset.
+> On the RK3588 the PCIe SMMU's clock is gated as unused when no PCIe
+> controller holds it, and the CR0 write at shutdown then hangs. Enable
+> the clock from the firmware node, if any, while the driver is bound.
 >=20
-> Acked-by: Rob Herring (Arm) <robh@kernel.org>
 > Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
 > ---
+
+Once runtime PM support lands [0], this should move to runtime PM
+resume. But at the moment it looks sensible:
 
 Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
@@ -112,54 +111,70 @@ Greetings,
 
 -- Sebastian
 
->  Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml | 8 ++++++++
+[0] https://lore.kernel.org/linux-iommu/20260929034510.2023173-1-praan@goog=
+le.com/
+
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 8 ++++++++
 >  1 file changed, 8 insertions(+)
 >=20
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/D=
-ocumentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-> index 3c044e4f03d4..9ab80142a485 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-> @@ -63,6 +63,14 @@ properties:
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.c
+> index 100b34f07032..beea222dcf57 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/acpi.h>
+>  #include <linux/acpi_iort.h>
+>  #include <linux/bitops.h>
+> +#include <linux/clk.h>
+>  #include <linux/crash_dump.h>
+>  #include <linux/delay.h>
+>  #include <linux/err.h>
+> @@ -5786,12 +5787,19 @@ static int arm_smmu_device_probe(struct platform_=
+device *pdev)
+>  	resource_size_t ioaddr;
+>  	struct arm_smmu_device *smmu;
+>  	struct device *dev =3D &pdev->dev;
+> +	struct clk *clk;
 > =20
->    msi-parent: true
+>  	smmu =3D devm_kzalloc_obj(dev, *smmu);
+>  	if (!smmu)
+>  		return -ENOMEM;
+>  	smmu->dev =3D dev;
 > =20
-> +  clocks:
-> +    maxItems: 1
-> +    description:
-> +      Clock of the SMMU's register and memory interfaces.
+> +	/* Before the firmware probe, which may take a CMDQV reference */
+> +	clk =3D devm_clk_get_optional_enabled(dev, NULL);
+> +	if (IS_ERR(clk))
+> +		return dev_err_probe(dev, PTR_ERR(clk),
+> +				     "failed to enable clock\n");
 > +
-> +  resets:
-> +    maxItems: 1
-> +
->    nvidia,cmdqv:
->      description: |
->        A phandle to its pairing CMDQV extension for an implementation on =
-NVIDIA
+>  	if (dev->of_node) {
+>  		ret =3D arm_smmu_device_dt_probe(pdev, smmu);
+>  	} else {
 >=20
 > --=20
 > 2.55.0
 >=20
 >=20
 
---356dxsaiqd4y3y2b
+--trvqlmcklbkkvnwt
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmsIBUIACgkQ2O7X88g7
-+pojpxAAl60EjN/Ws/Tt4rGo9MZ+TYyUyltt45l8mZYJuUkNuRTlwc+WJHOIJnKl
-gofGkYklDG1He/k/dP11sYRSyB24Z1EMr3x1nzlXeuFF9PZaxOGOn2J1e2vLnNfo
-tXNDP1TC4fBm/uun2sdoOBQmm+ZtUEoNGcnmeMW8DEc4MQz7+czum8+wzlMjquhF
-7OFQO6tX2HvByW1ARUujDlkwSPVfQSQYXXwrDoh1Si4kojAk4z9jIBN0dzPp8Z1y
-/T3vY56GBVN4K8P+uRtKs7Q3cQvoySwb/tbMtjUukseYQOu4y07Ahjih2fRrtRf4
-/5Pu8P0BNITQfmc0nsTP9IBI+JEIpwModufX8QZGS15HyoupoA21w7OpzAVamVlx
-OImMB22d32mFMv/OM3oJn4f7Praa3h6j8qKREbwo0FZsCl4rOKqQWVGILY0cBxIB
-9kaaUWW/Ju78xwH72nlyJl1zXuqDYjsAh7BXY6457zJp/8eutSNikalsgdkEVNGF
-4CMbAicoPTatPFkIM8LZ2sNFNMGAdwh1XrZardea9NJV3DK5jXkY8zy4Y0KjM8FA
-maVJONdZQv2d6N50Owf61bS7gHeKTmyG9P4WO9XvRHEnVdZPJuEQo28LpT/+7gdK
-PRtNSKzr5Bxv9PdT7m9YCDpH9qNq09civvhOB8ittmjC3h5yVCo=
-=r4Q7
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmsIBlQACgkQ2O7X88g7
++prL+w/9GJRhofBue91qCCzLZC9a3SdI+xVa3C+37ewGeBXjRN8WQ3oQJAEIgMDa
+UV1CJIg0QPveTd4D8M+1AIRKYEV5d6W7793UGpPK7zdalFdolIxw5cpxjlO3Lynv
+lZhCccXEEg/93BC9NPlFPWk3QaFWA88/ZrSnwX70q6vlafKhe/tJgVhKgjQh/gkY
+d4jIOfBSg0mWEhFd8HSUHAZvltis39p0XIkjAbMTaOnSA3+zg0jHOpqK0l43263H
+iOqoy/DJutYE0bwBsMmaqtx687Y4o6NUFmTiKQ+Sj58mzklx05z+lTdUJ0iftgfm
+qeQtOSM+Ju9CpoerPrKZL7SatDDca1fy7YS7fFZtWiR9nHjW0Ei15DzDWD4PfdTU
+tPt+WS2eNr0q2m/mCVGD9gSDYreBdbilUhm003BgZt6++u/DVb8NaMa6k3U8/zTV
+RMHBV6yGPp33xV/lIpltlBz62fbonvYCvg8TMfHwoptDL5VJIvrw9D2CAkg2+fze
+zo2mc8inuDpxaMMT/vQIWsSgUIYDMs1JNXRaDgVVZ25jBGXAqDZKgEUsf3buU+ks
+S3VgWHft1IUtmP7mDHwPORFouSMTsuPgUIrNiVi49RZsBnPovbzEwGiBHYFBodr/
+Gfjav4yl0P1OQ/KfJUcQc9DByRARuWfatt4zweqpCiRgUq0D1HI=
+=fBBJ
 -----END PGP SIGNATURE-----
 
---356dxsaiqd4y3y2b--
+--trvqlmcklbkkvnwt--
