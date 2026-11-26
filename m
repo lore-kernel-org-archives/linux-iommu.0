@@ -1,101 +1,120 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.181
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795668731;
-	b=b01BB6hOqui3FdRknfzJmEOLKVDnfK75sLLgQDVk+Jqec9+kJ+lQWTZmKJTspe4vY0I7
-	 vjcMYNU+he9d3LCQ7xmUoEWwr8HZ2He9iE2ji7CHmDKO7ofhRPdHvRLmwF4NfcuJ1L4Yk
-	 Dts+yf5uaz9qbOfN7/TWcgugiPJn6J55SLqRl2lBhSAhcbRnjX65KPWhUqpZvcUJ9o5/+
-	 MohBoN1CQmFjfHeSxUUKWGsx8P4FPN3MOmdrsOXu3q7Rj2Y4PIvsvBZjzuFpSPNdghgKI
-	 qP3uZKtPaGUb9GiE/e6BxG2GQ+WXo4BAzNfkB0x9HNKgh4NKKsdu/HFF6+aerbC7ksg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795668731;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=S3q8xfPDIBkp3Q9114uqxEU+8XToiBPIWTZl/xj0hLw=;
-	b=ut8WRWzdfdvY8dtsNjf4ibKczdOD1fgLCPJKVz4mx7ZrGz0VG5yRghPWMscD/QPbrvW8
-	 yq3dN9cy6WODW82hVz4iOYQsJRUhkXXP87ko2aCOcFU8w9hn+wikmZfi8UfS06pXYHa+s
-	 PUtP8ahmQPoTGMiicupoSMQk4+hANlmf8i3gveSk2AlVHjTB8w7ecEMGWvMSGHKvLpUzQ
-	 bCbkto4cTwY6hlsvWHYDGrCKzTBzUiE3orfs9hzRdgoWxFrpVnmeo4xIg8283aQn060u9
-	 hWWozgvuy4GVTOEGltDVc/e1nJLSTeWwXVJS6yZdtn8eLpn+3o1AXVAN2LHCcQiTCUw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=fyZQ+wH9;
-	arc=none smtp.remote-ip=209.85.214.181
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.12
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795669268;
+	b=3EDyFeSdqiuPPb/QR6sMf7zk6u4YFNL9GJvQqZkaHq8bYH9zyr7fx8NkqhEiYEKhdA/A
+	 YnqU1PUG+JG+2uPD/JUjmymOnmXhFkPxMOfmMMJrZBX/Ez/ZzN7ocf4hXUvZLDar2KDAi
+	 EIfWEPvL8MYVZzq1boiYheY2mn2O8Af5DMXxUCsQjmt5h+6oyFQB4Rl9YjVwhMm1rxbBf
+	 SZl09IwQVD5aL0GcHv7ozfPJTqXBcSB8QO6FB4h7KL5+Nwqbui3+tyTSOD/IFyXYrYoo2
+	 bLkvbp8++m/oEfxoqXKLjnf8T4gLg+W4QcIoNTS3x/Ea5NDWozbppAvftknknc1XqPA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795669268;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=GjHytJMXDzoCx6ad0K73SL0T69tcdzeEOAFHdrTOgtY=;
+	b=LCie0BFi4RlVrmw1zhZ5Gs8Hmz9oP0NwzY53eZN4Bw6PqNA3w2IVBLWZv1m7v4f3lA99
+	 2XJ1i0Qzb2EmswZ+UUAHWGcyik+m1T/SrRnjf10ghTFI4UT0I39Mv0ouTZQ/Xu6bnuw2W
+	 Tsd6Is6OPAyVDj03hscFGdg9eRrObSV995KbmkTHtlz8KAbOUvEPh5zt/JNWC11F+B1WH
+	 GWy3JuJ4LbIRwCFc3d047zsWLQ7jmtjDxAYyRl2VYMtE0H2hr5ZkTDqC7vugCyW7llI0a
+	 tRvuFIs0FHuli9FVN6DCQsnflF8omPUmvc3ZFwUuRI09vifFU7p7FemoI3+DZkDOk2A==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=OfYtZGKD;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.12
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013012.outbound.protection.outlook.com [40.93.201.12])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E232606A31E
-	for <iommu@lists.linux.dev>; Thu, 26 Nov 2026 04:52:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6E232606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B02B3606A31C;
+	Thu, 26 Nov 2026 05:01:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B02B3606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=fyZQ+wH9
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2f04e3bf46dso48784645ad.2
-        for <iommu@lists.linux.dev>; Wed, 25 Nov 2026 20:52:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795668731; x=1796273531; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=S3q8xfPDIBkp3Q9114uqxEU+8XToiBPIWTZl/xj0hLw=;
-        b=fyZQ+wH9C2x3Cwms0xC8Cu+9uue+IzbH3P/lJvgPEIfaKsiDRs1kw6Qm3IcGvCLRkr
-         7MJ8lvWalhc09ZtNggvLEshln5qjTGR2pNiphTUpfo+P1CGHAze06GnTx8grdty6YYBQ
-         4NszBy9CKO5M1K5pJmJxfF392d9KbwqS/zkQOWHhmlRKIsXlJSO0Lp+1A6HvP6v05mtk
-         kI+SO7a3+pwxiPYEefxONdCkahFwF6zKjgoeH0ZOuKnw6sVHQYpdt6Fqr8xAX4Wh6h9B
-         OiOiI3XRkgDtEPIYaToQTSkHPug2n85nu9rpxgdlToup8PgqqGTnbMLKzdIZcyR4ICCF
-         RQzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795668731; x=1796273531;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=S3q8xfPDIBkp3Q9114uqxEU+8XToiBPIWTZl/xj0hLw=;
-        b=eF1cZO2J6yk3PCmPdUwUhKyEWyRJxlMWpEjGd4yAF6/aBY7TEXG7Zq+zRlhgv94FEz
-         cxzTzO+OAfqNCiY5fwuzFbLMXohTVC7K2hBoar0K1WCkXsd6VaVWzASxGapCpZyux2nN
-         SDB45ecXfdOeqesd3sYvK7qryCoetEEsyBnQoy2ZEPivLayZwfwlqqxQB6BvPLGhAMMq
-         9oEwz3/bw+PHHscalaznzuKhyKG2k1uvXr2VR48IfaxlcFSkY9iHR3m37nyKTLnVxWve
-         /8IrnmLASgn3Tw9WA820BkjY9VaFxKGQgcUvxIItdb4sIedjcjThqGlpnQWag87UZIhB
-         optQ==
-X-Forwarded-Encrypted: i=1; AL+hErGmbwLyHR7gpYAggbXUAtIgb0DGst4iZaKXMqAEPpxdaQ8bz8McLv4XhzVgxa47lfeE/29dLg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+XUf87RH/+iabcJ+2t8RtRJEn2GA8Gza/LEh12Zod/jUl+6KPd
-	1h1LcwnqGxjiiVyiAK43Ojm2yQ8RORICsyMH+4eIGfK4EbG/aPpk9dxl
-X-Gm-Gg: AZFdTZd5+ex3JaA3mU5e0pBUDTeXvQl+SSiPpCJCMegEl2hRP0yCUnH9pZCcAy6RE2k
-	h0o2/Jar7HmgYiwKMf60DgVKZEb4cWBYI1aqvEi4IJguCw1zeLlK3aYK6nGTk0Db9xupBEjNXYn
-	AEDV29KjopEAZmVT1A/NUkyNI2ikdBQXeFJ6XBvwM6O9RWezgzgVH6UOwv5AzXJnzPQ0BEQhuVV
-	AQHtRLlLPxo54fNakhJuL7neKHiHABlbPdcWLoZbQ6LjxZgaQGO3Ygb1HiV9BFLorYI8E8DQxUX
-	S+lf8tL7RPYdwQaqjccqEbV63UuNrmSmXPwxtw1S/PJogjL6meE9Swm+0hMk0ViWi1rPUWeThib
-	KLGtrzj+P84UlCJ3IMQ+Df9F0l+dj9T0kVOkPWA1zmx33cTSAQrmRXeVyKyA2RbgHfCfSpsnIws
-	qDXwF23jDBQ5jLv4jMM1tdeFzasK1WFrIDmqLqhdwcGMermGevFi+79ICIMzwOmFr6GKGRuSkSU
-	fqa/IPsRXGxMM2TkVfZjVIiisAZV30+68OLgEBvK7ZyfCWEi7M+JUn5VuyB92Dk19lNQ4m61S3T
-	SizrCLMhQAGP+facUP2PS4trRtH3GlOmzv4pYpqwDNNvXExIAnSV17DJF8+kT2PsbsACLyOf/TJ
-	kajRTlSWJ8DZRl0OBzLlfqRISKdUQO3Z26WapS0FTPQ==
-X-Received: by 2002:a17:902:ce85:b0:2f0:3e44:4761 with SMTP id d9443c01a7336-2f03f25e801mr210179985ad.54.1795668730721;
-        Wed, 25 Nov 2026 20:52:10 -0800 (PST)
-Received: from LDYT9Q2G2M.pvgl.sap.corp ([2a09:bac5:cad0:1caa::2db:4c])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2f03f120830sm96700655ad.61.2026.11.25.20.52.07
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 25 Nov 2026 20:52:10 -0800 (PST)
-From: Zhiqi Zhang <zhiqizhangg@gmail.com>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Peter Griffin <peter.griffin@linaro.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Sam Protsenko <semen.protsenko@linaro.org>,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org,
-	Zhiqi Zhang <zhiqizhangg@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH] iommu/exynos: Disable runtime PM on registration failure
-Date: Thu, 26 Nov 2026 12:52:03 +0800
-Message-ID: <20261126045203.62181-1-zhiqizhangg@gmail.com>
-X-Mailer: git-send-email 2.54.0
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=OfYtZGKD
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=V/eC3bgmYZ6f3FFPOczen59v/oRCSBDOZmFDzsQiT6AB8nmkBWZ8zW9/bJW5s8u2uOFzuIsbR5bsRQu1zYSusB7dedlTC4fajG2x0pWpvUkygCQW4CYPajxK511ao7jPwNM7BcLLBdTxn71XIzQ0Ct40qg1vOVhq5x8wmIPeaxr7WYtSGsOuWNzctZHTlxFgYq/CjqjuKQ1jxMmwzmCqyqdjfHIYKkR5s3Ml+7/roOj1Kn7yl8zdD9Kw5M0CpvVQup3LY6I37+Zwr4LGRUkZ3LYj+OdefVz+Ro/f86o7WUPACKS3BIl3DGK9g2se/QnXAeqD2sQ037LVNqXBtZySXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GjHytJMXDzoCx6ad0K73SL0T69tcdzeEOAFHdrTOgtY=;
+ b=iVLwYRvZ7U7aH3k3anZjTwtEpngYM/KgFGZNzPUOMX7tzvOmjLlr67hqGLprwCvGqU9E3heKYEA9bX6/zs1B5OXOtzd8GO1JOFsv7/sgJhHfl4AaUU2u8TWp9aZFkJAY4T2bkQ+jtDq5/0OUZl/IUdkaRPXlNrQuA0SatMIM4huvfMEUSMPSzZQlJaD+qzh2s6t0/c7ZHoFYnxZLtpCh1QU+fCtFshnJ5Zp7fxDZPipBKcYGMEcx0InciuAaK6TXF/pimtky7frboRrV9dIE+1X7KOKup90SgoHDo0fNJqSPDMYnGkWCXX4P4jUgo5dTzPawrf/eMRaKUpM9L08mZg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GjHytJMXDzoCx6ad0K73SL0T69tcdzeEOAFHdrTOgtY=;
+ b=OfYtZGKD4KOjFlV8RkgyK9AeVYeVCrJiOAW01+WTqyOhHzJVymzGHX+8ktfNkJ2/i41nShm0OQj6pvdMU/6J45j8Rj/ut6gtQKgBae86sECUEJluEcJPdnkZubjlHgjpdq28CxvfuJIuAxuBug+1l/VsXT92WD1iGnSzKaw6YZXX9t4agU8NqDHzcq95wp13DPxiB/TIZkhhnatw9zir5GVnHu4Ld0HIkbFejcC0tS90VYsfqqqEYlOmldNTvnUazgugHQAoIRTq0zJ38zBJu9h/NiNvMLLMh5kIDWjVoko05hHk9EhA1GMHieIRG5tbRf9Ow80Jq2M7n6Vul2Ql6Q==
+Received: from CH3P220CA0002.NAMP220.PROD.OUTLOOK.COM (2603:10b6:610:1e8::13)
+ by IA0PR12MB7697.namprd12.prod.outlook.com (2603:10b6:208:433::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.6; Thu, 26 Nov
+ 2026 05:01:01 +0000
+Received: from CH2PEPF000166C8.namprd04.prod.outlook.com
+ (2603:10b6:610:1e8:cafe::36) by CH3P220CA0002.outlook.office365.com
+ (2603:10b6:610:1e8::13) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.662.7 via Frontend Transport; Thu, 26
+ Nov 2026 05:01:00 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.117.160) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CH2PEPF000166C8.mail.protection.outlook.com (10.167.244.230) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.662.3 via Frontend Transport; Thu, 26 Nov 2026 05:00:59 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Wed, 25 Nov
+ 2026 21:00:30 -0800
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Wed, 25 Nov
+ 2026 21:00:29 -0800
+Received: from nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57 via Frontend
+ Transport; Wed, 25 Nov 2026 21:00:28 -0800
+Date: Wed, 25 Nov 2026 21:00:26 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, David Matlack <dmatlack@google.com>, "John
+ Garry" <john.garry@arm.com>, Pasha Tatashin <pasha.tatashin@soleen.com>,
+	<patches@lists.linux.dev>, Pranjal Shrivastava <praan@google.com>, "Samiullah
+ Khawaja" <skhawaja@google.com>, Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v3 05/13] iommupt/kunit: Skip test configs without
+ supported features
+Message-ID: <awe86jdX2ayKruCf@nvidia.com>
+References: <0-v3-97feb2edfbab+748d0a-iommupt_armv8_jgg@nvidia.com>
+ <5-v3-97feb2edfbab+748d0a-iommupt_armv8_jgg@nvidia.com>
+ <awUg0O0WQUBcuUvC@nvidia.com>
+ <20261124150843.GC8680@nvidia.com>
+ <awXgxBCNDzh/32cm@nvidia.com>
+ <20261124200749.GB114472@nvidia.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -105,54 +124,59 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20261124200749.GB114472@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH2PEPF000166C8:EE_|IA0PR12MB7697:EE_
+X-MS-Office365-Filtering-Correlation-Id: eabd1f20-3fda-49bf-4ef4-08df4b7a437e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|23010399003|376014|7416014|82310400026|1800799024|5023799004|10067099003|11063799006|260925021311599003|260925021911599003|260925022911599003|261028144727099003|261022105027099003|261026121527099003|261021123027099003|261021121427099003|261026140227099003|261021135927099003|56012099006|261102123227099003|261009223027099003|4143699003|18002099003|22082099003|13003099007;
+X-Microsoft-Antispam-Message-Info:
+	Hw55+AOZDQ/LoHGK/CHoUW5J2gF/DunGPFHJS4OpTLojgxQdknp/MuTbmznZ2Vn19A2zjpK8E6Ia2WOVloQgQdiBNfhsq8PbmiQbkUIj4ElYtayXyyUbUZUn2GYO4w73FUjD89mLne/wJ1M2SEE8padJyGF708Ja6vdpc0+m649Vu4EkHFPZvZpZ/Cih1A81z2H/uguWnJnmg4hnXcoK0EWRmKDkAhgROSBVWIBkuc2Kt9DsXDqflWKzAn5SU1zW6ABgFYvMa9iaxWxiXkpQDmSKSg6YTCz3zI9ss3cVf71juzy/vj32NLwK04KJMESTyoqBpD0Wx/YENdJGH0abMBMQY4Jffu1BT+LyRSAIXFlwjE2I5EYS/UREa9Pbceuk6GC0KtzTeVbr5EM+Iyb8+fUC8gpBobazdLfSYB/wDY4JBXEWmGI7xd2QdjKowyLd3X9NGnm82RrLe4rM7n5MP9wPK8D1ZSNND0i5xywXZ4jGvdkn0cKowi0QFfPhh7zEvLU/8N1jKNCURL/lh/e3Ig8NCF4d2+1O0LnMZjW69FJA5MWW3WNarARO4yXJPQY69adLR5yEo4VomUyem5lQN0c03IvARaLgnEIeoYJnXPbveRXTyrBtqm11ZDtEJwE1K2qFAonID7RRrYy+kzIWvyWVcvXYFbhl6w56a7TjNpi8nWe9OPHn7sS50lVStTGVlSdL8mQC6FOvQA1IxQ2+Fg==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(376014)(7416014)(82310400026)(1800799024)(5023799004)(10067099003)(11063799006)(260925021311599003)(260925021911599003)(260925022911599003)(261028144727099003)(261022105027099003)(261026121527099003)(261021123027099003)(261021121427099003)(261026140227099003)(261021135927099003)(56012099006)(261102123227099003)(261009223027099003)(4143699003)(18002099003)(22082099003)(13003099007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	dsg96sK0E/HCBWbvMcu1F3hhhus57tK5gsEf41Groq9qZMiRKu/2VOnFd521ZEwbAwH+91Ksslt7utUZLvxveclWcL7PFHUtbWYqdlxCrwkPAf++ppa9YtfA/A5IpKU7Gm+0OnnvO8ia+PTEJsT5eb/DCRHP5f+8NseOTOZx5vyLMHvAgzOSxhswMPYuSUJt5JdIb9zr5wRLYl3QopIv083Wt6l8pv2KSJyg5nHtXojLFtyKRIshBpSFrojOxTcoY5gs62TyedOlkrOlWb0JeqNP6FwOWhLp+t/Bd6BH5YOzBl/XI+9FQXdFoywftpLOWJfeY3b0Ary8Mka47cDR6sZeXvPrVaTyq69t5haQF/DS7Ue/YO0kFbQ31DeDiuAXZai8m5vuI4rRQ5eLXXdhyeXQUB0HMjbv12AZt4SToVz6E5t5CEndJJ9v6OSF/gyB
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Nov 2026 05:00:59.8834
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: eabd1f20-3fda-49bf-4ef4-08df4b7a437e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH2PEPF000166C8.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7697
 
-exynos_sysmmu_probe() enables runtime PM and then registers the SysMMU
-with the IOMMU core. If iommu_device_register() fails, the error path
-currently only removes the sysfs entry before returning.
+On Tue, Nov 24, 2026 at 04:07:49PM -0400, Jason Gunthorpe wrote:
+> On Tue, Nov 24, 2026 at 11:08:52AM -0800, Nicolin Chen wrote:
+> > On Tue, Nov 24, 2026 at 11:08:43AM -0400, Jason Gunthorpe wrote:
+> > > On Mon, Nov 23, 2026 at 09:29:52PM -0800, Nicolin Chen wrote:
+> > > 
+> > > > The leak check reads NR_SECONDARY_PAGETABLE with global_node_page_state().
+> > > > That only returns the global counter. Each CPU also keeps a small delta of
+> > > > page updates that is folded into the global counter only after it exceeds
+> > > > a threshold. So the value can be off by a few pages without any leak.
+> > > 
+> > > There is a patch already in my tree to deal with this, this test only
+> > > works when you use the kunit runner
+> > 
+> > 6e8127719449e kunit: tool: catch warnings generated by the kernel
+> > 
+> > You mean this one? It doesn't fix the leak-check failure though.
+> 
+> Sorry, not my tree, Joerg picked it up:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git/commit/?id=d2eba9f4fa6319eac08608958d4f3a11d5240002
 
-That leaves runtime PM enabled for a device whose probe failed. The same
-path can also leave dma_dev pointing at this SysMMU when it was the first
-one to initialize the global DMA helper device, so later domain allocation
-may use a device that never finished probing.
+That one works. Kunit runs fine with it.
 
-Add an unwind label for iommu_device_register() failures. Disable runtime
-PM there, clear dma_dev if this probe set it, and then remove the sysfs
-entry as before.
-
-Found during static probe error-path review with help from OpenAI Codex.
-The fix was build-tested with ARCH=arm exynos_defconfig and W=1 using an
-arm-linux-gnueabihf GCC cross-compiler.
-
-Fixes: bbc4d205d93f ("iommu/exynos: Fix driver initialization sequence")
-Cc: stable@vger.kernel.org # 6.2+
-Signed-off-by: Zhiqi Zhang <zhiqizhangg@gmail.com>
----
- drivers/iommu/exynos-iommu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 7c337ba96..18a536008 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -844,10 +844,14 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
- 
- 	ret = iommu_device_register(&data->iommu, &exynos_iommu_ops, dev);
- 	if (ret)
--		goto err_dma_set_mask;
-+		goto err_iommu_register;
- 
- 	return 0;
- 
-+err_iommu_register:
-+	pm_runtime_disable(dev);
-+	if (dma_dev == &pdev->dev)
-+		dma_dev = NULL;
- err_dma_set_mask:
- 	iommu_device_sysfs_remove(&data->iommu);
- 	return ret;
-
-base-commit: ebb7a8dc1e74c705daffe11c2faf38ec2628f838
--- 
-2.54.0 (Apple Git-157)
-
+Thanks
+Nicolin
