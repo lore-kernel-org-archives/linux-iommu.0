@@ -1,91 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=139.138.37.100
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795768380;
-	b=KDIUy1+agE5725idq6zACtdjyJBGdQdvFKj1wUANFIwycjyEIAzYaMXD6D1gmm65Al/0
-	 guR4QE34WA5nxNMw+fOAni+u7tcWsp/kK6RSCdoanYy2SlRIbFwveJmNiwccVt4AcVpKC
-	 iK1+1+YA/tHkYWeLUwUEiCln7U4920sTBNOrqrJD2mefOdWMfKtYmmocp+IOneQIA7ve3
-	 C4/FR5XSbNQD6Gy+MXTFYKl2J4hpPtm3bnfjAhSnBvhpPRqx23KR7vPubFG080bkgSTxD
-	 nlIZuvFAZezOp8/P6XNIsdBaUseHwMwgdnA3i4WtmI+dAChJrduEP9Or+jL0GyLy5kQ==
+	t=1795769327;
+	b=eMX8WCJICtljAuXAqemjvcoy3gIK8qHoJkFArv/ax0j6mbknU6OdwcbV+b4v6d9sruoR
+	 ede4h3bMqeuePVSmRft3os1BwOZeldWM2gT16M65gMrJMEWsiMzRSuRFnPRg4nkVXfF5h
+	 hkbSKgJ2JgA/MdcKAc3bcRHeBWd7gifDVm7vFDfoAJltTl4R5mDVuozMeE7+FdLkpg0Kb
+	 DzG5xoC0HB0wN8WWhgcKZ/IaFDLpcVZ8A/y0cE0u4AqYsYdoRwQmxVqnqD67yWLsGE+AE
+	 A4bs7TIhs92r6MyN0ux2TGGyqBeZPhgVR4I5Ww3U+2c6FvK/9gv3Jflfm3uthNFfaMw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795768380;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:Received:Received:Received:Date:
-	 From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=x7T2hvQbWIwodUQErSaaCwrbt5ZR0SaoWTUBnFNg5fA=;
-	b=TiPj6D7Zlah17eZVf35zz2WcNTqesi5UtBGkxU0Ok+anuCvS4JWY2GNXN8RFMg463hQ1
-	 nAiGXTf4YRboRwQnD9PZeCvIZHRSMih/J1ufqDw7v6gCPpEbsrN2dB5qOovSro7vtgMrC
-	 Oafom8FD83WPX5MFn2/GYyiaIatS9f89jvnuSHw9sidWqO5GjARNKLh+iKSmJ4szCE9m7
-	 MQKePO4NeyPUyuJGLg1TGJx4i0a1sOJ5kSd6kIjrxNEbUuhhG40OxfRA78dH02i/a6+6B
-	 v1UbxFymVlemZvEpX0oYBL69CjDIOkph9TyL5rD/la5GsWtD7cN3XzaI78Rd4O/C5ig==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795769327;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
+	 Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
+	 References:MIME-Version:Content-Transfer-Encoding:
+	 X-Proofpoint-Reinject:X-QCInternal:X-QCInternal:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-GUID:
+	 X-Proofpoint-Spam-Details-Enc:X-Authority-Analysis:
+	 X-Proofpoint-Spam-Info:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=ufKoELyG5OJVjqqU3c/Qvt/pb5qRk+F+TxVqt+FkFmg=;
+	b=hNznU9RSvO1MRJPbqyJBJhlMg4DbwxEnpHcwwbI1Muqiwq4+masL6CT+Ve/0ztctFnjK
+	 H44HVZppxu+dsjahW0Ab3t6vMk8wbxFFydpWDst7Sbckvz+03s+9iENPnY2tmrDe4ZX0B
+	 cV6S6J4Yew9BcHrAUl244+vumvsohRIvytjHZyXbbOi0MPPXLsdFp/RVz9M2Q6MebAenV
+	 8dOLLQuruvkZFzdZypTW2gUn9MViKBy+J6D21vgmmk7f+i04ZYLwK+WfGS7hXLVN/2aH6
+	 //ojLVdcKDBi92xU+hY9ptM+XvhwS0JoP5X3mvbxbTMrTaVjiGwBE2CMo4bWKZKRd4Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=fujitsu.com;
-	spf=pass smtp.mailfrom=fujitsu.com;
-	dkim=pass header.d=fujitsu.com header.i=@fujitsu.com header.a=rsa-sha256 header.s=fj2 header.b=Swf+ci1q;
-	arc=none smtp.remote-ip=139.138.37.100
-Received: from esa12.hc1455-7.c3s2.iphmx.com (esa12.hc1455-7.c3s2.iphmx.com [139.138.37.100])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=OkdZKMFg;
+	arc=none smtp.remote-ip=205.220.180.131
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57B00606A323
-	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 08:32:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 57B00606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fujitsu.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fujitsu.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90BF7606A333
+	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 08:48:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90BF7606A333
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=fujitsu.com header.i=@fujitsu.com header.a=rsa-sha256 header.s=fj2 header.b=Swf+ci1q
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj2;
-  t=1795768379; x=1827304379;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ImbUcSS8Q6xOASEFymtw22SRZBZBBDi6HTSnPwkGl+s=;
-  b=Swf+ci1qpuk6l/o5dMuF019GxotmipzbLFNlAozGaL1kdRUsjPFg0eRu
-   WOI0Bk5mj1L2TXHPTbDBkkzN/WTpvSWHtHCeT19SPiOphoHNAaEXuHaMM
-   J9g5MuK3TBcWouOEZ+VO2UxAqOuGe0tGkhiMGAsnyh9TBPehyQKPzsi6P
-   +UnqgVKxFNr3uTStC58K5mC3vHFAoue8oFSP4WOPgMlxMSrWrL8Ps2/Dl
-   oqvBx2NwnOrnFpmaZmQgyGxkrL6/szxAdgo5e8OheKtdCmKGS4gVriV6+
-   z+1OcTBeqNyIYNLUhNbRO7XPdBhjd01h7j8NAzSvufXE1EpKw/iOEYPFT
-   g==;
-X-CSE-ConnectionGUID: bU1y8QYTTn+n62E49WySmg==
-X-CSE-MsgGUID: HOx+3H+jSPyNnv1t7UH2FQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11978"; a="241071014"
-X-IronPort-AV: E=Sophos;i="6.27,236,1786978800"; 
-   d="scan'208";a="241071014"
-Received: from gmgwuk01.global.fujitsu.com ([172.187.114.235])
-  by esa12.hc1455-7.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 17:32:52 +0900
-Received: from az2uksmgm4.o.css.fujitsu.com (unknown [10.151.22.201])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by gmgwuk01.global.fujitsu.com (Postfix) with ESMTPS id 727CB1C0169A
-	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 08:32:52 +0000 (UTC)
-Received: from az2uksmom2.o.css.fujitsu.com (unknown [10.151.22.203])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by az2uksmgm4.o.css.fujitsu.com (Postfix) with ESMTPS id 2780A1400632
-	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 08:32:52 +0000 (UTC)
-Received: from FCCLS0092175.localdomain (unknown [10.8.69.152])
-	by az2uksmom2.o.css.fujitsu.com (Postfix) with SMTP id 4F4DA14063B5;
-	Fri, 27 Nov 2026 08:32:49 +0000 (UTC)
-Date: Fri, 27 Nov 2026 17:32:47 +0900
-From: Kohei Enju <enju.kohei@fujitsu.com>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH v6 6/8] dma: swiotlb: Centralize memory-encryption pool
- sizing
-Message-ID: <awk97nvn_HKgONmF@FCCLS0092175.localdomain>
-References: <asYZFXGyafRjjBS0@arm.com>
- <asYiOgskwi8JYLe_@willie-the-truck>
- <yq5awlrt3dwo.fsf@kernel.org>
- <yq5av77c92oo.fsf@kernel.org>
- <aseRzPshcoys7AJS@arm.com>
- <yq5ao6d48dqr.fsf@kernel.org>
- <auR0fT1yrKQ9wbm8@FCCLS0092175.localdomain>
- <yq5a8q3d9oe6.fsf@kernel.org>
- <avRKiCBs81XSYMqW@FCCLS0092175.localdomain>
- <yq5a33t6qrvc.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=OkdZKMFg
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AR7GcNk1564733;
+	Fri, 27 Nov 2026 08:48:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:in-reply-to:message-id
+	:mime-version:references:subject:to; s=qcppdkim1; bh=ufKoELyG5OJ
+	VjqqU3c/Qvt/pb5qRk+F+TxVqt+FkFmg=; b=OkdZKMFggOe17aEGFaaCtZVdPNx
+	9xdMstrsu23pgILp0qZOqHFDhMK3OBNFT4dUE+712Ikj/COgvv4zVjL80d/xDysX
+	obmHVDWhrAEisiPtjKqSHJIySClLjeh2fn2YthXnRLdKfVDxaDAsdgx1FbLmex84
+	LbqmBQRVP2MfVAgWPy44qwPgB31j0ueK0HKBkhDBMgtyVz2pE+FtXVJNoO2sarXx
+	0/koXkp3+aB1dBXRDP30fk9zhzb1hkcJzZh59Y83a3uRoJurv/WcSYNh053D4B8q
+	7YJJcXuJMOmCKtiiCgFZmAotIrui24GMKj+fQjSTbwEuqwKxfOM8pdSgmiA==
+Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4j74garjf4-1
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Fri, 27 Nov 2026 08:48:31 +0000 (GMT)
+Received: from pps.filterd (apblrppmta01.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA01.qualcomm.com (8.18.1.11/8.18.1.11) with ESMTP id 6AR8mSCH003714;
+	Fri, 27 Nov 2026 08:48:28 GMT
+Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-mohis-hyd.qualcomm.com [10.147.253.64])
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 6AR8mR6J003695
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Fri, 27 Nov 2026 08:48:27 +0000 (GMT)
+Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 4840500)
+	id 963CA6AC; Fri, 27 Nov 2026 14:18:26 +0530 (+0530)
+From: Mohit Sharma <mohit.sharma@oss.qualcomm.com>
+To: Srinivas Kandagatla <srini@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Mark Brown <broonie@kernel.org>
+Cc: Ajay Kumar Nandam <ajay.nandam@oss.qualcomm.com>,
+        Liam Girdwood <lgirdwood@gmail.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Konrad Dybcio <konradybcio@kernel.org>,
+        Abel Vesa <abelvesa@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-sound@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Mohit Sharma <mohit.sharma@oss.qualcomm.com>
+Subject: [PATCH v2 2/4] iommu/arm-smmu-qcom: Use identity domain for Shikra q6apm DAI
+Date: Fri, 27 Nov 2026 14:18:24 +0530
+Message-Id: <20261127084826.916361-3-mohit.sharma@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20261127084826.916361-1-mohit.sharma@oss.qualcomm.com>
+References: <20261119164705.1594066-1-mohit.sharma@oss.qualcomm.com>
+ <20261127084826.916361-1-mohit.sharma@oss.qualcomm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -95,56 +96,64 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <yq5a33t6qrvc.fsf@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-ORIG-GUID: ZLC_RWqU_nT0re1kPnz3DgEpv7EmtYN3
+X-Proofpoint-GUID: ZLC_RWqU_nT0re1kPnz3DgEpv7EmtYN3
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI3MDAzNCBTYWx0ZWRfX11F6Sps7mC1e
+ deErkYJTWkPUladT0zOxaYlgUFYzF90RJUU3r796hzVZzTcpPkC8SmzO6uPrvj31wgsy0iugE5N
+ 251GdtjnUIY94TzsPHN9cXzWb94pH3+fLXMuWFVAWkqXeQg1sKgJXNbG8psH8RJWjPoYOwzXXJ2
+ YftHBAZbXw3kHEDhrvkkCQM5NxPX+E2dS8Nlo1UAivZ3TICx8FM6SDj1xBv8XGjX4pKjvbVvy44
+ 97PFg5TOTxieSn4yaad1I9vmc1u0VqKCn9e1CkHd+rjbu6WTmzWuM52WyoVr9+2DXck7KvFO7Oq
+ N/pxHkSUqXlklibJY2ZsOVsFkitffSeJgkQsuhnvYwzpOiZ4rtFFPyabxDJ9InEQZr6Nn/9PHbO
+ 4uB1vZsqF+3WvFNh8PLz+WO4Dh5x/jxG9eZ0glOdJPOtRDk/cRHem+5EW237nekZZFkmVkrCcKw
+ MYIwsFjqMORoWQIXe0w==
+X-Authority-Analysis: v=2.4 cv=I5bw19gg c=1 sm=1 tr=0 ts=6b0943df cx=c_pps
+ a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
+ a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
+ a=gowsoOTTUOVcmtlkKump:22 a=EUspDBNiAAAA:8 a=v-17ujD_Twj6ygAmxgMA:9
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI3MDAzNCBTYWx0ZWRfX/nnedxvKa/AO
+ frhAmY3MuRREW0LMTSYV0XAIMe1lWtR4Mt0yzVk5y+8XnvDoV1jtLWeK/HRiLCapygQJUemnBYZ
+ CQKtIa4adeqlJnTXitz98bTee3g3eGg=
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-27_01,2026-11-26_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 phishscore=0 suspectscore=0 bulkscore=0 priorityscore=1501
+ malwarescore=0 lowpriorityscore=0 clxscore=1015 impostorscore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611270034
 
-On 11/12 15:43, Aneesh Kumar K.V wrote:
-> Kohei Enju <enju.kohei@fujitsu.com> writes:
-> 
-> > Hi Aneesh,
-> >
-> > On 11/01 09:47, Aneesh Kumar K.V wrote:
-> > [...]
-> >> >
-> >> > Hi Aneesh,
-> >> >
-> 
->  [ ... 35 lines skipped ... ] 
-> 
-> > Overall, I would prefer the dynamic sizing approach. However, I believe
-> > the initial pool size still matters.
-> >
-> > Also, as Catalin pointed out earlier in the following message:
-> >
-> >     https://lore.kernel.org/all/ann6noRzoPLL9kDY@arm.com/
-> >
-> > the arm64 adjustment also reduces the target size used for dynamic
-> > pool allocation, since both the initial pool and dynamic allocation
-> > currently use default_nslabs.
-> >
-> > I am testing the patch below to decouple the initial pool size from the
-> > dynamic allocation target. It adds swiotlb_adjust_initial_size() for
-> > callers that only want to reduce the initial allocation, while keeping
-> > the existing swiotlb_adjust_size() semantics for callers that want to
-> > adjust both sizes.
-> >
-> 
-> Should we instead update the logic so that reducing the swiotlb size
-> leaves the dynamic allocation size unchanged, while increasing it also
-> bumps the dynamic allocation size?
+Shikra's q6apm DAI is hosted on the modem DSP under SMMU stream ID
+0x1cc.  Its firmware consumes the SID-tagged shared-memory addresses as
+physical addresses, so a translating domain leaves those addresses
+unmapped and causes context faults when Linux owns the SMMU under EL2.
 
-Sorry for the late response.
+Add the Shikra q6apm DAI compatible to the Qualcomm SMMU client match
+table.  This selects an identity domain for this stream while retaining
+an SMMU mapping scoped to its own stream ID.
 
-That makes sense for the arm64 and RISC-V cases. However, for
-plat_swiotlb_setup() in arch/mips/cavium-octeon/dma-octeon.c, I'm not
-sure whether we also want to preserve the dynamic allocation target when
-reducing the initial pool size.
+Co-developed-by: Ajay Kumar Nandam <ajay.nandam@oss.qualcomm.com>
+Signed-off-by: Ajay Kumar Nandam <ajay.nandam@oss.qualcomm.com>
+Signed-off-by: Mohit Sharma <mohit.sharma@oss.qualcomm.com>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Do we want that change on Octeon too? If not, I'd prefer a separate API
-so that we can preserve the existing behavior and explicitly update only
-the callers that need to reduce the initial pool size independently of
-the dynamic allocation target.
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 795e8ec7e8fa..09ea293052b2 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -420,6 +420,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+ 	{ .compatible = "qcom,sdm670-mdss" },
+ 	{ .compatible = "qcom,sdm845-mdss" },
+ 	{ .compatible = "qcom,sdm845-mss-pil" },
++	{ .compatible = "qcom,shikra-q6apm-dais" },
+ 	{ .compatible = "qcom,sm6115-mdss" },
+ 	{ .compatible = "qcom,sm6350-mdss" },
+ 	{ .compatible = "qcom,sm6375-mdss" },
+-- 
+2.34.1
 
-Thanks,
-Kohei
