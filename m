@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.195.47
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.200.1
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795779992;
-	b=4iJn3NgZOIVYaxqI7EuP3zWUTP4diDvVzOfxtScxWUFIieWr+3c/XYwdBWAdDXxu3yHZ
-	 T3eTYloNr5KDPz8iY+OMpCS6QowaocFhTQlyg9hp5rTs5NpAo0o9gGTpfZICa8N8VFGCG
-	 N7I4D1bTCLmCnuxvW2Cj06j+ahT6iBdjjzdESsdaHaIWHxmaIhB+lpITt8MSQ5uW+A07V
-	 I7unno+sHBuU3Ja3zXULtE2Pw00HzBWQNRA2XdvTVjvz4QbjxmbeJNnPUVHIO7HLCZZ0e
-	 6JMNYdE2eV99dDSn0rTPAdSa+yLOuleIYX0wlAmwOK/h3b+TV9SUmJ2VxtX1wGjrCNQ==
+	t=1795780005;
+	b=ew7dRafp/itiud2vynaN2YNJ4SjL/IY7wggLCI4xb9FNVrwRiAmd4BkDUB4H23qyFyPr
+	 eyqNWsaM5gV3nsl0vlg3Op76O6fY6VsgOg0dz8199KlcksoJE7axjoKGz9Mcglr2fXNQC
+	 EJrprO47wq9mWJD1Ky4eKWy1dGn0+hl5QOFcmgpG9N12WO91D2ZGYHGljVODPTGmNlKle
+	 NjFc1VnjyjOVUWSm7aBLLzfArhctluDtP99VMgLwIeQ1RNo6EiqZKhWv67cMFKI54atVj
+	 xOpB74lWt3W/08DmHcZq6nh+9tshdrF+iykkFLRGotug6txP7YykA8nJ1bIhSpSd5YA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795779992;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795780005;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
 	 From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
@@ -26,53 +26,53 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=+8UbzgmkR1cxrBoYfCu2LfFJUbju5rAJKXqy7W2Z6qg=;
-	b=BvnQfQKTFkpSsyDtM9m9RAKkvAVW1+IzO05lXb3bkx81TSVtoxgNertv8tdpa47zf9ss
-	 Cr+OL3eQFMjCY9v/Kfn94THEAQSFlGwYoj+0BD+tbi/aXXqWTP3pjYgrPrnZAwQRRLw3g
-	 +9FF3EwGTc8ET8g3CNpJH0VGaUG+Lz3+wNnWmxPUVchGaY89s4nPDtQ/mLUij3VZ4a8Ge
-	 MsTlc5y9Bg2QxYUNhKGfFXs1e4av1enEpcIdZI6sqUPqg6b2ESpYIRWAe5ZW0hJnjEfJ2
-	 5W4rkOYrjWSayLwiqF2IuhA7VPKaumlRcYucvE9LpHTr4QzEdvjzFcUGgplN58knA7A==
+	bh=lq+9D4FpU8Asrq/k7/8cK98lBexBRjHLhaRDTbKhagk=;
+	b=vG/RsV85bOG3etsutfcRuHltuAdYs/xReUMA/ujMCwmpUR/ic3YPdAvCQjrz3U1bPh6o
+	 8h+zcAEYX/x+UnF8j79w9CNde+jkvDjDtOAX6/9S2LzxNPmH+KjEvLOduA88F9p5PhI/i
+	 W/BffT4OZ8FHD5Wdh07dydmTmbj1U4OSrmWSOckHDq7n+bmBejc76fCtkcQscPaTUKVC6
+	 fLtbO1Mz2tU0KV7zCFXEbHp7u+ApoD3RbX1A0H9jeixZsse9tYWeVRWR7G8nDUrGmwmfT
+	 Bq79471iwASufoOYV1PvJC+XghFLYQ2MxD5/HDOSc4n+LtQTYOTOHfk62Mceiy/VNNQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=wbna6jtg;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.195.47
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012047.outbound.protection.outlook.com [40.93.195.47])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b="rf2lDU/e";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.200.1
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012001.outbound.protection.outlook.com [40.107.200.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90929606A692
-	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 11:46:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90929606A692
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19E29606A321
+	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 11:46:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 19E29606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=wbna6jtg
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=rf2lDU/e
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rAE6IHiq7dQwyukTjcJtG0/Jtq50dRjBdxmuMbYVcjTL4zDmW41oG5gYZAU3QMLBoWPBRT5PeDBGVVpj4TLvwLy0dW0SvwAzJ7xVtapiLCRelev0pdHAQsc/cfBMBbkC4cSF9pkM2c/Ljl4bNtgAu5UZ3C6NgvrygLoNETR51gocb6p8kJv3QjTNygOJu43KJuVLttMBgr8kK3zhvZfu/OHmqP3ERshEVDUQoQSG1pUDjNIiSnkHiRoP00txFZn7x+XQAykQ5pa6zWEtdfedK0wuh27JEGaCi95zKWLfpxF50zkkAzXUfbxhVQStUr7rMtsb/xMBy2QnVDWGMGf7WQ==
+ b=De9j8xwwVij7R2hJ4f7dZX1j/rsfCfDIEU3KtusLrXyiYVFyK2g7amXcNp3JyM0whkwYesgcreyfTQOLIYvn7D1SjRUQu/6cW71EUw1amXnDgRR++FFA8U2FvTIRvLi3vRcn+ZtUvpVBLOXrjZAYjwRu4tXP8sBoZKj0BVcGi0AZ5CMNHzl9v3Dg3vwxYZMHPhkfsjYVmlxig8A1FsVGnjY747i70wvSDtxKDK773CDVGA6uL5wIQ0kIT+/uoNzWP39g9Om+BRTASPUqc7xe1OZwJQ2YJaYZTHpn1RAB/m2H/Su4ZSPqyzNXAlW+tELZCjLU6cU+KpnjyD3OkNZiIQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+8UbzgmkR1cxrBoYfCu2LfFJUbju5rAJKXqy7W2Z6qg=;
- b=CYQ21AW7h5T22STQrxnSZwHYvIndDzRfFIXqA/ae/AP9WNoYHYPdv1c+S4r47suRWFdaIV81oDfdZohsmaD//t1gN7RQiTZ/nT3lVlViNfaS1WxdmyBVDdrpTnzb/P4FrcatXYw/e4wHKaiGKYYazC5izLVbGaS3cqpy9s4pg9JqQy3Y1G5IiUvgG7H+KqEhmhH0HLTCLujo6jGpsd3LDyKzposmCi+EPVyNKDkKHLpleHirbKe+kC5zsvJBOz4brqO6leV9ROVEhSeGZSnzvVWNqWPm1jQJmrRZ+471xKA2OQ7WBtIHzaZZQQlbi2elBOmGU4m12oqawiV98OKYGg==
+ bh=lq+9D4FpU8Asrq/k7/8cK98lBexBRjHLhaRDTbKhagk=;
+ b=fOFRtTu5sozYYsSjnPCAjUjbKmbge3TMWdRG6AJYkshAt+mrAhIy0xSQ51rcn3oQNqv+lEG9DZiyUZ2Hf/fAZyxa7bNyjVoDt00IeQ6/d+PkFSbynhke0ONbQQVpaKH1wu2s0eC7pI1DGDCEBQ35XXo50FyD/pNJ17D/5gdNV6cu2EZxGbbDHF7zEkL00SG942t8XiseE4FiIdz5dh5wEVVJp/oaggCerDKaCUbsuGhfy1QrMnn73lnvUaKV4c5gP9rYNu1BFGaiYNIqPyx3L+Cy0UMQtVPHhiZDnooMHCV4UWl4K2EevRm6ionRlyS4qDu3AuAWkFLo0ZJ3amPRsw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+8UbzgmkR1cxrBoYfCu2LfFJUbju5rAJKXqy7W2Z6qg=;
- b=wbna6jtgVXN8JZRQ1zy9pCMWGKh/yJYUz8n3SXUlnltOozgDB1DKPlqGOwnsRH5btCFnbR+pBOJ+Y5jrJ2cyVapsgntgpQK/pIPaFnvPTODDmufuoXmf5vNIWyUEZ+A4jWbGsUPl/TJ6oWy06QuT+r/98TLaXmYdrtpZkjvnGss=
-Received: from SJ0PR03CA0289.namprd03.prod.outlook.com (2603:10b6:a03:39e::24)
- by CHXPR12MB999243.namprd12.prod.outlook.com (2603:10b6:610:2fc::23) with
+ bh=lq+9D4FpU8Asrq/k7/8cK98lBexBRjHLhaRDTbKhagk=;
+ b=rf2lDU/e/Ar2+xuWj/39LbpJ1caImvgXqugFrToSN4dp1zYUgKBOsOOkOPXEJV/jAMoL6g+3D+X48RwBLFQ3FBdX2E/ejCu+7UAQCoJ/IoVrYp8rfWYcThlWc6S0sBfdScEIOlXiKUBHy2jmkrJepNmdU2yVf+emPiFvIwgRALA=
+Received: from LV3P220CA0009.NAMP220.PROD.OUTLOOK.COM (2603:10b6:408:234::18)
+ by DM6PR12MB4137.namprd12.prod.outlook.com (2603:10b6:5:218::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.10; Fri, 27 Nov
- 2026 11:46:26 +0000
-Received: from PH1PEPF00062F2D.namprd03.prod.outlook.com
- (2603:10b6:a03:39e:cafe::24) by SJ0PR03CA0289.outlook.office365.com
- (2603:10b6:a03:39e::24) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.7; Fri, 27 Nov
+ 2026 11:46:40 +0000
+Received: from BN7PEPF000000A2.namprd04.prod.outlook.com
+ (2603:10b6:408:234:cafe::26) by LV3P220CA0009.outlook.office365.com
+ (2603:10b6:408:234::18) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.662.10 via Frontend Transport; Fri,
- 27 Nov 2026 11:46:26 +0000
+ 27 Nov 2026 11:46:40 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -80,20 +80,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
 Received: from satlexmb07.amd.com (165.204.84.17) by
- PH1PEPF00062F2D.mail.protection.outlook.com (10.167.243.134) with Microsoft
+ BN7PEPF000000A2.mail.protection.outlook.com (10.167.248.154) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.688.5 via Frontend Transport; Fri, 27 Nov 2026 11:46:25 +0000
+ 15.21.688.5 via Frontend Transport; Fri, 27 Nov 2026 11:46:40 +0000
 Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Fri, 27 Nov
- 2026 05:46:22 -0600
+ 2026 05:46:37 -0600
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <will@kernel.org>, <robin.murphy@arm.com>,
 	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v2 6/7] iommu/amd: Update device attach state only after a successful attach
-Date: Fri, 27 Nov 2026 11:44:34 +0000
-Message-ID: <20261127114435.209548-7-vasant.hegde@amd.com>
+Subject: [PATCH v2 7/7] iommu/amd: Write the DTE under the domain lock on attach and detach
+Date: Fri, 27 Nov 2026 11:44:35 +0000
+Message-ID: <20261127114435.209548-8-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20261127114435.209548-1-vasant.hegde@amd.com>
 References: <20261127114435.209548-1-vasant.hegde@amd.com>
@@ -112,83 +112,93 @@ X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
  (10.181.42.216)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH1PEPF00062F2D:EE_|CHXPR12MB999243:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9ba310df-f76d-4caa-9c29-08df4c7c111b
+X-MS-TrafficTypeDiagnostic: BN7PEPF000000A2:EE_|DM6PR12MB4137:EE_
+X-MS-Office365-Filtering-Correlation-Id: a8dec65e-d10a-449b-0e5d-08df4c7c19da
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|82310400026|1800799024|36860700016|376014|18002099003|22082099003|10067099003|5023799004|11063799006|56012099006|261026121527099003|261026140227099003|261028144727099003|261021123027099003|261021121427099003|261022105027099003|261022075727099003|261102123227099003|261009223027099003;
+	BCL:0;ARA:13230040|36860700016|376014|23010399003|82310400026|1800799024|10067099003|11063799006|56012099006|261021123027099003|261102123227099003|261009223027099003|261021121427099003|261026140227099003|261022105027099003|261026121527099003|261028144727099003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	zRAJhzW20/eeHuu++A2oXHGN9ObED4figGL9KDDl3EMmNfLi5d9EyTU9apAl/r6eEAKfe3ihrffIlM+Y4lcZpaq2VhbSUiCaAj0+9f35FKFeVqf6y8OAAPcKu1+BkpkKfPnaPEbZ/G2ikWfq9omJokoTU6PCyDEcPeqy+R5MwMgHIwHV9zjYrPvGK6jG1QdExz9ka8ulEQL445E0EBnfigGjc64awt88ckGyov1j+cwLUUT09+omiKlEfCDlk34wntwULTEW8I+T/Yz3P5xLEqKchgrCTIvxXYlgCylFSew+mXEzWwASDpqBGbVDsu2T85tueV3AJ5d/+jwn4g9PfY8Df8JwRWOSEsYG+z9+9gSLg47Nbz6N4OyIVzniXWIJN0d3Sq5N/94lQB3cR7PGjbdHKli15cothMf59fm9jwaB9mQP5kjwFCC0heMg1GnL8EIbHDV3/XDZBCqNVBUDzAibLC4zZPdh8HUbQEiZx6mdzuEmR1mSKHs0S8TiF7DCYWgJmpKUrCla6YdLRatG0kSCneCFgtl0dedmT4eBIC6DLP24wk93qFRUiNyyIPvxWYdjoDuvd5lXDLTfFbpXyiciLXH2Yv2n6l91bNdK0wSmZ2h6CFNSjZb3PzS9nLXvcwtqu3SZrsp0mQZNLq8glZTXVkv0l+A5piOhRcacbBTXqlhov0iBix4B19Zh+19uVNUn8LjKZ/YgQZVuVAM+eg==
+	tpHQQuBhUbk5nMMy/ye65ju0ObyMB7WPcIjBzAziDDgZDyKIm345WNtBUjgtav8E4uKjmzdeOYMwkSBlLppf5xr3jGmBJHnLm28iFHglcXmrkCTnW/ThhV9khj6Ui3yn/kLAkLFQHFeXC2FRPSmO+WO8ssg3IxCdy4iMt/LMEZPy9UnM7vb6Nr4x1kHIlIlhXlFCkw7jC/3FkIGeJ4G2sdcQ9bct8EoTKcjJOJKp0KXH+6uKqBgukN3KqNeYJv+Dbd/fey/+1j8gnDz75754Bn5oLVpJDWPeWr/FdZetebzyvB1n5Y3s/jJaFyOdfqowj6/mZT9YwHMNxEGpw8yUh+ERBdbXDRkArteD+KmxX4MbUrkoP0X8s6v4BFOYWY+A1qeWL7rHKBi79VGVxR+BthhwF+wyhiX0wSkgzzks1lf3fdWHn8mDADkJt9atNNY5BXdNj4WDoKncdvGc74F480nOm4jgzIn1ozrgjHpoFJoOOm3CNLJyzTAx/rriJ1sM1SRDK6DEEJUabWFPxJf0j1Vueio7cDQFQGYamnbs7Pot2pN9tLLBCIkMPUKNLHiz6KFQxakK7w2lflgiFLYwH7XEOIf0ZP2mo0jnHTNqabmi8xjBXQdJZNRGVKBqXjPLIGaMELtfiWr1dmzkwQI6plFaSkLkOpuKVg6312xWX2jLK2WO6LZLD+evQxp0UZCi92fBSe4eu6NIzT2goKFjhg==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(82310400026)(1800799024)(36860700016)(376014)(18002099003)(22082099003)(10067099003)(5023799004)(11063799006)(56012099006)(261026121527099003)(261026140227099003)(261028144727099003)(261021123027099003)(261021121427099003)(261022105027099003)(261022075727099003)(261102123227099003)(261009223027099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(376014)(23010399003)(82310400026)(1800799024)(10067099003)(11063799006)(56012099006)(261021123027099003)(261102123227099003)(261009223027099003)(261021121427099003)(261026140227099003)(261022105027099003)(261026121527099003)(261028144727099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	si00FHA9TCnsA9I/G/nVNacrohpuBcxdPHzuRYzMuKHLBQYp47wQkogXmBl/TF6APg4ITtll2z9XUTc3Zid049Cwx6T9uUD8EZiApp/bwsVQqjRSFggZYpmyN7D9kVgUZ6TCbZ6Df959LEGGs44jAJsG7R+eVYDaZ2028PBOV6kVC+7/Hq0jbyizTL0Fn9BY/fmKtgsf0tA76EKy8N+jKTvD8jKCMxsiM6r/mXa/1IJeT0i9t9MjOtYPoR31En3kYBi0p8jHxYF+UIZt1zCaJObWvDGDdRwQSVKJBVkSadfWdNRMlpEA7rzIsZtZm19ketMyAUidJ/3SYBeQM+MxdKYRdgEvFANbyKyN/xKrQ2AKQpxs8S1ZBZU+bD6P12x0/bOtPANWy4OGmZLtdQ2S9vLzFEgxgVH2tXCLbeztxdkAFdypzB+rr18mQKrHLU9w
+	HKgKBCWzTCtehIr4DoMICIMWWssQHFzsa0J5AwHlPO6NwNZOExsjWBxX2Wk3RSfy7EN3tp6l3jDSSe7HpIvJ+wdqVSDvyO9BC+u7PSDcRhgWZwlGJCnVpIhnvHuQAcg5x7UKXGnKsJSaNdQI/3NvUsqdNW6W1a97NiS++Eh0Y7AsMQV3lJ0nCMJzXE3fjV6Aa05wHh6HiyNRu4gvrh5zqUB2hkZ/9ZzMvMTRue+mqJbXem9RLwNhAOkxx1FLAAr8TV9F7s9i+FTPq48L6s2SCfi5cKw6XqHPfllk4zM2KDqkg/TsgWKl6bY1TrI/y9z1H2s8PMamNscK8hCQm9XJPZN3dliUbzNnlNX5GI7CxRV9OC0vgsTkpJrEGcMawzI1SwBKrfGkszaYk22PspdbUdE9wD5PI8/c8RKzX9eCopmkLGdXgYXL8VOs5sFoncWI
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2026 11:46:25.5803
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2026 11:46:40.2861
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ba310df-f76d-4caa-9c29-08df4c7c111b
+X-MS-Exchange-CrossTenant-Network-Message-Id: a8dec65e-d10a-449b-0e5d-08df4c7c19da
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	PH1PEPF00062F2D.namprd03.prod.outlook.com
+	BN7PEPF000000A2.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CHXPR12MB999243
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4137
 
-amd_iommu_attach_device() clears dev_data->defer_attach before it has
-validated or attempted anything, and recomputes dev_data->use_vapic
-from the new domain after attach_device() returns, whether or not the
-attach succeeded.
+amd_iommu_change_top() and amd_iommu_set_dirty_tracking() rewrite the DTE
+of every device on the domain's dev_list while holding the domain lock.
+attach_device() adds the device to dev_list under that lock, but builds
+and writes its DTE after dropping it.
 
-When the attach fails, the new domain is not installed. Clearing
-defer_attach then drops the deferred attach for a device that was
-never attached to the new domain, and use_vapic ends up describing a
-domain the device is not using.
+On concurrent update it's possible that it may end up writing old top or
+losing HAD bits.
 
-Clear defer_attach and update use_vapic only once attach_device()
-succeeds. An early failure, such as the dirty tracking check or
-set_device_perfopt(), now leaves both fields untouched.
+detach_device() has the mirror problem: it clears the DTE before taking
+the domain lock, so a concurrent change_top() can make the DTE valid
+again before the device is removed from dev_list.
+
+Hold the domain lock across both the dev_list update and the DTE write,
+in both the attach and detach paths. This follows the existing
+pdom->lock -> dte_lock -> iommu->lock ordering already used by
+change_top().
 
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/iommu.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/iommu/amd/iommu.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 49cccc969639..1c307310cc2c 100644
+index 1c307310cc2c..45298d31b183 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -3017,8 +3017,6 @@ static int amd_iommu_attach_device(struct iommu_domain *dom, struct device *dev,
- 	if (dev_data->domain == domain)
- 		return 0;
- 
--	dev_data->defer_attach = false;
--
- 	/*
- 	 * Restrict to devices with compatible IOMMU hardware support
- 	 * when enforcement of dirty tracking is enabled.
-@@ -3036,6 +3034,10 @@ static int amd_iommu_attach_device(struct iommu_domain *dom, struct device *dev,
- 		detach_device(dev);
- 
- 	ret = attach_device(dev, domain);
-+	if (ret)
-+		return ret;
-+
-+	dev_data->defer_attach = false;
- 
- #ifdef CONFIG_IRQ_REMAP
- 	if (AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)) {
-@@ -3046,7 +3048,7 @@ static int amd_iommu_attach_device(struct iommu_domain *dom, struct device *dev,
+@@ -2396,14 +2396,16 @@ static int attach_device(struct device *dev,
  	}
- #endif
  
--	return ret;
-+	return 0;
- }
+ skip_caps:
+-	/* Update data structures */
+-	dev_data->domain = domain;
++	/*
++	 * Build and write the DTE under the domain lock so a concurrent
++	 * change_top() or dirty tracking update cannot be overwritten with
++	 * stale values.
++	 */
+ 	spin_lock_irqsave(&domain->lock, flags);
++	dev_data->domain = domain;
+ 	list_add(&dev_data->list, &domain->dev_list);
+-	spin_unlock_irqrestore(&domain->lock, flags);
+-
+-	/* Update device table */
+ 	dev_update_dte(dev_data, true);
++	spin_unlock_irqrestore(&domain->lock, flags);
  
- static bool amd_iommu_capable(struct device *dev, enum iommu_cap cap)
+ out:
+ 	mutex_unlock(&dev_data->mutex);
+@@ -2441,11 +2443,12 @@ static void detach_device(struct device *dev)
+ 	if (dev_is_pci(dev))
+ 		pdev_disable_caps(to_pci_dev(dev));
+ 
++	spin_lock_irqsave(&domain->lock, flags);
++
+ 	/* Clear DTE and flush the entry */
+ 	dev_update_dte(dev_data, false);
+ 
+ 	/* Flush IOTLB and wait for the flushes to finish */
+-	spin_lock_irqsave(&domain->lock, flags);
+ 	amd_iommu_domain_flush_all(domain);
+ 	list_del(&dev_data->list);
+ 	spin_unlock_irqrestore(&domain->lock, flags);
 -- 
 2.31.1
 
