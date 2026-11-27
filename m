@@ -1,146 +1,121 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=128.30.2.78
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.227.138
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795769464;
-	b=3vmcZn7Jpe8VKDy7Ay8xuQmiIfOAl6kZO6UQuc3+Pyo8jGm7v/fRuMDD9Xj/oHJvxrv8
-	 cLXJLtNXdAyK6fjz+6gB8eSEiGpNUBlW2Z/6EBFinZ9Cv9UgOO+ooPc66TPrCEOd4HCAc
-	 fcz2KGuvH2bc1uqsRa5mNaonMTDmkECgosdmoIvDauL4pha6Lrj1Kb7V4fgihrUjcvdF8
-	 h6Lm/v+YvEU6Qspd1dxzgd9S0IQtadoVKQsRQ00LuruHWhvQaWClHmyMDOlWbnjeIsEqB
-	 sZ8KJ47GhtgYshTDfyKNDQj9Qimm2MFc7vaUJ1rKpr7BVFRLY98aqw9Zho1BIAlWjzw==
+	t=1795770462;
+	b=nO34vFEP7UyShqOWlq9P4SIXNt/YUSngtLMBQLOllkswRdRinoZymDgSTLuseJwCitgg
+	 3DdKA+pgL98MTIVf7UO/hcJXYtTEKfSr3fW+5joAYnk/gE5uvEymqRrkjaKo1bL3yP5dO
+	 OAxVmFS2t6XzmpFGi0rUSAogpRVkF3qpa52USAyeWTGvflU3RbMf8Wr25qFsxwpC/MX4u
+	 NJfPWHB0jx3vXhm0m8fWwXhRiHkpYylhRP8xtT36iYPMocPbbxVf4pE6VWFRk4SF4YXjI
+	 atrs/B8M7c20pzuhWqd04YL+N8P6+/AapSW78MzptNZnfgK+5DazH6TJlaR+hXVSxyw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795769464;
-	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
-	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To;
-	bh=njh3SQBBAQE61UxliWgOlIeTiJ2q96ejV3+knyCCvnY=;
-	b=d1DXSzToQ+NSWw3JPfbbCrAQhkNYUaW9zaQ0Kq36JP/8woKgKUTQgShqaZ81EMafXCG8
-	 DiMpPZ97OccqrKo7UFt334tkVjALPM2IZ1xomiHQXsloYBKIPjRZgTPZkfTXEgIuMKm9Q
-	 b7sz4NZ/jrYEC4SK/QralyrpABcEM3c4IqS4+t1BQJ4t0IGFt36KPGh/71hEPyzFmrovC
-	 nxc+Wj+vndn+a79SArUDt7iPLwuEgjZVc4EU2LwUiuG5EFKMkjzbdHTWlbJk9g5Ghhk3i
-	 +gyaUSwMT4DyVt4FMfzdvMPL6rGzFmLXNPqHEwk7ssXWB+RiqyGc5V3rVm/N0hQbEkQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795770462;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=Y/UMHkeyUCY25NbdTw5rz9oJMH9U+JYd8hruRProdo8=;
+	b=bBUdEC0q6xnjfwyCeIrWGoq5J6RqmPMD9afnxWnGwwzjdG2tzksUmAH0HKzdghXTbIxv
+	 M+XshnoOVqJyZzKKaYGQWe3oFHyWauD8aljCsx+JNgDvpD7d9kI8vtnMxadq3B1S1Td+d
+	 sBfl4YBJrsOfYDC4YrpwRHPrV79zm9e8+Ou/jGwYzdOfylR1AwX/OZS5trsXDitqvTNhC
+	 oYEorY1a6fs/BJKhCD3pn3SvUOJ2GLriYd2IubJV61WxUQoID1orPPZvj8xyFwaqaFTx+
+	 I87LTDsdUn+9E3F8/VhwdrMdS4p0ed7S0oyv7jk4mRr2SmJsTBURdi1Hp0SfutIZfkA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=csail.mit.edu;
-	spf=pass smtp.mailfrom=csail.mit.edu;
-	dkim=pass header.d=outgoing.csail.mit.edu header.i=@outgoing.csail.mit.edu header.a=rsa-sha256 header.s=test20231205 header.b=xCF78GQE;
-	arc=none smtp.remote-ip=128.30.2.78
-Received: from outgoing2021.csail.mit.edu (outgoing2021.csail.mit.edu [128.30.2.78])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=er0dBdVc;
+	arc=none smtp.remote-ip=74.125.227.138
+Received: from mail-pj2-f10.google.com (mail-pj2-f10.google.com [74.125.227.138])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48CD4606A31C;
-	Fri, 27 Nov 2026 08:51:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 48CD4606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=csail.mit.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csail.mit.edu
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89A31606A326
+	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 09:07:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 89A31606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=outgoing.csail.mit.edu header.i=@outgoing.csail.mit.edu header.a=rsa-sha256 header.s=test20231205 header.b=xCF78GQE
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=outgoing.csail.mit.edu; s=test20231205; h=In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=njh3SQBBAQE61UxliWgOlIeTiJ2q96ejV3+knyCCvnY=; t=1795769464; x=1796633464; 
-	b=xCF78GQEoFuR5VSaFZJwsaQMsUqzxgkhr09s1AQlGBjs9gBHC90OExhT7yjx4EsH4WivLTHbGpI
-	p1E/a5+X4T4RCZDkcyYHblwO39qcnCS/jX+2rUBbwS1mQZgFvoM/x2kdWTDEyGuqBWjJm6feGtK2Z
-	wFpefSVLt7txJoZA0iIqI5jyU1zgPndu9WsOj6WeNxR3WovhoLSiXmJUNYFRfVro1Za1MGilJ19PW
-	Hz4feHPtbiuyFMlqUrY+NSp8E4S+LNWmiuwiqTCvoNSDozbzEFxQ7prI17GmZtzkMkrajaIxy6L5f
-	r/0Om6ynlQj5DoUoMwLx+tY8sfilr31FNhtg==;
-Received: from [167.220.238.14] (helo=csail.mit.edu)
-	by outgoing2021.csail.mit.edu with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.95)
-	(envelope-from <srivatsa@csail.mit.edu>)
-	id 1xWreR-007Btx-5B;
-	Fri, 27 Nov 2026 03:49:51 -0500
-Date: Fri, 27 Nov 2026 14:19:20 +0530
-From: "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
-To: Richard Cheng <icheng@nvidia.com>
-Cc: Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Minchan Kim <minchan@kernel.org>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Jens Axboe <axboe@kernel.dk>, Chanwoo Choi <cw00.choi@samsung.com>,
-	MyungJoo Ham <myungjoo.ham@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Heiko Stuebner <heiko@sntech.de>, Xu Yilun <yilun.xu@intel.com>,
-	Tom Rix <trix@redhat.com>, Moritz Fischer <mdf@kernel.org>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Mike Leach <mike.leach@arm.com>,
-	James Clark <james.clark@linaro.org>, Leo Yan <leo.yan@arm.com>,
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-	Sizhe Liu <liusizhe5@huawei.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Song Liu <song@kernel.org>,
-	Yu Kuai <yukuai@fygo.io>, Li Nan <magiclinan@didiglobal.com>,
-	Xiao Ni <xiao@kernel.org>, Haren Myneni <haren@linux.ibm.com>,
-	Rick Lindsley <ricklind@linux.ibm.com>,
-	Nick Child <nnac123@linux.ibm.com>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	"Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-	Shrikanth Hegde <sshegde@linux.ibm.com>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Marcin Wojtas <marcin.s.wojtas@gmail.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowangio@gmail.com>,
-	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Dan Williams <djbw@kernel.org>,
-	Vishal Verma <vishal.l.verma@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Alison Schofield <alison.schofield@intel.com>,
-	Ira Weiny <iweiny@kernel.org>,
-	Shuai Xue <xueshuai@linux.alibaba.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jing Zhang <renyu.zj@linux.alibaba.com>,
-	Frank Li <Frank.li@nxp.com>, Xu Yang <xu.yang_2@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Yushan Wang <wangyushan12@huawei.com>,
-	Jijie Shao <shaojijie@huawei.com>,
-	Gowthami Thiagarajan <gthiagarajan@marvell.com>,
-	Geetha sowjanya <gakula@marvell.com>,
-	Justin Tee <justin.tee@broadcom.com>,
-	Paul Ely <paul.ely@broadcom.com>,
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-	"Martin K. Petersen" <mkp@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Steffen Klassert <steffen.klassert@secunet.com>,
-	Daniel Jordan <daniel.m.jordan@oracle.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	Yosry Ahmed <yosry@kernel.org>, Nhat Pham <nphamcs@gmail.com>,
-	Chengming Zhou <chengming.zhou@linux.dev>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-pm@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=er0dBdVc
+Received: by mail-pj2-f10.google.com with SMTP id 98e67ed59e1d1-3b3d125637aso1562258a91.0
+        for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 01:07:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795770461; x=1796375261; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Y/UMHkeyUCY25NbdTw5rz9oJMH9U+JYd8hruRProdo8=;
+        b=er0dBdVcQhvlKo6n8ondjyF3IFNB0wpq9fwsoKyGtLxwGqk6K/+KeZCLHL6BtqSB/u
+         NN3vCdFMO/Iv02oZ8iDLbPnc7yC3zL6nSnNEeFR9Q7slNemByWRfS3YieXQfQpBAFr+N
+         yovOpOmr1V6/nhVQiYMUF4uT0sVZRGdfYF00oeYeSsO3xngoMcPz+vwqLFX86alk57LM
+         ak5prgjj/i/352YuS3BMAzu6OWAdZOiHXrqpwGZ+rkiOHWHMkw86FA+Huw2olHtHpnr7
+         1yW5IIkG8DdmWAJY97SRqYOERht9HkVJC0MWXKdcUzD9ICYNWwQVTU/wWm+4eAM1nUf5
+         KIZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795770461; x=1796375261;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Y/UMHkeyUCY25NbdTw5rz9oJMH9U+JYd8hruRProdo8=;
+        b=WPG7VC7xcg1Rno6uUseklNlk+B+IPXME+a1NgFYnLEfI0IpmxVmzLfS4bzrYVkHnny
+         DOHuRAU0bOSELAWf1Z2ZxmdJfMueEH0DPvxZ+yJP8Uk4t9zIN5JjkKnLUeq9AlMjSDDg
+         d8+VgdBsXcI3w+u/A7HIcCmiajdGP0Dji6xkCk8zDZ+HmmEspuIRg9rFk+LccmVFCuUW
+         9Rx3QPvS0lRRmw6Y0hfDCSEkdVqoCD0PcwyD+w2W/bEWqcZShG/RBK46j3HpaubzSAF+
+         l9aHIj7yEdP7FCNJZcLlpFP38iMFHHPTwMvk9EYZqzwEUeUpPUMCcQmz1M/23WgM541r
+         6r1Q==
+X-Forwarded-Encrypted: i=1; AL+hErGsS/YFPEA9ewRHUX2n6bqdO39oyjl6wIeuk5ng3WTxVYQzESdjpclqnE4Do/Ys2s8nxhk2Mw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9dCVWQBy6pN/tlnODGTxwLVAPxMXxlxSN+hW6rduHjvpo2V2sv
+	jeG+ZK5x8wD5qwGQPHaluG277hgzMv9lAw2jYZsvsl6DOoTXhgaOTf+R
+X-Gm-Gg: AZFdTZc/oFHZyuWTT3RMh9cSPoPemJMmZFBceZ2gB7CS3LeRH9kBodt7zYRZXdK5COh
+	1JxX92E0gOLCi0NpJMqgT2x61E9fM9uDTk6TBThRwZg/TS1qiCbwol84RosTt/cS4sAfhXkx2no
+	wxwqBSXG1f8Dkd6C8WYgzpmN4iGU12feZbPHbLGJ3OT5tXh54KsIOV46UIedbZUGN0NZ5YI52w6
+	TAIjiNw3zgyJi5gnjZWRqWjqFZtX9jkGBrkMelOuVjYNU+URfwO2ec1zcsQhgXC61JYDQaq6ZFE
+	M6NveS3D+/XdaIZEQbfRX6iz9vafas2vqdSBJtxGkZ4PRrl1putFiRwT1mtsJASk7JXPtjJ0IXO
+	LlUuAxzP2jKwt577TTGt/+aXLUjsA3tcHpbN9CH6ehbWm2Gug8s0L5KxZsDN15dwVoCLLGfSPmY
+	1qGbACNScE7gY/wzX1WFa91CMxZpYlkaX33Vey3P9Kt8wxA7mNO/jhn5z59uG+I3JLrGGdoK+Q9
+	mkCoSlZL737Gpp0CHLq4XpcPuik9NHcJ7/tNx3l9zxKlzNrHhFgRzSwSmwHM50a/5geiBj0OuYL
+	pM75KclFsx6IClBvJcfz6XHUt77gbDm8hqWG7TqDqQ==
+X-Received: by 2002:a17:90b:5287:b0:3b0:d35d:bb86 with SMTP id 98e67ed59e1d1-3b41c8fe261mr23255612a91.15.1795770460754;
+        Fri, 27 Nov 2026 01:07:40 -0800 (PST)
+Received: from intel.company.local ([122.11.210.25])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cde6d06ee37sm11718725a12.28.2026.11.27.01.07.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Nov 2026 01:07:39 -0800 (PST)
+From: Wandun Chen <chenwandun1@gmail.com>
+To: pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	robh@kernel.org,
+	baoquan.he@linux.dev,
+	rppt@kernel.org,
+	m.szyprowski@samsung.com
+Cc: catalin.marinas@arm.com,
+	will@kernel.org,
+	mark.rutland@arm.com,
+	chenhuacai@kernel.org,
+	kernel@xen0n.name,
+	tglx@kernel.org,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	hpa@zytor.com,
+	saravanak@kernel.org,
+	akpm@linux-foundation.org,
+	pasha.tatashin@soleen.com,
+	pratyush@kernel.org,
+	ruirui.yang@linux.dev,
+	robin.murphy@arm.com,
+	ruanjinjie@huawei.com,
 	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-fpga@vger.kernel.org,
-	coresight@lists.linaro.org, iommu@lists.linux.dev,
-	linux-raid@vger.kernel.org, netdev@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, virtualization@lists.linux.dev,
-	nvdimm@lists.linux.dev, linux-perf-users@vger.kernel.org,
-	linux-cxl@vger.kernel.org, imx@lists.linux.dev,
-	linux-scsi@vger.kernel.org, linux-crypto@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, linux-mm@kvack.org,
-	Prasanna Kumar T S M <ptsm@linux.microsoft.com>,
-	Saurabh Sengar <ssengar@linux.microsoft.com>
-Subject: Re: [PATCH] cpu/hotplug: Rename cpuhp_remove_multi_state to be
- symmetric with setup
-Message-ID: <awlEEAmT4k7fvQck@csail.mit.edu>
-References: <20261127-fix-rename_cpuhp_remove_multi_state-v1-1-097db4564cbd@csail.mit.edu>
- <awk6TGp9riwDD55i@MWDK4CY14F>
+	linux-kernel@vger.kernel.org,
+	loongarch@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	kexec@lists.infradead.org,
+	linux-mm@kvack.org,
+	iommu@lists.linux.dev
+Subject: [PATCH v10 0/8] kdump: reduce vmcore size and capture time
+Date: Fri, 27 Nov 2026 17:07:15 +0800
+Message-ID: <20261127090723.741253-1-chenwandun1@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -150,35 +125,114 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <awk6TGp9riwDD55i@MWDK4CY14F>
+Content-Transfer-Encoding: 8bit
 
-Hi Richard,
+From: Wandun Chen <chenwandun@lixiang.com>
 
-On Fri, Nov 27, 2026 at 04:09:11PM +0800, Richard Cheng wrote:
-> On Fri, Nov 27, 2026 at 01:07:40PM +0800, Srivatsa S. Bhat (Microsoft) wrote:
-> > The multi-instance CPU hotplug state setup API is named as
-> > cpuhp_setup_state_multi(), whereas the corresponding remove API is
-> > currently named as cpuhp_remove_multi_state(). Rename the latter as
-> > cpuhp_remove_state_multi() to fix the asymmetry. This also helps
-> > maintain consistency in the API names by letting them share a common
-> > prefix, i.e., cpuhp_setup/remove_state_*() across all the variants
-> > [none|nocalls|nocalls_cpuslocked].
-> > 
-> > Signed-off-by: Srivatsa S. Bhat (Microsoft) <srivatsa@csail.mit.edu>
-> 
-> Hi Srivatsa,
-> 
-> Not sure whether this is really needed, it doesn't harm anything,
-> but IMHO it doesn't really brings us benefit.
-> 
+On SoCs that carve out large firmware-owned reserved memory (GPU,
+camera ISP, ...), kdump currently dumps those carveouts as part of
+system RAM even though their contents are firmware state that is not
+useful for kernel crash analysis.
 
-I agree, this is not intended to be a functional change. The cleanup benefit is
-on the side of the CPU hotplug core API to provide better consistency in terms
-of the API naming pattern, but the current callsites that consume this API
-should see no functional difference as a result of this change. The consistency
-will help future callsites though!
+ACPI systems already filter reserved memory out of the vmcore through
+their existing path: firmware reports those carveouts as unusable in
+the EFI memory map, they get MEMBLOCK_NOMAP set in memblock.memory
+(is_usable_memory(), efi-init.c), and the ELF header builder has
+always skipped nomap regions; only DT-based systems currently fail
+to filter these regions, which is what this series addresses.
 
-Regards,
-Srivatsa
+This series introduces a MEMBLOCK_NODUMP flag (suggested by Rob) in
+memblock to filter reserved memory on DT-based architectures. A new
+flag is needed because MEMBLOCK_NOMAP can only express regions without
+a linear mapping, while MEMBLOCK_NODUMP can filter regions that are
+linearly mapped. Reserved regions are marked MEMBLOCK_NODUMP by default
+so kdump omits them; reusable CMA regions are different because their
+pages are handed back to the buddy allocator and may carry crash-relevant
+data.
+
+Since the reserved memory regions are filtered out, the vmcore is
+smaller in size and faster to produce.
+
+The series is based on linux-next and is organized as follows:
+
+Patches 1-3: Preparation and bugfixes: switch riscv crash_mem to
+             memblock, fold the duplicated per-arch memblock walks
+             into the weak defaults, and serialize crash header
+             preparation against memory hotplug.
+Patches 4-7: NODUMP infrastructure: switch crash_core to
+             for_each_mem_region(), introduce the MEMBLOCK_NODUMP
+             flag, add a dumpable flag to struct reserved_mem, and
+             mark /reserved-memory entries with MEMBLOCK_NODUMP.
+Patch 8:     Skip MEMBLOCK_NODUMP regions when building the vmcore
+             ELF header.
+
+
+v9 --> v10:
+1. Rebased on the latest linux-next, which includes the
+   reserved-memory rework.
+
+2. Patch 7: fix two issues found by Sashiko [1], by skipping
+   the NODUMP marking entirely when early reservation fail
+   and clamping the marked range to page boundaries.
+
+   The changes only tighten the conditions for marking NODUMP
+   and the overall logic is unchanged, so the Acked-by and
+   Reviewed-by tags are kept -- Marek, Rob, please let me know
+   if you disagree and I will drop them.
+
+3. The remaining x86-specific race in patch 3 found by Sashiko [2]
+   (Xen balloon inserting a System RAM resource outside
+   device_hotplug_lock) is pre-existing, and fixing it depends on
+   resolving other pre-existing issues first, so it will be sent
+   separately.
+
+[1] https://sashiko.dev/#/message/sashiko-outbox-181183@kernel.org
+[2] https://sashiko.dev/#/message/sashiko-outbox-181179@kernel.org
+
+An Ack for patch 1 from the riscv maintainers is still pending:
+I have pinged them, but no response yet. The Ack will be added
+once received.
+
+v8 --> v9:
+1. Patch 7: Avoid a potential boot panic on SH when NODUMP marking requires
+   memblock resizing before it is allowed. SH supports neither
+   CONFIG_KEXEC_FILE nor CONFIG_CRASH_HOTPLUG, so skip marking when both
+   are disabled.
+
+v7: https://lore.kernel.org/lkml/20260922084256.1515554-1-chenwandun1@gmail.com/
+v6: https://lore.kernel.org/lkml/20260902073116.802752-1-chenwandun1@gmail.com/
+v5: https://lore.kernel.org/lkml/20260806093519.2907771-1-chenwandun1@gmail.com/
+v4: https://lore.kernel.org/lkml/20260630074715.4126796-1-chenwandun1@gmail.com/
+
+
+Wandun Chen (8):
+  riscv: build crash_mem ranges from memblock instead of resource tree
+  crash_core: fold duplicated memblock arch hooks into the weak default
+  crash_core: serialize crash header preparation against hotplug
+  crash_core: replace for_each_mem_range() with for_each_mem_region()
+  memblock: introduce MEMBLOCK_NODUMP flag
+  of: reserved_mem: add dumpable flag to opt-in vmcore
+  of: reserved_mem: mark /reserved-memory entries with MEMBLOCK_NODUMP
+  crash_core: skip MEMBLOCK_NODUMP regions when building vmcore ELF
+    header
+
+ arch/arm64/kernel/machine_kexec_file.c     | 29 ------------
+ arch/loongarch/kernel/machine_kexec_file.c | 27 -----------
+ arch/riscv/Kconfig                         |  2 +-
+ arch/riscv/kernel/crash.c                  |  2 +-
+ arch/riscv/kernel/machine_kexec_file.c     | 33 --------------
+ arch/x86/kernel/crash.c                    |  2 +-
+ drivers/of/fdt.c                           |  2 +
+ drivers/of/of_private.h                    |  1 +
+ drivers/of/of_reserved_mem.c               | 30 ++++++++++++
+ include/linux/crash_core.h                 |  2 +
+ include/linux/memblock.h                   |  9 ++++
+ include/linux/of_reserved_mem.h            |  1 +
+ kernel/crash_core.c                        | 53 +++++++++++++++++++++-
+ kernel/dma/contiguous.c                    |  1 +
+ mm/memblock.c                              | 16 +++++++
+ 15 files changed, 116 insertions(+), 94 deletions(-)
+
+-- 
+2.43.0
+
