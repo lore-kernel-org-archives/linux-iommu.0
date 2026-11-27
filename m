@@ -1,91 +1,146 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=128.30.2.78
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795769334;
-	b=ykStq+tpdBOgxEsjRubZbbFfCX9JNdVHU5d1nGhKGSZows3Vny03HO3gx4Q22bMaTuq1
-	 AJaj6CpLFUNfijiTdXZIEIQZuzkA5qTsyJ2iyZs7G2WuM3aRk+glLMrf0l05dsFOFKejf
-	 2URLsM/fHFMVojTJxO93Wep0qqCIic5T2RDLBYuSF3LuwHVIhPui+8NpKb82KhH6WiNAl
-	 7ZpnYPPXjksONggJqcFCD2Bd6h6z0rqWSmKMmMoFGzbFWMhNrCpCg/0KFC7CVhMfP790D
-	 tbMCCv2sUBgglvx5jjTX1Aib+ddNhTNPDCZJo7Few+DzJh0Tj+rVvsSipkQUlSMmLaA==
+	t=1795769464;
+	b=3vmcZn7Jpe8VKDy7Ay8xuQmiIfOAl6kZO6UQuc3+Pyo8jGm7v/fRuMDD9Xj/oHJvxrv8
+	 cLXJLtNXdAyK6fjz+6gB8eSEiGpNUBlW2Z/6EBFinZ9Cv9UgOO+ooPc66TPrCEOd4HCAc
+	 fcz2KGuvH2bc1uqsRa5mNaonMTDmkECgosdmoIvDauL4pha6Lrj1Kb7V4fgihrUjcvdF8
+	 h6Lm/v+YvEU6Qspd1dxzgd9S0IQtadoVKQsRQ00LuruHWhvQaWClHmyMDOlWbnjeIsEqB
+	 sZ8KJ47GhtgYshTDfyKNDQj9Qimm2MFc7vaUJ1rKpr7BVFRLY98aqw9Zho1BIAlWjzw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795769334;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
-	 Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
-	 References:MIME-Version:Content-Transfer-Encoding:
-	 X-Proofpoint-Reinject:X-QCInternal:X-QCInternal:
-	 X-Proofpoint-ORIG-GUID:X-Authority-Analysis:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-GUID:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=K9GE5EqxXG5dSPh7D6jFDueWLhRzAd8DelVKAgzkI0Y=;
-	b=H4f59/BSGoTHMNsChp+rLLX5/+5B/33LFmlwktjKQLKA0+epesy5SP7QdNy/JCg8jw2S
-	 dAEF5eKQqpmQfCkvB9aga7NfPc8WhBQQ29KbaJ9xSwZd/gnm/FWR9nZGhLT2r0mRWZAS/
-	 afG17goyTEBQDDTib96X6y4xfPfKSfv5tLPYooLZ98gMSZyT5Zcg3cGxl/fKJDzxM3ctR
-	 RwsLMq0G/b4CghoKBakhq0A4R0j638KKxYCGjwRFQsQ3ZA03+frTBug6wCBes0al1l9uh
-	 QSkZE4Lnr8fPCD6prcXydJs6sbiZ88aIg/HK0H4D4v2nz7/WGGQApCa8vkzzjacrr6A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795769464;
+	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
+	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
+	 In-Reply-To;
+	bh=njh3SQBBAQE61UxliWgOlIeTiJ2q96ejV3+knyCCvnY=;
+	b=d1DXSzToQ+NSWw3JPfbbCrAQhkNYUaW9zaQ0Kq36JP/8woKgKUTQgShqaZ81EMafXCG8
+	 DiMpPZ97OccqrKo7UFt334tkVjALPM2IZ1xomiHQXsloYBKIPjRZgTPZkfTXEgIuMKm9Q
+	 b7sz4NZ/jrYEC4SK/QralyrpABcEM3c4IqS4+t1BQJ4t0IGFt36KPGh/71hEPyzFmrovC
+	 nxc+Wj+vndn+a79SArUDt7iPLwuEgjZVc4EU2LwUiuG5EFKMkjzbdHTWlbJk9g5Ghhk3i
+	 +gyaUSwMT4DyVt4FMfzdvMPL6rGzFmLXNPqHEwk7ssXWB+RiqyGc5V3rVm/N0hQbEkQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=fq9D2Reh;
-	arc=none smtp.remote-ip=205.220.180.131
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	dmarc=pass header.from=csail.mit.edu;
+	spf=pass smtp.mailfrom=csail.mit.edu;
+	dkim=pass header.d=outgoing.csail.mit.edu header.i=@outgoing.csail.mit.edu header.a=rsa-sha256 header.s=test20231205 header.b=xCF78GQE;
+	arc=none smtp.remote-ip=128.30.2.78
+Received: from outgoing2021.csail.mit.edu (outgoing2021.csail.mit.edu [128.30.2.78])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDA2E606A32E
-	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 08:48:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EDA2E606A32E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48CD4606A31C;
+	Fri, 27 Nov 2026 08:51:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 48CD4606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=csail.mit.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csail.mit.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=fq9D2Reh
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AR7GbZ73759043;
-	Fri, 27 Nov 2026 08:48:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=qcppdkim1; bh=K9GE5EqxXG5
-	dSPh7D6jFDueWLhRzAd8DelVKAgzkI0Y=; b=fq9D2Rehhh/KXAWWZ6ifmA40oz8
-	8ck1IWsOyJq7pKwhbs4wnamR8n90TCHhsTQTDC/nF4Q82+uRzgytw4A27JhZ2jZ6
-	uGM6X41COLW9NCOSKfgt4sY/asrwLKMoTY5krzMaqGI39N0KRx6EPU4gFANMRTpF
-	9PGF3xJBb2d+RZ/zS2IJi35mhcXS63wDS1ZewfChdpuYyLcZgW42acMt/IvXji0e
-	ARFEP3sMNTyx3Z8aQoMxPJjalGhAJQqwLq/zC7XuIAgqTfFKawjGgOO87njQguHb
-	fWryBjJlnQa6HAm0ezpG1rfoyj1vrdVjxMHgtzr8FkMiLC547jlP3+du6IQ==
-Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4j74g6rhvh-1
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Fri, 27 Nov 2026 08:48:30 +0000 (GMT)
-Received: from pps.filterd (apblrppmta02.qualcomm.com [127.0.0.1])
-	by APBLRPPMTA02.qualcomm.com (8.18.1.11/8.18.1.11) with ESMTP id 6AR8mRbd1693407;
-	Fri, 27 Nov 2026 08:48:27 GMT
-Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-mohis-hyd.qualcomm.com [10.147.253.64])
-	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 6AR8mR5G1693395
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Fri, 27 Nov 2026 08:48:27 +0000 (GMT)
-Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 4840500)
-	id 98A246AD; Fri, 27 Nov 2026 14:18:26 +0530 (+0530)
-From: Mohit Sharma <mohit.sharma@oss.qualcomm.com>
-To: Srinivas Kandagatla <srini@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Mark Brown <broonie@kernel.org>
-Cc: Ajay Kumar Nandam <ajay.nandam@oss.qualcomm.com>,
-        Liam Girdwood <lgirdwood@gmail.com>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Konrad Dybcio <konradybcio@kernel.org>,
-        Abel Vesa <abelvesa@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-sound@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Mohit Sharma <mohit.sharma@oss.qualcomm.com>
-Subject: [PATCH v2 3/4] arm64: dts: qcom: shikra: Add q6apm DAI compatible
-Date: Fri, 27 Nov 2026 14:18:25 +0530
-Message-Id: <20261127084826.916361-4-mohit.sharma@oss.qualcomm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261127084826.916361-1-mohit.sharma@oss.qualcomm.com>
-References: <20261119164705.1594066-1-mohit.sharma@oss.qualcomm.com>
- <20261127084826.916361-1-mohit.sharma@oss.qualcomm.com>
+	dkim=pass (2048-bit key, unprotected) header.d=outgoing.csail.mit.edu header.i=@outgoing.csail.mit.edu header.a=rsa-sha256 header.s=test20231205 header.b=xCF78GQE
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=outgoing.csail.mit.edu; s=test20231205; h=In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=njh3SQBBAQE61UxliWgOlIeTiJ2q96ejV3+knyCCvnY=; t=1795769464; x=1796633464; 
+	b=xCF78GQEoFuR5VSaFZJwsaQMsUqzxgkhr09s1AQlGBjs9gBHC90OExhT7yjx4EsH4WivLTHbGpI
+	p1E/a5+X4T4RCZDkcyYHblwO39qcnCS/jX+2rUBbwS1mQZgFvoM/x2kdWTDEyGuqBWjJm6feGtK2Z
+	wFpefSVLt7txJoZA0iIqI5jyU1zgPndu9WsOj6WeNxR3WovhoLSiXmJUNYFRfVro1Za1MGilJ19PW
+	Hz4feHPtbiuyFMlqUrY+NSp8E4S+LNWmiuwiqTCvoNSDozbzEFxQ7prI17GmZtzkMkrajaIxy6L5f
+	r/0Om6ynlQj5DoUoMwLx+tY8sfilr31FNhtg==;
+Received: from [167.220.238.14] (helo=csail.mit.edu)
+	by outgoing2021.csail.mit.edu with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.95)
+	(envelope-from <srivatsa@csail.mit.edu>)
+	id 1xWreR-007Btx-5B;
+	Fri, 27 Nov 2026 03:49:51 -0500
+Date: Fri, 27 Nov 2026 14:19:20 +0530
+From: "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
+To: Richard Cheng <icheng@nvidia.com>
+Cc: Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Minchan Kim <minchan@kernel.org>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Jens Axboe <axboe@kernel.dk>, Chanwoo Choi <cw00.choi@samsung.com>,
+	MyungJoo Ham <myungjoo.ham@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Heiko Stuebner <heiko@sntech.de>, Xu Yilun <yilun.xu@intel.com>,
+	Tom Rix <trix@redhat.com>, Moritz Fischer <mdf@kernel.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Mike Leach <mike.leach@arm.com>,
+	James Clark <james.clark@linaro.org>, Leo Yan <leo.yan@arm.com>,
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+	Sizhe Liu <liusizhe5@huawei.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Song Liu <song@kernel.org>,
+	Yu Kuai <yukuai@fygo.io>, Li Nan <magiclinan@didiglobal.com>,
+	Xiao Ni <xiao@kernel.org>, Haren Myneni <haren@linux.ibm.com>,
+	Rick Lindsley <ricklind@linux.ibm.com>,
+	Nick Child <nnac123@linux.ibm.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	"Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Marcin Wojtas <marcin.s.wojtas@gmail.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Jason Wang <jasowangio@gmail.com>,
+	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Dan Williams <djbw@kernel.org>,
+	Vishal Verma <vishal.l.verma@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Alison Schofield <alison.schofield@intel.com>,
+	Ira Weiny <iweiny@kernel.org>,
+	Shuai Xue <xueshuai@linux.alibaba.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jing Zhang <renyu.zj@linux.alibaba.com>,
+	Frank Li <Frank.li@nxp.com>, Xu Yang <xu.yang_2@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Yushan Wang <wangyushan12@huawei.com>,
+	Jijie Shao <shaojijie@huawei.com>,
+	Gowthami Thiagarajan <gthiagarajan@marvell.com>,
+	Geetha sowjanya <gakula@marvell.com>,
+	Justin Tee <justin.tee@broadcom.com>,
+	Paul Ely <paul.ely@broadcom.com>,
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+	"Martin K. Petersen" <mkp@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Steffen Klassert <steffen.klassert@secunet.com>,
+	Daniel Jordan <daniel.m.jordan@oracle.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Johannes Weiner <hannes@cmpxchg.org>,
+	Yosry Ahmed <yosry@kernel.org>, Nhat Pham <nphamcs@gmail.com>,
+	Chengming Zhou <chengming.zhou@linux.dev>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-pm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-fpga@vger.kernel.org,
+	coresight@lists.linaro.org, iommu@lists.linux.dev,
+	linux-raid@vger.kernel.org, netdev@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, virtualization@lists.linux.dev,
+	nvdimm@lists.linux.dev, linux-perf-users@vger.kernel.org,
+	linux-cxl@vger.kernel.org, imx@lists.linux.dev,
+	linux-scsi@vger.kernel.org, linux-crypto@vger.kernel.org,
+	linux-trace-kernel@vger.kernel.org, linux-mm@kvack.org,
+	Prasanna Kumar T S M <ptsm@linux.microsoft.com>,
+	Saurabh Sengar <ssengar@linux.microsoft.com>
+Subject: Re: [PATCH] cpu/hotplug: Rename cpuhp_remove_multi_state to be
+ symmetric with setup
+Message-ID: <awlEEAmT4k7fvQck@csail.mit.edu>
+References: <20261127-fix-rename_cpuhp_remove_multi_state-v1-1-097db4564cbd@csail.mit.edu>
+ <awk6TGp9riwDD55i@MWDK4CY14F>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -95,65 +150,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Reinject: loops=2 maxloops=12
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-ORIG-GUID: 4iIrR8MRngmXFkn0F5oDF5dnEeXhAPMc
-X-Authority-Analysis: v=2.4 cv=U5kHnuru c=1 sm=1 tr=0 ts=6b0943de cx=c_pps
- a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
- a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
- a=rJkE3RaqiGZ5pbrm-msn:22 a=EUspDBNiAAAA:8 a=5Lo-wh1e_jXiNIEOTl4A:9
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI3MDAzNCBTYWx0ZWRfX9OK+pLiDFwuX
- sqe3XXrnK+X+5YlngN0OqbynT69tY97LPob5zLmwQZrGSS4VBrOunUA/dH06+Xkmgrbc5iH+k7g
- WFm4bgTxa3Dp+yzq68+0KUWhSIQoQ5I=
-X-Proofpoint-GUID: 4iIrR8MRngmXFkn0F5oDF5dnEeXhAPMc
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI3MDAzNCBTYWx0ZWRfXw37i9MAKv+iY
- YUYtp34zo0dDsLt3nJC8hy8T7R0KV6Jgpxq7dOfy/1G7ZrSHUtES9BYX7VjQ4lJ9K5eVrSQyb2I
- BKrYF9PeTfEeoHhmvl5xzPGv5WgenmhGUkzS4UFBkrxOsUAGgjo/xa486X5oVbC75qdpKYTNZeE
- PLegaXSxWArOmOKIl5bogDTTFmcA0aaaoqjB5B7VJxkwFFQVjG6Dze+eDjuelgQvRYiKVcWR/YB
- 6d9ew9yoDEN2rozmOBJhmVNxUWzHbTgff/wTM0YFq8CGdYRiLWceM8/SELlM/+8d/wIFlgNopTc
- 4q3XRWErg1z/+ESMgXMvh7tfO8ymb1Q/AQFHzvHpoNAIyePONMo0aFazCawZwjpO8cJlKwS8LOO
- oqWqYnR0aVbTf4JCxz+pWVFN65TM8hlM9DXp867aDNSGjOYHSKJcZP2C4PoiTYpHuZ4K1GoU1/7
- O4MkViye2xJ7afIF4ZQ==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-27_01,2026-11-26_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 phishscore=0 lowpriorityscore=0 bulkscore=0 impostorscore=0
- adultscore=0 suspectscore=0 malwarescore=0 priorityscore=1501 clxscore=1015
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611270034
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <awk6TGp9riwDD55i@MWDK4CY14F>
 
-Add the Shikra-specific compatible to the q6apm DAI node while retaining
-the generic fallback used by the ASoC driver.  The specific compatible
-lets arm-smmu-qcom select the identity domain required by the firmware
-ABI when the EL2 overlay describes this stream to the SMMU.
+Hi Richard,
 
-The EL2 stream description is part of the prerequisite Shikra EL2
-overlay series.
+On Fri, Nov 27, 2026 at 04:09:11PM +0800, Richard Cheng wrote:
+> On Fri, Nov 27, 2026 at 01:07:40PM +0800, Srivatsa S. Bhat (Microsoft) wrote:
+> > The multi-instance CPU hotplug state setup API is named as
+> > cpuhp_setup_state_multi(), whereas the corresponding remove API is
+> > currently named as cpuhp_remove_multi_state(). Rename the latter as
+> > cpuhp_remove_state_multi() to fix the asymmetry. This also helps
+> > maintain consistency in the API names by letting them share a common
+> > prefix, i.e., cpuhp_setup/remove_state_*() across all the variants
+> > [none|nocalls|nocalls_cpuslocked].
+> > 
+> > Signed-off-by: Srivatsa S. Bhat (Microsoft) <srivatsa@csail.mit.edu>
+> 
+> Hi Srivatsa,
+> 
+> Not sure whether this is really needed, it doesn't harm anything,
+> but IMHO it doesn't really brings us benefit.
+> 
 
-Co-developed-by: Ajay Kumar Nandam <ajay.nandam@oss.qualcomm.com>
-Signed-off-by: Ajay Kumar Nandam <ajay.nandam@oss.qualcomm.com>
-Signed-off-by: Mohit Sharma <mohit.sharma@oss.qualcomm.com>
----
- arch/arm64/boot/dts/qcom/shikra.dtsi | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I agree, this is not intended to be a functional change. The cleanup benefit is
+on the side of the CPU hotplug core API to provide better consistency in terms
+of the API naming pattern, but the current callsites that consume this API
+should see no functional difference as a result of this change. The consistency
+will help future callsites though!
 
-diff --git a/arch/arm64/boot/dts/qcom/shikra.dtsi b/arch/arm64/boot/dts/qcom/shikra.dtsi
-index 0a95ad5a5582..796d5225d161 100644
---- a/arch/arm64/boot/dts/qcom/shikra.dtsi
-+++ b/arch/arm64/boot/dts/qcom/shikra.dtsi
-@@ -2358,7 +2358,8 @@ q6apmbedai: bedais {
- 						};
- 
- 						q6apmdai: dais {
--							compatible = "qcom,q6apm-dais";
-+							compatible = "qcom,shikra-q6apm-dais",
-+								     "qcom,q6apm-dais";
- 							memory-region = <&audio_heap_mem
- 									 &audio_mdsp_carveout_mem>;
- 						};
--- 
-2.34.1
-
+Regards,
+Srivatsa
