@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795780746;
-	b=Ww65Uvz371buQypBNU8C4ikrEWrGOtlCRKb1181dzjQ69BI0sFwg9IRIDGfcgoGMs9PQ
-	 y18GXjxgb00lpg2kT6oqWiMdx2aOzfh3PIAZ19KtTk5evkp+hMNjEUk+di4ldL1RqXkpa
-	 Keh9vIU7RVxNopeOmz99fetYizjYI9sUtrYn5vrARzKAvfxSkuJmTvslgBagGMywRT6Ks
-	 gz0Q1VAImWxiH98RWNT8hEbPQ7Ynk9XBItGwVL0ARWpOsDS0XqFs426exdNsnC/Tcucx6
-	 Z8WgtwiHCRgslkoWhPAitVhBr9XPpj8zRg+O/VbROLUT2IZ8ez/CwFty/Lss10u8m7w==
+	t=1795780742;
+	b=TcFVg5t6gA2mv6VxMzMKVCEogSAfZOGEcDzmhyuawrp1qOw9GYgq/3TLed2FDBUPcQ3g
+	 M+LONH+dC3bQ9oFBRO6UZHGBrgnmF4pE77kVM7rEQLzxY5caISBd/yLvefrgGCI9qirWy
+	 fAcM4AeaLTWCrl/EEIOzdYyr6tJ/7SFZNeUi+BCe5ryEXTo1hufnCtpq8vrDnVUg8yorv
+	 cY3mPc0q7Ibl3q1Hdr+thnv8kdeLwKft28ruvXT3CzkAM2o3MMuO76XA9u3upwscOjvdC
+	 NYzULgRl7OMY9PcuB9U9Dnz1v4HlGH1Fm3AOEgzEduqokoOW/xZFJPPUiUs3/BYp2OA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795780746;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795780742;
 	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:MIME-Version:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
 	 Content-Transfer-Encoding:X-CMS-MailID:X-Msg-Generator:Content-Type:
 	 X-RootMTR:X-EPHeader:X-CMS-RootMailID:References;
-	bh=vdbCYgPmbQHi62R0raVxdOiQ6kGDpNOXi4l/wBMg4js=;
-	b=k2Xd+0vI2yc7cPVnwnXIYP8FcR4eqboScd9ClWT6K71OeNgF/H3Yx5vAAlhw6TCxNSlf
-	 Lmjv4SUpTRRQLwJW0Xbw02xE7x1gIS5AMbxolvZV9cHzSCLMSnPo44n+i462avigNMLt/
-	 CzmhXpcO8AuPgTWEoPDILitUp7HdPFZkApyiC0kW/D3zWB3lY/YLnC9KMwXVr3hULBwbQ
-	 QwXGpM2u/R2S7+lhcjqzoxsz2bF8DXL6H3GuSpdd4GOMYXSI0mkLUwQtw9SsLrnsvnoS9
-	 /6RxgsCnV6zWyQrcKH/tX9iz4P9ODc4DNReN+jciZkY7ODKW5VRKLXXrXws1yLhYtVQ==
+	bh=22tX+yU7I7HmNJKs5o0R5O/j6HPhCaItzCZ7BgwjO4k=;
+	b=uKkddEsWoCRllD9hJMzuEWDXjY0y0ZbDGjospCKggxDT9Rj3vb1NrmdxT5elbaOwTiVE
+	 KA8+fc/Qt4E5ZsqRBtWbANtzGhERvLRkASAYbIxSpJwttMLWSRa1IVJ6ULf10NHpjlf4d
+	 wrCbLAhIxMGYfKCw9xHMw7qL51wNXjkVUnv+A5zmbVSjxeD5lcoLj/S12ZnQwM9o+0oLh
+	 BblmtHN/51yNQ8a9snvYTVrBv5w7cpffmICp8OOXg1ZfxEMBxnoJqzgzkrVbLd81TlKkv
+	 gP71dbY5wIHa0vD1cdZz53sll2WRtHr8ukD4hbhTDSdf1y2LBgv9JIzXynz4XlNEjBw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=samsung.com;
 	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Qa5Ih2AO;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=RonQfvQ6;
 	arc=none smtp.remote-ip=210.118.77.12
 Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF783606A31E
-	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 11:59:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CF783606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B01F8606A324
+	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 11:59:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B01F8606A324
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Qa5Ih2AO
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=RonQfvQ6
 Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261127115903euoutp02f920b4edda56e0cbf14d337bfa5cf1d9~r5RJej9so1288312883euoutp02d
-	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 11:59:03 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261127115903euoutp02f920b4edda56e0cbf14d337bfa5cf1d9~r5RJej9so1288312883euoutp02d
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261127115858euoutp02eaa0a255b29c89825738049075832d29~r5RE7Db2L1288312883euoutp02U
+	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 11:58:58 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261127115858euoutp02eaa0a255b29c89825738049075832d29~r5RE7Db2L1288312883euoutp02U
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1795780743;
-	bh=vdbCYgPmbQHi62R0raVxdOiQ6kGDpNOXi4l/wBMg4js=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Qa5Ih2AOt+YnoYKk+gucUtV5NOcK2cmgbdl9d0VRSm5TQHZX6NwfJ9uOA8l81bmkZ
-	 3KDANUpPq5lO/8SDBS/ZT+qTAHtn6YXo9CZGNXB62QHjsSy66PEZlrxaYSZJZLWF9G
-	 hoBpHMe+YMu11JjOur0Z23W8n5AChKkbs4ErqAOs=
+	s=mail20170921; t=1795780738;
+	bh=22tX+yU7I7HmNJKs5o0R5O/j6HPhCaItzCZ7BgwjO4k=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=RonQfvQ6uYtleM8SVajLLe9ZIC2xv34em9i2BT75/+6eiWQIqGrI0jY1rEvBxMoyi
+	 jEAvBQ4Eqe7JrBaxVMgj8Bwmd7K9X09akl0DiPVrmnnJTAab/DdHuxJzhFAm2vVflN
+	 BhDXuisaKeCn6+9ozn/tNvuYZVYxmvaaknUhaVgE=
 Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20261127115903eucas1p27ccc4cddb7f705d6afa5c2603597b97a~r5RJE9JYb2874728747eucas1p2-;
-	Fri, 27 Nov 2026 11:59:03 +0000 (GMT)
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261127115858eucas1p1ac63e4ce0f221453e8666ab9723a2ae0~r5REn8Iid0792807928eucas1p1q;
+	Fri, 27 Nov 2026 11:58:58 +0000 (GMT)
 Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
 	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20261127115901eusmtip14cb6ad1d98d81ec0ad3511996d5f286e~r5RIDnw6H0799507995eusmtip1O;
-	Fri, 27 Nov 2026 11:59:01 +0000 (GMT)
+	20261127115857eusmtip17e501e01b3810e026b6e3248567c99ee~r5RDrUILg0610906109eusmtip1o;
+	Fri, 27 Nov 2026 11:58:57 +0000 (GMT)
 From: Marek Szyprowski <m.szyprowski@samsung.com>
 To: iommu@lists.linux.dev, linux-media@vger.kernel.org,
 	linux-arm-msm@vger.kernel.org, kvm@vger.kernel.org,
@@ -64,14 +64,12 @@ Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
 	<alex@shazbot.org>, Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
 	Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>, Abhinav Kumar
 	<abhinav.kumar@linux.dev>, Bryan O'Donoghue <bod@kernel.org>, Mauro Carvalho
-	Chehab <mchehab@kernel.org>, Hans Verkuil <hverkuil+cisco@kernel.org>,
-	stable@vger.kernel.org
-Subject: [PATCH 4/4] iommu/dma: restore flush queue use in
+	Chehab <mchehab@kernel.org>, Hans Verkuil <hverkuil+cisco@kernel.org>
+Subject: [PATCH 0/4] iommu/dma: restore flush queue use in
  dma_iova_destroy()
-Date: Fri, 27 Nov 2026 12:58:48 +0100
-Message-ID: <20261127115849.2780625-5-m.szyprowski@samsung.com>
+Date: Fri, 27 Nov 2026 12:58:44 +0100
+Message-ID: <20261127115849.2780625-1-m.szyprowski@samsung.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261127115849.2780625-1-m.szyprowski@samsung.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -82,253 +80,70 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261127115903eucas1p27ccc4cddb7f705d6afa5c2603597b97a
+X-CMS-MailID: 20261127115858eucas1p1ac63e4ce0f221453e8666ab9723a2ae0
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261127115903eucas1p27ccc4cddb7f705d6afa5c2603597b97a
+X-RootMTR: 20261127115858eucas1p1ac63e4ce0f221453e8666ab9723a2ae0
 X-EPHeader: CA
-X-CMS-RootMailID: 20261127115903eucas1p27ccc4cddb7f705d6afa5c2603597b97a
-References: <20261127115849.2780625-1-m.szyprowski@samsung.com>
-	<CGME20261127115903eucas1p27ccc4cddb7f705d6afa5c2603597b97a@eucas1p2.samsung.com>
+X-CMS-RootMailID: 20261127115858eucas1p1ac63e4ce0f221453e8666ab9723a2ae0
+References: <CGME20261127115858eucas1p1ac63e4ce0f221453e8666ab9723a2ae0@eucas1p1.samsung.com>
+
+Hi,
 
 Commit 1acce29926d9 ("iommu/dma: simplify dma_iova_destroy() and drop
-the free_iova helper") turned dma_iova_destroy() into dma_iova_unlink()
-followed by dma_iova_free(). Before it, the destroy path marked its
-IOTLB gather as queued for DMA-FQ domains, skipped iommu_iotlb_sync()
-and handed the IOVA over to the flush queue, exactly like
-__iommu_dma_unmap(). After it:
+the free_iova helper") made dma_iova_destroy() always invalidate the
+IOTLB synchronously and free the IOVA directly, bypassing the flush
+queue on DMA-FQ domains. As Sibi reported [1], this makes iommu.strict=0
+ineffective for NVMe I/O (blk_rq_dma_map()) and costs about 4x of
+sequential throughput on SMMUv3 without RANGE_INV.
 
-  - dma_iova_unlink() never queues its gather and always calls
-    iommu_iotlb_sync() after iommu_unmap_fast(),
-  - dma_iova_free() passes a NULL gather to iommu_dma_free_iova(), so
-    the IOVA goes straight back to the allocator via free_iova_fast().
-
-DMA-FQ domains therefore get strict invalidation on this path. This
-includes blk_rq_dma_map(), which NVMe uses for all data transfers, so
-iommu.strict=0 has no effect on NVMe I/O. On a Qualcomm Glymur CRD
-(SMMUv3 without RANGE_INV, 4K pages, NVMe on PCIe Gen5 x4) sequential
-fio throughput drops from 10.6/11.9 GiB/s (write/read) to the strict
-mode level of ~2.7 GiB/s.
-
-Instead of reverting, decide once in dma_iova_try_alloc() whether the
-IOVA space is going to be released through the flush queue and record
-it in a new DMA_IOVA_USE_FQ flag in dma_iova_state::__size, next to
-DMA_IOVA_USE_SWIOTLB, so struct dma_iova_state does not grow.
+This series is an alternative to the revert proposed in [1]. Instead of
+restoring the free_iova flag, dma_iova_try_alloc() decides once whether
+the IOVA space is going to be released through the flush queue and
+records that in a new DMA_IOVA_USE_FQ flag in dma_iova_state::__size,
+next to DMA_IOVA_USE_SWIOTLB, so struct dma_iova_state does not grow.
 dma_iova_destroy() then unmaps with a gather queued according to that
-flag, skipping the sync for flush queue domains, and passes the same
-gather to the IOVA free, so the IOVA space (and any page table pages
-released by the unmap) goes through queue_iova() again. dma_iova_free()
-honours the flag as well. The whole reservation is still freed, keeping
-the size fix of the reverted commit.
+flag and retires it together with the IOVA free, exactly like
+__iommu_dma_unmap(): either by iommu_iotlb_sync() or by handing the
+IOVA (and any released page table pages) over to the flush queue. The
+gather is never left dangling and the IOVA is never returned to the
+allocator before a pending queued invalidation, as pointed out by Jason.
+dma_iova_unlink() stays strict, as the unlinked range remains owned by
+the caller and may be linked again right away. The whole reservation is
+still freed, keeping the size fix of the original cleanup.
 
-A gather must always be retired, either by iommu_iotlb_sync() or by
-handing it to the flush queue together with the IOVA, and the IOVA must
-never be returned to the allocator while a queued invalidation for it is
-still pending. To keep that obvious, the internal unlink helper only
-unmaps into a gather supplied by its caller, and each caller retires it
-right away: dma_iova_destroy() syncs or queues it together with the IOVA
-free, exactly like __iommu_dma_unmap(), while dma_iova_unlink() always
-uses a never queued gather and syncs it, as the unlinked range remains
-owned by the caller and may be linked again immediately.
+Storing a flag in the upper bits of __size requires that nobody reads
+__size directly, so patches 1-2 convert the venus and iris IOVA
+reservation code to dma_iova_size() and patch 3 adds a DMA_IOVA_FLAGS
+mask used by dma_iova_size(), dma_iova_try_alloc() and the vfio-pci
+dma-buf length check. Patch 4 is the actual fix.
 
-Fixes: 1acce29926d9 ("iommu/dma: simplify dma_iova_destroy() and drop the free_iova helper")
-Reported-by: Sibi Sankar <sibi.sankar@oss.qualcomm.com>
-Closes: https://lore.kernel.org/all/20261125135120.1126571-1-sibi.sankar@oss.qualcomm.com/
-Suggested-by: Leon Romanovsky <leon@kernel.org>
-Cc: stable@vger.kernel.org # v7.3+
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- drivers/iommu/dma-iommu.c   | 103 ++++++++++++++++++++++++++----------
- include/linux/dma-mapping.h |   8 ++-
- 2 files changed, 83 insertions(+), 28 deletions(-)
+The series has been developped with an aid of LLM, build tested on arm64
+and x86_64. Sibi, it would be great if you could rerun your fio test on
+top of it.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 99eb382a1359..0e329ecd7dfa 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1853,10 +1853,31 @@ bool dma_iova_try_alloc(struct device *dev, struct dma_iova_state *state,
- 
- 	state->addr = addr + iova_off;
- 	state->__size = size;
-+	/*
-+	 * Decide once, for the whole life cycle of @state, whether the IOVA
-+	 * space is going to be released through the flush queue.  A domain
-+	 * can only move from strict to lazy mode, so a stale "not queued"
-+	 * value is always safe.
-+	 */
-+	if (READ_ONCE(cookie->fq_domain))
-+		state->__size |= DMA_IOVA_USE_FQ;
- 	return true;
- }
- EXPORT_SYMBOL_GPL(dma_iova_try_alloc);
- 
-+static void __dma_iova_free(struct device *dev, struct dma_iova_state *state,
-+		struct iommu_iotlb_gather *gather)
-+{
-+	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-+	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-+	struct iova_domain *iovad = &cookie->iovad;
-+	size_t iova_start_pad = iova_offset(iovad, state->addr);
-+	size_t size = dma_iova_size(state);
-+
-+	iommu_dma_free_iova(domain, state->addr - iova_start_pad,
-+			iova_align(iovad, size + iova_start_pad), gather);
-+}
-+
- /**
-  * dma_iova_free - Free an IOVA space
-  * @dev: Device to free the IOVA space for
-@@ -1871,14 +1892,11 @@ EXPORT_SYMBOL_GPL(dma_iova_try_alloc);
-  */
- void dma_iova_free(struct device *dev, struct dma_iova_state *state)
- {
--	struct iommu_domain *domain = iommu_get_dma_domain(dev);
--	struct iommu_dma_cookie *cookie = domain->iova_cookie;
--	struct iova_domain *iovad = &cookie->iovad;
--	size_t iova_start_pad = iova_offset(iovad, state->addr);
--	size_t size = dma_iova_size(state);
-+	struct iommu_iotlb_gather iotlb_gather;
- 
--	iommu_dma_free_iova(domain, state->addr - iova_start_pad,
--			iova_align(iovad, size + iova_start_pad), NULL);
-+	iommu_iotlb_gather_init(&iotlb_gather);
-+	iotlb_gather.queued = state->__size & DMA_IOVA_USE_FQ;
-+	__dma_iova_free(dev, state, &iotlb_gather);
- }
- EXPORT_SYMBOL_GPL(dma_iova_free);
- 
-@@ -2097,27 +2115,20 @@ static void iommu_dma_iova_unlink_range_slow(struct device *dev,
- 		arch_sync_dma_flush();
- }
- 
--/**
-- * dma_iova_unlink - Unlink a range of IOVA space
-- * @dev: DMA device
-- * @state: IOVA state
-- * @offset: offset into the IOVA state to unlink
-- * @size: size of the buffer
-- * @dir: DMA direction
-- * @attrs: attributes of mapping properties
-- *
-- * Unlink a range of IOVA space for the given IOVA state.
-+/*
-+ * Unmap a range of IOVA space into @gather. The caller owns @gather and must
-+ * retire it, either by iommu_iotlb_sync() or, for a queued gather, by handing
-+ * it over to the flush queue together with the IOVA via iommu_dma_free_iova().
-  */
--void dma_iova_unlink(struct device *dev, struct dma_iova_state *state,
-+static void __dma_iova_unlink(struct device *dev, struct dma_iova_state *state,
- 		size_t offset, size_t size, enum dma_data_direction dir,
--		unsigned long attrs)
-+		unsigned long attrs, struct iommu_iotlb_gather *gather)
- {
- 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	struct iova_domain *iovad = &cookie->iovad;
- 	dma_addr_t addr = state->addr + offset;
- 	size_t iova_start_pad = iova_offset(iovad, addr);
--	struct iommu_iotlb_gather iotlb_gather;
- 	size_t unmapped;
- 
- 	if ((state->__size & DMA_IOVA_USE_SWIOTLB) ||
-@@ -2125,14 +2136,38 @@ void dma_iova_unlink(struct device *dev, struct dma_iova_state *state,
- 	     !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO))))
- 		iommu_dma_iova_unlink_range_slow(dev, addr, size, dir, attrs);
- 
--	iommu_iotlb_gather_init(&iotlb_gather);
--
- 	size = iova_align(iovad, size + iova_start_pad);
- 	addr -= iova_start_pad;
--	unmapped = iommu_unmap_fast(domain, addr, size, &iotlb_gather);
-+	unmapped = iommu_unmap_fast(domain, addr, size, gather);
- 	WARN_ON(unmapped != size);
-+}
- 
--	iommu_iotlb_sync(domain, &iotlb_gather);
-+/**
-+ * dma_iova_unlink - Unlink a range of IOVA space
-+ * @dev: DMA device
-+ * @state: IOVA state
-+ * @offset: offset into the IOVA state to unlink
-+ * @size: size of the buffer
-+ * @dir: DMA direction
-+ * @attrs: attributes of mapping properties
-+ *
-+ * Unlink a range of IOVA space for the given IOVA state.
-+ */
-+void dma_iova_unlink(struct device *dev, struct dma_iova_state *state,
-+		size_t offset, size_t size, enum dma_data_direction dir,
-+		unsigned long attrs)
-+{
-+	struct iommu_iotlb_gather iotlb_gather;
-+
-+	/*
-+	 * The IOVA range stays owned by the caller and may be linked again
-+	 * right away, so the IOTLB has to be invalidated synchronously even
-+	 * for flush queue domains. The gather is therefore never queued and
-+	 * is retired right here.
-+	 */
-+	iommu_iotlb_gather_init(&iotlb_gather);
-+	__dma_iova_unlink(dev, state, offset, size, dir, attrs, &iotlb_gather);
-+	iommu_iotlb_sync(iommu_get_dma_domain(dev), &iotlb_gather);
- }
- EXPORT_SYMBOL_GPL(dma_iova_unlink);
- 
-@@ -2152,14 +2187,28 @@ void dma_iova_destroy(struct device *dev, struct dma_iova_state *state,
- 		size_t mapped_len, enum dma_data_direction dir,
- 		unsigned long attrs)
- {
--	if (mapped_len)
--		dma_iova_unlink(dev, state, 0, mapped_len, dir, attrs);
-+	struct iommu_iotlb_gather iotlb_gather;
-+
-+	iommu_iotlb_gather_init(&iotlb_gather);
-+	iotlb_gather.queued = state->__size & DMA_IOVA_USE_FQ;
- 
- 	/*
- 	 * We can be here if the first call to dma_iova_link() failed and
- 	 * there is nothing to unlink, so let's be more clear.
- 	 */
--	dma_iova_free(dev, state);
-+	if (mapped_len)
-+		__dma_iova_unlink(dev, state, 0, mapped_len, dir, attrs,
-+				&iotlb_gather);
-+
-+	/*
-+	 * Retire the gather together with the IOVA, like __iommu_dma_unmap()
-+	 * does: either invalidate the IOTLB now, or hand the IOVA space and
-+	 * any page table pages released by the unmap over to the flush queue,
-+	 * so the IOVA cannot be reused before the deferred invalidation.
-+	 */
-+	if (!iotlb_gather.queued)
-+		iommu_iotlb_sync(iommu_get_dma_domain(dev), &iotlb_gather);
-+	__dma_iova_free(dev, state, &iotlb_gather);
- }
- EXPORT_SYMBOL_GPL(dma_iova_destroy);
- 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 0ebf3090ea0f..7524c14f1262 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -135,11 +135,17 @@ struct dma_iova_state {
-  */
- #define DMA_IOVA_USE_SWIOTLB		(1ULL << 63)
- 
-+/*
-+ * Set when the IOVA space is going to be released through the IOMMU flush
-+ * queue. Internal to dma-iommu.
-+ */
-+#define DMA_IOVA_USE_FQ			(1ULL << 62)
-+
- /*
-  * All flags stored in the upper bits of dma_iova_state::__size. Sizes passed
-  * to dma_iova_try_alloc() must not overlap with them.
-  */
--#define DMA_IOVA_FLAGS			DMA_IOVA_USE_SWIOTLB
-+#define DMA_IOVA_FLAGS			(DMA_IOVA_USE_SWIOTLB | DMA_IOVA_USE_FQ)
- 
- static inline size_t dma_iova_size(struct dma_iova_state *state)
- {
+[1] https://lore.kernel.org/all/20261125135120.1126571-1-sibi.sankar@oss.qualcomm.com/
+
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
+
+Patch summary:
+
+Marek Szyprowski (4):
+  media: venus: use dma_iova_size() to check the reserved IOVA size
+  media: iris: use dma_iova_size() to check the reserved IOVA size
+  dma-mapping: add DMA_IOVA_FLAGS mask for the dma_iova_state size flags
+  iommu/dma: restore flush queue use in dma_iova_destroy()
+
+ drivers/iommu/dma-iommu.c                     | 111 +++++++++++++-----
+ drivers/media/platform/qcom/iris/iris_probe.c |   3 +-
+ drivers/media/platform/qcom/venus/core.c      |   3 +-
+ drivers/vfio/pci/vfio_pci_dmabuf.c            |   2 +-
+ include/linux/dma-mapping.h                   |  14 ++-
+ 5 files changed, 98 insertions(+), 35 deletions(-)
+
 -- 
 2.43.0
 
