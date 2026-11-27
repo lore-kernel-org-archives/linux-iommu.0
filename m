@@ -1,64 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795813727;
-	b=3Q5fIktlcB5sKmtI6Spudl3g+OloLYXGTqYDUZHuqAY9AaNrzaJ79hGckhdwUwXMjej8
-	 TM20/kF9f9ZxBllI8ivHN4rJhMdW8ECYjg13pDg3ciLt1mhLYMXNU9/ep/hGV1T3XF2VN
-	 ccwUnpVcQoKqROUMvXLD2/tpUBhQSw2SQ3vsTbLWmQigcE21aWq/AN383bwtb5j/ftgfP
-	 FI+O2LI/j2jt3uVFHTRW0TRBtt16iNSjOLEJVaULHXosc0vtvvA0l3Dg3n/NS1BiQD3Yn
-	 kVvQ4gCdWKDmX7Ozj+hS/Wdebi09VonFS4gfIZEclfVpuko4+6waMJbHTs6mKsqsI0w==
+	t=1795817824;
+	b=3To/WewxyF2J6UmfFmaD5YrpatPKP0VfBsSkgdVgIS7KXqP2uLABxIIAg30W9M+rff/G
+	 xAtCW81JpFpdBtVpWyXTBGW7Zj+JG3rzNoh8GJFzEV0kDHN0ZUSjTyObcOj/JUOi/2GfW
+	 WQRi6iNbkl7OzkdAP1MBUkkHWfq2LWYK6/6NSWF+kJzgr7iYDNIt7RVcueq/gMhIHVRGS
+	 vmxY3/ODQ7PCFLoidtmdnhHlaIzfUxUdZEsgmfkMOHHQsTVOHfvTHaYJu0085a9wXx+eg
+	 mz9I5KHATViWKi22cxk46g1zFf8ht60AHAy36RXswUCw/SL1hRX7SwIsJP8L7qcz0tw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795813727;
-	h=Received:DKIM-Signature:Received:Subject:From:In-Reply-To:References:
-	 X-PR-Tracked-List-Id:X-PR-Tracked-Message-Id:X-PR-Tracked-Remote:
-	 X-PR-Tracked-Commit-Id:X-PR-Merge-Tree:X-PR-Merge-Refname:
-	 X-PR-Merge-Commit-Id:Message-Id:Date:To:Cc;
-	bh=hM2qNgS5XP77Q6VJ3q+L5S6t064r46tcKHRAWA/weR4=;
-	b=yaGumBVx2lishsEyrCMoABecRhAJpY/yE5qKrjo1pcekDuy1LTXjSBlV2UUodtoUig0L
-	 MvSu5moVTE+AX0/XMVT9CqBlijnXf9BkgZElEbfloW2ZsFt3E9o4kbLMnXTB+ga8WLElg
-	 wpwFMBFZGZIwQkKzhj0jyh6GGBrX5AlunrEsbjRON9doObgp6tCSgu6B9nLskk41z63RK
-	 yfefNHBC/nJmdcz3YFZyTqztzAgcx9/K4K7JYMUASXzyeyjplSuTaQ7hR0a8nnSKtLJQC
-	 LSxwtF8WAo2qCn5SdiW8FP0fRa0OvEtlMXrFoe4+YEtRy7we31c+kKEwWX9uKPAVylw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795817824;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=3bjnl3x1uRBJpCoTy6jJV187S3SL1Isxb5UBvBIQ2N0=;
+	b=0L8LJ/iGAnvqosyXV3L+Us56sK/f4evxq7gJ12q4geHtpUm2F8SWY3cR77sYhb70NOPS
+	 Bnp2MDNTMjiOwfOEw6/f9kwI8uWLzrVTmsTpvAFiz770bVPjdC8BRCtRfpELXnOV9Gn3I
+	 1esT5PqPZdA0AN5W/9MVuzUPMF6dQa1/0Xj+qH+wOVZogWO6yYOBlZ0hyw6t2nNK7c9wp
+	 i5QG1yx3M0cRIfg/dqdSwOjD+sp67sFudooz+rR2CsqJe6/8zE6SHTTO4ZK6CNP8ZOxUz
+	 6cAa+khlvVuLAQzF/zfXyeRVTiZKihkOANSWrwU5EiA8WBK0VIjTfgeKd824/OAnftg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HMLNY1oK;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P8YqIaa2;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61606606A321;
-	Fri, 27 Nov 2026 21:08:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48306606A31C;
+	Fri, 27 Nov 2026 22:17:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HMLNY1oK
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B9DD1F0089B;
-	Fri, 27 Nov 2026 21:08:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P8YqIaa2
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAC811F00898;
+	Fri, 27 Nov 2026 22:17:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795813727;
-	bh=hM2qNgS5XP77Q6VJ3q+L5S6t064r46tcKHRAWA/weR4=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc;
-	b=HMLNY1oKU8V+COLSkIUQ68/TmVeYSxuEUQk4lwHrwbCtVWEvADh8QBkRfEp8mfqzP
-	 OWp4NHiKWa/9+JD7DeIB24NinGgooGS4or0bhsXiJrdJtSaQN0jVG0BwR4zosHBsXR
-	 +ca+U2a2jFAPaS4MPRC+0mTWYs9/f4RuX5Y5GAtU3ZL/NqoXRmh7w66qq/BfJEReXk
-	 94e7u92wDjoLX3SiMd34CgK45NVifwPPHEZlRPLKY+IakzWvSatPYV+ZmATChV+Unu
-	 W4uW0Pxaz/EmiSbeTBcwKYtJN9+Qlmhx0Y8T9e8zJWbKCdOYQj9UTWJuh691P2ECvI
-	 Wtzi3KoE8BArw==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 3492C3927065;
-	Fri, 27 Nov 2026 21:08:47 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fixes for Linux v7.4-rc4
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <awml8VcCjRQKHVXi@8bytes.org>
-References: <awml8VcCjRQKHVXi@8bytes.org>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <awml8VcCjRQKHVXi@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.4-rc4
-X-PR-Tracked-Commit-Id: 10bcc637f7a657725dd8bbcc2b30d027acee6f2d
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 8c8611425a367d250339cdb05aa898971d35abdb
-Message-Id: <179581372594.1686500.11038876807079457331.pr-tracker-bot@kernel.org>
-Date: Fri, 27 Nov 2026 21:08:45 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	s=k20260515; t=1795817823;
+	bh=3bjnl3x1uRBJpCoTy6jJV187S3SL1Isxb5UBvBIQ2N0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=P8YqIaa2RBHZML1s0S1G51PbgmVxbhoDyDpkAKV70uwOWagJnFFB6HU6q1/UH8dBg
+	 RdaxW60DcdONludbExlgsffvuze6jrGemLoAu+j4PvqrTe1YJ4qA3OIrp+MCM5fivQ
+	 Py7XQm/Y/JgIoUcKvurQxDO8X3QKgY118UBNvC0HRIRX69gcP7VE8WDR68rNwSY+dz
+	 MOOsQ0/HR56/ZpsnElcTcoOXcNiXHRjRD9Fo4zBgb9ofzu2S+gS2ag/FHwj1vZG3FH
+	 qgfGO0hdHWMxWZWhQniTZ06Yb7BV+GBJUPXPv5StwQfZGwH3QTwuQi0IpIgzum5Fuo
+	 K61apGAhB0ZLQ==
+Date: Fri, 27 Nov 2026 22:17:37 +0000
+From: Jean-Philippe Brucker <jpb@kernel.org>
+To: Cam Miller <cam@linux.ibm.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	iommu@lists.linux.dev, virtualization@lists.linux.dev,
+	linux-kernel@vger.kernel.org, schnelle@linux.ibm.com,
+	mjrosato@linux.ibm.com
+Subject: Re: [RFC linux v1 3/3] iommu/virtio: Add device links for endpoints
+Message-ID: <20261127221737.GA1603267@myrica>
+References: <20261124155410.768743-1-cam@linux.ibm.com>
+ <20261124155410.768743-4-cam@linux.ibm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -67,16 +58,45 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261124155410.768743-4-cam@linux.ibm.com>
 
-The pull request you sent on Fri, 27 Nov 2026 16:47:14 +0100:
+On Tue, Nov 24, 2026 at 10:54:10AM -0500, Cam Miller wrote:
+> Make each endpoint a consumer of the virtio-iommu device, so that the
+> driver core unbinds each endpoint driver before viommu_remove() runs.
+> 
+> Before this change, removing a virtio-iommu (for example via "echo 1 >
+> /sys/bus/pci/devices/<dev>/remove") tears down the IOMMU groups of all
+> its endpoints while their drivers are still bound. The endpoints keep
+> stale IOVAs and their later dma_free_contiguous() leads to WARNs in
+> __iommu_group_free_device(), endpoint IO hanging, and crash at shutdown.
+> 
+> Make each endpoint a consumer of the viommu with device_link_add(), as
+> arm-smmu and other IOMMU drivers do. The driver core then unbinds the
+> endpoint drivers before viommu_remove() runs, so that their DMA teardown
+> will still see an intact domain.
+> 
+> Fixes: edcd69ab9a32 ("iommu: Add virtio-iommu driver")
+> Suggested-by: Jean-Philippe Brucker <jpb@kernel.org>
+> Signed-off-by: Cam Miller <cam@linux.ibm.com>
+> ---
+>  drivers/iommu/virtio-iommu.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index dd10c3e98a3d..a84a653f269e 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -1044,6 +1044,9 @@ static struct iommu_device *viommu_probe_device(struct device *dev)
+>  			goto err_free_dev;
+>  	}
+>  
+> +	if (!device_link_add(dev, viommu->dev, DL_FLAG_AUTOREMOVE_SUPPLIER))
+> +		dev_dbg(dev, "could not add device link\n");
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.4-rc4
+Could you return -ENODEV? The rest looks good
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/8c8611425a367d250339cdb05aa898971d35abdb
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Thanks,
+Jean
