@@ -1,52 +1,52 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795793080;
-	b=o2RgwBcgCtkNcSqyyMb9uU5jYVVJ+Zn95rZ9gMyvscAfMvOeZhG+stZAD3R8DWkmhLy8
-	 xDbAAT4lPvMf0B8qO27kaGLfAcP9FW1yQ8CKQzKIwbbqbM/1Jw44hejY4sG+FRkjCtYCU
-	 u4g0VVWjl+R34b6R9uYEoXipwDwDxibQOR3dqgVogR9Te/ELeOM1DXUYpiPPBRxjvT8AL
-	 gjM+IpWCbmHD0d2/u2HXdDdGI0E3xVUt3NIq/l1qVMurCsc4A0zFiBfmG5x5yjc41yOwu
-	 ehC74igNeQuuHmNn03WOrVlKQB7eWq6m7bq+7SE7WNNScK9yoPtBl0xifY3l8QQzMuQ==
+	t=1795793477;
+	b=eoWXtrlWiz9XXIM9ZOl+kUpSzOqy0bb+J/e3AXquyqb/SXK8sHPTizJ/kAmV92A4nLDq
+	 ae6Y1Zh4WOIiJhp57r+8PDBjDSmX7HT9p3ZEvBS0cGnQidsgGTZc5QYsvCsrWKL472bKU
+	 f2w+kPETWUS2uqNTqwg1lvp/384L5vDZcUaByL7DVB4I2JLt3rsrNIo5ih6ejFXgBsabd
+	 9zd5sPvI+H1vKPgI97eNT72MxAGqaiZH8I2/6c0EMF8u1EDjH7xV3NiSdjuVvTy9l2XmR
+	 8ogcBm4+BXnYNEDCKQLAeGlN1TsU0LOWzQkLrScLsReoQGgcEsB5m8IgyJ415b3CPRQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795793080;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795793477;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=w46lPKdDZuz+yasVArT/wiplTje3J5dokSU77xqqMi4=;
-	b=su7BOBExFI0wrpdWNGS0468+dkdm5jEMRff/SjG12duNnmIHC/3fi7bHvFzlqI7J0wEx
-	 FP8KPJ/BnoOoCvRv8Bv60zK+isfETJjS3umC+2T/rq+AGSH1ohLyZEtyKCSwIO2pIM/TR
-	 s0T1HKHRGVMNSjOXJFR47nqeQjp9G0ZZLe5VXYaY0PIIzTVDKAUYl8ImpjvWcTkBqaTGZ
-	 YJYUtiIhK9y8hiuiPA28qFxyn2xPcrunRTIlzW76+Ps9t6nXB3HAEzmm3ZraDyHXQ5mxP
-	 x7TMkiOBRq6P8oOe9abHEqahfxxSFfv3oLg8UFFherpnqCtLa6Gm7aKkfUbbWXxy1nA==
+	bh=AiKgiR/T4qeQ5YDnuOshjx2CZduMAwFjjmKloTtaWZE=;
+	b=exHRpXDAmDQNtCsMCfRVfyFI/KAN1jQNJkf5iDuzjP0a1SYlxTz/LdwrNwKrCgoS2IiA
+	 iaIXZ6565/CLsgztoXRLrk0GZw8vfMiP3W+3AxuKEumF7KdZdTWlwMAfxRcIx3MH+yBlm
+	 bEIPXklEur2uxWRGUVS2BQuqrt4zLC74ZzT/jPC9mxDRrNdXdqyqIYy86/dIMoI3Gp9Q6
+	 HnXVcpZHm9zOlXOHKQiSeUNgjU7RmgsP63kWqikbSOJg0csWdI7cOrnFhnY8X9m7JRbMG
+	 VYaWcBCbVLIbyKvKyQ9SoOKle/Wu5TmRqqXK2J4f4UN164wSBhZuJ4Wf+YaoNWz+iBQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="ce/7JmhM";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="b/bxmaPz";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F244606A32F;
-	Fri, 27 Nov 2026 15:24:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DBDF606A321;
+	Fri, 27 Nov 2026 15:31:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ce/7JmhM
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0AA41F00936;
-	Fri, 27 Nov 2026 15:24:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=b/bxmaPz
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 942CD1F0089F;
+	Fri, 27 Nov 2026 15:31:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795793080;
-	bh=w46lPKdDZuz+yasVArT/wiplTje3J5dokSU77xqqMi4=;
+	s=k20260515; t=1795793477;
+	bh=AiKgiR/T4qeQ5YDnuOshjx2CZduMAwFjjmKloTtaWZE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ce/7JmhMaWBK3DgK3DD0Ozh3QLSoA9Xvt+KOdMa6gPyAOjhVBUO/9UDY7FWR2ZlG6
-	 Qn7g8LeKTavr/tjs7mtAxNNmEjFLZgRtcxvQEFdJCBRXLt5a7v9V+kv2H6cT0V316y
-	 +uVrBxhQxfWrJI6qzG6OgT4mqgyFjGQ6WTAur+qJ5fiZUDi+bVwukPoOW0MlfN2JqT
-	 GMMkdV/NWdCetVEERBZkPMLUvrA1SWCS7gCevy9LwDiTDCNg1pn/o+xM0dEVlQBJhG
-	 FBWarQivAZQCbDNA3DIimJhoJrFYDQTrUp8baWgX0Bs2cHBHp7KUchpIWXAMTajdrR
-	 wF0/snaNYH5/Q==
-Date: Fri, 27 Nov 2026 17:24:36 +0200
+	b=b/bxmaPzPalF4fWgf3uVw3MTeg+rguOh01GZtKw7oI6ojWL6/CEY5l93aX1+7IQjO
+	 iTNClzh1X/9MdlVCEF913BQ9Du/xnbvst6YmGtr+bPEuTuN3z8I37wQ9hfI3Ggd4Ry
+	 khqlNXFbURegBYYm5rPprF5JHGyLffngpRuaeZ7a4g0R+h6khPN6XOlcYG0SiqA5cR
+	 93gIU2oyYk/1XGtybQwV7NTXOavW1gPadA0NVS/2t7Vbz8gEb67l/M1gGM1pKFObOg
+	 TmxxJyf1nbyB3nY3GwZNLb6gXNVxDI9IaH2W+GbQ3cN2I4xu/P1x54iin77ERkctdX
+	 gvBy2GT9vwLRA==
+Date: Fri, 27 Nov 2026 17:31:13 +0200
 From: Leon Romanovsky <leon@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
-	linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux.dev, linux-media@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Jason Gunthorpe <jgg@nvidia.com>,
 	Sibi Sankar <sibi.sankar@oss.qualcomm.com>,
 	Honglei Huang <honghuan@amd.com>, prakash.gupta@oss.qualcomm.com,
 	Alex Williamson <alex@shazbot.org>,
@@ -56,13 +56,12 @@ Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
 	Bryan O'Donoghue <bod@kernel.org>,
 	Mauro Carvalho Chehab <mchehab@kernel.org>,
 	Hans Verkuil <hverkuil+cisco@kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH 1/4] media: venus: use dma_iova_size() to check the
- reserved IOVA size
-Message-ID: <20261127152436.GA774860@unreal>
+Subject: Re: [PATCH 4/4] iommu/dma: restore flush queue use in
+ dma_iova_destroy()
+Message-ID: <20261127153113.GB774860@unreal>
 References: <20261127115849.2780625-1-m.szyprowski@samsung.com>
- <CGME20261127115859eucas1p1ae20b01eec39080daf19dbd71aba10e9@eucas1p1.samsung.com>
- <20261127115849.2780625-2-m.szyprowski@samsung.com>
- <20261127142912.GK114472@nvidia.com>
+ <CGME20261127115903eucas1p27ccc4cddb7f705d6afa5c2603597b97a@eucas1p2.samsung.com>
+ <20261127115849.2780625-5-m.szyprowski@samsung.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -74,37 +73,79 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261127142912.GK114472@nvidia.com>
+In-Reply-To: <20261127115849.2780625-5-m.szyprowski@samsung.com>
 
-On Fri, Nov 27, 2026 at 10:29:12AM -0400, Jason Gunthorpe wrote:
-> On Fri, Nov 27, 2026 at 12:58:45PM +0100, Marek Szyprowski wrote:
-> > The IOVA reservation code compares dma_iova_state::__size directly with
-> > the requested chunk size. __size is internal to the DMA IOVA API and may
-> > carry flags in its upper bits, so use the dma_iova_size() accessor
-> > instead.
+On Fri, Nov 27, 2026 at 12:58:48PM +0100, Marek Szyprowski wrote:
+> Commit 1acce29926d9 ("iommu/dma: simplify dma_iova_destroy() and drop
+> the free_iova helper") turned dma_iova_destroy() into dma_iova_unlink()
+> followed by dma_iova_free(). Before it, the destroy path marked its
+> IOTLB gather as queued for DMA-FQ domains, skipped iommu_iotlb_sync()
+> and handed the IOVA over to the flush queue, exactly like
+> __iommu_dma_unmap(). After it:
 > 
-> WTF is this even doing?
+>   - dma_iova_unlink() never queues its gather and always calls
+>     iommu_iotlb_sync() after iommu_unmap_fast(),
+>   - dma_iova_free() passes a NULL gather to iommu_dma_free_iova(), so
+>     the IOVA goes straight back to the allocator via free_iova_fast().
 > 
->     Fix this by reserving the 0-600MB range, below the boundary the
->     non-pixel stream cannot address, using dma_iova_try_alloc() so the
->     IOMMU-DMA core never hands that range out to a real DMA mapping. This
->     reserves only IOVA space, it does not allocate any physical memory.
+> DMA-FQ domains therefore get strict invalidation on this path. This
+> includes blk_rq_dma_map(), which NVMe uses for all data transfers, so
+> iommu.strict=0 has no effect on NVMe I/O. On a Qualcomm Glymur CRD
+> (SMMUv3 without RANGE_INV, 4K pages, NVMe on PCIe Gen5 x4) sequential
+> fio throughput drops from 10.6/11.9 GiB/s (write/read) to the strict
+> mode level of ~2.7 GiB/s.
 > 
-> That isn't what this API is for, and it isn't how it even works! It is
-> pure luck that the first call to it happens to take out the lower
-> address space.
+> Instead of reverting, decide once in dma_iova_try_alloc() whether the
+> IOVA space is going to be released through the flush queue and record
+> it in a new DMA_IOVA_USE_FQ flag in dma_iova_state::__size, next to
+> DMA_IOVA_USE_SWIOTLB, so struct dma_iova_state does not grow.
+> dma_iova_destroy() then unmaps with a gather queued according to that
+> flag, skipping the sync for flush queue domains, and passes the same
+> gather to the IOVA free, so the IOVA space (and any page table pages
+> released by the unmap) goes through queue_iova() again. dma_iova_free()
+> honours the flag as well. The whole reservation is still freed, keeping
+> the size fix of the reverted commit.
 > 
-> We even had a long discussion about this driver and this need in
-> another thread and this is the hack job you guys merged?
+> A gather must always be retired, either by iommu_iotlb_sync() or by
+> handing it to the flush queue together with the IOVA, and the IOVA must
+> never be returned to the allocator while a queued invalidation for it is
+> still pending. To keep that obvious, the internal unlink helper only
+> unmaps into a gather supplied by its caller, and each caller retires it
+> right away: dma_iova_destroy() syncs or queues it together with the IOVA
+> free, exactly like __iommu_dma_unmap(), while dma_iova_unlink() always
+> uses a never queued gather and syncs it, as the unlinked range remains
+> owned by the caller and may be linked again immediately.
+> 
+> Fixes: 1acce29926d9 ("iommu/dma: simplify dma_iova_destroy() and drop the free_iova helper")
+> Reported-by: Sibi Sankar <sibi.sankar@oss.qualcomm.com>
+> Closes: https://lore.kernel.org/all/20261125135120.1126571-1-sibi.sankar@oss.qualcomm.com/
+> Suggested-by: Leon Romanovsky <leon@kernel.org>
+> Cc: stable@vger.kernel.org # v7.3+
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
+>  drivers/iommu/dma-iommu.c   | 103 ++++++++++++++++++++++++++----------
+>  include/linux/dma-mapping.h |   8 ++-
+>  2 files changed, 83 insertions(+), 28 deletions(-)
 
-You should also mention that NONE of the DMA/IOMMU developers or the authors
-of that API were CCed when the change was merged.
-https://lore.kernel.org/all/20260818-reserve_iova_in_driver-v2-2-5005a1154408@oss.qualcomm.com/
+<...>
 
+>  /*
+>   * All flags stored in the upper bits of dma_iova_state::__size. Sizes passed
+>   * to dma_iova_try_alloc() must not overlap with them.
+>   */
+> -#define DMA_IOVA_FLAGS			DMA_IOVA_USE_SWIOTLB
+> +#define DMA_IOVA_FLAGS			(DMA_IOVA_USE_SWIOTLB | DMA_IOVA_USE_FQ)
+
+We need to be careful here. Every bit reduces the IOVA space available to
+everyone. It is only a matter of time before someone complains that __size
+is too small for their use case. This extra bit is probably not an issue,
+but that could change if we keep adding bits to DMA_IOVA_FLAGS.
+
+Thanks
+
+>  
+>  static inline size_t dma_iova_size(struct dma_iova_state *state)
+>  {
+> -- 
+> 2.43.0
 > 
-> And it couldn't even use the right APIs??!
-
-And proposed for the stable@ :(
-
-> 
-> Jason
