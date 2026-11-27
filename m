@@ -1,66 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=199.89.1.14
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.224.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795794989;
-	b=pZotfmqU0QuP1kFpBVekBmmIUqmIb2QR53aQe9OYds04XMPv4TdATSYlPZyYFMSR9tpn
-	 ku2TICVZCtIJzWlgSW7L6vXTQMak7fcc+RQ8kCirh3Wg0E/v9kulDW3SH/eX3AB3o8kEp
-	 Wx66V8J4jMDzUgUBTSLkrclU3m3lhnno0sku8nSJZpvM3bP0arL5SpKTFiRJo++19XMix
-	 GOVzzT3e7sML92cXyIwYG489QRpBBy/faeI1enNSfhFvL0K33lE1m2C8XAySpE0gbnEbp
-	 G3hz9SB5y8j5AvKWNDEor19nZJ5XuxBas9cS1sqTj0jspZehhvZKGRBq8PLXWKDrm6Q==
+	t=1795796558;
+	b=HSw7AbYPqwTWGf5/SYdyimBRuXm4vLWVPKFirsSvKd7VzHGBpDW0evSq/zFoFM1Hp4rr
+	 c2zMszBc2BBN7v8z1sQJLFq2VbG8TvzXlcOv6dgYvxZO9aDeczl2XY4L1mb/9qaeS9fs5
+	 bEIc15IX8JRlBojRYXglvM8ekK0PTUCmIraq0xC8f3MqLhhLcIvv1G/+bfM9R2/rEdkk2
+	 AIjLUCmN8pVTCnISrzFFw3I34phWOepv4hv9sUywZkTGzON1BR2YupQ5WGPmy3ZL8CimC
+	 LO+9FmZmoNFwQKXqi3CSqUXBernA3+Fi+FFdtJYjJDdexrzJuGFq8jRMgH2WJSvD3mg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795794989;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Virus-Scanned:Received:
-	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 References:Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=VOQN32mWBtipXbp6LOeA3aYHzW7Pgb5jWELRRzRROro=;
-	b=iAMd5m4GBUE/TIjUQ2Shd2MXgvHBHUJ0EvU+5T0i2613dg8Jn1uhqTMB6ChHBPMdBO3A
-	 w2HdYAT/yM8IDpnsIpomH4xjFkXGparIRLErR3WrcKmzt2N1IiUXORdXiFKcMEtufMxTG
-	 idxA3bU3eREbn2z+avn72jYKL2dbh0NMc7bIl2DhoGc5qaZ+Pu0m4mYHj4ZSuLm3T5TPp
-	 +ctY55vZSd4NzVc39AiXHeg5qAw4j7euMfFhWO6sA5kYTDU2llAB9xCJgSmHGWrzGb4r+
-	 41QZV7gHZoiSlvgtYvZjZYZ4gcMyfWd8c07t71sCa9t5zuTmRNoAZduodKEaNMHWK3g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795796558;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:
+	 X-Forwarded-Encrypted:X-Received:MIME-Version:References:In-Reply-To:
+	 Reply-To:From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=2FluCkB23A2rX2sPHBDAcwkjRgUYCjrVI/IlnA5wVSI=;
+	b=hqj1NgJq+eEw0Ih/w9tEwuyLGNz9lgy1nEyZlfVKASUlyGLqNsset0qY4viDxltalQxp
+	 lRy9VN9XigPPntwFspOE4ymg3ODmTA6doD+hrlM6EFsqXYCj4kt9vMOcLPGJcJ/6HTCHl
+	 M3E+IoqFnKJPgGeexuFRXGCHfjId4iOvb4lxPOckS1kFWHuZS0nYL55LMwmCF1fksIyVg
+	 NxGTbQ281m4IMjVnsf6Oz3wJt7YMysWgSOfJqgvXUMGw+8mUZpoFk23JqYTKvtWo5XFSz
+	 ZzVI2NsCLYLgjW+Sqwmu90Brb+p9oyS3H4GpaIVgqfBgBfAY8Mkx2+mbV9dapEGnpaw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=acm.org;
-	spf=pass smtp.mailfrom=acm.org;
-	dkim=pass header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=lxW+x7Td;
-	arc=none smtp.remote-ip=199.89.1.14
-Received: from 011.lax.mailroute.net (011.lax.mailroute.net [199.89.1.14])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=fail header.from=linux.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	arc=none smtp.remote-ip=74.125.224.53
+Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com [74.125.224.53])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD948606A31F;
-	Fri, 27 Nov 2026 15:56:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DD948606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=acm.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=lxW+x7Td
-Received: from localhost (localhost [127.0.0.1])
-	by 011.lax.mailroute.net (Postfix) with ESMTP id 4jbdM01DD5z1XMFvk;
-	Fri, 27 Nov 2026 15:56:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acm.org; h=
-	content-transfer-encoding:content-type:content-type:in-reply-to
-	:from:from:content-language:references:subject:subject
-	:user-agent:mime-version:date:date:message-id:received:received;
-	 s=mr01; t=1795794976; x=1798386977; bh=VOQN32mWBtipXbp6LOeA3aYH
-	zW7Pgb5jWELRRzRROro=; b=lxW+x7TdBhEc0hBbqI700ZHNzHN9FN6P35FAzd/s
-	o+BQp9a9ZikoufRQXDBrnYyL+uJq55LWEk//rnuppkEgIDWslrm2BCyRReKj9zVx
-	d7gc44cL6dGwVkcMzXWWBgpverh2360D3TMM+jWF29R2dwJi6sbzvo8MKPXUGxic
-	Naxz8g6J70yGHO0U9fcV/DjrGz8xJulosVSnaPofaVFuvl3JGchbgQLTXXr3kwsJ
-	28Bt42PPyj50ZpX71vc7flSNaqGXCTId0oD0zhf0/iArJLphACuIAiE1tw1GL7Dh
-	xuwh8IFDKzQXjD7alLKDKsMcGKqFA6yXm91vYAopjrBMWg==
-X-Virus-Scanned: by MailRoute
-Received: from 011.lax.mailroute.net ([127.0.0.1])
- by localhost (011.lax [127.0.0.1]) (mroute_mailscanner, port 10029) with LMTP
- id M3PTvbKtweB6; Fri, 27 Nov 2026 15:56:16 +0000 (UTC)
-Received: from [192.168.51.14] (c-24-6-239-25.hsd1.ca.comcast.net [24.6.239.25])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: bvanassche@acm.org)
-	by 011.lax.mailroute.net (Postfix) with ESMTPSA id 4jbdLl5Rd6z1XLyhd;
-	Fri, 27 Nov 2026 15:56:15 +0000 (UTC)
-Message-ID: <0318408a-20b8-4237-85b2-e522883f5436@acm.org>
-Date: Fri, 27 Nov 2026 07:56:14 -0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E853A606A324
+	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 16:22:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E853A606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-67bee1f693bso6470222d50.1
+        for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 08:22:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795796557; x=1796401357;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:reply-to:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=2FluCkB23A2rX2sPHBDAcwkjRgUYCjrVI/IlnA5wVSI=;
+        b=VDu2UZPVxciAUfZz5O6Rz/jvqbNSzAiT4n5TsjyGgWeKxn0K0Nh+Lan9tyu5kE5z35
+         nMdnX8kpN18acx8E2JWEMSWjBSqpOcwD4ozRTf61TFKBhWiMd7x5rOYQgQ2ASQouWSJ8
+         GwSeHSa2TO0X9A/ucQsLCSjB7QXpOZCEP+S3AcsIleLv8hrdgeDD++jXb38duqcbh1cT
+         Yt9EhcLJSBpKRDjHpAk13d21NRuHpQKAj9eg/dB1mk5NHy6ID0O28hC4tVVWLdnTswV5
+         eOpYVjVpcpXcm0Kypt1LHVdtic2+jIx1OPN3G742voAfbSuFNTrn5pCPaDNoUPu0fEN4
+         18Tg==
+X-Forwarded-Encrypted: i=1; AL+hErFI0dQ8XxrtSRtjALlnlzC6ZfiYSqec9YTcXq8MwqllSZzbYrrpMkWVzRwCMkfluaqY80yZNw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8okREd95PI8lmHaA+OhPxOBoonThHRj7jDGJfx5UNx7PqPP8Pp
+	XuGzpt3ubX1sJjpucJOJHgZr5w9pbbt74Iib8806bHvo6J7ikBov9nI0zgzkUw==
+X-Gm-Gg: AZFdTZfE7cLfsu+S/uWLg4Qnzll3rd6khAa21c1U60YYZNoASQ8NgQiP0mVJAhUShBJ
+	njVs5jDLCQuPydrj2l3LCQWr7fz7PrfXbmt1fWfumzljaIFx6NN/Omeh4kgkg7mGRZvhLWa3MsT
+	Fydo0Aqs7qKhLTSfIDEJPs9fnWFPMQphh2n7kll9MEDIuGErAZ59Y4gq0IY05NkXaWHMRJfzv4c
+	QWd8SlB5skNwqAPQv2fSJcLun757SkUoY2/M2VGkBTZjkR/1VPR6i03V2QaiK1FnZHfjk1Y6cie
+	CdyWGL1YDcZsQqwHIhoSR7qzbCBFpTtDr+PpJ5KACpfxdB5t34RKmbi3zPrisF5nTQCQJn7YniF
+	Nd62HJ5X7WxsS7HOzRLAiBOuAOYCNPGpZOk1qJ8O+TrOMgAt6EDh9WnztpJd5XnmXxm/CejqXC9
+	4gLjGh3Y+b47LtVAWQ8A2sDOThvbqMH14eF8g+7oFGdOtWBhBpn6MAOZSch52gjzOk8Gt3bfujZ
+	xwLRz8cuwW8Wg095lAArwCj2trEB9F3D+yYl7sf0Q9Ai46p7Ip+mALwS/30ztWthyl7IDiUrZE1
+	YMfePqiggZImUE7K34lvOHB+6Lgn1igPYPucZQK+0Df7u9UJ24HBosjekPfelt/qgMb4D+7Y1Lv
+	lOX/AeAnN8GJ/c3VsLGMDH8IdVG3PORINnc0ia7Gt1i9BAPYRnukemk5TRhQ=
+X-Received: by 2002:a05:690e:b8d:b0:679:cc49:55cb with SMTP id 956f58d0204a3-67df44b8ae6mr12417130d50.99.1795796556703;
+        Fri, 27 Nov 2026 08:22:36 -0800 (PST)
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-67df3354fe3sm11354458d50.10.2026.11.27.08.22.35
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 27 Nov 2026 08:22:35 -0800 (PST)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-8b531cd9bbaso72845327b3.2
+        for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 08:22:35 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AL+hErEGt4FRKQpwTWvPJ1NFHmRG5JX8a4sDklNoFrcC+yDcNeB3p8kDAIj5jgH9KY8Kh6leTUzwsg==@lists.linux.dev
+X-Received: by 2002:a05:690c:9a82:b0:8b0:c71d:2b2b with SMTP id
+ 00721157ae682-8b5205137b8mr119923687b3.45.1795796555253; Fri, 27 Nov 2026
+ 08:22:35 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -70,188 +82,245 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [REGRESSION] DMAR fault by Intel H97 SATA controller since
- "block: Increase BLK_DEF_MAX_SECTORS_CAP" (6.17-rc1)
-To: 70sp <70sp@protonmail.com>, Laurence Oberman <loberman@redhat.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Joerg Roedel <joro@8bytes.org>, Thorsten Leemhuis
- <regressions@leemhuis.info>, Tobias Laas <tobias.laas@posteo.de>,
- Damien Le Moal <dlemoal@kernel.org>, Jens Axboe <axboe@kernel.dk>,
- regressions@lists.linux.dev, linux-block@vger.kernel.org,
- linux-ide@vger.kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
- Will Deacon <will@kernel.org>, Niklas Cassel <cassel@kernel.org>
-References: <5ad27a97aafbc08a8702d5b90d09cd59@posteo.de>
- <awSs5Cw3hFkf4O4T@ryzen> <ec36d13e-e4c2-4bfb-8b50-69d4a1628839@leemhuis.info>
- <87b1bbd8-8113-4890-8623-738b19a9cc7b@leemhuis.info>
- <a0ff3156-add0-4f7d-8373-09f95bd7036b@acm.org>
- <2adaf0ef9e1a2fa18590f7d8dbf203c0f7de2be7.camel@redhat.com>
- <uJluFNYGCCrdvnYT3MatN_4Om8UczTJX_dzxumJxyCAC7F-Ubrekb7LPwlRxhCW0J91UBf-TqeRoJQfgYIYBRvMsPmE-Qs1eAg5zbDP0s58=@protonmail.com>
- <0edb9525-5068-42e6-b6c3-a1dcebcbcea7@acm.org>
- <f323c3d62265dfe90fa71514028af4d35f6e2420.camel@redhat.com>
- <e_efhbm0Vxq0FxO3-QqPkyhGrjzTvBDYmUOsGgmebVSyd0qsXXxYFXwC9sSjRAP06gcpsttHunBLtc0Mmt0cIjEI_0sDXL61lnxHhmuaxWs=@protonmail.com>
- <l7ImnFzOgVkMzGhZoxCBcI1dAbMnO2NlsstuK-4sh3CyOpWhWAC1RqFIr4CW82iTy3FZe2r1k4EFFtecv5PClmy_mvh10vI9W_W5Z5p-jlo=@protonmail.com>
-Content-Language: en-US
-From: Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <l7ImnFzOgVkMzGhZoxCBcI1dAbMnO2NlsstuK-4sh3CyOpWhWAC1RqFIr4CW82iTy3FZe2r1k4EFFtecv5PClmy_mvh10vI9W_W5Z5p-jlo=@protonmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <20261114133738.52817-1-tanure@linux.com>
+In-Reply-To: <20261114133738.52817-1-tanure@linux.com>
+Reply-To: tanure@linux.com
+From: Lucas Tanure <tanure@linux.com>
+Date: Fri, 27 Nov 2026 16:22:23 +0000
+X-Gmail-Original-Message-ID: <CAJX_Q+15Vit+pU3XE+DiUH4u6APf-FYBuhnrVGx9=pZC8MGpWw@mail.gmail.com>
+X-Gm-Features: Aa3M54quNMc8BBDlmy1z8lmGJhR7RotCtAP1c_2g21GpRyDjwzEWIScV0cEj9Ts
+Message-ID: <CAJX_Q+15Vit+pU3XE+DiUH4u6APf-FYBuhnrVGx9=pZC8MGpWw@mail.gmail.com>
+Subject: Re: [PATCH] iommu/rockchip: do not walk the page tables of a disabled MMU
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Heiko Stuebner <heiko@sntech.de>, 
+	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>, 
+	"moderated list:ARM/Rockchip SoC support" <linux-arm-kernel@lists.infradead.org>, 
+	"open list:ARM/Rockchip SoC support" <linux-rockchip@lists.infradead.org>, 
+	open list <linux-kernel@vger.kernel.org>
+Cc: stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 11/27/26 5:57 AM, 70sp wrote:
-> I have taken a look at the patches and the entire problem much more
-> in depth, and there probably isn't a significantly better variant to
-> do this.
->=20
-> In the state before the regression, the kernel was assigning smaller
-> page sizes for some cases, so it wasn't ideal as I thought. I also
-> haven't found a better place for the quirk to belong as there are
-> already exemptions for specific platforms in the code (I thought
-> there weren't). This one is probably fine.
->=20
-> I am sorry to Bart and Laurence who had to handle this. I thought my
-> patch was bad, so I thought the same about Barts, but it looks like
-> it's the correct way to approach it.
->=20
-> I was told to repost my patch formally by Lu Baolu ( https://
-> lore.kernel.org/regressions/d931a389-c143-4a6a-931c-
-> bc7025bcefb9@linux.intel.com/ ), probably because it fixes at least
-> my case.
->=20
-> I think we should wait for confirmation from Tobias and if it's
-> positive, we can send out the final patch closing both cases.
-My LLM came up with the (entirely untested) patch below after I asked
-it to generalize an earlier patch:
-
-Subject: [PATCH] iommu/vt-d: Disable superpages when legacy IGD engine=20
-lacks them
-
-Disable Intel VT-d superpages on bare-metal systems when the Intel
-integrated graphics device (0000:00:02.0) is behind a dedicated legacy
-(non-scalable-mode) VT-d engine that reports CAP.SLLPS =3D=3D 0 while an
-active remapping unit advertises superpage support.
-
-Per Intel Core processor datasheets (e.g. document 328897, section 3.1.2
-for 4th Generation Core / Haswell), the integrated graphics VT-d engine
-does not support super-pages and BIOS must disable super-pages in the
-default VT-d engine while integrated graphics is enabled. Several BIOSes
-leave CAP.SLLPS set on the default engine (dmar1). Whenever Linux install=
-s
-a 2 MiB or 1 GiB leaf entry (PS=3D1) on dmar1, hardware aborts DMA with
-fault reason 0x0c ("non-zero reserved fields in PTE"), breaking VFIO
-passthrough, discrete GPUs, audio, and AHCI storage (exposed by default
-once BLK_DEF_MAX_SECTORS_CAP increased to 4 MiB in v6.17).
-
-Prior to commit c376a3456d8b ("iommu/vt-d: Remove
-domain_update_iommu_cap()"), domain_update_iommu_superpage() intersected
-superpage support across all active IOMMUs, so the IGD unit (SLLPS=3D0)
-masked off superpages on dmar1. After that commit, dmar1 domains started
-honoring dmar1's advertised CAP.SLLPS.
-
-Check the hardware capability directly instead of matching hardcoded CPU
-model IDs. During intel_iommu_init(), look up the Intel integrated
-graphics device at 0000:00:02.0, find its matched non-INCLUDE_ALL DRHD
-unit, and clear intel_iommu_superpage before allocating any paging
-domains if that unit is a legacy engine (ECAP.SMTS =3D=3D 0) without
-superpage support (CAP.SLLPS =3D=3D 0) while an active IOMMU advertises
-CAP.SLLPS. Skip virtualized guests, untrusted PCI devices, systems
-without integrated graphics, and newer generations whose IGD VT-d engine
-supports superpages or scalable mode.
-
-Fixes: c376a3456d8b ("iommu/vt-d: Remove domain_update_iommu_cap()")
-Reported-by: Tobias Laas <tobias.laas@posteo.de>
-Closes:=20
-https://lore.kernel.org/linux-block/5ad27a97aafbc08a8702d5b90d09cd59@post=
-eo.de/
-Reported-by: =C5=A0imon Posp=C3=ADchal <70sp@protonmail.com>
-Closes:=20
-https://lore.kernel.org/r/HYhMd0Klo0XE_yiVY7XmsgyKKFDwKHfKRy22KrycLcYd0V_=
-ykA4xdbBMJXkA07YX3os6qK-NhMIVi6ITo-CkNIIF0e-GcI0UwwZmdDhAJ0I=3D@protonmai=
-l.com
-Cc: stable@vger.kernel.org
----
-  drivers/iommu/intel/iommu.c | 48 +++++++++++++++++++++++++++++++++++++
-  1 file changed, 48 insertions(+)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 5a2e705a2f2e..d2c03bec22e9 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -43,6 +43,7 @@
-
-  #define DEFAULT_DOMAIN_ADDRESS_WIDTH 57
-
-+static void __init check_igfx_superpage(void);
-  static void __init check_tylersburg_isoch(void);
-  static int intel_iommu_set_dirty_tracking(struct iommu_domain *domain,
-  					  bool enable);
-@@ -2762,6 +2763,7 @@ int __init intel_iommu_init(void)
-  		pr_info("No SATC found\n");
-
-  	init_no_remapping_devices();
-+	check_igfx_superpage();
-
-  	ret =3D init_dmars();
-  	if (ret) {
-@@ -4266,6 +4268,52 @@ static void __init check_tylersburg_isoch(void)
-  	       vtisochctrl);
-  }
-
-+/*
-+ * Per Intel Core processor datasheets (e.g. document 328897, section=20
-3.1.2),
-+ * when the integrated graphics VT-d engine does not support super-pages
-+ * (CAP.SLLPS =3D=3D 0), BIOS must disable super-pages in the default VT=
--d=20
-engine
-+ * while integrated graphics is enabled. Some BIOSes leave CAP.SLLPS set=
- on
-+ * the default engine, causing fault reason 0x0c (non-zero reserved=20
-fields in
-+ * PTE) when a 2 MiB or 1 GiB superpage mapping is used.
-+ */
-+static void __init check_igfx_superpage(void)
-+{
-+	struct dmar_drhd_unit *drhd, *igfx_drhd;
-+	struct intel_iommu *iommu;
-+	struct pci_dev *pdev;
-+
-+	if (!intel_iommu_superpage ||
-+	    cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
-+		return;
-+
-+	pdev =3D pci_get_domain_bus_and_slot(0, 0, PCI_DEVFN(2, 0));
-+	if (!pdev)
-+		return;
-+
-+	if (pdev->vendor !=3D PCI_VENDOR_ID_INTEL || !IS_GFX_DEVICE(pdev) ||
-+	    risky_device(pdev)) {
-+		pci_dev_put(pdev);
-+		return;
-+	}
-+
-+	igfx_drhd =3D dmar_find_matched_drhd_unit(pdev);
-+	pci_dev_put(pdev);
-+	if (!igfx_drhd || !igfx_drhd->iommu || igfx_drhd->include_all)
-+		return;
-+
-+	if (ecap_smts(igfx_drhd->iommu->ecap) ||
-+	    cap_super_page_val(igfx_drhd->iommu->cap))
-+		return;
-+
-+	for_each_active_iommu(iommu, drhd) {
-+		if (cap_super_page_val(iommu->cap)) {
-+			intel_iommu_superpage =3D 0;
-+			pr_info("Disabling superpages because integrated graphics VT-d=20
-engine lacks superpage support\n");
-+			break;
-+		}
-+	}
-+}
-+
-  /*
-   * Here we deal with a device TLB defect where device may=20
-inadvertently issue ATS
-   * invalidation completion before posted writes initiated with=20
-translated address
-
+On Sat, Nov 14, 2026 at 1:37=E2=80=AFPM Lucas Tanure <tanure@linux.com> wro=
+te:
+>
+> A page fault handler running while another CPU detaches the same IOMMU
+> can read a cleared RK_MMU_DTE_ADDR, turn it into a linear-map pointer
+> and dereference it, which panics the machine. A dummy or firmware-left
+> address is as unsafe.
+>
+> Seen on PX30 at reboot: the display controller still fetched an
+> unmapped framebuffer, its IOMMU sat in a page fault, ignored the stall
+> and paging-disable commands, and had RK_MMU_DTE_ADDR cleared during
+> the handler's second run.
+>
+> No wait works: the master shares the line, the RK3588 NPU driver
+> detaches from its interrupt thread, where synchronize_irq() deadlocks,
+> and synchronize_hardirq() skips a force-threaded handler. A spinlock
+> orders the walk against the register clear.
+>
+> 6.1 vendor kernel log, rk_pagefault_done is the walk, per CPU:
+>
+>   CPU 1, init, reboot path:
+>   [ 1069.789374][    T1] rk_iommu ff460f00.iommu: Enable stall request ti=
+med out, retry_count =3D 0, status: 0x0002cb
+>   [ 1069.791314][    T1] rk_iommu ff460f00.iommu: Disable paging request =
+timed out, retry_count =3D 0, status: 0x0002cb
+>   [ 1069.830197][    T1] Call trace:
+>   [ 1069.830922][    T1]  iommu_detach_device+0xd0/0xdc
+>   [ 1069.831483][    T1]  rockchip_drm_dma_detach_device+0x1c/0x34
+>   [ 1069.832033][    T1]  vop_crtc_atomic_disable+0xb0c/0xc44
+>   [ 1069.832751][    T1]  drm_atomic_helper_commit_modeset_disables+0x348=
+/0x690
+>   ...
+>   [ 1069.836601][    T1]  drm_atomic_helper_shutdown+0xa0/0x158
+>   [ 1069.837152][    T1]  rockchip_drm_platform_shutdown+0x18/0x2c
+>   [ 1069.837870][    T1]  platform_shutdown+0x3c/0x54
+>   [ 1069.838599][    T1]  device_shutdown+0x194/0x260
+>   [ 1069.839160][    T1]  kernel_restart+0x40/0x128
+>
+>   CPU 0, page fault handler:
+>   [ 1069.790364][    C0] rk_iommu ff460f00.iommu: Page fault at 0x0000000=
+0ffee0000 of type read
+>   [ 1069.792129][    C0] rk_iommu ff460f00.iommu: Page fault while iommu =
+not attached to domain?
+>   [ 1069.792184][    C0] rk_iommu ff460f00.iommu: Page fault at 0x0000000=
+0ffee0280 of type read
+>   [ 1069.794604][    C0] Unable to handle kernel paging request at virtua=
+l address ffffff8000000ffc
+>   [ 1069.805998][    C0] Internal error: Oops: 0000000096000006 [#1] PREE=
+MPT SMP
+>   [ 1069.809484][    C0] pc : rk_pagefault_done+0x1b4/0x3c8
+>   [ 1069.810548][    C0] lr : rk_pagefault_done+0x19c/0x3c8
+>   [ 1069.832390][    C0] Call trace:
+>   [ 1069.833116][    C0]  rk_pagefault_done+0x1b4/0x3c8
+>   [ 1069.833844][    C0]  rk_iommu_irq+0x64/0xc8
+>   [ 1069.834395][    C0]  __handle_irq_event_percpu+0xe8/0x2ac
+>   [ 1069.834945][    C0]  handle_irq_event+0x40/0xbc
+>   [ 1069.835675][    C0]  handle_fasteoi_irq+0x118/0x28c
+>   [ 1069.836404][    C0]  generic_handle_domain_irq+0x44/0x6c
+>   [ 1069.836954][    C0]  gic_handle_irq+0x60/0xf0
+>   [ 1069.837505][    C0]  call_on_irq_stack+0x3c/0x5c
+>   [ 1069.838235][    C0]  do_interrupt_handler+0x4c/0x94
+>   [ 1069.838963][    C0]  el1_interrupt+0x44/0xa8
+>   [ 1069.839446][    C0]  el1h_64_irq_handler+0x18/0x2c
+>   [ 1069.839997][    C0]  el1h_64_irq+0x78/0x7c
+>   [ 1071.215224][    C0] Kernel panic - not syncing: Oops: Fatal exceptio=
+n in interrupt
+>
+> Fixes: c68a292152d3 ("iommu/rockchip: rk3288 iommu driver")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Lucas Tanure <tanure@linux.com>
+> ---
+>  drivers/iommu/rockchip-iommu.c | 28 ++++++++++++++++++++++------
+>  1 file changed, 22 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iomm=
+u.c
+> index 1fa3110b142a..0f40d9678344 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -115,6 +115,7 @@ struct rk_iommu {
+>         struct iommu_device iommu;
+>         struct list_head node; /* entry in rk_iommu_domain.iommus */
+>         struct iommu_domain *domain; /* domain to which iommu is attached=
+ */
+> +       spinlock_t lock;
+>         const struct rk_iommu_ops *rk_ops;
+>  };
+>
+> @@ -543,7 +544,8 @@ static int rk_iommu_force_reset(struct rk_iommu *iomm=
+u)
+>         return 0;
+>  }
+>
+> -static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
+> +static void log_iova(struct rk_iommu *iommu, struct iommu_domain *domain=
+,
+> +                    int index, dma_addr_t iova)
+>  {
+>         void __iomem *base =3D iommu->bases[index];
+>         u32 dte_index, pte_index, page_offset;
+> @@ -563,6 +565,12 @@ static void log_iova(struct rk_iommu *iommu, int ind=
+ex, dma_addr_t iova)
+>
+>         mmu_dte_addr =3D rk_iommu_read(base, RK_MMU_DTE_ADDR);
+>         mmu_dte_addr_phys =3D iommu->rk_ops->pt_address(mmu_dte_addr);
+> +       if (domain =3D=3D &rk_identity_domain ||
+> +           mmu_dte_addr_phys !=3D to_rk_domain(domain)->dt_dma) {
+> +               dev_err(iommu->dev, "iova =3D %pad: page directory %#x is=
+ not the attached domain's, not walked\n",
+> +                       &iova, mmu_dte_addr);
+> +               return;
+> +       }
+>
+>         dte_addr_phys =3D mmu_dte_addr_phys + (4 * dte_index);
+>         dte_addr =3D phys_to_virt(dte_addr_phys);
+> @@ -593,6 +601,7 @@ static void log_iova(struct rk_iommu *iommu, int inde=
+x, dma_addr_t iova)
+>  static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
+>  {
+>         struct rk_iommu *iommu =3D dev_id;
+> +       struct iommu_domain *domain;
+>         u32 status;
+>         u32 int_status;
+>         dma_addr_t iova;
+> @@ -606,6 +615,8 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id=
+)
+>         if (WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks)))
+>                 goto out;
+>
+> +       spin_lock(&iommu->lock);
+> +       domain =3D READ_ONCE(iommu->domain);
+>         for (i =3D 0; i < iommu->num_mmu; i++) {
+>                 int_status =3D rk_iommu_read(iommu->bases[i], RK_MMU_INT_=
+STATUS);
+>                 if (int_status =3D=3D 0)
+> @@ -625,15 +636,15 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_=
+id)
+>                                 &iova,
+>                                 str_write_read(flags =3D=3D IOMMU_FAULT_W=
+RITE));
+>
+> -                       log_iova(iommu, i, iova);
+> +                       log_iova(iommu, domain, i, iova);
+>
+>                         /*
+>                          * Report page fault to any installed handlers.
+>                          * Ignore the return code, though, since we alway=
+s zap cache
+>                          * and clear the page fault anyway.
+>                          */
+> -                       if (iommu->domain !=3D &rk_identity_domain)
+> -                               report_iommu_fault(iommu->domain, iommu->=
+dev, iova,
+> +                       if (domain !=3D &rk_identity_domain)
+> +                               report_iommu_fault(domain, iommu->dev, io=
+va,
+>                                                    flags);
+>                         else
+>                                 dev_err(iommu->dev, "Page fault while iom=
+mu not attached to domain?\n");
+> @@ -651,6 +662,7 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id=
+)
+>
+>                 rk_iommu_write(iommu->bases[i], RK_MMU_INT_CLEAR, int_sta=
+tus);
+>         }
+> +       spin_unlock(&iommu->lock);
+>
+>         clk_bulk_disable(iommu->num_clocks, iommu->clocks);
+>
+> @@ -921,16 +933,19 @@ static struct rk_iommu *rk_iommu_from_dev(struct de=
+vice *dev)
+>  /* Must be called with iommu powered on and attached */
+>  static void rk_iommu_disable(struct rk_iommu *iommu)
+>  {
+> +       unsigned long flags;
+>         int i;
+>
+>         /* Ignore error while disabling, just keep going */
+>         WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks));
+>         rk_iommu_enable_stall(iommu);
+>         rk_iommu_disable_paging(iommu);
+> +       spin_lock_irqsave(&iommu->lock, flags);
+>         for (i =3D 0; i < iommu->num_mmu; i++) {
+>                 rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, 0);
+>                 rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, 0);
+>         }
+> +       spin_unlock_irqrestore(&iommu->lock, flags);
+>         rk_iommu_disable_stall(iommu);
+>         clk_bulk_disable(iommu->num_clocks, iommu->clocks);
+>  }
+> @@ -997,7 +1012,7 @@ static int rk_iommu_identity_attach(struct iommu_dom=
+ain *identity_domain,
+>         if (iommu->domain =3D=3D identity_domain)
+>                 return 0;
+>
+> -       iommu->domain =3D identity_domain;
+> +       WRITE_ONCE(iommu->domain, identity_domain);
+>
+>         spin_lock_irqsave(&rk_domain->iommus_lock, flags);
+>         list_del_init(&iommu->node);
+> @@ -1051,7 +1066,7 @@ static int rk_iommu_attach_device(struct iommu_doma=
+in *domain,
+>         if (ret)
+>                 return ret;
+>
+> -       iommu->domain =3D domain;
+> +       WRITE_ONCE(iommu->domain, domain);
+>
+>         spin_lock_irqsave(&rk_domain->iommus_lock, flags);
+>         list_add_tail(&iommu->node, &rk_domain->iommus);
+> @@ -1227,6 +1242,7 @@ static int rk_iommu_probe(struct platform_device *p=
+dev)
+>                 return -ENOMEM;
+>
+>         iommu->domain =3D &rk_identity_domain;
+> +       spin_lock_init(&iommu->lock);
+>
+>         platform_set_drvdata(pdev, iommu);
+>         iommu->dev =3D dev;
+> --
+> 2.56.1
+>
+ping?
