@@ -1,67 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795793477;
-	b=eoWXtrlWiz9XXIM9ZOl+kUpSzOqy0bb+J/e3AXquyqb/SXK8sHPTizJ/kAmV92A4nLDq
-	 ae6Y1Zh4WOIiJhp57r+8PDBjDSmX7HT9p3ZEvBS0cGnQidsgGTZc5QYsvCsrWKL472bKU
-	 f2w+kPETWUS2uqNTqwg1lvp/384L5vDZcUaByL7DVB4I2JLt3rsrNIo5ih6ejFXgBsabd
-	 9zd5sPvI+H1vKPgI97eNT72MxAGqaiZH8I2/6c0EMF8u1EDjH7xV3NiSdjuVvTy9l2XmR
-	 8ogcBm4+BXnYNEDCKQLAeGlN1TsU0LOWzQkLrScLsReoQGgcEsB5m8IgyJ415b3CPRQ==
+	t=1795793961;
+	b=tDLC6vtipQBkmtNOsINMecBACxI3fYzJojCR1jtjmL0Woh+C68NwYM48bCCgg6ml9HBF
+	 b8zs8IV+AjsmzYbrg27utHGuKuqirDlEj3t5RJMWE/PfRvYuV76FF96EMS4hccc4CjcDt
+	 gTpy2SoYFZteH5eUTbqg3+t6TULSFJnENN8PcetymzBYXQVeSWTeZPyHZsUjHAoEj/r7V
+	 9bw4djU/mIfEvujQYzvso+vmKdvVtq2jnkrZMGjyNR12rwYtWJKwQRXQpHMOmnqsTc41k
+	 c5hq0q44kkTqBorbachoO6AORnq00RhrdBmaqj6oTBOupPnjwvNyoxPiVjO0lbyIbHA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795793477;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=AiKgiR/T4qeQ5YDnuOshjx2CZduMAwFjjmKloTtaWZE=;
-	b=exHRpXDAmDQNtCsMCfRVfyFI/KAN1jQNJkf5iDuzjP0a1SYlxTz/LdwrNwKrCgoS2IiA
-	 iaIXZ6565/CLsgztoXRLrk0GZw8vfMiP3W+3AxuKEumF7KdZdTWlwMAfxRcIx3MH+yBlm
-	 bEIPXklEur2uxWRGUVS2BQuqrt4zLC74ZzT/jPC9mxDRrNdXdqyqIYy86/dIMoI3Gp9Q6
-	 HnXVcpZHm9zOlXOHKQiSeUNgjU7RmgsP63kWqikbSOJg0csWdI7cOrnFhnY8X9m7JRbMG
-	 VYaWcBCbVLIbyKvKyQ9SoOKle/Wu5TmRqqXK2J4f4UN164wSBhZuJ4Wf+YaoNWz+iBQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795793961;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=yqB5DRZzw4GAT7M3ixHliER6cQD69webi93fwhdLPow=;
+	b=Vjkk7YgaKKJwklF7jleoZuOPCMYbcTKVOrVpjS4abJYYCSzeTC/qRAJl/arKf70nhuB8
+	 VYtDUXFyIaBAM85tYmySGidCBIcMt5yvH8sFqloehJCd/HS153YfqO02v0HUR4fsvq4z3
+	 7AGX9am4AuEPtbpyKSzdXuArwdbhnLK+fexhOYKfGQGRQOmFDy0BxXlzd3xqXAykoXvKq
+	 9Lp2Rmr2puoR48hkpambYxPJd+hi33HNcKkhQ4b8WSxi2YRM/b5CSdeJjFhwinD9AOI58
+	 cBKinHFA6yFvOoPzIjMj4cWzv8801P1H6VhRrC9P8zHlFEOUUba3POugY9alcGp7PLw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="b/bxmaPz";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JNX2kE+w;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DBDF606A321;
-	Fri, 27 Nov 2026 15:31:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35BAD606A31C;
+	Fri, 27 Nov 2026 15:39:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=b/bxmaPz
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 942CD1F0089F;
-	Fri, 27 Nov 2026 15:31:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JNX2kE+w
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 577B01F00899;
+	Fri, 27 Nov 2026 15:39:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795793477;
-	bh=AiKgiR/T4qeQ5YDnuOshjx2CZduMAwFjjmKloTtaWZE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=b/bxmaPzPalF4fWgf3uVw3MTeg+rguOh01GZtKw7oI6ojWL6/CEY5l93aX1+7IQjO
-	 iTNClzh1X/9MdlVCEF913BQ9Du/xnbvst6YmGtr+bPEuTuN3z8I37wQ9hfI3Ggd4Ry
-	 khqlNXFbURegBYYm5rPprF5JHGyLffngpRuaeZ7a4g0R+h6khPN6XOlcYG0SiqA5cR
-	 93gIU2oyYk/1XGtybQwV7NTXOavW1gPadA0NVS/2t7Vbz8gEb67l/M1gGM1pKFObOg
-	 TmxxJyf1nbyB3nY3GwZNLb6gXNVxDI9IaH2W+GbQ3cN2I4xu/P1x54iin77ERkctdX
-	 gvBy2GT9vwLRA==
-Date: Fri, 27 Nov 2026 17:31:13 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux.dev, linux-media@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Sibi Sankar <sibi.sankar@oss.qualcomm.com>,
-	Honglei Huang <honghuan@amd.com>, prakash.gupta@oss.qualcomm.com,
-	Alex Williamson <alex@shazbot.org>,
-	Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-	Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-	Abhinav Kumar <abhinav.kumar@linux.dev>,
-	Bryan O'Donoghue <bod@kernel.org>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Hans Verkuil <hverkuil+cisco@kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH 4/4] iommu/dma: restore flush queue use in
- dma_iova_destroy()
-Message-ID: <20261127153113.GB774860@unreal>
-References: <20261127115849.2780625-1-m.szyprowski@samsung.com>
- <CGME20261127115903eucas1p27ccc4cddb7f705d6afa5c2603597b97a@eucas1p2.samsung.com>
- <20261127115849.2780625-5-m.szyprowski@samsung.com>
+	s=k20260515; t=1795793960;
+	bh=yqB5DRZzw4GAT7M3ixHliER6cQD69webi93fwhdLPow=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=JNX2kE+wC7eE5lXs2H1z5zsGdwx5jTNckuTKnqCvrgiBzUWhuJrbndqeW/9xW8BSE
+	 M28xCFJGQsc6Pb2Ko4RgLQvWY0pNReCTFCG4s5kydua0Dja1piOAStDAGCtOb2hS0b
+	 jVFVtUH+69h7F2RN0mbtp53Q1sEkf68xZgvsSdQX1HRMOWYOpi7r3K+T2VbjrGOlqw
+	 Stl4EW7IAI/Hnt1TLREpwCsGZ+gpr1rWuhfRPXZ9w5cOBVbb0vQjKYnYi52+EKY21q
+	 1e0YkJlk2SSif2UNUjKuqrHd8LF0MJXptiZF8+rIpYBOHZxgqDcVbqm4dOUFeVjF2C
+	 vyUO2bySK75GQ==
+Message-ID: <d0e76f09-a360-4c1d-bfab-c5658f2a69e0@kernel.org>
+Date: Fri, 27 Nov 2026 15:39:12 +0000
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -71,81 +51,128 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261127115849.2780625-5-m.szyprowski@samsung.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 0/4] of_iommu: add support for "iommu-ranges"
+To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Vasant Hegde <vasant.hegde@amd.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Jean-Philippe Brucker <jpb@kernel.org>, Rob Herring <robh@kernel.org>,
+ Saravana Kannan <saravanak@kernel.org>,
+ Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
+ Eric Auger <eric.auger@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+ Srinath Mannam <srinath.mannam@broadcom.com>,
+ Oza Pawandeep <quic_poza@quicinc.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Alex Williamson <alex@shazbot.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux.dev, devicetree@vger.kernel.org,
+ kvm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-media@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>,
+ stable@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+References: <20261120-add_iommu_ranges-v8-0-d90486973b73@oss.qualcomm.com>
+From: Bryan O'Donoghue <bod@kernel.org>
+Content-Language: en-GB
+Autocrypt: addr=bod@kernel.org; keydata=
+ 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
+In-Reply-To: <20261120-add_iommu_ranges-v8-0-d90486973b73@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Nov 27, 2026 at 12:58:48PM +0100, Marek Szyprowski wrote:
-> Commit 1acce29926d9 ("iommu/dma: simplify dma_iova_destroy() and drop
-> the free_iova helper") turned dma_iova_destroy() into dma_iova_unlink()
-> followed by dma_iova_free(). Before it, the destroy path marked its
-> IOTLB gather as queued for DMA-FQ domains, skipped iommu_iotlb_sync()
-> and handed the IOVA over to the flush queue, exactly like
-> __iommu_dma_unmap(). After it:
+On 20/11/2026 10:35, Vikash Garodia wrote:
+> The series adds support for recently introduced property
+> "iommu-ranges". It adds the required checks to error out for cases
+> which are not following the schema definition.
 > 
->   - dma_iova_unlink() never queues its gather and always calls
->     iommu_iotlb_sync() after iommu_unmap_fast(),
->   - dma_iova_free() passes a NULL gather to iommu_dma_free_iova(), so
->     the IOVA goes straight back to the allocator via free_iova_fast().
+> Iommu-ranges was defined in schema with this PR
+> https://github.com/devicetree-org/dt-schema/pull/207
 > 
-> DMA-FQ domains therefore get strict invalidation on this path. This
-> includes blk_rq_dma_map(), which NVMe uses for all data transfers, so
-> iommu.strict=0 has no effect on NVMe I/O. On a Qualcomm Glymur CRD
-> (SMMUv3 without RANGE_INV, 4K pages, NVMe on PCIe Gen5 x4) sequential
-> fio throughput drops from 10.6/11.9 GiB/s (write/read) to the strict
-> mode level of ~2.7 GiB/s.
+> These changes are required for following clients
+> DCP display controller
+> https://lore.kernel.org/all/20261026-jshekhar-dcp-hlos-v2-0-7cf014efdee1@oss.qualcomm.com
 > 
-> Instead of reverting, decide once in dma_iova_try_alloc() whether the
-> IOVA space is going to be released through the flush queue and record
-> it in a new DMA_IOVA_USE_FQ flag in dma_iova_state::__size, next to
-> DMA_IOVA_USE_SWIOTLB, so struct dma_iova_state does not grow.
-> dma_iova_destroy() then unmaps with a gather queued according to that
-> flag, skipping the sync for flush queue domains, and passes the same
-> gather to the IOVA free, so the IOVA space (and any page table pages
-> released by the unmap) goes through queue_iova() again. dma_iova_free()
-> honours the flag as well. The whole reservation is still freed, keeping
-> the size fix of the reverted commit.
+> fastrpc
+> https://lore.kernel.org/all/20261007-extended-mapping-v2-0-5dca3aa2c2d3@oss.qualcomm.com
 > 
-> A gather must always be retired, either by iommu_iotlb_sync() or by
-> handing it to the flush queue together with the IOVA, and the IOVA must
-> never be returned to the allocator while a queued invalidation for it is
-> still pending. To keep that obvious, the internal unlink helper only
-> unmaps into a gather supplied by its caller, and each caller retires it
-> right away: dma_iova_destroy() syncs or queues it together with the IOVA
-> free, exactly like __iommu_dma_unmap(), while dma_iova_unlink() always
-> uses a never queued gather and syncs it, as the unlinked range remains
-> owned by the caller and may be linked again immediately.
+> Iris video
+> https://lore.kernel.org/all/20261103-vpu_iommu_iova_handling-v6-0-e4b6ad864f8f@oss.qualcomm.com
 > 
-> Fixes: 1acce29926d9 ("iommu/dma: simplify dma_iova_destroy() and drop the free_iova helper")
-> Reported-by: Sibi Sankar <sibi.sankar@oss.qualcomm.com>
-> Closes: https://lore.kernel.org/all/20261125135120.1126571-1-sibi.sankar@oss.qualcomm.com/
-> Suggested-by: Leon Romanovsky <leon@kernel.org>
-> Cc: stable@vger.kernel.org # v7.3+
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
->  drivers/iommu/dma-iommu.c   | 103 ++++++++++++++++++++++++++----------
->  include/linux/dma-mapping.h |   8 ++-
->  2 files changed, 83 insertions(+), 28 deletions(-)
+> This patch series is being posted as revision v6 onwards, since the
+> patches were initially part of the media series [1]. The patches were
+> moved out to get review comments from iommu reviewers, which was
+> otherwise looking as a media series. Happy to move this back to media
+> series if anyone have any concerns.
+> [1]
+> https://lore.kernel.org/linux-media/20260926-vpu_iommu_iova_handling-v5-0-0322ca5dc10c@oss.qualcomm.com
+Hey.
 
-<...>
+What's up this series. A number of other series are predicated on it and 
+therefore are stuck.
 
->  /*
->   * All flags stored in the upper bits of dma_iova_state::__size. Sizes passed
->   * to dma_iova_try_alloc() must not overlap with them.
->   */
-> -#define DMA_IOVA_FLAGS			DMA_IOVA_USE_SWIOTLB
-> +#define DMA_IOVA_FLAGS			(DMA_IOVA_USE_SWIOTLB | DMA_IOVA_USE_FQ)
+Link: 
+https://lore.kernel.org/linux-media/20260529-enable_iris_on_purwa-v8-1-b1b9670459ab@oss.qualcomm.com/
 
-We need to be careful here. Every bit reduces the IOVA space available to
-everyone. It is only a matter of time before someone complains that __size
-is too small for their use case. This extra bit is probably not an issue,
-but that could change if we keep adding bits to DMA_IOVA_FLAGS.
+Link: 
+https://lore.kernel.org/linux-media/20261117-add_iris_for_eliza-v3-1-02a55a9272ef@oss.qualcomm.com/
 
-Thanks
+Link: 
+https://patchwork.linuxtv.org/project/linux-media/patch/20260914-add_iris_for_maili-v1-2-09df2b54c317@oss.qualcomm.com/
 
->  
->  static inline size_t dma_iova_size(struct dma_iova_state *state)
->  {
-> -- 
-> 2.43.0
-> 
+Link: 
+https://patchwork.linuxtv.org/project/linux-media/patch/20260918-add_iris_for_hawi-v1-2-ac60fd15c98b@oss.qualcomm.com/
+
+Link: 
+https://patchwork.linuxtv.org/project/linux-media/patch/20261123-mahua_iris_enable-v2-2-b1a16b16afca@oss.qualcomm.com/
+
+Link: 
+https://patchwork.linuxtv.org/project/linux-media/patch/20261001-kaanapali-iris-v4-2-642f9ac5e699@oss.qualcomm.com/
+
+If the approach is wrong then the above submitters need to align on 
+whatever is right...
+
+---
+bod
