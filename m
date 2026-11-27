@@ -1,17 +1,17 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.46.22
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.85.8
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795779648;
-	b=jlOk7//m6CMTJS21HlFRiy/07Y3pVgGChUEgQnrlcpE57DCkLwgnTU2BdVMwyclV2n+R
-	 O2Gwyd22G5feyip1qJVWox/hRQqu/QfgWG3hTOQ0/Bt0SYd/UT0bypLOw0UODydJtNa9c
-	 bkmjCveisCPMgUE4QFu2Axa5HuQ3oMBFHVxSBTvZ2ja8SPXbSKBQJx69tuqfRhl5VKAZb
-	 Qr+nfMCWvajT2UK5sd6pZHiwYlJyRp0T6Jt4RAHIBLxfgXZyjuC5OdGPvOD8U1dD2SBJK
-	 mME5aabANPmgVUdsXz4ST1hDbJxLv2AG93ZvDd3CRxsoUdI/g0L9dv2YEXWHbupnRgw==
+	t=1795779896;
+	b=yz8/EoQ5N6ixjBfpIbJ2jGVqwoXcRR/KW4QU6L2oUr22ed6Ik4QRTgfzioEKIjrcA05+
+	 wvhSLrD5mNvOuApf5qSyJzcDKNpeYcwizgrQIDktDEl3sKjGjWm0uS1aE1Ns4MZ3S2Yr7
+	 BXlI4SW3Kz3642ImJpo8jwNxAJ2sfVbqyWOHM1hNxpUHaLDTfkvbFN1gkc/Y7EfU4gJM6
+	 U3Bo13YJAUG8uhMw6ELtQrrZyIleP6jn6cKdUcftrZhkkAybdUDcDn82eMEj/rCvG5PV5
+	 364Xi0/ZDj0FNB1HeoA3uPEJegAwgg5W/VnRoNfeEvWXZQFs2qi2J/BtgRcNE4bZccw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795779648;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795779896;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+	 From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-Originating-IP:
 	 X-ClientProxiedBy:X-EOPAttributedMessage:X-MS-PublicTrafficType:
 	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
@@ -26,53 +26,53 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=aoF+H0lUGyD24KboAuEUBm7TaYznYkIEf4CPq6UNqvo=;
-	b=Mnlr9NuY6Mhb4hnixDoVUPDLhOux+LDgDuo3JjI+pBmtzUSKgjAwZ0Ea0M228ALPd4N9
-	 VGgF3Gk6h+O/ndvf1C2VTpuuDUeEooxUg2eYakl7nuSUQ5ibkWl4UGLgD5qLyD4wbtIis
-	 PSW8T2UzuwrH5IzEfDwxenifGteqzl1guZtpBLJT+4KVnlO2HVXdJmNNr7/5gJt1ZDCkx
-	 gs6HdjhQb2silJbO70OnnscaI+VU8zT7C7DAFLPCR1J9Hc3OySsbXVcnhhhRD4AKi3XjJ
-	 xJ5C2b7HpoqzsHlk2YJJwcWUbLvxl+B+E/qUZN7jDXCpF8wyiqFHDZ3hYmMFKQh60tg==
+	bh=hCQIkBstd30UQ0ujMnhmpvkENPlRonuzTW6kprcwcGY=;
+	b=t2DLJQ2mS5j7gFWMVFlTJuiNUGKzpO9xS3uICd166K/e6Xy7yt4Z+1tbTluRs/SHZJql
+	 UWsv7IwYGB6BpLXNLn5xF3Xcg4GeNVh8BEKxB6eHH9R5/O9Cer8vFnvWvF8qCO+My5SA3
+	 1u2dQjCjf/+K4vqnfV+ppyLG3qLspnhl1BbvdjIjIWk1LMLt36RzR9DqOl7xe/Iy8tAWL
+	 kzhdYSCV9Isbhizw+gKBVKL/weyLEzpfmQmHIFX8FjK7Cnebe1Q9H5b+1MtfJCRF+3NcF
+	 OBhHNqGCYA0mTlZp78psc71bQ+0keo/BrdgKGTOyuil5D452G57xiqQimi33Acj+R9g==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=AC5sA5QW;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.46.22
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010022.outbound.protection.outlook.com [52.101.46.22])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=WBaF3Nmc;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.85.8
+Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010008.outbound.protection.outlook.com [52.101.85.8])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC7FF606A321
-	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 11:40:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EC7FF606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A76A606A31E
+	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 11:44:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4A76A606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=AC5sA5QW
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=WBaF3Nmc
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=KMrx0ZR2eIU5btXcgdHpONHZoaKxnRECEsU/MRwDomrBelo6EieLcWalunuAIi9M5lik0UJvrl3UdxlwNyhUg/WhNlSUhWPESUqPuJBC39ukERxTEIH6XdddIJ/8J5VCYVS4XfYwlr5YtgbF/nXQG6e5T6BbjUceP2E6jTHx9DpG8hVjSXJPnbuw8XOvKK7oKSJN6Do4/ZtBoM+ICwPGSSpMPtgs+OH9OtAE8iaKWAKuR+Qn4O8rorOwMdaaPe7lkE4DL+HRqnnPn1UcD87f2fArM4TBIQtxLTgWDHmFNUV9KVlViutuSuRdHdkl9oyzlo64awrMcVP702piKVY4hg==
+ b=vYUs9Eqc4W4eXQjilgKSBFQrzni4w4jHSUHhFGRr3n56SiIC+aGyie8eRRfwS9rF6g/4RSmI+X8vLZa1Q8uydvSFf0lU4aSagDBRfOiCrv/UOAh8zSSUStwXW5e9XT08eFHzOgyQfB8eNnQU8f3MYB7YPAdUCy9Qq9dNmBUNKkZrUs3HkNzd/2odv1wH1d8kDXEl03vcaOyYRGYyXtN0SyLw1rZ8HK7FmRMg0BvK5SSQ9cKKVfq+5+B6k0r7a6cbAJuM65/p4udTAllYTcSGr1OyrTKtnm0CzvbAu7Ge6yPNUo2fNeuZg2V9Ksu2n0kTvRZ5oALzvS4EYSZjs7kg7g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aoF+H0lUGyD24KboAuEUBm7TaYznYkIEf4CPq6UNqvo=;
- b=HqX6Ar5OmtQrHk4Q8PKMAJRiBXo7pZIj0T0ZXO+YXGH0Zpddj8HRfM29SCP9wSPaHPAesVQH36EoOHNPkKgm+VTHU4/mxsn+JT35j2rk2ZKOIgbZ6gUIgf5Ip0PO1US2n3utLy7FFW/GO9KgNBlWf/bY4Xl5/7NZq/ZUtDGQuanEGNAsFlVO0KuoR+fFj3Y/sL18xLwXrjflTJmMYTeM9iCqpkEQzRdUFkXAjjxjgWR/bBmySX6T/x+wv7hSZrzvJAmnypi5Wp8Z37iY9IdUcxtXJSoMf3neiEGhma17zkbDPfe+mUxhoQ5l09LqQ6LPTNHHlKuKYFkRJj0XamdOrg==
+ bh=hCQIkBstd30UQ0ujMnhmpvkENPlRonuzTW6kprcwcGY=;
+ b=LQ6vgY3oir1RTuYhz4IUZ57j5e73VZ3yq9rfTSbVCOvz6o4SvA2zQDGXTdacmtBQqS9wbz0VMDAfml9iLdmINjZoic0CqqLHHW3AMunHtMGjsVCnR1jUrRTA3hjE7aaOyImV98g53xS9khvipl5OkEbX+XGlNhgZUMwx5/g1F4NVl+SkTSMxawX7IdfPiN/Ia+MtpShF57Lod/iEPxDAFfAMlGkvolb2nIvPq9Ks3DQJXfLOX4hg7N67CFAfcV5QSdmQx+n054ERR5goG6wCJLullhzM8veZoXLLzxYCf+b8E8eCOqCoX4XYV/z6xfqf9G5aBrixZSyejC1hZyC0rA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aoF+H0lUGyD24KboAuEUBm7TaYznYkIEf4CPq6UNqvo=;
- b=AC5sA5QWVCnz9XLx57Gb5BFY5cfAnFtXQEcjwwapHv4vcpotdqfoUPLzrrdpFAWw4LDgVRoj47iuWFBn91ugXFyG5DZLd/6U74+rhhg2tCCYq6fmG1CK1LKGFNmKhJkRb5QCFRStO7ek+fRhgX3ViFbC/IZ9rU2Eyn4QvhRZrtk=
-Received: from SJ0PR13CA0131.namprd13.prod.outlook.com (2603:10b6:a03:2c6::16)
- by DS7PR12MB5863.namprd12.prod.outlook.com (2603:10b6:8:7a::18) with
+ bh=hCQIkBstd30UQ0ujMnhmpvkENPlRonuzTW6kprcwcGY=;
+ b=WBaF3NmcquZj62tlBtoVud+e7Tby1HNQYZZygOo40zoc5zqgZWDSfNVhuaIdnmLdCj+l295vzau9sM/8bQaQq9IWa4JqTgpJVbIpA8IsAkLqifCc04NR2w7LUzq2U0XPyoocNZcApD+ZeVxlEMe6FrvjEBNyk0nAReQQqxwNd0o=
+Received: from BN0PR04CA0142.namprd04.prod.outlook.com (2603:10b6:408:ed::27)
+ by CHBPR12MB971693.namprd12.prod.outlook.com (2603:10b6:610:340::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.14; Fri, 27 Nov
- 2026 11:40:43 +0000
-Received: from SJ1PEPF000037B4.namprd05.prod.outlook.com
- (2603:10b6:a03:2c6:cafe::41) by SJ0PR13CA0131.outlook.office365.com
- (2603:10b6:a03:2c6::16) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.688.6 via Frontend Transport; Fri, 27
- Nov 2026 11:40:43 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.7; Fri, 27 Nov
+ 2026 11:44:52 +0000
+Received: from BN7PEPF0000009C.namprd04.prod.outlook.com
+ (2603:10b6:408:ed:cafe::8a) by BN0PR04CA0142.outlook.office365.com
+ (2603:10b6:408:ed::27) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.662.11 via Frontend Transport; Fri,
+ 27 Nov 2026 11:44:52 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -80,23 +80,21 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
 Received: from satlexmb07.amd.com (165.204.84.17) by
- SJ1PEPF000037B4.mail.protection.outlook.com (10.167.244.196) with Microsoft
+ BN7PEPF0000009C.mail.protection.outlook.com (10.167.248.148) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.688.5 via Frontend Transport; Fri, 27 Nov 2026 11:40:43 +0000
+ 15.21.688.5 via Frontend Transport; Fri, 27 Nov 2026 11:44:52 +0000
 Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Fri, 27 Nov
- 2026 05:40:40 -0600
+ 2026 05:44:49 -0600
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <will@kernel.org>, <robin.murphy@arm.com>,
 	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v2 RESEND 3/3] iommu/amd: Drop the iommu_dev_data allocation for alias devices
-Date: Fri, 27 Nov 2026 11:39:34 +0000
-Message-ID: <20261127113934.209373-4-vasant.hegde@amd.com>
+Subject: [PATCH v2 0/7] iommu/amd: Improve updates, GCR3 teardown, and completions
+Date: Fri, 27 Nov 2026 11:44:28 +0000
+Message-ID: <20261127114435.209548-1-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261127113934.209373-1-vasant.hegde@amd.com>
-References: <20261127113934.209373-1-vasant.hegde@amd.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -108,107 +106,82 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
+X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
  (10.181.42.216)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF000037B4:EE_|DS7PR12MB5863:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1e4a8b74-e1fa-4401-cf06-08df4c7b4513
+X-MS-TrafficTypeDiagnostic: BN7PEPF0000009C:EE_|CHBPR12MB971693:EE_
+X-MS-Office365-Filtering-Correlation-Id: dd1bd872-8409-4f60-7125-08df4c7bd95a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|36860700016|82310400026|376014|1800799024|56012099006|11063799006|261026121527099003|261026140227099003|261021121427099003|261028144727099003|261102123227099003|261022105027099003|261021123027099003|10067099003|261009223027099003|18002099003|22082099003;
+	BCL:0;ARA:13230040|82310400026|36860700016|376014|23010399003|1800799024|261009223027099003|261009221227099003|18002099003|3023799007|13003099007|261026140227099003|10067099003|11063799006|56012099006|261102123227099003|261022075727099003|261026121527099003|261022105027099003|261028144727099003|261021123027099003|261021121427099003;
 X-Microsoft-Antispam-Message-Info:
-	aqrcOwCpvaStb9ci9RphLKM5PzyuhO5+PWmdERiPs2PnS1Fh/poMFRI9gkJ+hkuYjLZvOMNzf4TWxsxpJp1kJ02PxWvZQzb8+SrXNPbiSHXcWy6Agl42kUiFJuzTzimn5xxfcgPGUL8ezW/hNiLPqj6XWa0fPSF6v9XK3/ICDWXzXCTtXKwW0JQakm3U48idj6br/IoHhlpD2Ch+ZFarOcJ+VMIYxQk51N2zsGJpdWUMTdYwRRpoyBAy4r0g0wyY2N5Ti8vfLIwmwp1ZppeoEVxciK5SToGFdNXRO8fVECtaA4AhIfYoWsCpjmcCs8EEa8IIpbvtD3vOtUWUsrvM3OQizD68lH6jYa2vQtqiCkKN1CeQEbtO6Yw55nXvZfNBhQ9KTlHPFzLnL7aIlH+ZhAjaLMpAa7OW6o5UfqclkNy7XbvmedWTTpEl3/WM5VRwbpOXfhOXqIrBQaqMTtMUMtijYbD8qRZpemg3Irg9fEz9ktRvny5y4WjzQWAXt5QYEh0egc3jKrZU56EP6SKnW8WT7U+fH5wSUgFpYzAmLtH9pl9hC8mtDH41RPZD6BUei9s9uSGK9KB5m38liyfT/YgSHKopV88HHvwxibY607Glr4aJNFJeeDeaSftEYeSQkGbA+TOEaXbgJ4RIGqipJbw2cyu0ew0lnf7k9JVNlTl3ZumpYRwUavEwMfYqm10Fdkni+S00z69J8iNy3rHebg==
+	dsnJRkbhCUo6qb8aZ/iQWQBhozTwYB0IEV7EmhTUM0l6aElDcHl8sKcH2X8+Tx3ep6u37jGVqTeOzrL6u1IPAbuiJLDUapKBIZjnK49+BvLuS5wfl+Wpj8V2qQ1wrql5K/tVAdIy/uWzf45kwyBrR3VQiVVJYx9Kjf9RK/cbRrj2vTegnJ0uEL4XezwvVL1Hi29dMiOvIq0cJBYe3AtPKuTPA56DDQ6hc2Z3tig2CHMyxU62YFITsPy34CI0fp6fCmmDznS0HHNlYFlEv3NQcK3J3gXzFq0/MirDwhqF/L0FGUlpnmZ2a/S5S6Amt+kGoyQvi1AdlxDIY8/4DP5Cl+XMhyzHe4WjAmg8g4PHaixijU+yx5b3BB3ujoPoumjXPOzhV1q+Dql3po4gn1mbHT4hl1EyXLiJ3AUQ5OWQWIRY1V3Wfs5yhvp4udZhtFHV3BcrtDIkMwC5Fg/CAxTbMMGJ8D++b5CW1hFRBdQ7aTCDXB777YP2oq4+RqNK6ZcQTgfDBP6Q4/Gj7qmZoiW39c6hYpR17mIB4XkCXEOMjPZD6gj2CzS35fzQuqze8XG2eXHZfKqK4ysGe81wLIqV8A9athCxcs5kSWbSAsBQmKk/hrsp7dVly7xli3J4B1EoT2TMBbcuzKWaekKxLuvQfvrrl73mwipUfZyMYdGYFLs=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(36860700016)(82310400026)(376014)(1800799024)(56012099006)(11063799006)(261026121527099003)(261026140227099003)(261021121427099003)(261028144727099003)(261102123227099003)(261022105027099003)(261021123027099003)(10067099003)(261009223027099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(376014)(23010399003)(1800799024)(261009223027099003)(261009221227099003)(18002099003)(3023799007)(13003099007)(261026140227099003)(10067099003)(11063799006)(56012099006)(261102123227099003)(261022075727099003)(261026121527099003)(261022105027099003)(261028144727099003)(261021123027099003)(261021121427099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	hAmbszfA5Phc3ZUcsisyexg2dS3dJ9iaGhkdqn3JIFisKqKsPZCDDEtsLOajeD5ORmSVtyyjwHio3uz6Ed29Qshjy6VPMFaerdYCo1BJkNN2c78aDcFZH2hL4q/gvrBPY48Kq7PZq/Mubl85as7WElUu0IPrq7nCiWARTNrPYMIdMq0+1Irt29we5pvwBN7HyB3jADUjBWJ2Y/P6vgROOCO+g6ULN9YzGutOBFx4yfPQJonwCt1Q9YLO4M87rtFJf1PICshCLcplGOeS0ZvwVHGXzIVpFlBfdWrCMI+GDWFXaxU0G0/WymqJYBw/+M8sp91zvXlluwCwu3vJkBgF9rj+HT4E4WIF6kWq+45T1i5WesX3bq1ZI747TthSApUPYSLQ6HOFfiZ1btC7JgTUyAUDb2+vqWAEItq6m60AJrSGskWtLMNNN3xwUS73p7kl
+	VbSRw7Ceqch8gaRNr4ggRAKsabpJJoGkHqdPqXPk/GV7xoRHrcZQSaXQIoUAoLAu/BdKX4EyJ2K4D8nqIGxHxKmJtAolSzDVia4Txe6/pM3BdEAqvhTsRq1kwRCYyLnm0Vjg2ZQn9UEPxOalxMG8Wy8o/yfHpW2d9ybpV1/FejujB9CUvWyH0plxx35TRY2eHZh/5Ei06+CkMBwX4zXAQ8qxZuADDj1UMkPtAN5bKksDVuyfQC/V33jyLdHIQSAa5MbjGjI9/DIfCzKjCBdcs0e7RaNhDrLzmlaRD91yEcSy8ggOqlr6S2VlmfSMFH6yV6xxAcEPwM2SNT+fn8xZvm3CIXkv2UAAYr1HSaVwbeSL60sE1qw5sbDTm3bfq38XSR6EyuUwn9Vpho43FjrgJoaNktu8pEhpPKZRDymbQ6VxEy2TgZZrVRQTMOsnEo7t
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2026 11:40:43.2255
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2026 11:44:52.0734
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e4a8b74-e1fa-4401-cf06-08df4c7b4513
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd1bd872-8409-4f60-7125-08df4c7bd95a
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF000037B4.namprd05.prod.outlook.com
+	BN7PEPF0000009C.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5863
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CHBPR12MB971693
 
-A DMA alias is simply another DeviceID for a device the driver already
-tracks. The alias dev_data object is never attached to a domain and is
-never freed, so it serves no purpose beyond carrying a deviceID.
+Various enhancement to command completion handling, fix page accounting
+issue, remove redundant dte flush, etc.
 
-Now that the DTE helpers address a slot directly by DeviceID,
-get_dte256()/update_dte256() can read the source entry and write the
-alias entry using their DeviceIDs alone. Drop the dev_data lookup and
-the alias allocation.
+- attach_device() publishes a device on dev_list under the domain lock,
+  then writes the DTE after dropping it. change_top() and dirty tracking
+  walk that list under the same lock, so the new DTE can store a stale
+  page-table root or drop the HDAT bit. detach_device() clears the DTE
+  before taking the lock, and a concurrent walk can make the entry valid
+  again. Hold the domain lock across both the list update and the DTE
+  write. defer_attach and use_vapic are updated only after attach
+  succeeds. change_top() no longer repeats the alias clone and DTE flush
+  that set_dte_entry() already performs.
 
-No functional change intended.
+- GCR3 intermediate pages were allocated with get_zeroed_page() and
+  freed with iommu_free_pages(), so the IOMMU page counters drift on
+  teardown. Allocate them with iommu_alloc_pages_node_sz() on the
+  IOMMU node. A clear does not allocate a missing intermediate table,
+  and a two-level table frees its level-1 pages as well as the leaves.
 
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/iommu.c | 27 ++++-----------------------
- 1 file changed, 4 insertions(+), 23 deletions(-)
+- iommu_flush_irt_and_complete() reserved a completion-wait sequence
+  before the invalidate commands were queued, and dropped it if queueing
+  failed. Reserve the sequence only after those commands are queued.
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index a1a07bbd1545..29a3374216b6 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -82,7 +82,6 @@ static void amd_iommu_change_top(struct pt_iommu *iommu_table,
- 
- static void iommu_flush_dte_sync(struct amd_iommu *iommu, u16 devid);
- 
--static struct iommu_dev_data *find_dev_data(struct amd_iommu *iommu, u16 devid);
- static bool amd_iommu_enforce_cache_coherency(struct iommu_domain *domain);
- static int amd_iommu_set_dirty_tracking(struct iommu_domain *domain,
- 					bool enable);
-@@ -412,10 +411,8 @@ static int clone_alias(struct pci_dev *pdev_origin, u16 alias, void *data)
- {
- 	struct dev_table_entry new;
- 	struct amd_iommu *iommu;
--	struct iommu_dev_data *dev_data, *alias_data;
- 	struct pci_dev *pdev = data;
- 	u16 devid = pci_dev_id(pdev);
--	int ret = 0;
- 
- 	if (devid == alias)
- 		return 0;
-@@ -424,27 +421,11 @@ static int clone_alias(struct pci_dev *pdev_origin, u16 alias, void *data)
- 	if (!iommu)
- 		return 0;
- 
--	/* Copy the data from pdev */
--	dev_data = dev_iommu_priv_get(&pdev->dev);
--	if (!dev_data) {
--		pr_err("%s : Failed to get dev_data for 0x%x\n", __func__, devid);
--		ret = -EINVAL;
--		goto out;
--	}
--	get_dte256(iommu, dev_data->devid, &new);
--
--	/* Setup alias */
--	alias_data = find_dev_data(iommu, alias);
--	if (!alias_data) {
--		pr_err("%s : Failed to get alias dev_data for 0x%x\n", __func__, alias);
--		ret = -EINVAL;
--		goto out;
--	}
--	update_dte256(iommu, alias_data->devid, &new);
--
-+	get_dte256(iommu, devid, &new);
-+	update_dte256(iommu, alias, &new);
- 	amd_iommu_set_rlookup_table(iommu, alias);
--out:
--	return ret;
-+
-+	return 0;
- }
- 
- static void clone_aliases(struct amd_iommu *iommu, struct device *dev)
+This series is made with the help of AI (Cursor).
+
+Full series including other cleanup is available at :
+  https://github.com/AMDESE/linux-iommu/tree/iommu_code_audit_7.4_v1
+
+Changes since v1:
+  - Rebased on top of v7.4-rc3
+  - Addressed AI review comments
+
+
+v1: https://lore.kernel.org/linux-iommu/20261105042254.399163-1-vasant.hegde@amd.com/
+
+Vasant Hegde (7):
+  iommu/amd: Drop redundant flushes when the page table top changes
+  iommu/amd: Fix page-counter drift in multi-level GCR3 table teardown
+  iommu/amd: Do not allocate GCR3 tables when clearing a PASID
+  iommu/amd: Allocate the completion sequence after queueing commands
+  iommu/amd: Free the level-1 tables of a two-level GCR3 table
+  iommu/amd: Update device attach state only after a successful attach
+  iommu/amd: Write the DTE under the domain lock on attach and detach
+
+ drivers/iommu/amd/iommu.c | 97 ++++++++++++++++++++-------------------
+ 1 file changed, 49 insertions(+), 48 deletions(-)
+
 -- 
 2.31.1
 
