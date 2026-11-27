@@ -1,60 +1,45 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795781144;
-	b=WoxjcG8eFTm/cpjmYiBCXY5RrMXilJ5tbvFs2LjD+SM0BTCeLaYKYZHJY6BMaSERrJrI
-	 NldtleRxaHOViEpShIhcCzUskTpKSJC5d+yQzlTsXS5ECduSTZ7nUwir6k9Z/QGRkk5yW
-	 mnX4j6gAf63cGOUIJWyZ/l1fufJlUzmtr+mmrVloFwDpwNsRxKOm+3OPc0ACiQNgOg/EF
-	 JTGHYdKxyIhTeqRYHKpUbQbljqQgSpaJ/rymPTYPEU28TmeIbmmRHwnK1OfAVJSWp/py0
-	 sqctzYcPV3tIcPFlyTgrtUKjqG4ZcsOfKXeWyBVMvu4etUL4Neg/GNtaqDXA0ul/FcQ==
+	t=1795781686;
+	b=oevkK55jMkjnecOdHTj6dCl67UDFF/6Wa7ZiyUaNdX4Re1ftjDzboSnDPDxGL1gUk656
+	 L/ogpykISIw40FIR8cJvfS6/useVn6IJf98PkIctmP9Ub0xw1Ylky9NmBIqxPb4EcdgyU
+	 psLIgWbmxGBqZfDtMsi9qxTeLhjrLZh4ggQPP837UNJCIOlUiT7JJ3s/uF3lWbJKgzeEL
+	 NQer3E1QT34P1MYwkYsLGE/6jdjLqEuJ4g+b9TrUU6+8OZYM2YdPryE9OfQhKgjyN1i+n
+	 rQ+ufj89yiLdRQKi0u2u3865bdN//NEUG4wSzzvPj9xE2tc3U7farHCO5i+66UfxPyA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795781144;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:From:To:Cc:
-	 Content-Language:In-Reply-To:Content-Transfer-Encoding:X-CMS-MailID:
-	 X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:X-CMS-RootMailID:
-	 References;
-	bh=a9fm/uk5JQ3HNfgBODpdCWOALyft9Wz+Y8nV7YiTAZ4=;
-	b=Avd9Xp4RIuzeZrRG6fH1Us9QhvoTAWsBjwpL4j5i9RfiP0VxQ2/n3jivzRe3r7R7B115
-	 pWzF/mMOuQA3GqfvYsElgVY+v6OprUzRbhZ4EnBGYq6x+LegeNxJTFzsLd6RDtFjaETXu
-	 VH+icijSO1p3yS2QlDIxS/0DZKitd/Z+NuiIdm3bbYzipXR5hvngFCPtMT0gF7rWrTp3s
-	 lD+3Ti9tb1F8wlv8PTE4qGLcbMTf0c6Dq6sVcEhR+gvAkVe1DqmGs1NzW0drJ8WxzWBiz
-	 SihjaYRa5So7wKvCkmSMM4KS/QNFj2AduTeiD7y9oUYXLwDsfzylTOwRPcq3ToxV+Lg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795781686;
+	h=Received:DKIM-Signature:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Subject:From:To:Cc:In-Reply-To:References:
+	 Date:Message-Id:X-Mailer:X-Developer-Signature:X-Developer-Key;
+	bh=3w20wn8ciMIi314K9ZKRgL922tIUAQ1fVj1q7jFt11I=;
+	b=YVbqdJTquLn3SjFgyy9SKFu4FYtxD+XqF/htujHQvVqAq/NxMzFUk6ITPp4HqP/5TgmS
+	 4/IDO1LWa8gz6HyKpcY3NgDtphsHzpNFTZ97VKHA+nm+YO38r56YWbOGejxfQ2d7WCSWn
+	 SIZ3jdKd6DPYjlM/L1301KESuQX/TzSqkbyPPHdpsaI67/yzC5iFPqliBzor3/85Jx822
+	 oVVpauVlisyHpD8bRejx4qrE8+pO2yMTe+3ryl0BghJegNDX7nUWmUz5VBn0iKzBeiwwi
+	 lBExA7t9PioPw0EWsPNjbbidw9NU/zYIyrJPE0GfKiwnwqHhDUXshPGPNHbU9qpkBIg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b="KNGq0ZK/";
-	arc=none smtp.remote-ip=210.118.77.11
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JrGEsf9R;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46404606A332
-	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 12:05:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 46404606A332
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F8B3606A323;
+	Fri, 27 Nov 2026 12:14:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=KNGq0ZK/
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261127120540euoutp01e06b8907cfee57c6213fa23027610e41~r5W65sRae0459004590euoutp01e
-	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 12:05:40 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261127120540euoutp01e06b8907cfee57c6213fa23027610e41~r5W65sRae0459004590euoutp01e
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1795781140;
-	bh=a9fm/uk5JQ3HNfgBODpdCWOALyft9Wz+Y8nV7YiTAZ4=;
-	h=Date:Subject:From:To:Cc:In-Reply-To:References:From;
-	b=KNGq0ZK/A1D5c2Ml3AhUtZiXqmbgvORs6wpuuj660jbSCbmTazbj4gDyBZi+xLwiI
-	 jtaDAZpE0HohUhdFj0gD50kJaET1JfCEre56TVD/k5h5NcXWHcg/VQdC+xwKgQDRQI
-	 TeRudICmUo1K+W5W9nkh2uKF3tVqVniMXYWMtP4M=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261127120539eucas1p10b2e005bf38fd3ff3ca53b48bf531777~r5W6fzJTf0959809598eucas1p11;
-	Fri, 27 Nov 2026 12:05:39 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261127120538eusmtip27bba0cf597c14302cb8417c82729e000~r5W5u8fKU2205822058eusmtip2X;
-	Fri, 27 Nov 2026 12:05:38 +0000 (GMT)
-Message-ID: <d1660922-e3a1-4d13-8824-f0525f88f723@samsung.com>
-Date: Fri, 27 Nov 2026 13:05:38 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JrGEsf9R
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA841F000C1;
+	Fri, 27 Nov 2026 12:14:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795781685;
+	bh=3w20wn8ciMIi314K9ZKRgL922tIUAQ1fVj1q7jFt11I=;
+	h=Subject:From:To:Cc:In-Reply-To:References:Date;
+	b=JrGEsf9RGSAi95mThpsPZiqwBb8CPAROQvgPolW2qIJ2xXEk5VJKACzsGFeqPtsMk
+	 12STunPm5NpI3riSYWarempFNzU3lBP52Nu9ASxRNvvlCt5tbzD/Hw69Mx3qSnEwze
+	 Tixfxfhgo095X1TISXxrvq2kWiGqVrUKHT1E9npI8SB7mKrHS/umAuWt+Hx6/XLiPW
+	 CxkomSEuUSy3wQR8uAzWuBAWKwnbwVNUjdHwpE1WFY5jnYft8hPuN8KnQgWOuemKqt
+	 DFUFi5a6yGXRGOdEjpfbF1YQa23ZPwEuA+i7DRrh/a6UUpOg1fAbG/YbyqIeU2kgn0
+	 fWfCj2t0bN5wQ==
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,104 +49,51 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] Revert
- "iommu/dma: simplify dma_iova_destroy() and drop the free_iova helper"
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Sibi Sankar <sibi.sankar@oss.qualcomm.com>, will@kernel.org,
-	robin.murphy@arm.com, honghuan@amd.com, Jason Gunthorpe <jgg@ziepe.ca>,
-	joro@8bytes.org, prakash.gupta@oss.qualcomm.com, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, stable@vger.kernel.org
-Content-Language: en-US
-In-Reply-To: <c5e4fc4e-0e63-47cf-8b88-93ecfb3646de@samsung.com>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261127120539eucas1p10b2e005bf38fd3ff3ca53b48bf531777
-X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261125135138eucas1p141ba6b5e09623562e2033e290fba811c
-X-EPHeader: CA
-X-CMS-RootMailID: 20261125135138eucas1p141ba6b5e09623562e2033e290fba811c
-References: <CGME20261125135138eucas1p141ba6b5e09623562e2033e290fba811c@eucas1p1.samsung.com>
-	<20261125135120.1126571-1-sibi.sankar@oss.qualcomm.com>
-	<a3722347-4b88-41ad-926b-455530020c6b@samsung.com>
-	<20261125183419.GB774860@unreal>
-	<c5e4fc4e-0e63-47cf-8b88-93ecfb3646de@samsung.com>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v3 0/8] arm64: Unmap FF-A lent memory from direct map
+From: Sumit Garg <sumit.garg@kernel.org>
+To: Vincent Donnefort <vdonnefort@google.com>
+Cc: catalin.marinas@arm.com, will@kernel.org, rppt@kernel.org, 
+ akpm@linux-foundation.org, m.szyprowski@samsung.com, jenswi@kernel.org, 
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+ mark.rutland@arm.com, robin.murphy@arm.com, hch@lst.de, 
+ ryan.roberts@arm.com, sumit.garg@kernel.org, sudeep.holla@kernel.org, 
+ ardb@kernel.org, thierry.reding@kernel.org, david@kernel.org, 
+ danielmentz@google.com, linux-arm-kernel@lists.infradead.org, 
+ linux-mm@kvack.org, iommu@lists.linux.dev, op-tee@lists.trustedfirmware.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20261111110738.872947-1-vdonnefort@google.com>
+References: <20261111110738.872947-1-vdonnefort@google.com>
+Date: Fri, 27 Nov 2026 17:44:23 +0530
+Message-Id: <179578166371.172025.10770561998032628043.b4-review@b4>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=764; i=sumit.garg@kernel.org;
+ h=from:subject:message-id; bh=H72B6Re7Lfo3dYJpngqffII6YfaUb4iqb0oxwd+0b1c=;
+ b=owGbwMvMwCV2RWpxpe9rmzmMp9WSGLI5SzTqKoX2v6poOjM7Tepq5Ht5my8u93hEPXlY96rGb
+ llxtjyvo5SFQYyLQVZMkSX167dp24T+1YZaneCBmcPKBDKEgYtTACZyuYeRYavT7sI3m/SebpyX
+ onf6hgPXAYGpWw5ElojkKeqEbHUztmH4w+Vd9c3uxqQ7AhKnb8xtPv11xZuQkk5zO+20IpOs84t
+ N+AA=
+X-Developer-Key: i=sumit.garg@kernel.org; a=openpgp;
+ fpr=65F5F696B612FE7D553AC80CD41AA3794DEB3C9C
 
-On 27.11.2026 12:28, Marek Szyprowski wrote:
-> On 25.11.2026 19:34, Leon Romanovsky wrote:
->> On Wed, Nov 25, 2026 at 06:21:06PM +0100, Marek Szyprowski wrote:
->>> On 25.11.2026 14:51, Sibi Sankar wrote:
->>>> This reverts commit 1acce29926d93f3eba427696fe3da6451504dae2.
->>>>
->>>> Before this commit, dma_iova_destroy() unmapped through
->>>> __iommu_dma_iova_unlink(..., free_iova=true), which set
->>>> iotlb_gather.queued from cookie->fq_domain, skipped iommu_iotlb_sync()
->>>> and freed the IOVA with the queued gather, exactly like
->>>> __iommu_dma_unmap(). After it, dma_iova_destroy() calls
->>>> dma_iova_unlink() and then dma_iova_free():
->>>>
->>>>   - dma_iova_unlink() never marks its gather as queued and always calls
->>>>     iommu_iotlb_sync() after iommu_unmap_fast().
->>>>   - dma_iova_free() passes a NULL gather to iommu_dma_free_iova(), so
->>>>     the IOVA goes straight back to the allocator through
->>>>     free_iova_fast() and never through queue_iova().
->>>>
->>>> DMA-FQ domains therefore get strict invalidation on this path. That
->>>> includes the block layer's blk_rq_dma_map() path, which NVMe uses for
->>>> all data transfers, so iommu.strict=0 has no effect on NVMe I/O.
->>>>
->>>> hw/sw details: Qualcomm Glymur CRD: SMMUv3 with no RANGE_INV,
->>>> 	       4K pages; NVMe SSD on PCIe Gen5 x4
->>>>
->>>> Fio sequential read/write numbers:
->>>>   Domain                          seq write    seq read
->>>>   DMA (strict)                    2694 MiB/s   2693 MiB/s
->>>>   DMA-FQ (lazy), flush queue      2707 MiB/s   2803 MiB/s
->>>>     bypassed (this regression)
->>>>   DMA-FQ (lazy), flush queue      10.6 GiB/s   11.9 GiB/s
->>>>     used by dma_iova_destroy()
->>>>
->>>> Fixes: 1acce29926d9 ("iommu/dma: simplify dma_iova_destroy() and drop the free_iova helper")
->>>> Cc: stable@vger.kernel.org # v7.3+
->>>> Signed-off-by: Sibi Sankar <sibi.sankar@oss.qualcomm.com>
->>> The performance data clearly shows that the flush queue was there for
->>> the reason. Together with this revert it would probably make sense to
->>> apply the v1 of the reverted patch:
->>>
->>> https://lore.kernel.org/all/20260701092033.422867-1-honghuan@amd.com/
->>>
->>> Leon, do You see any other option?
->> These numbers shows clearly that we had iotlb_gather.queued != 0
->> and never performed iommu_iotlb_sync(domain, &iotlb_gather); while
->> destroying mapped IOVA.
->>
->> I agree with you, v1 is the easiest solution, however my preferred one
->> is to cache gather when it is created and keep it in dma_iova_state 
->> structure for whole life cycle of that struct.
-> I've played with the code (using LLM ;) and there are some issues with this
-> approach:
->
-> 1. tso_dma_map_completion_save() copies the struct dma_iova_state by value,
-> what breaks internals of the struct iommu_iotlb_gather.
-> 2. adding iommu_iotlb_gather to dma_iova_state increase the struct size
-> from 16 to 64 bytes, what lands in every NVMe request, RDMA rw contexts,
-> TSO maps and HMM.
->
-> I've decided to put only the 'use_fq' bit in the __size entry and baked the
-> fix. It looks quite nice. This approach solves both above issues, although
-> it requires to also fix some drivers which already pokes __size directly
-> instead of calling dma_iova_size().
->
-> I will post this in a few minutes.
+> This series is a follow-up to the discussion that has started here [1].
+> 
+> When memory is lent to the Secure world via FF-A, CPU speculative
+> accesses from NS to the lent pages can still occur as long as it retains
+> a cacheable mapping to it.
 
-For the reference:
+One thing I forgot to ask during last review, in case of hypervisor
+support like pKVM how are going to handle unmap from stage-2? As I can
+see from code pKVM doesn't support FF-A lend calls to unmap pages from
+stage-2.
 
-https://lore.kernel.org/all/20261127115849.2780625-1-m.szyprowski@samsung.com/
+I think overall it is important to unmap memory from both stage-1 and
+stage-2 to avoid CPU speculative accesses from NS when memory is lent to
+the secure world. Is there plan to support stage-2 unmapping like in
+case of pKVM?
 
-Best regards
+-Sumit
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Sumit Garg <sumit.garg@kernel.org>
