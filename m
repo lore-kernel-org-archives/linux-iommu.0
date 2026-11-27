@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.52
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.198.0
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795779053;
-	b=rKCobQ+IJq9qFr2Nh/n2idisUkHpCxdouxboyTq1YOm6dMwf2+cra8X+H/TmANVTtGWm
-	 Mny3vttqjZ1mIIObpka9gU7OVQrTOf2R9vBBjOvOXQDO8OMlCrSfzkT/V5TxNOVqRIgEq
-	 C0Gha25+unSGqxws/zDDE7zuGZ27xIh0n46nBxZcMWxz9fp2sE0Nzw8XSadv1K1RlArBs
-	 aATwg4P1b+qTi6WwYjPlJaVQfkdU/xN2E6kV6JAbTkLFDJ20Ldj2u35cSYtb3QpK2AlAz
-	 HVcVH21O0jz0iBI5EZYQ9OO7gVz0bBAQoi1vKHdFeicLucjBiVr6KKNuT34EY92ljRQ==
+	t=1795779071;
+	b=Mie4Lcfdb6XQYxjeogYP52EF+VosGSkoH5SCM4otEQsFK+zQnEEZ/MJHx+kSiYY4M+TL
+	 oV9VTCd3erbo0t8CYNnphmGSWqjprwZAMlWDtQdoRRtCdVCnYuF4AvDCYgrPNKp3FnmSi
+	 IXFtSxqQnmyrSBf5cayr44sUHQq9i4mh5Qa5ElEcjZWWfxrUvzZoQTHuKSjVZCWGclQF1
+	 jI0n/KNCHRLwYGfGFFodm7giVhsFXi1itmt4iojnoUzWOMR9d/ctflNJ4oy/FSujPWDHO
+	 dos9KncUSaOgE3Ymo19kWhdsfJqLxEuiBZjFWfSDetRpeCxp5ygFn9fX3+hSd3Opsqg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795779053;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795779071;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
 	 From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
@@ -26,52 +26,52 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=KSP9pafrIMxqz5xBSu7jeumKmSdlBmCOijDgVYVd4Rc=;
-	b=5cGcfBK1KadyRF/1gxGoMVQetGuoxcC1Z+b7bdbSw35YugiVetBNPAPFEAXa+iiIaytg
-	 92YvMW3GIm8r0AAuMTA2AsdU/u1ayRwGofkAxZ6/Q4KAcvG7P0mW1lGjh1M0VL+hJpflW
-	 b75YCLT1t7bN81BQOStUFyZ8UktF+nhh0MP7P4bqlVuK39SNKpcruUN4x9EzZ0etsBenK
-	 urRyv0rUmRbfnItqgMJX+WVztZ//4AiTYBAjYSi8J7F6kGZnUeOsEa5crOmtJOJXsvDv5
-	 DyxSvuR5MMGurXMWR6oXiAuI6pPkpcCd4kA+8anSZjTr4AS31lwsV45AurnVZMCH6BA==
+	bh=M4YQr3/nPlVKJicA3r6JKyJHjxQzWv1cSmplMGa05ng=;
+	b=ATNCVswmYGDrRQxWeMf9/04l2hvAvJNek0HS/+IjcWLR+KqjTxO/JKqdlY8RIiQsMhFj
+	 iN9Uxv796xu5KJ4VILkndriJMraq78Xrg4GtHEFg+2U92ICvGREglVGvyiIfUnChYdKtZ
+	 CnyB11V9DQuU9AyOZqPH/gj64DXzaO2QmfZpuU+AWUVIO6PL+px+R+uzPZz+I71vux2AI
+	 1QR7+0GlJozSIlYAeWLmsd+X1PXJqXzGbBuhUL+bwXV0k893DDeZ7bpgouoz+MOBaHyfo
+	 xrTDw2e/kMYG7X5O3W84jGKD0M24SzUKLuSYYPhq+1uZgwA5fbSuoyp0gh7mkSgG3YQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=ki+NKe6A;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.52
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012052.outbound.protection.outlook.com [52.101.48.52])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=KEJB5xM8;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.198.0
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010000.outbound.protection.outlook.com [40.93.198.0])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D6FE606A31C
-	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 11:30:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7D6FE606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAC68606A31C
+	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 11:31:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CAC68606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=ki+NKe6A
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=KEJB5xM8
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZsaaXQbhTSWA5wO/4aLBRsLQc6yG/MJOm8qn5dkwGwJrVnBQ8qPBollukgmMt5qOxY+7UTxlGWZBX/ljx4EtGvARUlWym1+IwtyEuMxMLO8pqRnSqLzkqiC/rjwXc4PnI9ma5KZdXYSWQHmhze7EDrirP7TornkhEZyIm5Gvs53J6sdVqi6ttaysFich6VkYJpOkGIEQjqNtPOLpl8EymRQ/PmUb7l2pQ73z+MzO19CGHL2epBKjTAyf16YhbzfhAD4w9tz53eysgFnJhv5pRk45/IBmy+TFCIRwE9Bvm806YawloPJtxncSjyNeQ7M5Ylkm+yy6vd2gVhawlfgi7g==
+ b=I8m3NFfyPh3f/X1/YCbsXhVEUTDyyJ1mdsZ+/gjtDUQHSvpXVK+qoiRRWrVyRYCw99F47P61BBNxV5pQhyj6UJyzIqrcehJFn7+u9N5MRTLJYoqmzZjq36QBWsBcccdno4USJSKrobTyl0SKs9he0T7fmcI/8l3eWoi/D/OM3ugyctE6HW5r28z6AefT8PhUNerFiGS5QV9HpiyPXCAPZ0D4RfwYZu/wQUd7nsjD2h8SwvB+VOqEfbiko5AwNmHj22gRWQ8FOodSk1HkqQyMDhvORgMoQ3mSl+BHO4kecjN4zGHhpB1UZ+Um9nmFqJ4Y2TOnMzRI3KcReF1+BHpfIw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KSP9pafrIMxqz5xBSu7jeumKmSdlBmCOijDgVYVd4Rc=;
- b=YKLShNjszv8l/rdgTkTgNFIItdPBjJoBqpJWMd16Fo7VPwPERYWwOyaQ+XEJ5uqWhUhq9vaI7ctsAB+9XjdSaq1rR0iMlj9abGtRO501ADpy9SVmCUbRlyAHt33DuB626YU70b8yVFIaQVHlnM57prdGlJyAD4XIJHQQonYsxpoQiQjYAQhe8bSMMtPl0Gur1Ou+OzZZScojMpgg6ecdXRrXvS0bT1+9eeO7hsiHL6RvLOVpFM23jbZXDiQmctqjV4xzhFfkFw2ykPriFpVZI/w8rgQqjiRYlSXGHKYPvXustrSQjkkHp8j9NaFYHGmr185n94bV+U+XOAnrbZhqPA==
+ bh=M4YQr3/nPlVKJicA3r6JKyJHjxQzWv1cSmplMGa05ng=;
+ b=FBz6NAJVJtc70J3/WcPSrH/Rn9C38y2uZTFJbonOvsQHFD9fZfteS54hKitDyfFfISovQy6XOUPWTAhBvMEBJzuxDI+OEHaSOhgM30uFIW81xA03dsbCzoBEhr2DBPHyNwjXAxtwmqTYN7Zl07EvbQVxgD+Bdb4rfXNCN8a4O1am+iS8h/YqBrlefRrqpcuCnyN1QXvnz93aXtwBgVADcbVeSfJ39i+NAGotKAqw/sO9ZgfLuFStBLgyAK55ILLGX7Vvk9eXlUnMD3WZNZZ+Vlkb05N/pkjsULpas3c+cTwEaXqsPGs06RTGoj2thpmKAXLhq6VqyHxyE63SAb9Z2w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KSP9pafrIMxqz5xBSu7jeumKmSdlBmCOijDgVYVd4Rc=;
- b=ki+NKe6A3SjXfe4AuK0mQQDEHxjDWDSTB/kfZnbAj0wyK2bs2YnNW6IyriKC42xbC2IKhK9c7OQQQ7dwcmfk9vLGGdFVQpK89nXHhkLiZULIKV4+8w5c9eNqCa5ZTPy7Kr1exeUOoeG1NxUjrfqT2NU4EuYy3O/JaT0TdpvI1Rg=
-Received: from MN2PR01CA0066.prod.exchangelabs.com (2603:10b6:208:23f::35) by
- SN7PR12MB6886.namprd12.prod.outlook.com (2603:10b6:806:262::6) with Microsoft
+ bh=M4YQr3/nPlVKJicA3r6JKyJHjxQzWv1cSmplMGa05ng=;
+ b=KEJB5xM8xByeWcv15zNK2A26ei3xGxCDGfHPd5/ZGBbuLlRwEdHGeoD9ulNy1OWEgWKfVie/Kgyv35xC0ifUubrs9FQ60rtS5v9ge4HEvPVGNwGnC1XEkG5WkzKvxgXFTKvuKwZ4LdKH6he9s9Gz8OU5l6GmF81O+KCrFc6iGwE=
+Received: from BL0PR01CA0026.prod.exchangelabs.com (2603:10b6:208:71::31) by
+ DM6PR12MB4420.namprd12.prod.outlook.com (2603:10b6:5:2a7::8) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.662.7; Fri, 27 Nov 2026 11:30:47 +0000
-Received: from IA0PEPF00000037.namprd03.prod.outlook.com
- (2603:10b6:208:23f:cafe::3d) by MN2PR01CA0066.outlook.office365.com
- (2603:10b6:208:23f::35) with Microsoft SMTP Server (version=TLS1_3,
+ 15.21.662.11; Fri, 27 Nov 2026 11:31:01 +0000
+Received: from IA0PEPF0000003C.namprd03.prod.outlook.com
+ (2603:10b6:208:71:cafe::40) by BL0PR01CA0026.outlook.office365.com
+ (2603:10b6:208:71::31) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.662.10 via Frontend Transport; Fri,
- 27 Nov 2026 11:30:47 +0000
+ 27 Nov 2026 11:31:01 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -79,20 +79,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
 Received: from satlexmb07.amd.com (165.204.84.17) by
- IA0PEPF00000037.mail.protection.outlook.com (10.167.249.68) with Microsoft
+ IA0PEPF0000003C.mail.protection.outlook.com (10.167.249.73) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.688.5 via Frontend Transport; Fri, 27 Nov 2026 11:30:47 +0000
+ 15.21.688.5 via Frontend Transport; Fri, 27 Nov 2026 11:31:01 +0000
 Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Fri, 27 Nov
- 2026 05:30:43 -0600
+ 2026 05:30:58 -0600
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <will@kernel.org>, <robin.murphy@arm.com>,
 	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v2 1/3] iommu/amd: Serialize device-table writes with one per-segment lock
-Date: Fri, 27 Nov 2026 11:30:16 +0000
-Message-ID: <20261127113018.209034-2-vasant.hegde@amd.com>
+Subject: [PATCH v2 2/3] iommu/amd: Identify a DTE entry by its DeviceID
+Date: Fri, 27 Nov 2026 11:30:17 +0000
+Message-ID: <20261127113018.209034-3-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20261127113018.209034-1-vasant.hegde@amd.com>
 References: <20261127113018.209034-1-vasant.hegde@amd.com>
@@ -111,181 +111,170 @@ X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
  (10.181.42.216)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA0PEPF00000037:EE_|SN7PR12MB6886:EE_
-X-MS-Office365-Filtering-Correlation-Id: f1393b82-3dba-4a27-45cb-08df4c79e1b2
+X-MS-TrafficTypeDiagnostic: IA0PEPF0000003C:EE_|DM6PR12MB4420:EE_
+X-MS-Office365-Filtering-Correlation-Id: bf2e84b3-74c5-4177-2f21-08df4c79ea37
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|36860700016|376014|23010399003|18002099003|22082099003|11063799006|56012099006|261026121527099003|261026140227099003|261009223027099003|261022105027099003|261102123227099003|261021121427099003|261028144727099003|261021123027099003|10067099003;
+	BCL:0;ARA:13230040|1800799024|36860700016|376014|23010399003|82310400026|10067099003|56012099006|5023799004|11063799006|261021123027099003|261009223027099003|261022105027099003|261022075727099003|261021121427099003|261102123227099003|261026121527099003|261026140227099003|261028144727099003|18002099003|22082099003|6133799003;
 X-Microsoft-Antispam-Message-Info:
-	h1WAE+2ZujZdkGte6jEjAt88AK6PgSdZZQjojpSooaWblyYM9jrs6VhhoefwfA+tLlW58wkIbRMRUHI/r5ckmuuMviPiBanACMFzFXywJufsAXWl5Vck2+IKaQ3J9Y2iNiUoeAgpuKBkM1+bbWWIO8UA8DSeIDi67g632GJuDpTs8A47NEMMg2wc+Jv/PBgbxBOj22AwriegtOdaUaL8gvSy1NMtwpQARHSbiMJOyy/sRj3JiXXlXCCIqH/oAoxyJyzC2570vlX7VDnX6LZoqlvj94VytpdxY5cc8vEjAniHzckBo285YrilsEVuPECiv/g+XeZxUx5ovswEYGzF3q4brzX77ED5b5WYCW83/lUomoYE+SV8ElZEpBlFldhRivSbQnOAMF+mC51ywBUlFAHLpOJ0gbL50yNnfJNHbwWpmpdCdkSbTFZ10XYKEpfu/a/kTbsm4VTV+R6Ihli0Raew9DnWdc8fxI6ijJHJgoZi7c03wN6OtsTqXnaQOQ2TrNhyVZ1nmYSijHEGLLpm6TF11fAiK0ErvSg2jVSVu/HKI+uIvjVui9yky4csH2t4zigbeNbqKfC5+MPT5Q2L3T/YrbXTYMtXIl+2iv/pYcvjOeZO3cggocJnGQLElYVT7jXGcdF+9EW6y2t9Jdhx71z0oU18mM30Uw+dy7wJBOcxH3JXj5gMgq32h5JRpbc7gPjgZZvbXVf5BAg+/cZ9PA==
+	kWTpi2HX0uPpL4CpKXEiW3hVQU6QmRTcY90uDgAteqEQTkwdRK9gcBenWExWd96f/l9/u8oBZW8ZD5nKSg3qttnXDgy6RwNg6g/rnoQ5eVr4pfwqTu/EuXveOJouVK6uDXvAilB/MAjIn8k40/G+P4Jp/NHsPf/rgb83obYOtGjFPOmUNJdkUuEYDj1HW8/3LfNvLpv+BL9yAmje5lY6AqqgtgEuNUlTEoRBj49NsNu5kpuru5vD6xJQp0cGhldXuk487ldb3wSM0TMsDdTtUxaQ8H7FuKh9eZI81Eir3wXAQM9epBHBh90drBiBXqg+G1FOglZzuYOaLr1xUksPMdht7DIDXbatwz7zD1r8dgNZ5/SFOQ1+WLITRa98hQYwkY+u+TKqSQrPKGEZ9Z4wddWb1NZiHBY3+vgy4tLCED779O9bBnmzkH8eKlN8R9WjBBt8nRKsZ2zzWrXxqkvudljXMI8LRbil57x2EDRv91ejKLLsgcl3wFHcSH/DFwAgKc0lCUq5+ZbpZPpnMtJ/VB97urOe3kewDJ8aUnYKyl6m/4fsGUgAjlBByYme5dYb+k4zQTbb0mUUAOHcl1pn2+6w68i5Qt6XzXQKiViQag0f9ojOZVdOxga4yRSyTybVovANDhF1A+XD17WROKm6E4cg/GtnvSOZG70zjxDQEdpHTgJacMS1mosKFa5o+AAV+lTKrcYzjnj3AiQZ0tjizw==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700016)(376014)(23010399003)(18002099003)(22082099003)(11063799006)(56012099006)(261026121527099003)(261026140227099003)(261009223027099003)(261022105027099003)(261102123227099003)(261021121427099003)(261028144727099003)(261021123027099003)(10067099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(376014)(23010399003)(82310400026)(10067099003)(56012099006)(5023799004)(11063799006)(261021123027099003)(261009223027099003)(261022105027099003)(261022075727099003)(261021121427099003)(261102123227099003)(261026121527099003)(261026140227099003)(261028144727099003)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	Z4n/ySuv5AnhMeOCsvVyEGEbO1FqhS8liMyW3AncYgv0EedoHtYizJ/Z70W7qM16mL1/MKXhBSsBZwHKwv96+TOVk94gCt442ZDskcVLxXYg8FP1WfQLFRZduEhBtnV4QxTNEod1FprANAf9tNVglKUNwRe6FeMsglD2hBqSfQXUb7gi01KeEukcMD4Vo8PYamEWadB2A9i3Ub14e/5J/xuTPPai4fjBjnx/0T7+HGkZvYmPefI/QetBcapK90zCsNgLYO2MrzWpefs7BMGsGWIeJ3N1VDZBA6Co9D4QY8pyJoqSgBpPQwQxFHxP/YA+bke/PmCqRsXGv8cqbCGvhSZfjRdV8eQT1k5leHPQTo4813WYAEYsJAXJA8tHnwDKvlhat7gGKJSQ6tXDmeYUQeNAa4a0yB2+vw/kNkcC6/sKcddQriU8u6HoGnobvEwV
+	41zS6tPd8GQA/rQph3Lk3oODvHloOuDygtCV670h23Z5onShPLNGUH1yPV5gMIc5FVrRlfPKP4nzkGLaldIXaEA9DmKqJBHCUfO197FGhPTg+J2TsXqw07SeJLdZgNF4fWJh3WJhP3s2Wlj9GiKpKM2UGjWIdPoRPt3PAjOWr5Yxabe1wu/7mrZ73WOI3ya/wNsWSQIA4cpPkACgVE67AX/q7i0dfqUtOhBNHjVW0oRWkAZ2X9yCGWCRFt9ZnWQufn0u6EN3IX0lts605Aj2GneQuD7oXhmTMiFpYXt1cXEebXFB3jxcQi4fK1AbDksqVd2iVIR20OKqe6V1o7FGzdw7gni9mhyATThZTbN8k3esQKD/a1xUsYaf53HvcGgMR0GqmIzcv7+n/J9BqbKiGGJFxW7ADHhWFmIEM9y42MFVMIzpWhjjia3IH3FtjNB/
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2026 11:30:47.0769
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2026 11:31:01.3782
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1393b82-3dba-4a27-45cb-08df4c79e1b2
+X-MS-Exchange-CrossTenant-Network-Message-Id: bf2e84b3-74c5-4177-2f21-08df4c79ea37
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	IA0PEPF00000037.namprd03.prod.outlook.com
+	IA0PEPF0000003C.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6886
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4420
 
-The DTE update lock (dte_lock) currently lives in iommu_dev_data structure.
-Because of this, dte[devid] can only be serialized when a corresponding
-dev_data object exists. This leads to inconsistent locking:
+The DTE accessors update_dte256() and get_dte256() take a struct
+iommu_dev_data pointer purely to read ->devid when indexing into the
+device table. Now that the DTE lock lives in the per-PCI-segment
+structure rather than in iommu_dev_data, nothing in these helpers
+needs the dev_data object itself.
 
- - The interrupt remapping path (set_dte_irq_entry()) skips the lock
-   entirely when search_dev_data() returns NULL, leaving the DTE write
-   unprotected.
- - An alias ID has no device object of its own, so clone_alias() has to
-   create a dev_data for alias devices purely to have a lock to hold
-   before updating the DTE.
+A DTE entry is fundamentally identified by its DeviceID, so pass
+the DeviceID directly instead of an iommu_dev_data. This removes the
+artificial requirement for callers to construct or look up a dev_data
+object just to program or read a DTE slot. ex, dump_dte_entry()
+no longer has to call find_dev_data() before dumping an entry.
 
-Move dte_lock to per PCI segment (amd_iommu_pci_seg). This guarantees that
-every code path holds the lock before updating DTE. A subsequent patch
-builds on this by removing the need to create dev_data objects solely for
-alias devices.
-
-A DTE update is not a fast-path operation, so using a single per-PCI-
-segment lock instead of a per-device lock does not affect performance.
-
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/amd_iommu_types.h |  2 +-
- drivers/iommu/amd/init.c            |  1 +
- drivers/iommu/amd/iommu.c           | 22 ++++++++++------------
- 3 files changed, 12 insertions(+), 13 deletions(-)
+ drivers/iommu/amd/iommu.c | 31 +++++++++++++++----------------
+ 1 file changed, 15 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 9657e80ffdeb..30dc9495e3ee 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -566,6 +566,7 @@ struct amd_iommu_pci_seg {
- 
- 	/* List of all available dev_data structures */
- 	struct llist_head dev_data_list;
-+	spinlock_t dte_lock;		/* Device-table update lock */
- 
- 	/* PCI segment number */
- 	u16 id;
-@@ -806,7 +807,6 @@ struct devid_map {
- struct iommu_dev_data {
- 	/*Protect against attach/detach races */
- 	struct mutex mutex;
--	spinlock_t dte_lock;              /* DTE lock for 256-bit access */
- 
- 	struct list_head list;		  /* For domain->dev_list */
- 	struct llist_node dev_data_list;  /* For global dev_data_list */
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index c9c504ce8ce6..61e7b70fb063 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1801,6 +1801,7 @@ static struct amd_iommu_pci_seg *__init alloc_pci_segment(u16 id,
- 
- 	pci_seg->id = id;
- 	init_llist_head(&pci_seg->dev_data_list);
-+	spin_lock_init(&pci_seg->dte_lock);
- 	INIT_LIST_HEAD(&pci_seg->unity_map);
- 	list_add_tail(&pci_seg->list, &amd_iommu_pci_seg_list);
- 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 41ee4ad1dcf8..8beb23e96c8e 100644
+index 8beb23e96c8e..a1a07bbd1545 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -121,7 +121,7 @@ static void write_dte_upper128(struct dev_table_entry *ptr, struct dev_table_ent
- 	/*
- 	 * Preserve DTE_DATA2_INTR_MASK. This needs to be
- 	 * done here since it requires to be inside
--	 * spin_lock(&dev_data->dte_lock) context.
-+	 * pci_seg->dte_lock context.
- 	 */
- 	new->data[2] &= ~DTE_DATA2_INTR_MASK;
- 	new->data[2] |= old.data[2] & DTE_DATA2_INTR_MASK;
-@@ -152,7 +152,7 @@ static void update_dte256(struct amd_iommu *iommu, struct iommu_dev_data *dev_da
- 	struct dev_table_entry *dev_table = get_dev_table(iommu);
- 	struct dev_table_entry *ptr = &dev_table[dev_data->devid];
- 
--	spin_lock_irqsave(&dev_data->dte_lock, flags);
-+	spin_lock_irqsave(&iommu->pci_seg->dte_lock, flags);
- 
- 	if (!(ptr->data[0] & DTE_FLAG_V)) {
- 		/* Existing DTE is not valid. */
-@@ -208,7 +208,7 @@ static void update_dte256(struct amd_iommu *iommu, struct iommu_dev_data *dev_da
- 		write_dte_lower128(ptr, new);
- 	}
- 
--	spin_unlock_irqrestore(&dev_data->dte_lock, flags);
-+	spin_unlock_irqrestore(&iommu->pci_seg->dte_lock, flags);
- }
- 
- void amd_iommu_update_dte(struct amd_iommu *iommu,
-@@ -230,10 +230,10 @@ static void get_dte256(struct amd_iommu *iommu, struct iommu_dev_data *dev_data,
- 
- 	ptr = &dev_table[dev_data->devid];
- 
--	spin_lock_irqsave(&dev_data->dte_lock, flags);
-+	spin_lock_irqsave(&iommu->pci_seg->dte_lock, flags);
- 	dte->data128[0] = ptr->data128[0];
- 	dte->data128[1] = ptr->data128[1];
--	spin_unlock_irqrestore(&dev_data->dte_lock, flags);
-+	spin_unlock_irqrestore(&iommu->pci_seg->dte_lock, flags);
- }
- 
- static inline bool pdom_is_v2_pgtbl_mode(struct protection_domain *pdom)
-@@ -383,7 +383,6 @@ static struct iommu_dev_data *alloc_dev_data(struct amd_iommu *iommu, u16 devid)
- 		return NULL;
- 
- 	mutex_init(&dev_data->mutex);
--	spin_lock_init(&dev_data->dte_lock);
- 	dev_data->devid = devid;
- 	ratelimit_default_init(&dev_data->rs);
- 
-@@ -3104,13 +3103,13 @@ static int amd_iommu_set_dirty_tracking(struct iommu_domain *domain,
- 	}
- 
- 	list_for_each_entry(dev_data, &pdomain->dev_list, list) {
--		spin_lock(&dev_data->dte_lock);
- 		iommu = get_amd_iommu_from_dev_data(dev_data);
-+		spin_lock(&iommu->pci_seg->dte_lock);
- 		dte = &get_dev_table(iommu)[dev_data->devid];
- 		new = dte->data[0];
- 		new = (enable ? new | DTE_FLAG_HAD : new & ~DTE_FLAG_HAD);
- 		dte->data[0] = new;
--		spin_unlock(&dev_data->dte_lock);
-+		spin_unlock(&iommu->pci_seg->dte_lock);
- 
- 		/* Flush device DTE */
- 		device_flush_dte(dev_data);
-@@ -3340,11 +3339,11 @@ static void set_dte_irq_entry(struct amd_iommu *iommu, u16 devid,
- 			      struct irq_remap_table *table)
+@@ -145,12 +145,12 @@ static void write_dte_lower128(struct dev_table_entry *ptr, struct dev_table_ent
+  * This function is used only by code, which updates DMA translation part of the DTE.
+  * So, only consider control bits related to DMA when updating the entry.
+  */
+-static void update_dte256(struct amd_iommu *iommu, struct iommu_dev_data *dev_data,
++static void update_dte256(struct amd_iommu *iommu, u16 devid,
+ 			  struct dev_table_entry *new)
  {
- 	u64 new;
-+	unsigned long flags;
- 	struct dev_table_entry *dte = &get_dev_table(iommu)[devid];
- 	struct iommu_dev_data *dev_data = search_dev_data(iommu, devid);
+ 	unsigned long flags;
+ 	struct dev_table_entry *dev_table = get_dev_table(iommu);
+-	struct dev_table_entry *ptr = &dev_table[dev_data->devid];
++	struct dev_table_entry *ptr = &dev_table[devid];
  
--	if (dev_data)
--		spin_lock(&dev_data->dte_lock);
-+	spin_lock_irqsave(&iommu->pci_seg->dte_lock, flags);
+ 	spin_lock_irqsave(&iommu->pci_seg->dte_lock, flags);
  
- 	new = READ_ONCE(dte->data[2]);
- 	new &= ~DTE_IRQ_PHYS_ADDR_MASK;
-@@ -3354,8 +3353,7 @@ static void set_dte_irq_entry(struct amd_iommu *iommu, u16 devid,
- 	new |= DTE_IRQ_REMAP_ENABLE;
- 	WRITE_ONCE(dte->data[2], new);
+@@ -158,12 +158,12 @@ static void update_dte256(struct amd_iommu *iommu, struct iommu_dev_data *dev_da
+ 		/* Existing DTE is not valid. */
+ 		write_dte_upper128(ptr, new);
+ 		write_dte_lower128(ptr, new);
+-		iommu_flush_dte_sync(iommu, dev_data->devid);
++		iommu_flush_dte_sync(iommu, devid);
+ 	} else if (!(new->data[0] & DTE_FLAG_V)) {
+ 		/* Existing DTE is valid. New DTE is not valid.  */
+ 		write_dte_lower128(ptr, new);
+ 		write_dte_upper128(ptr, new);
+-		iommu_flush_dte_sync(iommu, dev_data->devid);
++		iommu_flush_dte_sync(iommu, devid);
+ 	} else if (!FIELD_GET(DTE_FLAG_GV, ptr->data[0])) {
+ 		/*
+ 		 * Both DTEs are valid.
+@@ -171,7 +171,7 @@ static void update_dte256(struct amd_iommu *iommu, struct iommu_dev_data *dev_da
+ 		 */
+ 		write_dte_upper128(ptr, new);
+ 		write_dte_lower128(ptr, new);
+-		iommu_flush_dte_sync(iommu, dev_data->devid);
++		iommu_flush_dte_sync(iommu, devid);
+ 	} else if (!FIELD_GET(DTE_FLAG_GV, new->data[0])) {
+ 		/*
+ 		 * Both DTEs are valid.
+@@ -180,7 +180,7 @@ static void update_dte256(struct amd_iommu *iommu, struct iommu_dev_data *dev_da
+ 		 */
+ 		write_dte_lower128(ptr, new);
+ 		write_dte_upper128(ptr, new);
+-		iommu_flush_dte_sync(iommu, dev_data->devid);
++		iommu_flush_dte_sync(iommu, devid);
+ 	} else if (FIELD_GET(DTE_GPT_LEVEL_MASK, ptr->data[2]) !=
+ 		   FIELD_GET(DTE_GPT_LEVEL_MASK, new->data[2])) {
+ 		/*
+@@ -193,12 +193,12 @@ static void update_dte256(struct amd_iommu *iommu, struct iommu_dev_data *dev_da
  
--	if (dev_data)
--		spin_unlock(&dev_data->dte_lock);
-+	spin_unlock_irqrestore(&iommu->pci_seg->dte_lock, flags);
+ 		/* First disable DTE */
+ 		write_dte_lower128(ptr, &clear);
+-		iommu_flush_dte_sync(iommu, dev_data->devid);
++		iommu_flush_dte_sync(iommu, devid);
+ 
+ 		/* Then update DTE */
+ 		write_dte_upper128(ptr, new);
+ 		write_dte_lower128(ptr, new);
+-		iommu_flush_dte_sync(iommu, dev_data->devid);
++		iommu_flush_dte_sync(iommu, devid);
+ 	} else {
+ 		/*
+ 		 * Both DTEs are valid and have guest page table,
+@@ -215,20 +215,20 @@ void amd_iommu_update_dte(struct amd_iommu *iommu,
+ 			     struct iommu_dev_data *dev_data,
+ 			     struct dev_table_entry *new)
+ {
+-	update_dte256(iommu, dev_data, new);
++	update_dte256(iommu, dev_data->devid, new);
+ 	clone_aliases(iommu, dev_data->dev);
+ 	device_flush_dte(dev_data);
+ 	iommu_completion_wait(iommu);
  }
  
- static struct irq_remap_table *get_irq_table(struct amd_iommu *iommu, u16 devid)
+-static void get_dte256(struct amd_iommu *iommu, struct iommu_dev_data *dev_data,
+-		      struct dev_table_entry *dte)
++static void get_dte256(struct amd_iommu *iommu, u16 devid,
++		       struct dev_table_entry *dte)
+ {
+ 	unsigned long flags;
+ 	struct dev_table_entry *ptr;
+ 	struct dev_table_entry *dev_table = get_dev_table(iommu);
+ 
+-	ptr = &dev_table[dev_data->devid];
++	ptr = &dev_table[devid];
+ 
+ 	spin_lock_irqsave(&iommu->pci_seg->dte_lock, flags);
+ 	dte->data128[0] = ptr->data128[0];
+@@ -431,7 +431,7 @@ static int clone_alias(struct pci_dev *pdev_origin, u16 alias, void *data)
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
+-	get_dte256(iommu, dev_data, &new);
++	get_dte256(iommu, dev_data->devid, &new);
+ 
+ 	/* Setup alias */
+ 	alias_data = find_dev_data(iommu, alias);
+@@ -440,7 +440,7 @@ static int clone_alias(struct pci_dev *pdev_origin, u16 alias, void *data)
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
+-	update_dte256(iommu, alias_data, &new);
++	update_dte256(iommu, alias_data->devid, &new);
+ 
+ 	amd_iommu_set_rlookup_table(iommu, alias);
+ out:
+@@ -749,9 +749,8 @@ static void dump_dte_entry(struct amd_iommu *iommu, u16 devid)
+ {
+ 	int i;
+ 	struct dev_table_entry dte;
+-	struct iommu_dev_data *dev_data = find_dev_data(iommu, devid);
+ 
+-	get_dte256(iommu, dev_data, &dte);
++	get_dte256(iommu, devid, &dte);
+ 
+ 	for (i = 0; i < 4; ++i)
+ 		pr_err("DTE[%d]: %016llx\n", i, dte.data[i]);
 -- 
 2.31.1
 
