@@ -1,47 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=79.135.106.99
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795856126;
-	b=j9PJNR6PAvpQOVQ0dnp+jKUrwBQlRtd/yoTxIXl5aimz6wkBbhAbZ9Jd5p5mmKVLn5pm
-	 fB5a+umlreKv7rTvxWUCggqPf1ITQ4mNk+Bv7AW53vGyaMkdN3gz3/JWZzqBa0irzU8aS
-	 0vUkzv1QthKozayFQz6R0DD4+jyOtuh89aaAWHLype1B2yAd/wwUieMQPmSXBmcvNDfJH
-	 uSvEW0mrnQcKWJnDi5g1seEqPiTVqSmVyESqvyuuB9nUE4KZn/LBXkFZ1XiAdp+uLIX/V
-	 CTx/NSgh59wNJ3b7Fq0/ONAvEpXsjkjUrZj8AqCTX680vPzamKtbV/Wz77gJzEr1u0Q==
+	t=1795860797;
+	b=W/RboozSZhFjBbfj2+uCyhFHWYRHWanMgX3nVpMvN+x9Kt7sMC3e1X+D6XoKlwtB50mw
+	 91dAyctDmafWoxgdQ4oVhFS7Q3vXVpz8Ox05750Emh8ok5PivlrlnT+RbH1+GNqbFb1DG
+	 +6z+N4QqwbR5vgoNQxUpTnruvF+4mBpvzXIsn9W0t94qgk9JKPSDFfFKlugSL5e+4dxeo
+	 pGrBR5Y+9eKNP2HNxzyITXIp7fIPWB8pcF1Z4bcoydnW02UFIchaav1z9UizY+9zcMdWw
+	 74BipGpserrovdlShWDmTCzvG2qdDn7q1nftnx8YdHMggKCHOkBi7T6P0zyjCPorQkQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795856126;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
+	a=rsa-sha256; c=relaxed/relaxed; t=1795860797;
+	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
+	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=pT/Ty5tDobukfZnRUpr1Lr4sCBOaNehiDx5qlqzSLeI=;
-	b=QirWoE0lPzw9/kWtzfU+XeN5RbaOmHtT4FKeaCktLAOkCYLvEQGDaggB8F0tll4RAcqn
-	 VwsTYgWckJw9Vp57hlO4s5r1YrnZsMdLq36nRwubh5d/Cdcgl1GAPlmNbvWJAP+Sbt/+o
-	 /ITYf80oL/Cyo0Gou7KnIdGqUM0uJoBN7W1CluKqpU8nBOuk30HTxfKUc2wDVp2JnbAAG
-	 v9UU3S+JI9h1ggAS147QQVeamcmnLjU4Ua+2Fi9kXWG5+LXOpnv3JmB+NVRX54vh9kEzU
-	 4hSQQMNrQ5lkn7xW6t9t3p7MZ24BKTZydrYbsTFmWAwuqpNwUO4QABTynBaKT1H5U7w==
+	bh=6bDRCNDgV+w4zFz1M9i8EtB9AGPzc8GgRuZjagDad+Y=;
+	b=NCBX8FwMqFv8hUiK6OXMhM4LqAosIMjGrIfkoc/oSoCkOAefzYXoIG5ITAiGWdWQxI5O
+	 4snlE1zn6/6M+ex+XDgtZCkYPFxzKe7txNKwo5iBeeQ+QZWz4PI367gt/sxu0mdBs0wFh
+	 lv2JR6AE6JKCSZIh7rCqlhnjv8ixB0UT3sC8tesEG5toVNyp+WfSB7geXHWiUCVucEzuM
+	 24/a3qlySEnwEvUdkiHLLbrhHkCPACVL3h9deJcC7uyinaBKfxD0Shh3AaCADbqZmVw+O
+	 Wyb7pN+3je+b79MtaX5rxad9BzeuKEbPIAT/Take/75l+U9GRUpEEEOH0TUqYknzO6g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="a82/5EW2";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=protonmail.com;
+	spf=pass smtp.mailfrom=protonmail.com;
+	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=E58q7IBI;
+	arc=none smtp.remote-ip=79.135.106.99
+Received: from mail-10699.protonmail.ch (mail-10699.protonmail.ch [79.135.106.99])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF011606A321;
-	Sat, 28 Nov 2026 08:55:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B89C606A323
+	for <iommu@lists.linux.dev>; Sat, 28 Nov 2026 10:13:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6B89C606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=a82/5EW2
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8A991F00898;
-	Sat, 28 Nov 2026 08:55:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795856126;
-	bh=pT/Ty5tDobukfZnRUpr1Lr4sCBOaNehiDx5qlqzSLeI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=a82/5EW2OfNfsbisNQy+guLQbVhsz1qVvMs9F/Ys2r1NWSxIjxVbgPNIiLIyTxawm
-	 63d26N+kWSNTDaBQegZGajx2fig+KoU4kZ6MJFXA8xTGp5jZQuqLJcVzWeUN6NMd68
-	 gJEgbBgVvqFDeLfePo5ijOI5qMds/3InSMZ2LRJ8xdXF8u4ktAUYNxB/odGZzEjJIX
-	 VPKS/iasFIp+DR9UFQif07K/JL7CsGKiY4SS5NZSFz2WIJgqSgI3sGfEex1In37MPf
-	 IDTTVTRJQB7nCush8kTC4mSsgfF5xkIEtZ8BzlkdzXW0eZYIpMO2XvMT+Qab2tjfUv
-	 Uz67ViBQU+w5g==
-Message-ID: <0d77ebaa-fba4-4047-a43a-18b3c1ae242b@kernel.org>
-Date: Sat, 28 Nov 2026 08:55:20 +0000
+	dkim=pass (2048-bit key, unprotected) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=E58q7IBI
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+	s=protonmail3; t=1795860794; x=1796119994;
+	bh=6bDRCNDgV+w4zFz1M9i8EtB9AGPzc8GgRuZjagDad+Y=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=E58q7IBIMWri3KS/uvCCzQS1QMJASgx586aCYtpb/rbuRAHyQQG/I006BnnmnGqTi
+	 CqeQkRGCY5ldH1KDWkbrzVHJFyRjz3bkcDIwM2+mkJhVq6Wu2uUc0Olmjpfg80yOxk
+	 ozbRk2Aow9+nT2fYEQVeu1Mp+qKeaIZS/G0rdFvWG/QuBRF6veKipD/SrCCUQdX9nO
+	 znkp+dJdT0wvVCyBC/giVYQWw8esUfLy/Xs7lowKGhBv2sZrr6f8y8/g2FPg/iFH+a
+	 RimwhFiAXaJ1gajyMeSHyC/Yj9YwKByIKExsQ33onkfap/66t6kO5Gto2jkT+0TyKO
+	 gMgb33rVT94AA==
+Date: Sat, 28 Nov 2026 10:13:07 +0000
+To: Aigeus <info@aigeus.net>
+From: 70sp <70sp@protonmail.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev, regressions@lists.linux.dev, Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [REGRESSION] GPU passes into VM improperly after c376a3456d8b or a98db518dde2
+Message-ID: <WV3FhKHog9vt2uFWViY8UTVnQk0xq5O_l0vRT4AMpGXxfo-9FcilH-CoNgVYHc0bdCdmWtatt-h4AuogBtpr1FaXTEZJpMA3SEAIepliqC0=@protonmail.com>
+In-Reply-To: <4jbbNj4Glnz2ScWg@mailsubfra1002.protonmail.ch>
+References: <275dbe0d-0b2d-4ec4-9c8c-9bd7ddf06070@linux.intel.com> <QISmXFlpPMgvFUKmdIBDwqn4JHHXt2NZeJzerMLHF_5icLo0lPKVlN0Ig9v8Vb52NmCeSFdyrao4x8KoN1DCXtDlnZS7eRIClC6vZyu-hPU=@protonmail.com> <d931a389-c143-4a6a-931c-bc7025bcefb9@linux.intel.com> <4jbbNj4Glnz2ScWg@mailsubfra1002.protonmail.ch>
+Feedback-ID: 144929603:user:proton
+X-Pm-Message-ID: 38fd2fdf9c4e12e9822b9b9b8b463b3c8ca2d7f8
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -51,104 +64,60 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/4] media: venus: use dma_iova_size() to check the
- reserved IOVA size
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
- linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Leon Romanovsky <leon@kernel.org>,
- Sibi Sankar <sibi.sankar@oss.qualcomm.com>, Honglei Huang
- <honghuan@amd.com>, prakash.gupta@oss.qualcomm.com,
- Alex Williamson <alex@shazbot.org>,
- Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
- Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
- Abhinav Kumar <abhinav.kumar@linux.dev>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Hans Verkuil <hverkuil+cisco@kernel.org>, stable@vger.kernel.org
-References: <20261127115849.2780625-1-m.szyprowski@samsung.com>
- <CGME20261127115859eucas1p1ae20b01eec39080daf19dbd71aba10e9@eucas1p1.samsung.com>
- <20261127115849.2780625-2-m.szyprowski@samsung.com>
- <nohVXMHveO5nQuD8sOn0QoENkIUC-GQzMCh8HTX6v2eezbtW6OM5gX5JwJ7_MSwfWj3bC4Zmfz1CrxTDKJeFGg==@protonmail.internalid>
- <20261127142912.GK114472@nvidia.com>
- <dcc8689e-41bc-4a18-87fc-2fa76e11eab1@kernel.org>
- <1MLPCyQ6FzkBIjdEja1y1xlc1P6WofGan08C2FN5E6caYBo9uKTCVFZXVujGWTLFgNm4nIXZGke0kdpRd8Z_BA==@protonmail.internalid>
- <20261127172626.GQ114472@nvidia.com>
-From: Bryan O'Donoghue <bod@kernel.org>
-Content-Language: en-GB
-Autocrypt: addr=bod@kernel.org; keydata=
- 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
-In-Reply-To: <20261127172626.GQ114472@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On 27/11/2026 17:26, Jason Gunthorpe wrote:
->> It would be possible to reserve this IOVA range in DT so given what you've
->> highlighted I think this and the Iris commit should be reverted and the DT
->> constraint implemented.
-> That was the other thread, obviously using DT to describe a hardware
-> issue is the correct choice. But there was some problem where they
-> also wanted to split the SID space using DT and then the DT mechansim
-> doesn't work because the whole thing becomes too hacky :\
-> 
-> Jason
+> Hello,
+>=20
+> I am the reporter of the in-kernel amdgpu case in this thread (the one
+> without VFIO, also filed as Debian bug #1155044). The superpage
+> hypothesis fits my machine exactly and sp_off confirms it, so here is
+> an independent data point from a plain DMA-API domain.
+>=20
+> Hardware: Gigabyte H97-HD3 (BIOS F9c), Core i7-4790K (Haswell, iGPU
+> enabled and driven by i915), Radeon RX 5500 XT (Navi 14) at
+> 0000:03:00.0, Debian 13, kernel 7.3.4+deb13-amd64.
+>=20
+> With plain intel_iommu=3Don this box fails as in my message of 23 Nov:
+> DMAR faults with reason 0x0c (non-zero reserved fields in PTE) on DMA
+> reads issued by the GPU itself, then "PSP load smu failed" and
+> "Fatal error during GPU init" (36 fault lines across the failing
+> boots, 0 on 6.12.118).
+>=20
+> After appending sp_off to the intel_iommu=3D options and rebooting, with
+> everything else unchanged:
+>=20
+>   /proc/cmdline: ... ro quiet splash intel_iommu=3Don,sp_off
+>   DMAR: IOMMU enabled
+>   DMAR-IR: Enabled IRQ remapping in xapic mode
+>   i915 0000:00:02.0: [drm] VT-d active for gfx access
+>   amdgpu 0000:03:00.0: VRAM: 8176M ...
+>   amdgpu 0000:03:00.0: SMU is initialized successfully!
+>   [drm] Initialized amdgpu 3.64.0 for 0000:03:00.0 on minor 1
+>   dmesg | grep -c "fault reason"  ->  0
+>=20
+> So the fault class is not VFIO-specific: an in-kernel driver using a
+> plain DMA-API domain hits the same reserved-PTE rejection, and
+> disabling superpages removes it while DMA remapping and interrupt
+> remapping stay enabled. That is consistent with the Haswell
+> IGD/superpage restriction =C5=A0imon described.
+>=20
+> Once the change is reposted as a formal patch I can build it against
+> the Debian 7.3.4 tree and boot-test it on this machine within a day,
+> so the verification does not have to rest on one box.
+>=20
+> Thanks,
+> Aigeus
+> GitHub: EgolOS <79418083+EgolOS@users.noreply.github.com>
 
-Actually I've been looking for some resolution on this.
+Hello,
 
-https://lore.kernel.org/linux-media/d0e76f09-a360-4c1d-bfab-c5658f2a69e0@kernel.org
+thank you for the confirmation and info. We are currently confirming whethe=
+r another regression thread is the same issue here: https://lore.kernel.org=
+/regressions/0318408a-20b8-4237-85b2-e522883f5436@acm.org/
 
-There's been radio silence on the method from the iommu maintainers so I 
-haven't merged the DT that would come to depend on it.
+I will try to send out the patch (or somebody else may) as we confirm or de=
+ny whether they are the same.
 
-If its mergable with changes then grand, if not then the approach needs 
-to be rolled back.
-
-Either way several series in limbo and now this rollback.
-
-I would like to do the right thing _once_ to resolve.
-
----
-bod
+Best regards,
+=C5=A0imon Posp=C3=ADchal
