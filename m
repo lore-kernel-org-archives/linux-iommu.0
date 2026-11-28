@@ -1,135 +1,58 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=113.46.200.226
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795821307;
-	b=OkoFxhrqXBt5UWWq16iUAJr3tq/bbNb664F5vKDV15iAl6y8FjdiZMSGMhKRb+WooCyG
-	 h0KegIKq+mtV4yhQpUUHQbwAMX2jgApoYlXFkqHInnxVLgjGENTxZaPF8+MlZGvi+Zqn1
-	 GGZk/UgRwx/831StwZ1NCjdgrsoVTkmpmqSzlvtwFsmfHuEUIKnVlUqQZqf2eLeoRm06S
-	 /f1WPrfw0Y7/mZ1fvRqMPG1NN4E95+GJ1A7b1Cv21zRcDQTMQO/dk4n1wTxzSbD1ZXoLU
-	 tI/fSZTR07N1QvNsMwQbrqTrM4aAq0nCqnjOyBoWoh/T+s4dd9DktJYMX7q+0SYPG9Q==
+	t=1795831412;
+	b=ozK3zAt4VWGU4rvfZApy6hpr1lJl3wmHpL++fawsju+6tFUkWxhZEaKc02zbNVSTP8Vv
+	 o4ZjgWC/K/+nPxkx7YhP8qDADsJ9bksBAYxoEJXmyXQlYatA6JEnDAOw9heGSL1/iCj6Q
+	 rA+kzReYi92Ji7jk0IzbbcYaVP5OmERQ+8G+rXZzGyveQ7r2jjEi1vSj03mCYfdzoxAhx
+	 /ME90VLXMSkUHuwUco0QDzAb9tg8ZIf9qSy3/369WO1+qNOZ+SWFYB+3AvBA32YcOfYLt
+	 Wbo+R9BoDa0CRIolI5XSDcp+dtICQep89yOpX2n2FMWIifhzDpkBlgnAfWy4seMNZxg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795821307;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=U1M+MDeqlkODjZ50qKjXMO75f40J30DxxF3l7NYSGEM=;
-	b=TlbFbuhmqzDahUCX1/KFetA3i99dFInzTxT+8zvnXHwVmwtgSEk/CyyI7NWTmShU6+wB
-	 b1pHD3t7U9Vzr8sZpHyuYwm9CrHKfKV4p9/Yl/YOTBxVxV03bZRxtvkY1qo9mLy1mMML1
-	 MOVbqFR0FncfUuYsKj+jw7nmaKMT5qM9hx9paoaECQDgVi6irEzU9X1gBKZbWUkOR5IDM
-	 riOTEcwNsUyV2SIHqPgDrTKIFStNxlZGhgUKzhF6AoWjuEXPdnLmzgBWuL8rUpP8C+cuo
-	 zNmnHPNPuTrhSRfeUiHE4Uf1342X3w7iAQUIs98xKDqxNU21d7KVvGrN/GmT8jqeD9Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795831412;
+	h=DMARC-Filter:dkim-signature:Received:Received:Received:Message-ID:
+	 Date:MIME-Version:User-Agent:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-Originating-IP:
+	 X-ClientProxiedBy;
+	bh=Bb02QMbPzYGMZl2XBsuZPs04tkTOlgjVE/NIsauxzp4=;
+	b=t16v4h3LlZpLbYTdjPCSkMzoH0osRYBqMe/svgtvqctvNsRE++R1Yl8JYrksPZAK5Cfl
+	 vmnhBnc5dV0ZPkXWcN1GFwuh0Sx+GoRqwlxrpeo1X+K6KdzMgh/GS+4sJXrCjSuwq52nO
+	 qxk7o5/jDVcGF9meCJEIXV3fMR7GyHBXhjdw47YfV9KytmD0xEzyOCJR7HxKWspIfy/H6
+	 bC/CAhu+5mTJR2FYuus/aWv6V5xTHp4kSbj6/dMTDt1HvzI8fR1unilrkZqE7aB9cUUup
+	 WPQxaQ53lHNlI0TRcLcQlwi6ool6JDNgndNusAmAa/ttpmSTG82k6epQrJT1hnLHGlg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vabDjH7u;
-	arc=none smtp.remote-ip=209.85.221.46
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=huawei.com;
+	spf=pass smtp.mailfrom=huawei.com;
+	dkim=pass header.d=huawei.com header.i=@huawei.com header.a=rsa-sha256 header.s=dkim header.b=5dAoixTz;
+	arc=none smtp.remote-ip=113.46.200.226
+Received: from canpmsgout11.his.huawei.com (canpmsgout11.his.huawei.com [113.46.200.226])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B68B606A33C
-	for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 23:15:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6B68B606A33C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6E97606A31E;
+	Sat, 28 Nov 2026 02:03:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A6E97606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vabDjH7u
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-48e46e449e8so5654793f8f.3
-        for <iommu@lists.linux.dev>; Fri, 27 Nov 2026 15:15:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795821306; x=1796426106; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=U1M+MDeqlkODjZ50qKjXMO75f40J30DxxF3l7NYSGEM=;
-        b=vabDjH7ufz+EQoK3AA45FhuJjcfsEFN5E9nhHlhm3tIKkfKjVAFG8EJwS2MfbB6CT8
-         fe2GMekMUStjbbQ6YplZheDzj8mgsLJ05/QMudPVn2vYdfEPiDiJI3tAf4rZSDK1rKyp
-         cjEqTqxeWsDYMWs9woYQF1R4E8pBoCZb3jHLSrqH7avZKSLXXE6dHTaK+bc7cLXMFLif
-         icR4Gp5zKQalKKYN5jzcDPqjgPdyg1OxEYL/FcyIHm9sjn0N9T4t7bMitrdxoaGHG3nv
-         P3naiVVzl5n5fr5bf7+qXqU29tVwXRqxJpJFjOClu/lnWuLZSDXmRBd8tnzKIb3JAgCV
-         d3rQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795821306; x=1796426106;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=U1M+MDeqlkODjZ50qKjXMO75f40J30DxxF3l7NYSGEM=;
-        b=ROcWvVY82i6Rt/UlJyNLKSEkBS2OYTAu2el+nhUplNTLdA/0Wmu+ooC2uxbjiUZu1/
-         UVM71Nd0x3Dj/OPoUXnH6F4y4+2v1CCkA5cTNkXLny9646vIVO9UND8SyCBdQFIH4NlE
-         bNw/Qeu7er3yqFEFFSD989uqNixieCSLW2FC870Q+eHSKv4uIImgNgvrkUf+KjGsyLoe
-         zkDMmpzIJsyCOVLX181SBinmi+2ey2qXN+I4KXKyfJOcgGdxfx1nbUoLCm9sf33kalrR
-         qewot3FusQGJWbTHgW1koYluXuMTfi55M6OQSCZEMjNAKmJrF+hjd+heNg6/5+CzO/xv
-         3Jwg==
-X-Forwarded-Encrypted: i=1; AL+hErFBCPxjbyd84cUZguijBlzAq5Qck6nTcy1+DQlA2NHLcllrWZ2pkzp28WwCTF9VIBTtpXLvpQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/GVxzeTcA6OfIZf/Vdsee5MEr48dINOkvk0/kywIm/DCmBPARp
-	FqQM5rdI5ZRl6N+eQHmMZfmngOXGrY8sjGO/PVE7GgZpFIpsqsQ7HNU+
-X-Gm-Gg: AZFdTZdPRqgrh/O2cEIdcdQ/QL9m8WbBPqRqZVhCM4BV7bspkSVftQuDhfJlfTxdAAs
-	JB0BU/r1mNiV9RcBLxVNg/m3NzSxFron7dgSk6u6tMa5hK6/PAz3eM8/6iKUT5lINiv3DbWF7u8
-	jBE3REg3GBXnHWlbcNdkNBbSHCPb2lULRvVAt1J6hcjbPrRUTQVjUQsvykziB8yVmz3vaqRhACB
-	hZkXYklpX9KiKr/56anCBqbZKPPu1iBQdjmXeIocu4zn5R/pIBimS9LLdknS6Xt0ehCkTiuRCHN
-	z2ayKWzhpezome0I2N7287p28bHARwQADB5GHhqmE8RNmZc8RvuHu20rQBKTxzohzZ1UO81dIal
-	RrCwJwpydJaei72d4OpcO0weybCJ9bkJsr2w5d/wQHUtNnzi5VYWnvEl3qKhbczCTPGOn9adigu
-	10RtDusjC4RDsPsYwQWv4j3dR4hoP8M9OttDcmxzWN8U1N0Q0Dv+FSYIWbpgu9Sxi7sVmFpY6HH
-	FXrGC4MSfFPEnCsJjR+23NioULqv/NtRxkuDm3tf4GskKMwCEo525wH7fYhP3K+h/ScByO52kms
-	u14cLuqfMxnR7ryGgqpl0o1JKqY=
-X-Received: by 2002:a05:6000:178f:b0:4bb:c85e:d565 with SMTP id ffacd0b85a97d-4bbc86e17b5mr14733028f8f.55.1795821305534;
-        Fri, 27 Nov 2026 15:15:05 -0800 (PST)
-Received: from flare5 ([212.58.121.92])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6a67fe48sm45269880f8f.23.2026.11.27.15.14.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2026 15:15:03 -0800 (PST)
-From: Stanislav Aleksandrov <lightofmysoul@gmail.com>
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Abel Vesa <abelvesa@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Robert Marko <robimarko@gmail.com>,
-	Guru Das Srinagesh <linux@gurudas.dev>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Radu Rendec <radu@rendec.net>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Wesley Cheng <wesley.cheng@oss.qualcomm.com>,
-	Vinod Koul <vkoul@kernel.org>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Bart Van Assche <bvanassche@acm.org>,
-	Bean Huo <beanhuo@micron.com>,
-	Stanley Jhu <stanleyjhu@google.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	"David S. Miller" <davem@davemloft.net>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Viresh Kumar <viresh.kumar@linaro.org>,
-	Amit Kucheria <amitk@kernel.org>,
-	Thara Gopinath <thara.gopinath@gmail.com>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>,
-	Lukasz Luba <lukasz.luba@arm.com>,
-	Georgi Djakov <djakov@kernel.org>,
-	Sibi Sankar <sibi.sankar@oss.qualcomm.com>,
-	Ulf Hansson <ulfh@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-usb@vger.kernel.org,
-	linux-phy@lists.infradead.org,
-	linux-scsi@vger.kernel.org,
-	linux-crypto@vger.kernel.org,
-	linux-pm@vger.kernel.org
-Subject: Re: [PATCH v3 14/14] arm64: dts: qcom: Add Samsung Galaxy XR
-Date: Fri, 27 Nov 2026 23:14:45 +0000
-Message-ID: <20261127231445.3623202-1-lightofmysoul@gmail.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <87280d80-9047-405b-8dcc-11276d34d2dd@oss.qualcomm.com>
-References: <20261125-halliday-dts-v3-0-5c8311c0b70b@gmail.com> <20261125-halliday-dts-v3-14-5c8311c0b70b@gmail.com> <87280d80-9047-405b-8dcc-11276d34d2dd@oss.qualcomm.com>
+	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.a=rsa-sha256 header.s=dkim header.b=5dAoixTz
+dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
+	c=relaxed/relaxed; q=dns/txt;
+	h=From;
+	bh=Bb02QMbPzYGMZl2XBsuZPs04tkTOlgjVE/NIsauxzp4=;
+	b=5dAoixTzdi5Pva3FlAw+4G4gvuRSbcuNIp9u6jt4z68aplPRUSy8CmEDY1bii9n7+mU75QUxP
+	s5A0vr9IzCzDScYnVJHNow//t6iWbrZ46GCsHh9kMtlyDcQkW7OdSxett+AHYn6ZaJFvgQk+BOj
+	M3+5IMQ/nsRWxs/EB7JtCUI=
+Received: from mail.maildlp.com (unknown [172.19.163.163])
+	by canpmsgout11.his.huawei.com (SkyGuard) with ESMTPS id 4jbtpt197czKm6c;
+	Sat, 28 Nov 2026 10:03:02 +0800 (CST)
+Received: from kwepemk200008.china.huawei.com (unknown [7.202.194.74])
+	by mail.maildlp.com (Postfix) with ESMTPS id 8271540563;
+	Sat, 28 Nov 2026 10:03:22 +0800 (CST)
+Received: from [10.67.110.68] (10.67.110.68) by kwepemk200008.china.huawei.com
+ (7.202.194.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Sat, 28 Nov
+ 2026 10:03:21 +0800
+Message-ID: <6448a512-9c1a-441b-a8b8-7bf654e8b2a5@huawei.com>
+Date: Sat, 28 Nov 2026 10:03:20 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -139,30 +62,151 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v10 3/8] crash_core: serialize crash header preparation
+ against hotplug
+To: Wandun Chen <chenwandun1@gmail.com>, <pjw@kernel.org>,
+	<palmer@dabbelt.com>, <aou@eecs.berkeley.edu>, <alex@ghiti.fr>,
+	<robh@kernel.org>, <baoquan.he@linux.dev>, <rppt@kernel.org>,
+	<m.szyprowski@samsung.com>
+CC: <catalin.marinas@arm.com>, <will@kernel.org>, <mark.rutland@arm.com>,
+	<chenhuacai@kernel.org>, <kernel@xen0n.name>, <tglx@kernel.org>,
+	<mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
+	<x86@kernel.org>, <hpa@zytor.com>, <saravanak@kernel.org>,
+	<akpm@linux-foundation.org>, <pasha.tatashin@soleen.com>,
+	<pratyush@kernel.org>, <ruirui.yang@linux.dev>, <robin.murphy@arm.com>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<loongarch@lists.linux.dev>, <linux-riscv@lists.infradead.org>,
+	<devicetree@vger.kernel.org>, <kexec@lists.infradead.org>,
+	<linux-mm@kvack.org>, <iommu@lists.linux.dev>
+References: <20261127090723.741253-1-chenwandun1@gmail.com>
+ <20261127090723.741253-4-chenwandun1@gmail.com>
+From: Jinjie Ruan <ruanjinjie@huawei.com>
+In-Reply-To: <20261127090723.741253-4-chenwandun1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: kwepems100001.china.huawei.com (7.221.188.238) To
+ kwepemk200008.china.huawei.com (7.202.194.74)
 
-On Fri, Nov 27, 2026 at 02:58:40PM +0100, Konrad Dybcio wrote:
-> Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 
-Thanks for the review.
 
-I've implemented support for almost all of the hardware in my
-local branch and I have found that the headset exists in multiple
-revisions.
+在 2026/11/27 17:07, Wandun Chen 写道:
+> From: Wandun Chen <chenwandun@lixiang.com>
+> 
+> crash_prepare_headers() counts memory ranges before populating the
+> allocated crash_mem array. The weak implementation used by ARM64,
+> RISC-V and LoongArch walks memblock.memory, while x86 performs the
+> same two-pass operation over system RAM resources. Concurrent memory
+> hotplug can change range source between the two walks and make the
+> populate pass overflow cmem->ranges.
+> 
+> Take device_hotplug_lock when preparing crash headers during
+> kexec_file_load(). The x86/riscv memory hotplug path already takes
+> device_hotplug_lock, so call __crash_prepare_headers() directly
+> to avoid recursive locking.
+> 
+> Sashiko reported this issue in [1].
+> 
+> Fixes: 3751e728cef2 ("arm64: kexec_file: add crash dump support")
+> Fixes: 1bcca8620a91 ("LoongArch: Add crash dump support for kexec_file")
+> Fixes: 8acea455fafa ("RISC-V: Support for kexec_file on panic")
+> Fixes: dd5f726076cc ("kexec: support for kexec on panic using new system call")
+> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+> Link: https://sashiko.dev/#/message/20260806101002.1F84E1F000E9@smtp.kernel.org [1]
+> Acked-by: Baoquan He <baoquan.he@linux.dev>
+> ---
+>  arch/riscv/kernel/crash.c  |  2 +-
+>  arch/x86/kernel/crash.c    |  2 +-
+>  include/linux/crash_core.h |  2 ++
+>  kernel/crash_core.c        | 17 +++++++++++++++--
+>  4 files changed, 19 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/riscv/kernel/crash.c b/arch/riscv/kernel/crash.c
+> index fe5a4b306aae..ac8df2edf2a7 100644
+> --- a/arch/riscv/kernel/crash.c
+> +++ b/arch/riscv/kernel/crash.c
+> @@ -70,7 +70,7 @@ void arch_crash_handle_hotplug_event(struct kimage *image, void *arg)
+>  	 * Create the new elfcorehdr reflecting the changes to CPU and/or
+>  	 * memory resources.
+>  	 */
+> -	if (crash_prepare_headers(true, &elfbuf, &elfsz, NULL)) {
+> +	if (__crash_prepare_headers(true, &elfbuf, &elfsz, NULL)) {
+>  		pr_err("unable to create new elfcorehdr");
+>  		goto out;
+>  	}
+> diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
+> index e6f23933a6df..bef008a0cb22 100644
+> --- a/arch/x86/kernel/crash.c
+> +++ b/arch/x86/kernel/crash.c
+> @@ -465,7 +465,7 @@ void arch_crash_handle_hotplug_event(struct kimage *image, void *arg)
+>  	 * Create the new elfcorehdr reflecting the changes to CPU and/or
+>  	 * memory resources.
+>  	 */
+> -	if (crash_prepare_headers(IS_ENABLED(CONFIG_X86_64), &elfbuf, &elfsz, NULL)) {
+> +	if (__crash_prepare_headers(IS_ENABLED(CONFIG_X86_64), &elfbuf, &elfsz, NULL)) {
+>  		pr_err("unable to create new elfcorehdr");
+>  		goto out;
+>  	}
+> diff --git a/include/linux/crash_core.h b/include/linux/crash_core.h
+> index bc087124cd78..28e7a81cf263 100644
+> --- a/include/linux/crash_core.h
+> +++ b/include/linux/crash_core.h
+> @@ -61,6 +61,8 @@ extern int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_ma
+>  				       void **addr, unsigned long *sz);
+>  extern int crash_prepare_headers(int need_kernel_map, void **addr,
+>  				 unsigned long *sz, unsigned long *nr_mem_ranges);
+> +int __crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+> +			    unsigned long *nr_mem_ranges);
+>  extern int crash_exclude_core_ranges(struct crash_mem **cmem);
+>  
+>  struct kimage;
+> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+> index faa0f22dbb41..8a861a946e26 100644
+> --- a/kernel/crash_core.c
+> +++ b/kernel/crash_core.c
+> @@ -16,6 +16,7 @@
+>  #include <linux/mm.h>
+>  #include <linux/cpuhotplug.h>
+>  #include <linux/memblock.h>
+> +#include <linux/device.h>
+>  #include <linux/kmemleak.h>
+>  #include <linux/crash_core.h>
+>  #include <linux/reboot.h>
 
-So, I'd like to make a split:
+The order of the header files is completely messed up now.
 
-rename: halliday-samsung-xrvst2.dts -> halliday-samsung-xrvst2.dtsi
-add: halliday-samsung-xrvst2-rev22.dts
-add: halliday-samsung-xrvst2-rev25.dts
+> @@ -344,8 +345,8 @@ int crash_exclude_core_ranges(struct crash_mem **cmem)
+>  	return 0;
+>  }
+>  
+> -int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+> -			  unsigned long *nr_mem_ranges)
+> +int __crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+> +			    unsigned long *nr_mem_ranges)
+>  {
+>  	unsigned int max_nr_ranges;
+>  	struct crash_mem *cmem;
+> @@ -382,6 +383,18 @@ int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+>  	return ret;
+>  }
+>  
+> +int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+> +			  unsigned long *nr_mem_ranges)
+> +{
+> +	int ret;
+> +
+> +	lock_device_hotplug();
+> +	ret = __crash_prepare_headers(need_kernel_map, addr, sz, nr_mem_ranges);
+> +	unlock_device_hotplug();
+> +
+> +	return ret;
 
-The .dts files will initially contain only compatibles.
-The real differences between the revisions are the DMIC drive
-strength, the display panels and their supply voltage, so the files
-will be 'empty' until I send my sound and display series.
+otherwise, LGTM
+Reviewed-by: Jinjie Ruan <ruanjinjie@huawei.com>
 
-Is it OK if I send the split in a v4, or is it better
-to do it in a follow-up?
+> +}
+> +
+>  /**
+>   * crash_exclude_mem_range - exclude a mem range for existing ranges
+>   * @mem: mem->range contains an array of ranges sorted in ascending order
 
-Best regards,
-Stanislav
