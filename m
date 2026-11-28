@@ -1,58 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=113.46.200.218
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795834714;
-	b=MlaakqpFvouXzuiMg8qczU+VX3cmgeWW7E9WiQ3oTOwRFYRJdfN3ux9uU/Wj2M8lxUau
-	 Ka0ilrt9xP1D1wEMRiaPmFp7X2kwFiBfVvBxrPNPaqZoisfbuUaNo6ZZFY2n3kkmm2CwC
-	 HUzdGmNhRYBfg4ocCqOhm2j/dAAP/01u/kYy1JWx+6DQTW4Mzccxw0kA1EJmSUIHnRhHL
-	 mf+9PNMdIudCUYfMGz2mTk4uBiFAIkPW9OV3hNSZczQUvCeBc3GjAusJK+tSqtnftr9V+
-	 CY9db4zdCCiDvjFkmIn0rBWEoxtxumRdD8rU6h3xrymlMSIsoP7WndwWfCDa8t8G9TQ==
+	t=1795847037;
+	b=h/rJhocWo+ijIj+PwWLSHt60O93eByQYDA8K8qP+rHJbn/SSXyvI53pet7t62FdixnBo
+	 ZsIknDfmZGlRnlXzyxybv8E+ugSqqiFJh7FGn7j5uHIsdNCo2GfG/EbcqKd3PuJy1XF6f
+	 QLH8SzZoOROXmf68Eqvd+0c4otsYPwpKIKLHVE3zPPD8Otu/k98eomjCrXAdUUOvhvCrf
+	 Yt+DpAWOdyFUOrTY3C9J4EmtSCWEBdGdAWCjBNMeYZ24tJgF4skuWuFycehiNmh1bB557
+	 Gyb72/CZXmXDOcDH6fr+OMJ/z6l/0fcGZG3lz9+ClV8ehwg4s1hkNAwZrOrJgLLhOeQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795834714;
-	h=DMARC-Filter:dkim-signature:Received:Received:Received:Message-ID:
-	 Date:MIME-Version:User-Agent:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-Originating-IP:
-	 X-ClientProxiedBy;
-	bh=iXm9bjNklHkCJkXC6cXS/6l9msjPSXzfutfiuU6LTJE=;
-	b=SJ4wSmLRkBRdJZTkR0hj36byuxtsj/VBHhPYqH5isE5rgUZF4DnCH43L7LI0ffbdhmrg
-	 KFrd0ugUspGGh5WFPev4YKUxB9WAcXusOvo4XH3vhUy6QtgfERpS5M0Undsu8ElvuS3mq
-	 zd2soEXZFBV9WD5ODcKIMqt40CJMPQZ7Sd7o3ezaejdpL20jpUdyZw6BE1CRdtROrTxaU
-	 WW89Jje1Kyji5F/02Foabi/KaKLab1WqrxFmHMJqrCKX9E4u/4GB9qLbXS0GJsf/7n6y+
-	 4UiXBDd8rvTv3FEC4fQducWhf60MifJ9spP2oliQEpJnvLOJxXE/HundlZVZbsf/FmQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795847037;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=8Qad8FBrWmSXpIHn7XB6n6a/R6xdfCdRWpV3iuJaBbU=;
+	b=2TiIPL9PeJsHjZSuBm+75ek89V1yee72GBQNdBvQjOBvNXnaPQ65jVmvXNU4K7txETXR
+	 ttFvZ5U5HCa2GcLZMOU98BGm9nZCUMdLcIyvOk1f/ldwkVXIuyR3sN4WUuDR44YJWVF03
+	 Xapnrh15tZCBUgUTrYs2dX81Ar/MobWzB5SlB3klBpxbS329G7WotNkxrBREBHuDrHSm8
+	 s6tLmAD8jmd1XxxdovP6RXfqO8zWBFf9ttlJKtWzD9h/gq8hZfbk1Ytl2boh2+9YMG/Fs
+	 Rl9qqGjv83nvP2AXPLi2r5M/mYor6pB4AimRvBwnziFunjtga2X0dlL1qI1FfbwQn4Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=huawei.com;
-	spf=pass smtp.mailfrom=huawei.com;
-	dkim=pass header.d=huawei.com header.i=@huawei.com header.a=rsa-sha256 header.s=dkim header.b=SfKvHHDA;
-	arc=none smtp.remote-ip=113.46.200.218
-Received: from canpmsgout03.his.huawei.com (canpmsgout03.his.huawei.com [113.46.200.218])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Yz97vZR6;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34ADE606A31C;
-	Sat, 28 Nov 2026 02:58:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 34ADE606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70192606A31C;
+	Sat, 28 Nov 2026 06:23:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.a=rsa-sha256 header.s=dkim header.b=SfKvHHDA
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=iXm9bjNklHkCJkXC6cXS/6l9msjPSXzfutfiuU6LTJE=;
-	b=SfKvHHDA5DZy5PHVuUfUp7ZJIYPFO/O1wYHgqxN6U4/eJpLR+3Ela1UpPw9XS8p/TtJJrEZrr
-	gDPn1UZB2A8lTM0A3I9jkCqzQxTZVWI0Nmo8f3SKrZ6KPSFo+ihxjnn+PVobzzgk/65BELmIsiR
-	LEeIYm+6onwT1S/RxJyVyGY=
-Received: from mail.maildlp.com (unknown [172.19.162.140])
-	by canpmsgout03.his.huawei.com (SkyGuard) with ESMTPS id 4jbw1Y64lPzpStH;
-	Sat, 28 Nov 2026 10:57:21 +0800 (CST)
-Received: from kwepemk200008.china.huawei.com (unknown [7.202.194.74])
-	by mail.maildlp.com (Postfix) with ESMTPS id 102B5202E6;
-	Sat, 28 Nov 2026 10:58:29 +0800 (CST)
-Received: from [10.67.110.68] (10.67.110.68) by kwepemk200008.china.huawei.com
- (7.202.194.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Sat, 28 Nov
- 2026 10:58:28 +0800
-Message-ID: <ad0126a1-0d5d-47eb-87fd-1df6ccfece02@huawei.com>
-Date: Sat, 28 Nov 2026 10:58:27 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Yz97vZR6
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EB0F1F00897;
+	Sat, 28 Nov 2026 06:23:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795847037;
+	bh=8Qad8FBrWmSXpIHn7XB6n6a/R6xdfCdRWpV3iuJaBbU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Yz97vZR6AFMYEfOORuZLTjCNfBDdyDW0ZjCGakD9lLhVzzObv6RdEC1MBK1XGDIRG
+	 W2NCADnFryfB9Lirn7seK6SW/Wp5E5gBclImK+hmHviZU4MCFZPQRk3GGySw1hMmBW
+	 8fCTeHGjjj5GF59IU/sRhU3gk8oMKhq8agQDFPRRgSTnTA8P5ClIVJwwi8QThojTNj
+	 zAUpjGDyYqepYo7f09sqyp53Lulvu/+BaUxT2NAuG7nvbhCFq4ZFlrBoDYANEBX/r7
+	 rgvsGfVjFeFX1QyFrWs3tuFrWN7z3YCpXvtgNdLsGkrTFqrwaUQG8is/e/9ZNwfqOn
+	 xZO6KD1FPwyFw==
+Date: Sat, 28 Nov 2026 08:23:53 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>,
+	Sibi Sankar <sibi.sankar@oss.qualcomm.com>,
+	Honglei Huang <honghuan@amd.com>, prakash.gupta@oss.qualcomm.com,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v2] iommu/dma: restore flush queue use in
+ dma_iova_destroy()
+Message-ID: <20261128062353.GG774860@unreal>
+References: <CGME20261127171534eucas1p1adc65490fcfb09b573d27aaa834f2912@eucas1p1.samsung.com>
+ <20261127171529.2917893-1-m.szyprowski@samsung.com>
+ <90e159b3-ef50-4d03-937a-ced5896b152a@arm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -62,102 +63,59 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v10 4/8] crash_core: replace for_each_mem_range() with
- for_each_mem_region()
-To: Wandun Chen <chenwandun1@gmail.com>, <pjw@kernel.org>,
-	<palmer@dabbelt.com>, <aou@eecs.berkeley.edu>, <alex@ghiti.fr>,
-	<robh@kernel.org>, <baoquan.he@linux.dev>, <rppt@kernel.org>,
-	<m.szyprowski@samsung.com>
-CC: <catalin.marinas@arm.com>, <will@kernel.org>, <mark.rutland@arm.com>,
-	<chenhuacai@kernel.org>, <kernel@xen0n.name>, <tglx@kernel.org>,
-	<mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
-	<x86@kernel.org>, <hpa@zytor.com>, <saravanak@kernel.org>,
-	<akpm@linux-foundation.org>, <pasha.tatashin@soleen.com>,
-	<pratyush@kernel.org>, <ruirui.yang@linux.dev>, <robin.murphy@arm.com>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<loongarch@lists.linux.dev>, <linux-riscv@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <kexec@lists.infradead.org>,
-	<linux-mm@kvack.org>, <iommu@lists.linux.dev>
-References: <20261127090723.741253-1-chenwandun1@gmail.com>
- <20261127090723.741253-5-chenwandun1@gmail.com>
-From: Jinjie Ruan <ruanjinjie@huawei.com>
-In-Reply-To: <20261127090723.741253-5-chenwandun1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: kwepems200001.china.huawei.com (7.221.188.67) To
- kwepemk200008.china.huawei.com (7.202.194.74)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <90e159b3-ef50-4d03-937a-ced5896b152a@arm.com>
 
-
-
-在 2026/11/27 17:07, Wandun Chen 写道:
-> From: Wandun Chen <chenwandun@lixiang.com>
+On Fri, Nov 27, 2026 at 05:30:26PM +0000, Robin Murphy wrote:
+> On 27/11/2026 5:15 pm, Marek Szyprowski wrote:
+> > Commit 1acce29926d9 ("iommu/dma: simplify dma_iova_destroy() and drop
+> > the free_iova helper") turned dma_iova_destroy() into dma_iova_unlink()
+> > followed by dma_iova_free(). Before it, the destroy path marked its
+> > IOTLB gather as queued for DMA-FQ domains, skipped iommu_iotlb_sync()
+> > and handed the IOVA over to the flush queue, exactly like
+> > __iommu_dma_unmap(). After it:
+> > 
+> >    - dma_iova_unlink() never queues its gather and always calls
+> >      iommu_iotlb_sync() after iommu_unmap_fast(),
+> >    - dma_iova_free() passes a NULL gather to iommu_dma_free_iova(), so
+> >      the IOVA goes straight back to the allocator via free_iova_fast().
+> > 
+> > DMA-FQ domains therefore get strict invalidation on this path. This
+> > includes blk_rq_dma_map(), which NVMe uses for all data transfers, so
+> > iommu.strict=0 has no effect on NVMe I/O. On a Qualcomm Glymur CRD
+> > (SMMUv3 without RANGE_INV, 4K pages, NVMe on PCIe Gen5 x4) sequential
+> > fio throughput drops from 10.6/11.9 GiB/s (write/read) to the strict
+> > mode level of ~2.7 GiB/s.
+> > 
+> > Fix this by letting dma_iova_destroy() unmap the linked range into its
+> > own gather, queued for flush queue domains like in __iommu_dma_unmap(),
+> > and retire that gather together with the IOVA free: either by
+> > iommu_iotlb_sync(), or by handing the IOVA space (and any page table
+> > pages released by the unmap) over to the flush queue via queue_iova().
+> > The whole reservation is still freed, keeping the size fix of the
+> > mentioned commit.
+> > 
+> > A gather must always be retired, either by iommu_iotlb_sync() or by
+> > handing it to the flush queue together with the IOVA, and the IOVA must
+> > never be returned to the allocator while a queued invalidation for it is
+> > still pending. To keep that obvious, the internal unlink helper only
+> > unmaps into a gather supplied by its caller, and each caller retires it
+> > right away: dma_iova_destroy() syncs or queues it together with the IOVA
+> > free, while dma_iova_unlink() always uses a never queued gather and
+> > syncs it, as the unlinked range remains owned by the caller and may be
+> > linked again immediately.
+> > 
+> > Consequently dma_iova_free(), and dma_iova_destroy() with nothing
+> > mapped, keep returning the IOVA directly to the allocator: no queued
+> > gather was ever created for it, so there is no deferred invalidation to
+> > wait for.
 > 
-> for_each_mem_range() skips MEMBLOCK_NOMAP regions implicitly. Switch the
-> weak defaults to for_each_mem_region(), which exposes struct
-> memblock_region and per-region flags, and filter NOMAP regions explicitly
-> via the new crash_should_skip_region() helper. This prepares for a
-> subsequent patch to extend the skip filter.
-> 
-> No functional change.
-> 
-> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
-> Tested-by: Meijing Zhao <zhaomeijing@lixiang.com>
-> Acked-by: Baoquan He <baoquan.he@linux.dev>
-> ---
->  kernel/crash_core.c | 25 +++++++++++++++++--------
->  1 file changed, 17 insertions(+), 8 deletions(-)
-> 
-> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-> index 8a861a946e26..e161c8b65e00 100644
-> --- a/kernel/crash_core.c
-> +++ b/kernel/crash_core.c
-> @@ -283,25 +283,34 @@ static struct crash_mem *alloc_cmem(unsigned int nr_ranges)
->  }
->  
->  #ifdef CONFIG_ARCH_KEEP_MEMBLOCK
-> +/* Exclude NOMAP regions from the vmcore. */
-> +static bool crash_should_skip_region(struct memblock_region *reg)
-> +{
-> +	return memblock_is_nomap(reg);
+> From a quick skim, this looks about right to me. Note that a single gather
+> in the dma_iova_state itself would never work anyway, as multiple threads
+> are still free to unlink non-overlapping parts of the range simultaneously,
+> so gathering always has to be per-call.
 
+It is reasonable to expect such concurrent accesses to be protected by locks.
 
-LGTM
-Reviewed-by: Jinjie Ruan <ruanjinjie@huawei.com>
-
-> +}
-> +
->  unsigned int __weak arch_get_system_nr_ranges(void)
->  {
->  	unsigned int nr_ranges = 2 + crashk_cma_cnt; /* crashk_res + crashk_low_res, +CMA splits */
-> -	phys_addr_t start, end;
-> -	u64 i;
-> +	struct memblock_region *reg;
->  
-> -	for_each_mem_range(i, &start, &end)
-> +	for_each_mem_region(reg) {
-> +		if (crash_should_skip_region(reg))
-> +			continue;
->  		nr_ranges++;
-> +	}
->  	return nr_ranges;
->  }
->  
->  int __weak arch_crash_populate_cmem(struct crash_mem *cmem)
->  {
-> -	phys_addr_t start, end;
-> -	u64 i;
-> +	struct memblock_region *reg;
->  
-> -	for_each_mem_range(i, &start, &end) {
-> -		cmem->ranges[cmem->nr_ranges].start = start;
-> -		cmem->ranges[cmem->nr_ranges].end = end - 1;
-> +	for_each_mem_region(reg) {
-> +		if (crash_should_skip_region(reg))
-> +			continue;
-> +		cmem->ranges[cmem->nr_ranges].start = reg->base;
-> +		cmem->ranges[cmem->nr_ranges].end = reg->base + reg->size - 1;
->  		cmem->nr_ranges++;
->  	}
->  	return 0;
-
+Thanks
