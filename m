@@ -1,60 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=79.135.106.99
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=44.245.243.92
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795860797;
-	b=W/RboozSZhFjBbfj2+uCyhFHWYRHWanMgX3nVpMvN+x9Kt7sMC3e1X+D6XoKlwtB50mw
-	 91dAyctDmafWoxgdQ4oVhFS7Q3vXVpz8Ox05750Emh8ok5PivlrlnT+RbH1+GNqbFb1DG
-	 +6z+N4QqwbR5vgoNQxUpTnruvF+4mBpvzXIsn9W0t94qgk9JKPSDFfFKlugSL5e+4dxeo
-	 pGrBR5Y+9eKNP2HNxzyITXIp7fIPWB8pcF1Z4bcoydnW02UFIchaav1z9UizY+9zcMdWw
-	 74BipGpserrovdlShWDmTCzvG2qdDn7q1nftnx8YdHMggKCHOkBi7T6P0zyjCPorQkQ==
+	t=1795867988;
+	b=e/GZqzc2XEsvP7tnxxsgkJCrBRS+9HJTofOuhZzr/bQLl3xfKJ3MDBB+4O9wnbt16GMs
+	 jnR2KLqpyWu5TaX1uFUMYS1zBQtrQvcT6LVFAPYPTV4R4y2UXP7OhSC/8P7vdRgJNcWF+
+	 zOVlobS0664bffzvpTj8vkzr7icmt0jiyWzW1VEyWiOkNl4x47dS6V0Vvqhk8pBjcmU20
+	 1z0l1UReKjFNXBgcsFaSyeL31v5YtOJqrshMKKnb+hxODg8RSJt09w9PKHnP5Mo0LY8DZ
+	 699UjEFrQhceL1Z6qlvNpNm00Fl0uy+Ft7IQ/SxVgciNORRgX+9JUqdRG1cKidtISHQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795860797;
-	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
-	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=6bDRCNDgV+w4zFz1M9i8EtB9AGPzc8GgRuZjagDad+Y=;
-	b=NCBX8FwMqFv8hUiK6OXMhM4LqAosIMjGrIfkoc/oSoCkOAefzYXoIG5ITAiGWdWQxI5O
-	 4snlE1zn6/6M+ex+XDgtZCkYPFxzKe7txNKwo5iBeeQ+QZWz4PI367gt/sxu0mdBs0wFh
-	 lv2JR6AE6JKCSZIh7rCqlhnjv8ixB0UT3sC8tesEG5toVNyp+WfSB7geXHWiUCVucEzuM
-	 24/a3qlySEnwEvUdkiHLLbrhHkCPACVL3h9deJcC7uyinaBKfxD0Shh3AaCADbqZmVw+O
-	 Wyb7pN+3je+b79MtaX5rxad9BzeuKEbPIAT/Take/75l+U9GRUpEEEOH0TUqYknzO6g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795867988;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:Received:Received:X-Farcaster-Flow-ID:Received:Received:
+	 From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+	 X-ClientProxiedBy;
+	bh=UT4QFq3/I0Qt6OZwW1g9RS5I8R97iJbFOGCwAOa1pME=;
+	b=Omn+r8IR7pXHD+iFeA0Ml+25bzu1m5q5N8IwG2nV4PD/SXwYsVmu4UQJQ2fyRKNDLCMK
+	 ky8z9mjJMb5Gbsk0kFcV7KTgHKff3s8FPgXZofXzONGuqLXO5cxdsFUOtCvmYZ9+En3W5
+	 NFoyvlpAYj66As99S8ZnEHl18gDvTz+CV+FPdpfZfBa8Y66mFW1CT4zPdWfVb4l6ug+/w
+	 MNXv6cvOwPh8GZD7F50AbhKOZMoio0+z217jFbDgot5IOaPLILerjjah0Qk8qGkPNl51I
+	 jl136Hkg/5buo3KwasvLS7vwvjtQ3ClPYiwxOoXR2JWngrABICC3aNE8fy26dO98dow==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=protonmail.com;
-	spf=pass smtp.mailfrom=protonmail.com;
-	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=E58q7IBI;
-	arc=none smtp.remote-ip=79.135.106.99
-Received: from mail-10699.protonmail.ch (mail-10699.protonmail.ch [79.135.106.99])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=amazon.de;
+	spf=pass smtp.mailfrom=amazon.de;
+	dkim=pass header.d=amazon.de header.i=@amazon.de header.a=rsa-sha256 header.s=amazoncorp2 header.b=bIcE0Kce;
+	arc=none smtp.remote-ip=44.245.243.92
+Received: from pdx-out-001.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-001.esa.us-west-2.outbound.mail-perimeter.amazon.com [44.245.243.92])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B89C606A323
-	for <iommu@lists.linux.dev>; Sat, 28 Nov 2026 10:13:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6B89C606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E407606A32F
+	for <iommu@lists.linux.dev>; Sat, 28 Nov 2026 12:13:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6E407606A32F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=E58q7IBI
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1795860794; x=1796119994;
-	bh=6bDRCNDgV+w4zFz1M9i8EtB9AGPzc8GgRuZjagDad+Y=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=E58q7IBIMWri3KS/uvCCzQS1QMJASgx586aCYtpb/rbuRAHyQQG/I006BnnmnGqTi
-	 CqeQkRGCY5ldH1KDWkbrzVHJFyRjz3bkcDIwM2+mkJhVq6Wu2uUc0Olmjpfg80yOxk
-	 ozbRk2Aow9+nT2fYEQVeu1Mp+qKeaIZS/G0rdFvWG/QuBRF6veKipD/SrCCUQdX9nO
-	 znkp+dJdT0wvVCyBC/giVYQWw8esUfLy/Xs7lowKGhBv2sZrr6f8y8/g2FPg/iFH+a
-	 RimwhFiAXaJ1gajyMeSHyC/Yj9YwKByIKExsQ33onkfap/66t6kO5Gto2jkT+0TyKO
-	 gMgb33rVT94AA==
-Date: Sat, 28 Nov 2026 10:13:07 +0000
-To: Aigeus <info@aigeus.net>
-From: 70sp <70sp@protonmail.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev, regressions@lists.linux.dev, Thorsten Leemhuis <regressions@leemhuis.info>
-Subject: Re: [REGRESSION] GPU passes into VM improperly after c376a3456d8b or a98db518dde2
-Message-ID: <WV3FhKHog9vt2uFWViY8UTVnQk0xq5O_l0vRT4AMpGXxfo-9FcilH-CoNgVYHc0bdCdmWtatt-h4AuogBtpr1FaXTEZJpMA3SEAIepliqC0=@protonmail.com>
-In-Reply-To: <4jbbNj4Glnz2ScWg@mailsubfra1002.protonmail.ch>
-References: <275dbe0d-0b2d-4ec4-9c8c-9bd7ddf06070@linux.intel.com> <QISmXFlpPMgvFUKmdIBDwqn4JHHXt2NZeJzerMLHF_5icLo0lPKVlN0Ig9v8Vb52NmCeSFdyrao4x8KoN1DCXtDlnZS7eRIClC6vZyu-hPU=@protonmail.com> <d931a389-c143-4a6a-931c-bc7025bcefb9@linux.intel.com> <4jbbNj4Glnz2ScWg@mailsubfra1002.protonmail.ch>
-Feedback-ID: 144929603:user:proton
-X-Pm-Message-ID: 38fd2fdf9c4e12e9822b9b9b8b463b3c8ca2d7f8
+	dkim=pass (2048-bit key, unprotected) header.d=amazon.de header.i=@amazon.de header.a=rsa-sha256 header.s=amazoncorp2 header.b=bIcE0Kce
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazoncorp2;
+  t=1795867988; x=1827403988;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=UT4QFq3/I0Qt6OZwW1g9RS5I8R97iJbFOGCwAOa1pME=;
+  b=bIcE0Kce4jl+pqerVkvUVTIkWaI5zlo0xxcGmurQ6zgG4aW7w+eD61jH
+   3oq4dCI9x8VBB8PJ7nUrO76XVY0o2xS1iwG1DcUq4xatBR8FaM0POnK9U
+   KQXlGqeFAt7FgOvJpeZkEMw3CaK2DJdCj/Z/c+TFwbmQRV6DbYS/rvVr0
+   ZT0KPFM3ap/G6xbahLLTI303gGn8mFmoKITvoj7vH8WSv72BViDORJmb0
+   Kprv8uM0TucDae2Lssm8Ya9PkflKBUiOt94mJ6NkVW8rsOMLe4QS05Lo2
+   vpVOJNbyU0Ira9IjzfAdZgiyYyvUqoYH0Qh0q5DtKHWwj1K7qVS2jEwT3
+   A==;
+X-CSE-ConnectionGUID: mLw+jaVZSuijQVr8FCv5aA==
+X-CSE-MsgGUID: 0sQrJQsXScWkoi33QW3tdg==
+X-IronPort-AV: E=Sophos;i="6.27,238,1787011200"; 
+   d="scan'208";a="34874357"
+Received: from ip-10-5-9-48.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.9.48])
+  by internal-pdx-out-001.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2026 12:13:06 +0000
+Received: from EX19MTAUWA002.ant.amazon.com [205.251.233.178:31104]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.13.177:2525] with esmtp (Farcaster)
+ id d018b670-54d4-413c-95c9-126e656b1bc4; Sat, 28 Nov 2026 12:13:05 +0000 (UTC)
+X-Farcaster-Flow-ID: d018b670-54d4-413c-95c9-126e656b1bc4
+Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
+ EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.57;
+ Sat, 28 Nov 2026 12:13:05 +0000
+Received: from dev-dsk-lshahed-1a-d9c3b839.eu-west-1.amazon.com
+ (172.19.123.145) by EX19D001UWA001.ant.amazon.com (10.13.138.214) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.57; Sat, 28 Nov 2026
+ 12:13:03 +0000
+From: Ibrahim Elshahed <lshahed@amazon.de>
+To: Lu Baolu <baolu.lu@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>
+CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <nh-open-source@amazon.com>, Anselm Busse
+	<abusse@amazon.com>
+Subject: [PATCH] iommu/vt-d: Validate table addresses in dmar_fault_dump_ptes()
+Date: Sat, 28 Nov 2026 12:12:55 +0000
+Message-ID: <20261128121255.66061-1-lshahed@amazon.de>
+X-Mailer: git-send-email 2.47.3
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,60 +85,156 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: EX19D031UWC002.ant.amazon.com (10.13.139.212) To
+ EX19D001UWA001.ant.amazon.com (10.13.138.214)
 
-> Hello,
->=20
-> I am the reporter of the in-kernel amdgpu case in this thread (the one
-> without VFIO, also filed as Debian bug #1155044). The superpage
-> hypothesis fits my machine exactly and sp_off confirms it, so here is
-> an independent data point from a plain DMA-API domain.
->=20
-> Hardware: Gigabyte H97-HD3 (BIOS F9c), Core i7-4790K (Haswell, iGPU
-> enabled and driven by i915), Radeon RX 5500 XT (Navi 14) at
-> 0000:03:00.0, Debian 13, kernel 7.3.4+deb13-amd64.
->=20
-> With plain intel_iommu=3Don this box fails as in my message of 23 Nov:
-> DMAR faults with reason 0x0c (non-zero reserved fields in PTE) on DMA
-> reads issued by the GPU itself, then "PSP load smu failed" and
-> "Fatal error during GPU init" (36 fault lines across the failing
-> boots, 0 on 6.12.118).
->=20
-> After appending sp_off to the intel_iommu=3D options and rebooting, with
-> everything else unchanged:
->=20
->   /proc/cmdline: ... ro quiet splash intel_iommu=3Don,sp_off
->   DMAR: IOMMU enabled
->   DMAR-IR: Enabled IRQ remapping in xapic mode
->   i915 0000:00:02.0: [drm] VT-d active for gfx access
->   amdgpu 0000:03:00.0: VRAM: 8176M ...
->   amdgpu 0000:03:00.0: SMU is initialized successfully!
->   [drm] Initialized amdgpu 3.64.0 for 0000:03:00.0 on minor 1
->   dmesg | grep -c "fault reason"  ->  0
->=20
-> So the fault class is not VFIO-specific: an in-kernel driver using a
-> plain DMA-API domain hits the same reserved-PTE rejection, and
-> disabling superpages removes it while DMA remapping and interrupt
-> remapping stay enabled. That is consistent with the Haswell
-> IGD/superpage restriction =C5=A0imon described.
->=20
-> Once the change is reposted as a formal patch I can build it against
-> the Debian 7.3.4 tree and boot-test it on this machine within a day,
-> so the verification does not have to rest on one box.
->=20
-> Thanks,
-> Aigeus
-> GitHub: EgolOS <79418083+EgolOS@users.noreply.github.com>
+From: Anselm Busse <abusse@amazon.com>
 
-Hello,
+dmar_fault_dump_ptes() walks the root entry, context entry, PASID
+tables and page tables of a device that has just taken a DMA fault.
+It translates each table address found in those entries with
+phys_to_virt() and dereferences the result, without checking that the
+address is backed by memory in the direct map. The walk runs from the
+DMAR fault interrupt handler.
 
-thank you for the confirmation and info. We are currently confirming whethe=
-r another regression thread is the same issue here: https://lore.kernel.org=
-/regressions/0318408a-20b8-4237-85b2-e522883f5436@acm.org/
+If an entry is corrupt and points at an address that has no struct
+page, such as one past the end of RAM, phys_to_virt() returns an
+unmapped virtual address and the dump faults in the interrupt handler.
+A recoverable device fault becomes a panic. Pointing a device's
+context entry past the end of RAM and letting the device DMA gives:
 
-I will try to send out the patch (or somebody else may) as we confirm or de=
-ny whether they are the same.
+  DMAR: [DMA Read NO_PASID] Request device [0000:00:03.0] fault addr 0x100000 [fault reason 0x03] Invalid context entry
+  DMAR: Dump dmar0 table entries for IOVA 0x100000
+  DMAR: root entry: 0x0000000100e0e001
+  DMAR: context entry: hi 0x0000000000000502, low 0x0000000400000001
+  BUG: unable to handle page fault for address: ffff9fb940000000
+  #PF: supervisor read access in kernel mode
+  #PF: error_code(0x0000) - not-present page
+  Oops: Oops: 0000 [#1] SMP NOPTI
+  RIP: 0010:dmar_fault_dump_ptes+0x216/0x263
 
-Best regards,
-=C5=A0imon Posp=C3=ADchal
+Check each table address with pfn_valid() before dereferencing it and
+stop the dump with a message when the check fails. Open-code the PASID
+table lookup instead of using get_pasid_table_from_pde() so the
+pointer taken from the PASID directory entry gets the same check.
+
+Fixes: 914ff7719e8a ("iommu/vt-d: Dump DMAR translation structure when DMA fault occurs")
+Cc: stable@vger.kernel.org
+Signed-off-by: Anselm Busse <abusse@amazon.com>
+Co-developed-by: Ibrahim Elshahed <lshahed@amazon.de>
+Signed-off-by: Ibrahim Elshahed <lshahed@amazon.de>
+---
+Reproduced with a test-only hook that rewrites a device's context
+entry before the device DMAs. In QEMU (q35, intel-iommu, legacy mode)
+on iommu/next, a context entry pointing past the end of RAM or at the
+local APIC oopses without this patch; with it the dump prints "legacy
+mode page table address is invalid" and the system keeps running.
+
+ drivers/iommu/intel/iommu.c | 47 +++++++++++++++++++++++++++++++------
+ 1 file changed, 40 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 5a2e705a2f2e..2f3122b1f4a3 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -552,6 +552,18 @@ static void free_context_table(struct intel_iommu *iommu)
+ }
+ 
+ #ifdef CONFIG_DMAR_DEBUG
++/*
++ * A faulting device's table entries may hold garbage or point outside
++ * the direct map. Return NULL if @addr cannot be dereferenced.
++ */
++static void *dmar_fault_table_virt(u64 addr)
++{
++	if (!pfn_valid(PHYS_PFN(addr)))
++		return NULL;
++
++	return phys_to_virt(addr);
++}
++
+ static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn,
+ 			 u8 bus, u8 devfn, struct dma_pte *parent, int level)
+ {
+@@ -572,7 +584,12 @@ static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn,
+ 		if (level == 1 || dma_pte_superpage(pte))
+ 			break;
+ 
+-		parent = phys_to_virt(dma_pte_addr(pte));
++		parent = dmar_fault_table_virt(dma_pte_addr(pte));
++		if (!parent) {
++			pr_info("page table address is invalid at level %d\n",
++				level - 1);
++			break;
++		}
+ 		level--;
+ 	}
+ }
+@@ -621,7 +638,11 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+ 			return;
+ 		}
+ 		level = agaw_to_level(ctx_entry->hi & 7);
+-		pgtable = phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
++		pgtable = dmar_fault_table_virt(ctx_entry->lo & VTD_PAGE_MASK);
++		if (!pgtable) {
++			pr_info("legacy mode page table address is invalid\n");
++			return;
++		}
+ 		goto pgtable_walk;
+ 	}
+ 
+@@ -631,7 +652,11 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+ 	}
+ 
+ 	/* get the pointer to pasid directory entry */
+-	dir = phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
++	dir = dmar_fault_table_virt(ctx_entry->lo & VTD_PAGE_MASK);
++	if (!dir) {
++		pr_info("pasid directory table address is invalid\n");
++		return;
++	}
+ 
+ 	/* For request-without-pasid, get the pasid from context entry */
+ 	if (intel_iommu_sm && pasid == IOMMU_PASID_INVALID)
+@@ -642,11 +667,15 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+ 	pr_info("pasid dir entry: 0x%016llx\n", pde->val);
+ 
+ 	/* get the pointer to the pasid table entry */
+-	entries = get_pasid_table_from_pde(pde);
+-	if (!entries) {
++	if (!pasid_pde_is_present(pde)) {
+ 		pr_info("pasid table is not present\n");
+ 		return;
+ 	}
++	entries = dmar_fault_table_virt(READ_ONCE(pde->val) & PDE_PFN_MASK);
++	if (!entries) {
++		pr_info("pasid table address is invalid\n");
++		return;
++	}
+ 	index = pasid & PASID_PTE_MASK;
+ 	pte = &entries[index];
+ 	for (i = 0; i < ARRAY_SIZE(pte->val); i++)
+@@ -659,10 +688,14 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+ 
+ 	if (pasid_pte_get_pgtt(pte) == PASID_ENTRY_PGTT_FL_ONLY) {
+ 		level = pte->val[2] & BIT_ULL(2) ? 5 : 4;
+-		pgtable = phys_to_virt(pte->val[2] & VTD_PAGE_MASK);
++		pgtable = dmar_fault_table_virt(pte->val[2] & VTD_PAGE_MASK);
+ 	} else {
+ 		level = agaw_to_level((pte->val[0] >> 2) & 0x7);
+-		pgtable = phys_to_virt(pte->val[0] & VTD_PAGE_MASK);
++		pgtable = dmar_fault_table_virt(pte->val[0] & VTD_PAGE_MASK);
++	}
++	if (!pgtable) {
++		pr_info("scalable mode page table address is invalid\n");
++		return;
+ 	}
+ 
+ pgtable_walk:
+
+base-commit: 1ec7c5bbcabf9a75ba3b0bc0c0e64134a965abe7
+-- 
+2.47.3
+
